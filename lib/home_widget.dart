@@ -28,16 +28,16 @@ class _HomeState extends State<Home> {
         currentIndex: _currentIndex, // new
         items: [
           BottomNavigationBarItem(
-            icon: new Icon(Icons.person),
-            title: new Text('Profile'),
-          ),
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.explore),
+            icon: new Icon(Icons.search),
             title: new Text('Maps'),
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.favorite),
-            title: new Text('Favorites'),
+            icon: new Icon(Icons.group),
+            title: new Text('Munch Bunch'),
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.person),
+            title: new Text('Profile'),
           )
         ],
       ),
