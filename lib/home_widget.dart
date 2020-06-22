@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munch/bottom_tab.dart';
+import 'package:munch/munch_card.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -12,16 +13,13 @@ class _HomeState extends State<Home> {
   int _currentIndex = 0;
   final List<Widget> _children = [
     BottomTabWdiget(Colors.white),
-    BottomTabWdiget(Colors.deepOrange),
+    MunchCard(),
     BottomTabWdiget(Colors.green)
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Munch'),
-      ),
       body: _children[_currentIndex], // new
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped, // new
