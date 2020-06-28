@@ -1,5 +1,5 @@
 abstract class BaseAuthentication {
-  Future<String> signIn();
+  Future<void> signIn();
 
   Future<void> signOut();
 }

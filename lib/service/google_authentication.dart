@@ -9,7 +9,7 @@ class GoogleAuthentication implements BaseAuthentication {
   GoogleAuthentication(this._auth, this._googleSignIn);
 
   @override
-  Future<String> signIn() async {
+  Future<void> signIn() async {
     final GoogleSignInAccount googleSignInAccount =
         await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =
@@ -29,7 +29,7 @@ class GoogleAuthentication implements BaseAuthentication {
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
 
-    return 'signInWithGoogle succeeded: $user';
+    print('signInWithGoogle succeeded: $user');
   }
 
   @override
