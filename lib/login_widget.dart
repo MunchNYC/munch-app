@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:munch/service/google_authentication.dart';
+import 'package:munch/service/base_authentication.dart';
 import 'home_widget.dart';
 
 class Login extends StatefulWidget {
-  final GoogleAuthentication _googleAuthentication;
+  final BaseAuthentication _authentication;
 
-  Login(this._googleAuthentication);
+  Login(this._authentication);
 
   @override
-  _LoginState createState() => _LoginState(_googleAuthentication);
+  _LoginState createState() => _LoginState(_authentication);
 }
 
 class _LoginState extends State<Login> {
-  final GoogleAuthentication _googleAuthentication;
+  final BaseAuthentication _authentication;
   bool _isLoading = false;
 
-  _LoginState(this._googleAuthentication);
+  _LoginState(this._authentication);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(height: 50),
-              _signInWithGoogleButton(),
+              _signInButton(),
               _progressIndicator()
             ],
           ),
@@ -37,10 +37,10 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _signInWithGoogleButton() {
+  Widget _signInButton() {
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: _onSignInWithGoogleButtonTapped,
+      onPressed: _onSignInButtonTapped,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
@@ -67,13 +67,13 @@ class _LoginState extends State<Login> {
     );
   }
 
-  void _onSignInWithGoogleButtonTapped() {
+  void _onSignInButtonTapped() {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      _googleAuthentication.signIn().whenComplete(() {
+      _authentication.signIn().whenComplete(() {
         setState(() {
           _isLoading = false;
         });
