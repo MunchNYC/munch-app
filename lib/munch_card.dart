@@ -58,7 +58,8 @@ class MunchCard extends StatelessWidget {
           }).toList(),
         ));
 
-    SafeArea cardWithSafeArea = SafeArea(child: Column(children: <Widget>[
+    SafeArea cardWithSafeArea = SafeArea(
+        child: Column(children: <Widget>[
       titleSection,
       imageCarousel,
       SizedBox(height: 40)
