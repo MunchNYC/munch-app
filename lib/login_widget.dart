@@ -13,6 +13,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GoogleAuthentication _googleAuthentication;
+  bool _isLoading = false;
 
   _LoginState(this._googleAuthentication);
 
@@ -28,6 +29,7 @@ class _LoginState extends State<Login> {
             children: <Widget>[
               SizedBox(height: 50),
               _signInWithGoogleButton(),
+              _progressIndicator()
             ],
           ),
         ),
@@ -64,6 +66,7 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+
   void _onSignInWithGoogleButtonTapped() {
     setState(() {
       _isLoading = true;
@@ -90,5 +93,15 @@ class _LoginState extends State<Login> {
       print(e.toString());
       // TODO How do we want to display errors?
     }
+  }
+
+  Widget _progressIndicator() {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return Container(
+      height: 0.0,
+      width: 0.0,
+    );
   }
 }
