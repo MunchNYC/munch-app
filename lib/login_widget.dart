@@ -38,17 +38,7 @@ class _LoginState extends State<Login> {
   Widget _signInWithGoogleButton() {
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: () {
-        _googleAuthentication.signIn().whenComplete(() {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return Home();
-              },
-            ),
-          );
-        });
-      },
+      onPressed: _onSignInWithGoogleButtonTapped,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
@@ -73,5 +63,32 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+  void _onSignInWithGoogleButtonTapped() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      _googleAuthentication.signIn().whenComplete(() {
+        setState(() {
+          _isLoading = false;
+        });
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return Home();
+            },
+          ),
+        );
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(e.toString());
+      // TODO How do we want to display errors?
+    }
   }
 }
