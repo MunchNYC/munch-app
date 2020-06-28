@@ -62,10 +62,12 @@ class MunchCard extends StatelessWidget {
     )
     );
 
+    SafeArea safeArea = SafeArea(child: Column(children: <Widget>[titleSection, imageCarousel, SizedBox(height: 40)]),);
+
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
-      padding: const EdgeInsets.all(24),
-      child: Column(children: <Widget>[titleSection, imageCarousel, SizedBox(height: 40)],)
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: Colors.red[200]),
+      padding: const EdgeInsets.only(left: 24, right: 24),
+      child: safeArea,
     );
   }
 }
