@@ -15,7 +15,6 @@ class _HomeState extends State<Home> {
   final List<Widget> _children = [
     BottomTabWdiget(Colors.white),
     MunchSwipeScreen(),
-
   int _currentIndex = 0;
   final List<Widget> _children = [
     BottomTabWdiget(Colors.white),
