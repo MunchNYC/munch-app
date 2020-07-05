@@ -6,20 +6,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
-enum accountListItem {
-  EditProfile,
-  ReferFriend,
-  Notifications,
-  Privacy,
-  Support,
-  SignOut
+enum AccountListItemType {
+  editProfile,
+  referFriend,
+  notifications,
+  privacy,
+  support,
+  signOut
 }
 
 class AccountListItem extends StatelessWidget {
   final IconData icon;
   final text;
   final bool hasNavigation;
-  final accountListItem itemType;
+  final AccountListItemType itemType;
 
   const AccountListItem(
       {Key key, this.hasNavigation, this.icon, this.text, this.itemType})
@@ -55,14 +55,14 @@ class AccountListItem extends StatelessWidget {
 
   _accountListItemActions(BuildContext context) {
     switch (this.itemType) {
-      case accountListItem.Privacy:
+      case AccountListItemType.privacy:
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => AccountPrivacy()));
         break;
-      case accountListItem.ReferFriend:
+      case AccountListItemType.referFriend:
         _referFriendShare(context);
         break;
-      case accountListItem.Support:
+      case AccountListItemType.support:
         _launchEmailDeviceDefaults(context);
         break;
     }
