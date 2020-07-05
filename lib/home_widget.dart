@@ -21,9 +21,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Munch'),
-      ),
       body: _children[_currentIndex], // new
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped, // new
@@ -39,7 +36,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.person),
-            title: new Text('Profile'),
+            title: new Text('Account'),
           ),
         ],
       ),
