@@ -48,12 +48,12 @@ class _HomeState extends State<Home> {
             title: new Text('Profile'),
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.explore),
-            title: new Text('Maps'),
+            icon: new Icon(Icons.group),
+            title: new Text('Munch Bunch'),
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.favorite),
-            title: new Text('Favorites'),
+            icon: new Icon(Icons.person),
+            title: new Text('Profile'),
           )
         ],
       ),
