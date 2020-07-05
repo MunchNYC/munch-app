@@ -5,6 +5,8 @@ import 'package:munch/login_widget.dart';
 import 'package:munch/service/google_authentication.dart';
 import 'package:flutter/material.dart';
 
+import 'home_widget.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
           child: Text('Hello World'),
         ),
       ),
+      title: 'My Flutter App',
+      home: Home(),
     );
   }
 }
