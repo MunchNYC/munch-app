@@ -41,5 +41,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Need to upload image</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Need to upload image</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Location used to provide the best app experience</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Location used to provide the best app experience</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Location used to provide the best app experience</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Location used to provide the best app experience</string>
 </dict>
 </plist>
