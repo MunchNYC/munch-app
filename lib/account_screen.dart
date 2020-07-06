@@ -182,7 +182,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       AccountListItem(
                         icon: //Icons.exit_to_app,
-                            LineAwesomeIcons.alternate_sign_out,
+                            //LineAwesomeIcons.alternate_sign_out,
+                            LineAwesomeIcons.file_export,
                         text: 'Sign Out',
                         hasNavigation: false,
                         itemType: AccountListItemType.signOut,
