@@ -6,6 +6,7 @@ class MunchSwipeScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _MunchSwipeScreenState();
   }
+
 }
 
 class _MunchSwipeScreenState extends State<MunchSwipeScreen> {
@@ -26,33 +27,13 @@ class _MunchSwipeScreenState extends State<MunchSwipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-      child: Column(children: [
-        Expanded(
-            child: Stack(
+      body: Center(
+        child: Stack(
           alignment: Alignment.center,
           children: cardList,
-        )),
-        Container(
-          child: Row(
-            children: <Widget>[
-              FloatingActionButton(
-                onPressed: () {}, // handle tap
-                child: Icon(Icons.close, color: Colors.red, size: 36),
-                backgroundColor: Colors.white,
-              ),
-              FloatingActionButton(
-                onPressed: () {}, // handle tap
-                child: Icon(Icons.check, color: Colors.green, size: 36),
-                backgroundColor: Colors.white,
-              ),
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-          ),
-          padding: EdgeInsets.all(16),
-        )
-      ]),
-    ));
+        ),
+      ),
+    );
   }
 
   List<Widget> _getCards() {
@@ -73,14 +54,16 @@ class _MunchSwipeScreenState extends State<MunchSwipeScreen> {
     }
 
     for (int x = 0; x < cards.length; x++) {
-      cardList.add(Draggable(
-        onDragEnd: (drag) {
-          _removeCard(x);
-        },
+      cardList.add(
+        Draggable(
+          onDragEnd: (drag) {
+            _removeCard(x);
+          },
         child: cards[x],
         feedback: cards[x],
         childWhenDragging: getNextCard(x),
-      ));
+        )
+      );
     }
 
     return cardList;
