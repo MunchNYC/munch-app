@@ -28,11 +28,10 @@ class MunchCard extends StatelessWidget {
       ],
     );
 
-    Widget imageCarousel = Container(
-        color: Colors.white,
+    Widget imageCarousel = Expanded(
         child: CarouselSlider(
           options: CarouselOptions(
-              height: MediaQuery.of(context).size.height / 2,
+              // height: MediaQuery.of(context).size.height / 2,
               enableInfiniteScroll: false,
               enlargeCenterPage: true,
               viewportFraction: 1),
@@ -50,7 +49,7 @@ class MunchCard extends StatelessWidget {
               builder: (BuildContext context) {
                 return Container(
                     width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    height: MediaQuery.of(context).size.height,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(12), child: i));
               },
@@ -58,18 +57,14 @@ class MunchCard extends StatelessWidget {
           }).toList(),
         ));
 
-    SafeArea cardWithSafeArea = SafeArea(
-        child: Column(children: <Widget>[
-      titleSection,
-      imageCarousel,
-      SizedBox(height: 40)
-    ]));
-
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24), color: Colors.red[200]),
+          borderRadius: BorderRadius.circular(24)),
       padding: const EdgeInsets.only(left: 24, right: 24),
-      child: cardWithSafeArea,
+      child: Column(children: <Widget>[
+        titleSection,
+        imageCarousel,
+      ]),
     );
   }
 }
