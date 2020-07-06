@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:munch/bottom_tab.dart';
 import 'package:munch/munch_swipe_screen.dart';
+import 'account_screen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _HomeState extends State<Home> {
   final List<Widget> _children = [
     BottomTabWdiget(Colors.white),
     MunchSwipeScreen(),
-    BottomTabWdiget(Colors.green)
+    AccountScreen()
   ];
 
   @override
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.person),
-            title: new Text('Profile'),
+            title: new Text('Account'),
           )
         ],
       ),
