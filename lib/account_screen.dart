@@ -174,7 +174,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       AccountListItem(
                         icon: //Icons.mail_outline,
-                            LineAwesomeIcons.question_circle,
+                            //LineAwesomeIcons.question_circle,
+                            LineAwesomeIcons.envelope,
                         text: 'Support',
                         hasNavigation: false,
                         itemType: AccountListItemType.support,
