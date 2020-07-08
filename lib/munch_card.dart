@@ -8,11 +8,11 @@ class MunchCard extends StatelessWidget {
       children: <Widget>[
         SizedBox(height: 20),
         Container(
-            child: Text('Otaku Katsu', style: TextStyle(fontSize: 24)),
-            padding: EdgeInsets.only(left: 16)),
+            child: Text('Otaku Katsu', style: TextStyle(fontSize: 32)),
+            padding: EdgeInsets.only(left: 24)),
         SizedBox(height: 8),
         Padding(
-            padding: EdgeInsets.only(left: 16),
+            padding: EdgeInsets.only(left: 24),
             child: Row(
               children: <Widget>[
                 Text('Google Logo'),
@@ -25,7 +25,7 @@ class MunchCard extends StatelessWidget {
             )),
         Container(
             padding:
-                const EdgeInsets.only(left: 16, top: 8, right: 12, bottom: 16),
+                const EdgeInsets.only(left: 24, top: 8, right: 16, bottom: 16),
             child: Text(
               'Cozy Japanese restaurant in the Lower East Side of Manhattan offerring Katsu, Sandos (Sandwiches), Onigiri, Seasonal Dishes, and other Japanese Comfort Food.',
               softWrap: true,
