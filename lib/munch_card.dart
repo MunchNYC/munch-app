@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 class MunchCard extends StatelessWidget {
   @override
@@ -8,59 +7,48 @@ class MunchCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(height: 20),
-        Container(child: Text('Otaku Katsu', style: TextStyle(fontSize: 24))),
+        Container(
+            child: Text('Otaku Katsu', style: TextStyle(fontSize: 24)),
+            padding: EdgeInsets.only(left: 16)),
         SizedBox(height: 8),
-        Row(children: <Widget>[
-          Text('Google Logo'),
-          Icon(Icons.star, color: Colors.amber[600], size: 20),
-          Icon(Icons.star, color: Colors.amber[600], size: 20),
-          Icon(Icons.star, color: Colors.amber[600], size: 20),
-          Icon(Icons.star_half, color: Colors.amber[600], size: 20),
-          Icon(Icons.star_border, color: Colors.amber[600], size: 20)
-        ]),
+        Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Row(
+              children: <Widget>[
+                Text('Google Logo'),
+                Icon(Icons.star, color: Colors.amber[600], size: 20),
+                Icon(Icons.star, color: Colors.amber[600], size: 20),
+                Icon(Icons.star, color: Colors.amber[600], size: 20),
+                Icon(Icons.star_half, color: Colors.amber[600], size: 20),
+                Icon(Icons.star_border, color: Colors.amber[600], size: 20)
+              ],
+            )),
         Container(
             padding:
-                const EdgeInsets.only(left: 0, top: 8, right: 12, bottom: 16),
+                const EdgeInsets.only(left: 16, top: 8, right: 12, bottom: 16),
             child: Text(
               'Cozy Japanese restaurant in the Lower East Side of Manhattan offerring Katsu, Sandos (Sandwiches), Onigiri, Seasonal Dishes, and other Japanese Comfort Food.',
               softWrap: true,
-            ))
+            )),
       ],
     );
 
     Widget imageCarousel = Expanded(
-        child: CarouselSlider(
-          options: CarouselOptions(
-              // height: MediaQuery.of(context).size.height / 2,
-              enableInfiniteScroll: false,
-              enlargeCenterPage: true,
-              viewportFraction: 1),
-          items: [
-            /**
-         * Images from backend go here
-         */
-            Image.asset('images/sushi1.jpg', fit: BoxFit.cover),
-            Image.asset('images/sushi2.jpg', fit: BoxFit.cover),
-            Image.asset('images/sushi3.jpg', fit: BoxFit.cover),
-            Image.asset('images/sushi4.jpg', fit: BoxFit.cover),
-            Image.asset('images/sushi5.jpg', fit: BoxFit.cover),
-          ].map((i) {
-            return Builder(
-              builder: (BuildContext context) {
-                return Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12), child: i));
-              },
-            );
-          }).toList(),
-        ));
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(18),
+              bottomRight: Radius.circular(18)),
+          child: Image.asset('images/sushi1.jpg',
+              fit: BoxFit.cover, width: constraints.maxWidth - 2),
+        );
+      }),
+    );
 
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24)),
-      padding: const EdgeInsets.only(left: 24, right: 24),
+          borderRadius: BorderRadius.circular(18), color: Colors.white),
       child: Column(children: <Widget>[
         titleSection,
         imageCarousel,
