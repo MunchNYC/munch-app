@@ -26,12 +26,13 @@ class _MunchSwipeScreenState extends State<MunchSwipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
         body: SafeArea(
       child: Column(children: [
         Expanded(
-            child: Stack(
-          alignment: Alignment.center,
-          children: cardList,
+            child: Container(
+              child: MunchCard(),
+              padding: EdgeInsets.only(left: 24, top: 24, right: 24)
         )),
         Container(
           child: Row(
