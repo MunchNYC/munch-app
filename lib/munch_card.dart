@@ -12,11 +12,11 @@ class MunchCard extends StatelessWidget {
         SizedBox(height: 8),
         Row(children: <Widget>[
           Text('Google Logo'),
-          Icon(Icons.star, color: Colors.yellowAccent[700], size: 20),
-          Icon(Icons.star, color: Colors.yellowAccent[700], size: 20),
-          Icon(Icons.star, color: Colors.yellowAccent[700], size: 20),
-          Icon(Icons.star, color: Colors.yellowAccent[700], size: 20),
-          Icon(Icons.star_border, color: Colors.yellowAccent[700], size: 20)
+          Icon(Icons.star, color: Colors.amber[600], size: 20),
+          Icon(Icons.star, color: Colors.amber[600], size: 20),
+          Icon(Icons.star, color: Colors.amber[600], size: 20),
+          Icon(Icons.star_half, color: Colors.amber[600], size: 20),
+          Icon(Icons.star_border, color: Colors.amber[600], size: 20)
         ]),
         Container(
             padding:
