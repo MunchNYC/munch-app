@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:munch/bottom_tab.dart';
 import 'package:munch/munch_swipe_screen.dart';
 import 'account_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, height: 896, width: 414, allowFontScaling: true);
     return Scaffold(
       body: _children[_currentIndex], // new
       bottomNavigationBar: BottomNavigationBar(

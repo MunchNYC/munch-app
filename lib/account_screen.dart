@@ -6,6 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'account_list_item.dart';
+import 'package:munch/account_privacy.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 const spacingUnit = 10;
 
@@ -56,7 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  void _profileImageTapped() {
+  void _profileImageTappedAlt() {
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -74,6 +77,43 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           );
         });
+  }
+
+  SnackBar _emailSnackBar() {
+    return SnackBar(
+      content:
+          Text('Failed to launch Email. Contact us at: munchappdev@gmail.com'),
+    );
+  }
+
+  void _referFriendShare(BuildContext context) {
+    final RenderBox box = context.findRenderObject();
+    final String text =
+        'This Awesome app called Munch helps us find a distinct place to feast! www.google.com';
+    Share.share(text,
+        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+  }
+
+  void _launchDeviceDefaults(BuildContext context, command, error) async {
+    if (await canLaunch(command)) {
+      await launch(command);
+    } else {
+      Scaffold.of(context).showSnackBar(error);
+    }
+  }
+
+  void _launchEmailDeviceDefaults(BuildContext context) {
+    const command = 'mailto:munchappdev@gmail.com';
+    _launchDeviceDefaults(context, command, _emailSnackBar());
+  }
+
+  void _pushPrivacy(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AccountPrivacy()));
+  }
+
+  void _doNothing() {
+    print('a');
   }
 
   Column _profileImageBottomAlertControllerMenu() {
@@ -106,7 +146,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, height: 896, width: 414, allowFontScaling: true);
     return Scaffold(
         appBar: null,
         body: SafeArea(
@@ -145,32 +184,26 @@ class _AccountScreenState extends State<AccountScreen> {
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: spacingUnit.w * 2),
-//              AccountListItem(
-//                icon: LineAwesomeIcons.user_edit,
-//                text: 'Edit Profile',
-//                hasNavigation: true,
-//                  itemType: accountListItem.EditProfile
-////              ),
                       AccountListItem(
                         icon: //Icons.people_outline,
                             LineAwesomeIcons.user_friends,
                         text: 'Refer a Friend',
                         hasNavigation: false,
-                        itemType: AccountListItemType.referFriend,
+                        target: () => _referFriendShare(context),
                       ),
                       AccountListItem(
                         icon: //Icons.notifications_none,
                             LineAwesomeIcons.bell,
                         text: 'Notifications',
                         hasNavigation: true,
-                        itemType: AccountListItemType.notifications,
+                        target: () => _doNothing(),
                       ),
                       AccountListItem(
                         icon: //Icons.security,
                             LineAwesomeIcons.user_shield,
                         text: 'Privacy',
                         hasNavigation: true,
-                        itemType: AccountListItemType.privacy,
+                        target: () => _pushPrivacy(context),
                       ),
                       AccountListItem(
                         icon: //Icons.mail_outline,
@@ -178,7 +211,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             LineAwesomeIcons.envelope,
                         text: 'Support',
                         hasNavigation: false,
-                        itemType: AccountListItemType.support,
+                        target: () => _launchEmailDeviceDefaults(context),
                       ),
                       AccountListItem(
                         icon: //Icons.exit_to_app,
@@ -186,7 +219,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             LineAwesomeIcons.file_export,
                         text: 'Sign Out',
                         hasNavigation: false,
-                        itemType: AccountListItemType.signOut,
+                        target: () => _doNothing(),
                       ),
                       SizedBox(
                         height: spacingUnit.w * 2,

@@ -1,79 +1,22 @@
-import 'package:munch/account_privacy.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'account_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
-
-enum AccountListItemType {
-  editProfile,
-  referFriend,
-  notifications,
-  privacy,
-  support,
-  signOut
-}
 
 class AccountListItem extends StatelessWidget {
   final IconData icon;
   final text;
   final bool hasNavigation;
-  final AccountListItemType itemType;
+  final VoidCallback target;
 
   const AccountListItem(
-      {Key key, this.hasNavigation, this.icon, this.text, this.itemType})
+      {Key key, this.hasNavigation, this.icon, this.text, this.target})
       : super(key: key);
-
-  SnackBar _emailSnackBar() {
-    return SnackBar(
-      content:
-          Text('Failed to launch Email. Contact us at: munchappdev@gmail.com'),
-    );
-  }
-
-  void _referFriendShare(BuildContext context) {
-    final RenderBox box = context.findRenderObject();
-    final String text =
-        'This Awesome app called Munch helps us find a distinct place to feast! www.google.com';
-    Share.share(text,
-        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-  }
-
-  void _launchDeviceDefaults(BuildContext context, command, error) async {
-    if (await canLaunch(command)) {
-      await launch(command);
-    } else {
-      Scaffold.of(context).showSnackBar(error);
-    }
-  }
-
-  void _launchEmailDeviceDefaults(BuildContext context) {
-    const command = 'mailto:munchappdev@gmail.com';
-    _launchDeviceDefaults(context, command, _emailSnackBar());
-  }
-
-  _accountListItemActions(BuildContext context) {
-    switch (this.itemType) {
-      case AccountListItemType.privacy:
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AccountPrivacy()));
-        break;
-      case AccountListItemType.referFriend:
-        _referFriendShare(context);
-        break;
-      case AccountListItemType.support:
-        _launchEmailDeviceDefaults(context);
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        _accountListItemActions(context);
-      },
+      onTap: target,
       child: Container(
         height: spacingUnit.w * 5.5,
         margin: EdgeInsets.symmetric(horizontal: spacingUnit.w * 4)
@@ -89,7 +32,6 @@ class AccountListItem extends StatelessWidget {
             ],
             borderRadius: BorderRadius.circular(spacingUnit.w * 3),
             color: Colors.white),
-        //Theme.of(context).backgroundColor),
         child: Row(
           children: <Widget>[
             Icon(
