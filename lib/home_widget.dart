@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:munch/bottom_tab.dart';
 import 'package:munch/munch_swipe_screen.dart';
+import 'account_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -14,11 +16,12 @@ class _HomeState extends State<Home> {
   final List<Widget> _children = [
     BottomTabWdiget(Colors.white),
     MunchSwipeScreen(),
-    BottomTabWdiget(Colors.green)
+    AccountScreen()
   ];
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, height: 896, width: 414, allowFontScaling: true);
     return Scaffold(
       body: _children[_currentIndex], // new
       bottomNavigationBar: BottomNavigationBar(
@@ -35,7 +38,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.person),
-            title: new Text('Profile'),
+            title: new Text('Account'),
           )
         ],
       ),
