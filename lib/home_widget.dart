@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munch/bottom_tab.dart';
+import 'package:munch/munch_map.dart';
 import 'package:munch/munch_swipe_screen.dart';
 
 class Home extends StatefulWidget {
@@ -12,7 +13,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
   final List<Widget> _children = [
-    BottomTabWdiget(Colors.white),
+    MunchMap(),
     MunchSwipeScreen(),
     BottomTabWdiget(Colors.green)
   ];
