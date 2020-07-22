@@ -19,6 +19,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
+  share: '>=0.6.4+3 <2.0.0'
 
 dependencies:
   flutter:
@@ -27,6 +28,11 @@ dependencies:
   google_sign_in: ^4.4.4
   firebase_auth: ^0.16.1
   google_maps_flutter: 0.5.28+1
+  flutter_screenutil: ^1.1.0
+  line_awesome_flutter: ^1.0.1
+  image_picker: ^0.6.7+2
+  url_launcher: ^5.4.11
+  share: ^0.6.4+3
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -50,12 +56,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/sushi1.jpg
-    - images/sushi2.jpg
-    - images/sushi3.jpg
-    - images/sushi4.jpg
-    - images/sushi5.jpg
-    - images/google_logo.png
+    - images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
