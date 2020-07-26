@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "565789517036",
+    "firebase_url": "https://munch-76f64.firebaseio.com",
+    "project_id": "munch-76f64",
+    "storage_bucket": "munch-76f64.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565789517036:android:4552fdb4a3c0c43cbb71c9",
+        "android_client_info": {
+          "package_name": "com.munch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "565789517036-86r4nlbiadr3m1h5grnlngo86vlf4bh4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI4XT9LrNr3Cbm6VJFrk8bsGqFtc-_s7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "565789517036-86r4nlbiadr3m1h5grnlngo86vlf4bh4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "565789517036-obboapmoct76r15t2tqsqqr01s0prpdj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.munch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
