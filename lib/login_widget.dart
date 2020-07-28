@@ -72,27 +72,30 @@ class _LoginState extends State<Login> {
       _isLoading = true;
     });
 
-    try {
-      _authentication.signIn().whenComplete(() {
-        setState(() {
-          _isLoading = false;
-        });
-
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return Home();
-            },
-          ),
-        );
-      });
-    } catch (e) {
+    _authentication.signIn().then((value) {
+      navigateToHomeScreen();
+    }).catchError((error) {
+      handleError(error.toString());
+    }).whenComplete(() {
       setState(() {
         _isLoading = false;
       });
-      print(e.toString());
-      // TODO How do we want to display errors? https://munch.atlassian.net/browse/MUN-18
-    }
+    });
+  }
+
+  void navigateToHomeScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return Home();
+        },
+      ),
+    );
+  }
+
+  void handleError(String errorMessage) {
+    // TODO How do we want to display errors? https://munch.atlassian.net/browse/MUN-18
+    print(errorMessage);
   }
 
   Widget _progressIndicator() {
