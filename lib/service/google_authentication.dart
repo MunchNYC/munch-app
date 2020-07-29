@@ -26,8 +26,8 @@ class GoogleAuthentication implements BaseAuthentication {
     assert(!user.isAnonymous);
 
     // Todo: cache this for sending to backend
-    final IdTokenResult token = await user.getIdToken();
-    assert(await user.getIdToken() != null);
+    final IdTokenResult firebaseIdToken = await user.getIdToken();
+    assert(firebaseIdToken != null);
 
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
