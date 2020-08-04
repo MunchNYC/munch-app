@@ -16,37 +16,30 @@ class _AccountNotificationState extends State<AccountNotification> {
         title: Text('Notifications'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: Column(
-                  children: <Widget>[
-                    ListTile(
-                      title: Text('App Notification Settings'),
-                      onTap: () {
-                        AppSettings.openAppSettings();
-                      },
-                      trailing: Icon(Icons.chevron_right,
-                          color: Colors.grey, size: 10 * 2.5),
-                    ),
-                    SwitchListTile(
-                      title: Text('Munch Reminder'),
-                      value: _munchReminder,
-                      onChanged: (bool value) {
-                        setState(() {
-                          _munchReminder = value;
-                        });
-                      },
-                    ),
-                  ],
+        child: ListView(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text('App Notification Settings'),
+                  onTap: () {
+                    AppSettings.openAppSettings();
+                  },
+                  trailing: Icon(Icons.chevron_right,
+                      color: Colors.grey, size: 10 * 2.5),
                 ),
-              ),
-            ],
-          ),
+                SwitchListTile(
+                  title: Text('Munch Reminder'),
+                  value: _munchReminder,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _munchReminder = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
