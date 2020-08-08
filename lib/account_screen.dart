@@ -9,6 +9,7 @@ import 'account_list_item.dart';
 import 'package:munch/account_privacy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share/share.dart';
+import 'account_notification.dart';
 
 const spacingUnit = 10;
 
@@ -112,6 +113,11 @@ class _AccountScreenState extends State<AccountScreen> {
         context, MaterialPageRoute(builder: (context) => AccountPrivacy()));
   }
 
+  void _pushNotificationScreen(BuildContext context) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AccountNotification()));
+  }
+
   void _doNothing() {
     print('a');
   }
@@ -196,7 +202,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             LineAwesomeIcons.bell,
                         text: 'Notifications',
                         hasNavigation: true,
-                        target: () => _doNothing(),
+                        target: () => _pushNotificationScreen(context),
                       ),
                       AccountListItem(
                         icon: //Icons.security,
