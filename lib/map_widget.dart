@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MunchMap extends StatefulWidget {
+class MapWidget extends StatefulWidget {
   @override
-  State<MunchMap> createState() => MunchMapState();
+  State<MapWidget> createState() => MapWidgetState();
 }
 
-class MunchMapState extends State<MunchMap> {
+class MapWidgetState extends State<MapWidget> {
   Completer<GoogleMapController> _controller = Completer();
   int _selectedIndex = 0;
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -93,10 +93,6 @@ class MunchMapState extends State<MunchMap> {
                       prefixIcon: Icon(Icons.search),
                       hintText: "Search a location"),
                 )),
-//            IconButton(
-//              icon: Icon(Icons.ac_unit),
-//              onPressed: () {},
-//            )
           )
         ]));
   }
