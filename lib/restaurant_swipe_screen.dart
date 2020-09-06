@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:munch/munch_card.dart';
+import 'package:munch/restaurant_card.dart';
 
-class MunchSwipeScreen extends StatefulWidget {
+class RestaurantSwipeScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _MunchSwipeScreenState();
+    return _RestaurantSwipeScreenState();
   }
 }
 
-class _MunchSwipeScreenState extends State<MunchSwipeScreen> {
+class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   List<Widget> cardList;
 
   void _removeCard(index) {
@@ -31,41 +31,23 @@ class _MunchSwipeScreenState extends State<MunchSwipeScreen> {
       child: Column(children: [
         Expanded(
             child: Container(
-              child: MunchCard(),
+              child: RestaurantCard(),
               padding: EdgeInsets.only(left: 24, top: 24, right: 24)
         )),
-        Container(
-          child: Row(
-            children: <Widget>[
-              FloatingActionButton(
-                onPressed: () {}, // handle tap
-                child: Icon(Icons.close, color: Colors.red, size: 36),
-                backgroundColor: Colors.white,
-              ),
-              FloatingActionButton(
-                onPressed: () {}, // handle tap
-                child: Icon(Icons.check, color: Colors.green, size: 36),
-                backgroundColor: Colors.white,
-              ),
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-          ),
-          padding: EdgeInsets.all(16),
-        )
       ]),
     ));
   }
 
   List<Widget> _getCards() {
-    // Get Resties Here
-    List<MunchCard> cards = new List();
-    cards.add(MunchCard());
-    cards.add(MunchCard());
-    cards.add(MunchCard());
+    // Get Restaurants Here
+    List<RestaurantCard> cards = new List();
+    cards.add(RestaurantCard());
+    cards.add(RestaurantCard());
+    cards.add(RestaurantCard());
 
     List<Widget> cardList = new List();
 
-    MunchCard getNextCard(index) {
+    RestaurantCard getNextCard(index) {
       if (index + 1 == cards.length) {
         return null;
       } else {

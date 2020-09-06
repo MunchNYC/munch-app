@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Munch App',
-      home: Login(_googleAuthentication),
+      home: Login(_googleAuthentication)
     );
   }
 }
