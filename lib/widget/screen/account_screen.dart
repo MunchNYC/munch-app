@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:munch/service/auth/authentication_bloc.dart';
+import 'package:munch/service/auth/authentication_event.dart';
+import 'package:munch/util/navigation_helper.dart';
 import '../include/account_list_item.dart';
 import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/account_privacy.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,6 +26,20 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   PickedFile _image;
   final picker = ImagePicker();
+
+  AuthenticationBloc _authenticationBloc;
+
+  @override
+  void initState() {
+    _authenticationBloc = AuthenticationBloc();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _authenticationBloc?.close();
+    super.dispose();
+  }
 
   Future _getImage(ImageSource source) async {
     Navigator.pop(context);
@@ -118,8 +135,11 @@ class _AccountScreenState extends State<AccountScreen> {
         MaterialPageRoute(builder: (context) => AccountNotification()));
   }
 
-  void _doNothing() {
-    print('a');
+  void _signOut() {
+    _authenticationBloc.add(LogoutEvent());
+
+    // MOCK-UP, should be put in bloc pattern, not a priority now
+    NavigationHelper.navigateToLogin(context, addToBackStack: false);
   }
 
   Column _profileImageBottomAlertControllerMenu() {
@@ -225,7 +245,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             LineAwesomeIcons.file_export,
                         text: 'Sign Out',
                         hasNavigation: false,
-                        target: () => _doNothing(),
+                        target: () => _signOut(),
                       ),
                       SizedBox(
                         height: spacingUnit.w * 2,
