@@ -74,6 +74,8 @@ enum AppStrutStylePattern {
 }
 
 class AppTextStyle{
+  static const String APP_FONT = 'Montserrat';
+
   static List<TextStyle> _appTextStyles = [
     TextStyle(color: Palette.primary, fontSize: 12.0),
     TextStyle(color: Palette.background, fontSize: 12.0),
@@ -144,6 +146,8 @@ class AppTextStyle{
 
   static TextStyle style(AppTextStylePattern atsp, {Color color, bool bold, double fontSizeOffset = 0}){
     TextStyle textStyle = _appTextStyles[atsp.index];
+
+    textStyle = textStyle.copyWith(fontFamily: APP_FONT);
 
     if(color != null){
       textStyle = textStyle.copyWith(color: color);

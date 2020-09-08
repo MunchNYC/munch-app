@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:munch/widget/include/map_widget.dart';
 import 'package:munch/widget/screen/restaurant_swipe_screen.dart';
-
+import 'package:munch/theme/dimensions.dart';
+import 'package:munch/theme/palette.dart';
+import 'package:munch/widget/screen/tabs/munches_tab.dart';
 import 'account_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final List<Widget> _children = [
-    MapWidget(),
+    MunchesTab(),
     RestaurantSwipeScreen(),
     AccountScreen()
   ];
@@ -22,7 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     ScreenUtil.init(context, height: 896, width: 414, allowFontScaling: true);
     return Scaffold(
-      body: _children[_currentIndex], // new
+      backgroundColor: Palette.background,
+      body: Container(
+        padding: AppDimensions.padding(AppPaddingType.screenOnly),
+        child: _children[_currentIndex],
+      ),// new
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped, // new
         currentIndex: _currentIndex, // new

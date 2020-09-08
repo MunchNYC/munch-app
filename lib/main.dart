@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/theme/palette.dart';
+import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/home_screen.dart';
 import 'package:munch/widget/screen/login_screen.dart';
@@ -35,12 +36,17 @@ class MunchApp extends StatelessWidget {
     _firebaseListener.listen();
   }
 
-  void initializeApp(){
+  void _setSystemSettings(){
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+  }
 
+  void initializeApp(){
+    _setSystemSettings();
     _configureFirebase();
   }
 
@@ -52,7 +58,8 @@ class MunchApp extends StatelessWidget {
             title: AppConfig.getInstance().appTitle,
             theme: ThemeData(
               primarySwatch: Palette.generateMaterialColor(Palette.primary),
-              backgroundColor: Palette.background
+              backgroundColor: Palette.background,
+              fontFamily: AppTextStyle.APP_FONT
             ),
             locale: Locale("en"), // switch between en and ru to see effect
             localizationsDelegates: [const AppLocalizationsDelegate()],

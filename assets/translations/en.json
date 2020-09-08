@@ -1,6 +1,10 @@
 {
     "login_screen.google_button.text": "Sign in with Google",
 
+    "munches_tab.title": "Munches",
+    "munches_tab.deciding_tab.title": "Still deciding",
+    "munches_tab.decided_tab.title": "Decided",
+
     "firebase_auth.google_login.cancelled.error": "Google login cancelled",
     "firebase_auth.logout.error": "Failed to logout",
     "firebase_auth.credentials_clash.error": "You are already using another authentication provider. Consider using it as authentication method",
