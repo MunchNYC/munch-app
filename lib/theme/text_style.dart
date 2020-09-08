@@ -163,4 +163,9 @@ class AppTextStyle{
 
     return textStyle;
   }
+
+  // Strut styles are used for different languages, in order to force text to have same height on different languages
+  static StrutStyle strutStyle(AppStrutStylePattern atsp){
+    return _appStrutStyles[atsp.index];
+  }
 }

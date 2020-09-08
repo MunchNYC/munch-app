@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/map_widget.dart';
-import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/munch_list_widget.dart';
-import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/restaurant_swipe_screen.dart';
+import 'package:munch/widget/include/map_widget.dart';
+import 'package:munch/widget/screen/restaurant_swipe_screen.dart';
+
 import 'account_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
