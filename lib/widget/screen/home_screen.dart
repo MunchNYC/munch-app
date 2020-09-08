@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:munch/map_widget.dart';
-import 'package:munch/munch_list_widget.dart';
-import 'package:munch/restaurant_swipe_screen.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/map_widget.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/munch_list_widget.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/restaurant_swipe_screen.dart';
 import 'account_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class Home extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _HomeState();
-  }
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final List<Widget> _children = [
     MapWidget(),

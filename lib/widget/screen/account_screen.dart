@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'account_list_item.dart';
-import 'package:munch/account_privacy.dart';
+import '../include/account_list_item.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/account_privacy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share/share.dart';
-import 'account_notification.dart';
+import '../include/account_notification.dart';
 
 const spacingUnit = 10;
 

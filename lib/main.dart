@@ -1,20 +1,86 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:munch/login_widget.dart';
-import 'package:munch/service/google_authentication.dart';
+import 'package:flutter/services.dart';
+import 'package:munch/repository/user_repository.dart';
+import 'package:munch/theme/palette.dart';
+import 'package:munch/util/app.dart';
+import 'package:munch/widget/screen/home_screen.dart';
+import 'package:munch/widget/screen/login_screen.dart';
+import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/stateful_wrapper.dart';
 
-void main() => runApp(MyApp());
+import 'config/app_config.dart';
+import 'config/firebase_listener.dart';
+import 'config/localizations.dart';
+import 'model/user.dart';
 
-class MyApp extends StatelessWidget {
-  final _googleAuthentication =
-      GoogleAuthentication(FirebaseAuth.instance, GoogleSignIn());
+Future loadEnvironment() async{
+  const ENV = String.fromEnvironment('ENV', defaultValue: 'dev');
+  await AppConfig.forEnvironment(ENV);
+}
+
+void main() {
+  // Needs to be called if runApp is called after future is finished, like below
+  WidgetsFlutterBinding.ensureInitialized();
+
+  loadEnvironment().then((value) {
+    runApp(MunchApp());
+  });
+}
+
+class MunchApp extends StatelessWidget {
+  FirebaseListener _firebaseListener;
+
+  void _configureFirebase(){
+    _firebaseListener = FirebaseListener();
+    _firebaseListener.listen();
+  }
+
+  void initializeApp(){
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    _configureFirebase();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Munch App',
-      home: Login(_googleAuthentication)
+    return StatefulWrapper(
+        onInit: initializeApp,
+        child: MaterialApp(
+            title: AppConfig.getInstance().appTitle,
+            theme: ThemeData(
+              primarySwatch: Palette.generateMaterialColor(Palette.primary),
+              backgroundColor: Palette.background
+            ),
+            locale: Locale("en"), // switch between en and ru to see effect
+            localizationsDelegates: [const AppLocalizationsDelegate()],
+            supportedLocales: [const Locale('en')],
+            debugShowCheckedModeBanner: false,
+            home: _buildHomeWidget(),
+            onGenerateRoute: null,
+        )
     );
   }
+
+  Widget _buildHomeWidget(){
+    return FutureBuilder(
+      future: UserRepo.getInstance().getCurrentUser(forceRefresh: true),
+      builder: (context, AsyncSnapshot<User> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return AppCircularProgressIndicator();
+        }
+
+        App.initAppContext(context);
+
+        if (snapshot.hasData) {
+          return HomeScreen();
+        }
+
+        return LoginScreen();
+      }
+    );
+  }
+
 }

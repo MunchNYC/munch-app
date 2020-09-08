@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:munch/restaurant_card.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
   @override
