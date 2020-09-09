@@ -1,0 +1,219 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http_parser/http_parser.dart';
+import 'package:munch/config/app_config.dart';
+import 'package:munch/config/constants.dart';
+import 'package:munch/repository/user_repository.dart';
+import 'package:munch/util/app.dart';
+import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
+
+abstract class Api{
+  static String backendBaseUrl = AppConfig.getInstance().apiUrl;
+
+  String baseUrl;
+
+  Api(){
+    baseUrl = backendBaseUrl;
+  }
+
+  Api.thirdParty(this.baseUrl);
+
+  static const String POST = "POST";
+  static const String PATCH = "PATCH";
+  static const String GET = "GET";
+  static const String PUT = "PUT";
+  static const String DELETE = "DELETE";
+
+  Future<Map<String, String>> generateHeaders(
+      {String contentType = "application/json",
+        String accept = "application/json",
+        bool authRequired = true}) async {
+    Map<String, String> map = Map.of({
+      HttpHeaders.contentTypeHeader: contentType,
+      HttpHeaders.acceptHeader: accept,
+    });
+
+    if (authRequired) {
+      map.addAll(await accessTokenHeader());
+    }
+
+    return map;
+  }
+
+  // Wrapper function which in case of UnauthorisedException, refreshes Auth token and retries the request
+  Future<dynamic> performHttpRequest({Map<String, String> headers, Function(Map<String, String>) requestFunction}) async {
+    if (headers == null) {
+      headers = await generateHeaders();
+    }
+
+    for (int attempt = 0; attempt <= CommunicationSettings.numOfRetries; attempt++) {
+      print("Headers: " + headers.toString());
+      try {
+        final response = await requestFunction(headers).
+            timeout(Duration(seconds: CommunicationSettings.maxWaitTimeSec),
+            onTimeout: () {
+              throw FetchDataException.fromMessage(App.translate("api.error.request_timeout"));
+            });
+
+        return _returnResponse(response);
+      } on UnauthorisedException catch (e) {
+        print("Attempt ${attempt + 1} failed due to UnauthorisedException.");
+
+        if (attempt == CommunicationSettings.numOfRetries) {
+          throw e;
+        }
+
+        await refreshAuthToken(headers);
+      } on SocketException {
+        throw FetchDataException.fromMessage(App.translate("api.error.internet_connection"));
+      }
+    }
+  }
+
+  Future<dynamic> get(String url, [Map<String, String> headers]) async {
+    print("Getting from: " + baseUrl + url);
+
+    return await performHttpRequest(headers: headers, requestFunction: (headers) async {
+      return await http.get(baseUrl + url, headers: headers);
+    });
+  }
+
+  Future<dynamic> post(String url, Map<String, dynamic> body,[Map<String, String> headers]) async {
+    print("Posting to: " + baseUrl + url);
+
+    return await performHttpRequest(headers: headers, requestFunction: (headers) async {
+      return await http.post(baseUrl + url, headers: headers, body: json.encode(body));
+    });
+  }
+
+  Future<dynamic> put(String url, Map<String, dynamic> body, [Map<String, String> headers]) async {
+    print("Putting to: " + baseUrl + url);
+
+    return await performHttpRequest(headers: headers, requestFunction: (headers) async {
+      return await http.put(baseUrl + url, headers: headers, body: json.encode(body));
+    });
+  }
+
+  Future<dynamic> patch(String url, Map<String, dynamic> body, [Map<String, String> headers]) async {
+    print("Patching to: " + baseUrl + url);
+
+    return await performHttpRequest(headers: headers, requestFunction: (headers) async {
+      return await http.patch(baseUrl + url, headers: headers, body: json.encode(body));
+    });
+  }
+
+  Future<dynamic> delete(String url, [Map<String, String> headers]) async {
+    print("Deleting from: " + baseUrl + url);
+
+    return await performHttpRequest(headers: headers, requestFunction: (headers) async {
+      return await http.delete(baseUrl + url, headers: headers);
+    });
+  }
+
+  Future<dynamic> multipart(String method, String url, Map<String, dynamic> fields, Map<String, File> files, Map<String, MediaType> contentTypes, [Map<String, String> headers]) async {
+    print("Multipart "  + method + " to: " + baseUrl + url);
+
+    return await performHttpRequest(headers: headers, requestFunction: (headers) async {
+      var request = http.MultipartRequest(method, Uri.parse(baseUrl + url));
+
+      fields.forEach((k, v) => request.fields[k] = v);
+
+      files.forEach((k, v) async => request.files.add(http.MultipartFile(
+          k, v.openRead(), await v.length(),
+          filename: basename(v.path), contentType: contentTypes[k])));
+
+      request.headers.addAll(headers);
+      return await request.send();
+    });
+  }
+
+  Future<void> refreshAuthToken(Map<String, String> headers) async {
+    print("Refreshing Auth token.");
+
+    if (headers.containsKey(CommunicationSettings.tokenHeader)) {
+      String newAuthToken = await UserRepo.getInstance().refreshAccessToken();
+      headers.update(
+          CommunicationSettings.tokenHeader, (oldValue) => newAuthToken);
+    }
+  }
+
+  Future<Map<String, String>> accessTokenHeader() async {
+    String accessToken = await UserRepo.getInstance().getAccessToken();
+
+    return {CommunicationSettings.tokenHeader: "Bearer " + accessToken};
+  }
+
+  dynamic _returnResponse(http.Response response) {
+    print(response.statusCode);
+    print(response.body);
+    if(response.statusCode >= 200 && response.statusCode < 300){
+      // if that's response with no content
+      if (response.statusCode == 204) {
+        return null;
+      }
+
+      var responseJson = json.decode(response.body.toString());
+      return responseJson;
+    }
+
+    switch (response.statusCode) {
+      case 400:
+        throw BadRequestException(
+            response.statusCode, json.decode(response.body.toString()));
+      case 401:
+      case 403:
+        throw UnauthorisedException(
+            response.statusCode, {"message": App.translate("api.error.unauthorized")});
+      case 422:
+        throw ValidationException(
+            response.statusCode, json.decode(response.body.toString()));
+      case 500:
+      default:
+        throw FetchDataException(
+            response.statusCode, json.decode(response.body.toString()));
+    }
+  }
+}
+
+class ApiException implements Exception {
+  int _status;
+  String _message;
+
+  ApiException(this._status, Map<String, dynamic> map) {
+    _message = map["message"] as String;
+  }
+
+  ApiException.fromMessage(this._message);
+
+  String toString() {
+    return _message;
+  }
+}
+
+class FetchDataException extends ApiException {
+  FetchDataException.fromMessage(String message) : super.fromMessage(message);
+
+  FetchDataException(int status, Map<String, dynamic> map) : super(status, map);
+}
+
+class BadRequestException extends ApiException {
+  BadRequestException(int status, Map<String, dynamic> map)
+      : super(status, map);
+}
+
+class UnauthorisedException extends ApiException {
+  UnauthorisedException(int status, Map<String, dynamic> map)
+      : super(status, map);
+}
+
+class InvalidInputException extends ApiException {
+  InvalidInputException(int status, Map<String, dynamic> map)
+      : super(status, map);
+}
+
+class ValidationException extends ApiException {
+  ValidationException(int status, Map<String, dynamic> map)
+      : super(status, map);
+}
