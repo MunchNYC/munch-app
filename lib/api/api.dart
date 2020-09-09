@@ -142,7 +142,7 @@ abstract class Api{
   Future<Map<String, String>> accessTokenHeader() async {
     String accessToken = await UserRepo.getInstance().getAccessToken();
 
-    return {CommunicationSettings.tokenHeader: accessToken};
+    return {CommunicationSettings.tokenHeader: "Bearer " + accessToken};
   }
 
   dynamic _returnResponse(http.Response response) {

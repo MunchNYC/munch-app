@@ -66,7 +66,7 @@ class MunchApp extends StatelessWidget {
 
   Widget _buildHomeWidget(){
     return FutureBuilder(
-      future: UserRepo.getInstance().getCurrentUser(forceRefresh: true),
+      future: UserRepo.getInstance().fetchCurrentUser(),
       builder: (context, AsyncSnapshot<User> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return AppCircularProgressIndicator();

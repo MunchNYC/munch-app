@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/Api.dart';
-import 'package:munch/api/authentication_api.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
@@ -13,7 +9,6 @@ import 'package:munch/util/app.dart';
 class AuthRepo {
   static AuthRepo _instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final AuthenticationApi _authenticationApi = AuthenticationApi();
 
   AuthRepo._internal();
 
@@ -24,12 +19,17 @@ class AuthRepo {
     return _instance;
   }
 
-  Future<FirebaseUser> _signIn(AuthCredential credentials) async {
-    var authResult;
+  final UserRepo _userRepo = UserRepo.getInstance();
+
+  Future<User> _signIn(AuthCredential credentials) async {
+    AuthResult authResult;
 
     try {
       authResult = await _auth.signInWithCredential(credentials);
 
+      await _userRepo.setCurrentUser(authResult.user);
+
+      return _userRepo.currentUser;
     } catch (error) {
       if (error is PlatformException && error.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL") {
         throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
@@ -38,48 +38,37 @@ class AuthRepo {
       print("AuthRepo::signIn No user found; " + error.toString());
     }
 
-    if (authResult != null && authResult.user != null) {
-      return authResult.user;
-    } else{
-      throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
-    }
+    throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
   }
 
-  Future<FirebaseUser> signInWithGoogle(GoogleSignInAccount account) async {
-    final authentication = await account.authentication;
-    final credentials = GoogleAuthProvider.getCredential(
-        idToken: authentication.idToken,
-        accessToken: authentication.accessToken);
+  Future<User> signInWithGoogle() async {
+    // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
+    GoogleSignIn googleSignInRepo = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
 
-    return await _signIn(credentials);
+    GoogleSignInAccount account = await googleSignInRepo.signIn();
+
+    if(account != null) {
+      final authentication = await account.authentication;
+      final credentials = GoogleAuthProvider.getCredential(
+          idToken: authentication.idToken,
+          accessToken: authentication.accessToken);
+
+      return await _signIn(credentials);
+    } else{
+      return null;
+    }
   }
 
 
   Future<bool> signOut() async {
+    // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
+    await _userRepo.clearCurrentUser();
+
     return _auth.signOut().catchError((error) {
       print("LoginRepo::logout() encountered an error:\n${error.error}");
       return false;
     }).then((value) {
       return true;
     });
-  }
-
-  // gets called after signIn with Social Networks in order to preserve user in our private DB
-  // need to specify name as a separated parameter, because apple login doesn't auto-fill firebase user's name well
-  Future registerSocial(FirebaseUser firebaseUser) async {
-    User user = await _authenticationApi.registerSocial(firebaseUser.email);
-
-    UserUpdateInfo updateUser = UserUpdateInfo();
-
-    // preserve name from backend, must do that because name is auto-changed in Firebase on login with social provider
-    updateUser.displayName = user.displayName;
-
-    firebaseUser.updateProfile(updateUser);
-  }
-
-
-  Future onSuccessfulFirebaseLogin(FirebaseUser firebaseUser) async {
-     // fetch user from backend to be sure we have it on home screen
-     await UserRepo.getInstance().getCurrentUser(forceRefresh: true);
   }
 }

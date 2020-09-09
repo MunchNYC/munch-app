@@ -3,7 +3,7 @@ class StorageKeys {
 }
 
 class CommunicationSettings {
-  static const String tokenHeader = "X-Authorization-Firebase";
+  static const String tokenHeader = "Authorization";
   static const int maxWaitTimeSec = 15;
   static const int numOfRetries = 1;
 }

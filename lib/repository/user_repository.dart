@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:munch/api/users_api.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepo {
   static UserRepo _instance;
-  UsersApi _usersApi = UsersApi();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   User _currentUser;
@@ -23,39 +21,28 @@ class UserRepo {
 
   User get currentUser => _currentUser;
 
-  Future<User> getCurrentUser({bool forceRefresh = false}) async {
-    if (_currentUser != null && !forceRefresh) {
-      return _currentUser;
-    } else {
-      // to be sure user is not null, to avoid race condition, it's enough to fetch firebase user because we need only uid
-      FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
+  Future setCurrentUser(FirebaseUser firebaseUser) async {
+    final idToken = await firebaseUser.getIdToken();
 
-      // User is not logged in
-      if(firebaseUser == null){
-        return null;
-      }
-
-      // Refresh user data by fetching it from backend
-      User _fetchedById = await _usersApi.fetchUserById(firebaseUser.uid);
-      print("Refreshed from backend: " + _fetchedById.toString());
-      await updateCurrentUser(_fetchedById);
-      return _currentUser;
-    }
+    _currentUser = User.fromFirebaseUser(firebaseUser: firebaseUser, accessToken: idToken.token);
   }
 
-  Future updateCurrentUser(User backendUser) async {
-    print("User from backend: " + backendUser.toString());
+  Future<User> fetchCurrentUser() async {
+    FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
 
-    // assign current accessToken
-    backendUser.accessToken = await getAccessToken();
+    // User is not logged in
+    if(firebaseUser == null){
+      return null;
+    }
 
-    _currentUser = backendUser;
-    print("Current User after backend call: " + _currentUser.toString());
+    await setCurrentUser(firebaseUser);
+
+    return _currentUser;
   }
 
   Future clearCurrentUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    clearAccessToken();
+
     _currentUser = null;
   }
 
@@ -70,12 +57,22 @@ class UserRepo {
     return newAuthToken;
   }
 
+  Future clearAccessToken() async {
+    FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+
+    await flutterSecureStorage.delete(key: StorageKeys.ACCESS_TOKEN);
+
+    if(_currentUser != null) {
+      _currentUser.accessToken = null;
+    }
+  }
+
   Future<String> getAccessToken() async {
     if (_currentUser != null && _currentUser.accessToken != null) {
       return _currentUser.accessToken;
     } else {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      return prefs.getString(StorageKeys.ACCESS_TOKEN);
+      FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+      return await flutterSecureStorage.read(key: StorageKeys.ACCESS_TOKEN);
     }
   }
 
@@ -85,7 +82,7 @@ class UserRepo {
     if (_currentUser != null) {
       _currentUser.accessToken = token;
     }
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(StorageKeys.ACCESS_TOKEN, token);
+    FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+    await flutterSecureStorage.write(key: StorageKeys.ACCESS_TOKEN, value: token);
   }
 }

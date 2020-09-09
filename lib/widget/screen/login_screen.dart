@@ -57,7 +57,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginView(BuildContext context, AuthenticationState state){
-    if(state.loading){
+    /*
+      (state is LoginWithGoogleState && state.ready) is added in order to prevent rendering login page again,
+       while we're waiting for _loginListener to navigate to home page (about 1 sec of delay)
+     */
+    if(state.loading || (state is LoginWithGoogleState && state.ready)){
       return AppCircularProgressIndicator();
     }
 
