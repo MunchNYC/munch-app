@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:munch/widget/screen/home_screen.dart';
-import 'package:munch/widget/screen/login_screen.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/home/home_screen.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/auth/login_screen.dart';
 
 class NavigationHelper {
   static Future _navigateTo(BuildContext context,

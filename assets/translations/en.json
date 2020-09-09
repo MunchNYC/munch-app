@@ -1,4 +1,12 @@
 {
+    "home_screen.bottom_navigation.tab1.title": "Munches",
+    "home_screen.bottom_navigation.tab2.title": "Profile",
+
+    "create_join_dialog.join_textfield.hint": "Join code (6 characters)",
+    "create_join_dialog.join_button.text": "Join",
+    "create_join_dialog.divider.text": "Or",
+    "create_join_dialog.create_button.text": "Create",
+
     "login_screen.google_button.text": "Sign in with Google",
 
     "munches_tab.title": "Munches",

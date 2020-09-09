@@ -4,8 +4,8 @@ import 'package:munch/repository/user_repository.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
-import 'package:munch/widget/screen/home_screen.dart';
-import 'package:munch/widget/screen/login_screen.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/home/home_screen.dart';
+import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/stateful_wrapper.dart';
 

@@ -22,7 +22,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   bool flat = false;
   double minWidth = 0.0;
   double height = 0.0;
-  EdgeInsetsGeometry padding = EdgeInsets.all(7.0);
+  EdgeInsetsGeometry padding = EdgeInsets.all(8.0);
   double borderRadius = 0.0;
   double borderWidth = 0.0;
   Color borderColor;
@@ -118,6 +118,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
                 child: content,
                 color: color,
                 textColor: textColor,
+                elevation: 4.0,
                 onPressed: disabled ? null : () => _buttonPressed(context)));
   }
 

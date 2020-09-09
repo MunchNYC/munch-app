@@ -9,10 +9,10 @@ import 'package:munch/service/auth/authentication_bloc.dart';
 import 'package:munch/service/auth/authentication_event.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/widget/include/account_privacy.dart';
-import '../include/account_list_item.dart';
+import 'include/account_list_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share/share.dart';
-import '../include/account_notification.dart';
+import '../../include/account_notification.dart';
 
 const spacingUnit = 10;
 

@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(App.translate("login_screen.google_button.text"),
-                  style: AppTextStyle.style(AppTextStylePattern.heading5, bold: false, color: Palette.secondaryLight)
+                  style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.bold, color: Palette.secondaryLight)
               )
             )
           ],
