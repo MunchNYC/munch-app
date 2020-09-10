@@ -7,6 +7,7 @@ part 'app_config.jser.dart';
 class AppConfig {
   String appTitle;
   String apiUrl;
+  String apiVersion;
 
   static AppConfig _instance;
 

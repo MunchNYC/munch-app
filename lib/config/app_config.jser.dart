@@ -13,6 +13,7 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     Map<String, dynamic> ret = <String, dynamic>{};
     setMapValue(ret, 'appTitle', model.appTitle);
     setMapValue(ret, 'apiUrl', model.apiUrl);
+    setMapValue(ret, 'apiVersion', model.apiVersion);
     return ret;
   }
 
@@ -22,6 +23,7 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     final obj = AppConfig();
     obj.appTitle = map['appTitle'] as String;
     obj.apiUrl = map['apiUrl'] as String;
+    obj.apiVersion = map['apiVersion'] as String;
     return obj;
   }
 }

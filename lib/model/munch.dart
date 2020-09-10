@@ -1,11 +1,10 @@
 import 'package:jaguar_serializer/jaguar_serializer.dart';
-import 'package:munch/model/processors/TimestampProcessor.dart';
+import 'package:munch/model/processors/timestamp_processor.dart';
 
 part 'munch.jser.dart';
 
-// MOCK-UP
-enum MunchState{
-  DECIDING, DECIDED, ARCHIVED
+enum MunchStatus{
+  UNDECIDED, DECIDED, ARCHIVED
 }
 
 class Munch{
@@ -15,18 +14,20 @@ class Munch{
 
   String name;
 
-  MunchState state;
-
   int numberOfMembers;
 
   DateTime creationTimestamp;
+
+  // nonNullable means - put null conditions (maybe better name is @nullable, this is not logical)
+  @Field.ignore()
+  MunchStatus munchStatus = MunchStatus.UNDECIDED;
 
   @override
   String toString() {
     return "id: $id; name: $name;";
   }
 
-  Munch({this.id, this.code, this.name, this.state, this.numberOfMembers, this.creationTimestamp});
+  Munch({this.id, this.code, this.name, this.numberOfMembers, this.creationTimestamp});
 }
 
 @GenSerializer(fields: const {

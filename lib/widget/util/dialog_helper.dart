@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
-import 'package:munch/theme/text_style.dart';
 
 // Need template T, because in the root of dialog body we have to put bloc, because Dialog has different context
 class DialogHelper<T extends Bloc<dynamic, SuperState>>{
@@ -39,7 +38,6 @@ class DialogHelper<T extends Bloc<dynamic, SuperState>>{
                   )
               )
           );
-
         }
     );
   }

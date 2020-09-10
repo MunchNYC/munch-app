@@ -1,9 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:munch/model/munch.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/app.dart';
 
 class MunchListWidget extends StatelessWidget {
+  Munch _munch;
+
+  MunchListWidget(this._munch);
+
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
@@ -37,9 +44,10 @@ class MunchListWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("The Crew", style: AppTextStyle.style(AppTextStylePattern.body3), maxLines: 1, overflow: TextOverflow.ellipsis),
-          Text("5 members", style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
-          Text("Undecided", style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
+          Text(_munch.name, style: AppTextStyle.style(AppTextStylePattern.body3), maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(_munch.numberOfMembers.toString() + " " + App.translate("munch_list_widget.members.text"), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
+          // TODO: Fill restaurant name
+          Text(_munch.munchStatus == MunchStatus.UNDECIDED ? App.translate("munch_list_widget.munch_status.undecided.text") : "Restaurant name", style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
         ]
     );
   }
@@ -53,7 +61,7 @@ class MunchListWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Text("Mar 23", style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+              Text(DateFormat('MMM dd').format(_munch.creationTimestamp), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
               Icon(Icons.navigate_next, color: Palette.secondaryLight, size: 14.0)
             ],
           )

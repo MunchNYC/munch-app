@@ -23,9 +23,10 @@ class CustomFormField extends StatelessWidget{
         isDense: true,
         focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Palette.secondaryLight)),
         border: OutlineInputBorder(borderSide: BorderSide(color: Palette.secondaryLight)),
+        errorMaxLines: 3
       ),
       style: textStyle,
-      validator: (value) => validator(),
+      validator: validator,
       onSaved: onSaved,
       initialValue: initialValue,
     );

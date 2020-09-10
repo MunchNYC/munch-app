@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/home/home_screen.dart';
 import 'file:///D:/Desktop/Posao/Munch/munch-app/lib/widget/screen/auth/login_screen.dart';
+import 'package:munch/widget/include/map_widget.dart';
 
 class NavigationHelper {
   static Future _navigateTo(BuildContext context,
@@ -55,6 +56,12 @@ class NavigationHelper {
           screen: HomeScreen(),
           rootNavigator: true);
     }
+  }
+
+  static Future navigateToMapScreen(BuildContext context,
+      {String munchName, bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack,
+        screen: MapWidget(munchName: munchName));
   }
 }
 
