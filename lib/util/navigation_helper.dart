@@ -61,7 +61,7 @@ class NavigationHelper {
   static Future navigateToMapScreen(BuildContext context,
       {String munchName, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack,
-        screen: MapWidget(munchName: munchName));
+        screen: MapScreen(munchName: munchName));
   }
 }
 

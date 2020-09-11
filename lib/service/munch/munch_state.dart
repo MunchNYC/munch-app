@@ -19,3 +19,9 @@ class MunchJoiningState extends MunchState {
   MunchJoiningState.loading({message = ""}):super.loading(message: message);
   MunchJoiningState.failed({message = ""}):super.failed(message: message);
 }
+
+class MunchCreatingState extends MunchState {
+  MunchCreatingState.ready({data}):super.ready(data: data);
+  MunchCreatingState.loading({message = ""}):super.loading(message: message);
+  MunchCreatingState.failed({message = ""}):super.failed(message: message);
+}

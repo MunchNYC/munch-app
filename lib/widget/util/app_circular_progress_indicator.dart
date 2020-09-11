@@ -10,7 +10,7 @@ class AppCircularProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget _circularProgressIndicator =  CircularProgressIndicator(
-        backgroundColor: Palette.secondaryDark,
+        backgroundColor: Palette.ternaryDark,
         valueColor: AlwaysStoppedAnimation<Color>(Palette.secondaryLight),
         strokeWidth: this.strokeWidth,
     );

@@ -26,4 +26,10 @@ class MunchRepo {
 
     return munch;
   }
+
+  Future<Munch> createMunch(Munch munch) async{
+    Munch createdMunch = await _munchApi.createMunch(munch);
+
+    return createdMunch;
+  }
 }

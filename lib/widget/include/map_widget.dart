@@ -1,220 +1,355 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:munch/model/coordinates.dart';
+import 'package:munch/model/munch.dart';
+import 'package:munch/service/location/location_bloc.dart';
+import 'package:munch/service/location/location_event.dart';
+import 'package:munch/service/location/location_state.dart';
+import 'package:munch/service/munch/munch_bloc.dart';
+import 'package:munch/service/munch/munch_event.dart';
+import 'package:munch/service/munch/munch_state.dart';
+import 'package:munch/theme/palette.dart';
+import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/app.dart';
+import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/utility.dart';
+import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/custom_button.dart';
+import 'package:munch/widget/util/custom_form_field.dart';
+import 'package:munch/widget/util/dialog_helper.dart';
+import 'package:munch/widget/util/error_page_widget.dart';
 
-class MapWidget extends StatefulWidget {
+class MapScreen extends StatefulWidget {
   String munchName;
 
-  MapWidget({this.munchName});
+  MapScreen({this.munchName});
 
   @override
-  State<MapWidget> createState() => MapWidgetState();
+  State<MapScreen> createState() =>MapScreenState();
 }
 
-class MapWidgetState extends State<MapWidget> {
+class MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
-  int _selectedIndex = 0;
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
+
+  static const double DEFAULT_MAP_ZOOM = 13.0;
+  static const LatLng DEFAULT_CAMERA_POSITION = LatLng(40.7128, -74.0060);
+
+  static const double MILES_TO_METERS_RATIO = 1609.344;
+  static const List<double> RADIUS_VALUES_MILES = [0.5, 1, 2];
+
+  static List<int> _radiusValuesMetres = RADIUS_VALUES_MILES.map((value) => (value * MILES_TO_METERS_RATIO).floor()).toList();
+
+  int _circleRadius = _radiusValuesMetres[1];
+  Circle _centralCircle;
+
+  Position _currentLocation;
+
+  LatLng _initialCameraPosition;
+
+  MunchBloc _munchBloc;
+  LocationBloc _locationBloc;
+
+  @override
+  void initState() {
+    _munchBloc = MunchBloc();
+    _locationBloc = LocationBloc();
+
+    _locationBloc.add(GetCurrentLocationEvent());
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _locationBloc?.close();
+    super.dispose();
+  }
+
+
+  Widget _appBar(BuildContext context){
+    return AppBar(
+        elevation: 0.0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Palette.background,
+        title: Stack(
+          children: <Widget>[
+            CustomButton(
+              flat: true,
+              // very important to set, otherwise title won't be aligned good
+              padding: EdgeInsets.zero,
+              color: Colors.transparent,
+              content: Text(App.translate("map_screen.app_bar.leading.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, fontSizeOffset: 1.0, color: Palette.hyperlink)),
+              onPressedCallback: (){
+                NavigationHelper.popRoute(context);
+              },
+            ),
+            Center(child: Text(App.translate("map_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))),
+          ],
+        )
+    );
+  }
+
+  Widget _floatingActionButton(BuildContext context){
+    return Stack(
+      children: [
+        Positioned(
+          left: 36.0,
+          bottom: 4.0,
+          child: FloatingActionButton(
+              backgroundColor: Palette.background,
+              child: Icon(Icons.gps_fixed, color: Palette.hyperlink, size: 32.0),
+              onPressed: (){
+                _goToCurrentLocation();
+              }
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _initCentralCircle(){
+    _centralCircle = Circle(
+        circleId: CircleId('Central circle'),
+        fillColor: Color(0x9093BFF2),
+        radius: _circleRadius.toDouble(),
+        strokeWidth: 2,
+        strokeColor: Color(0xFF4970D6),
+        center: _initialCameraPosition
+    );
+  }
+
+  void _locationListener(BuildContext context, LocationState state) {
+    if (state.hasError) {
+      // don't show flushbar if we don't get user's location
+      if(state is CurrentLocationFetchingState){
+        _initialCameraPosition = DEFAULT_CAMERA_POSITION;
+
+        _initCentralCircle();
+      } else {
+        Utility.showErrorFlushbar(state.message, context);
+      }
+    } else {
+      if(state is CurrentLocationFetchingState){
+
+        if(state.hasData) {
+
+          _currentLocation = state.data;
+
+          _initialCameraPosition = LatLng(_currentLocation.latitude, _currentLocation.longitude);
+        } else{
+          _initialCameraPosition = DEFAULT_CAMERA_POSITION;
+        }
+
+        _initCentralCircle();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.calendar_today),
-              color: Colors.black,
-              onPressed: () {},
-            ),
-          ],
-          backgroundColor: Colors.white,
-          title:
-              Text("Choose a location",
-                  style: TextStyle(color: Colors.black)
-              )
+      appBar: _appBar(context),
+      body: BlocConsumer<LocationBloc, LocationState>(
+        bloc: _locationBloc,
+        listenWhen: (LocationState previous, LocationState current) => current.hasError || current.ready,
+        listener: (BuildContext context, LocationState state) => _locationListener(context, state),
+        buildWhen: (LocationState previous, LocationState current) => current is CurrentLocationFetchingState,
+        builder: (BuildContext context, LocationState state) => _buildMapScreen(context, state)
       ),
-      body: Stack(
+      floatingActionButton: _floatingActionButton(context),
+    );
+  }
+
+  Widget _buildMapScreen(BuildContext context, LocationState state){
+    if (state.hasError) {
+      // don't show error page if we don't get user's location
+      if(!(state is CurrentLocationFetchingState)) {
+        return ErrorPageWidget();
+      }
+    } else if (state.initial || state.loading)  {
+      return Center(child: AppCircularProgressIndicator());
+    }
+
+    return _renderMapScreen(context);
+  }
+
+  Widget _renderMapScreen(BuildContext context){
+    return Stack(
+      children: <Widget>[
+        _googleMap(context),
+        _mapControls(context),
+        _centralMarker()
+      ],
+    );
+  }
+
+  Widget _mapControls(BuildContext context){
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-            _buildGoogleMap(context),
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-            _buildSearchBarStack(),
-            _buildRadiusSelectionStack()
-          ]),
-          _buildLetsEatButton()
-          ],
-        ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 5,
-        backgroundColor: Colors.white,
-        onPressed: () {},
-        child: Icon(
-          Icons.my_location,
-          color: Colors.blueAccent
-        )
-      ),
-    );
-  }
-
-  Widget _buildGoogleMap(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition:
-            CameraPosition(target: LatLng(40.712776, -74.005974), zoom: 12),
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: {
-          newyork1Marker,
-          newyork2Marker,
-          newyork3Marker,
-          gramercyMarker,
-          bernardinMarker,
-          blueMarker
-        },
-      ),
-    );
-  }
-
-  Widget _buildSearchBarStack() {
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-        child: Stack(children: <Widget>[
-          Container(
-            child: Material(
-                elevation: 5.0,
-                borderRadius: BorderRadius.circular(20.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon: Icon(Icons.search),
-                      hintText: "Search a location"),
-                )),
-          )
-        ]));
-  }
-
-  Widget _buildRadiusSelectionStack() {
-    return Padding(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              _buildRadiusSelectionButton("0.5 mi"),
-              _buildRadiusSelectionButton("1 mi"),
-              _buildRadiusSelectionButton("2 mi")
-            ]));
-  }
-
-  Widget _buildRadiusSelectionButton(String distance) {
-    return FlatButton(
-      color: Colors.white,
-      onPressed: () {},
-      child: Text(distance),
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 30),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                _searchBar(context),
+                SizedBox(height: 12.0),
+                _buildRadiusSelectionStack()
+              ],
+            ),
+            _buildLetsEatButtonListener()
+        ]
       )
     );
   }
 
-  Widget _buildLocationButton() {
-    return IconButton(
-        icon: Icon(Icons.android), color: Colors.white, onPressed: () {});
+  Widget _googleMap(BuildContext context){
+    return GoogleMap(
+        // disable button for my location because it's behind our search bar, make a custom FAB
+        myLocationButtonEnabled: false,
+        myLocationEnabled: true,
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(target: _initialCameraPosition, zoom: DEFAULT_MAP_ZOOM),
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+        circles: {_centralCircle},
+        onCameraMove: (CameraPosition position) {
+          setState(() {
+            _centralCircle = _centralCircle.copyWith(
+              centerParam: position.target,
+            );
+          });
+        },
+    );
   }
 
-  Widget _buildLetsEatButton() {
-    return Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-            padding: EdgeInsets.only(bottom: 18),
-            child: FlatButton(
-              color: Colors.redAccent,
-              textColor: Colors.white,
-              disabledColor: Colors.grey,
-              disabledTextColor: Colors.black,
-              padding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 80.0),
-              splashColor: Colors.blue,
-              onPressed: () {},
-              child: Text(
-                "Lets Eat!",
-                style: TextStyle(fontSize: 16.0),
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0)
-              )
-            )
+  Widget _searchBar(BuildContext context) {
+    return Material(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      elevation: 8.0,
+      child: CustomFormField(
+        textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary, fontSizeOffset: 1.0, fontWeight: FontWeight.w500),
+        hintText: App.translate("map_screen.search_field.placeholder.text"),
+        hintStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0, fontWeight: FontWeight.w500),
+        fillColor: Palette.background,
+        borderColor: Palette.background,
+        borderRadius: 12.0,
+      )
+    );
+  }
+
+  Widget _buildRadiusSelectionStack() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        _buildRadiusSelectionButton(0),
+        SizedBox(width: 12.0),
+        _buildRadiusSelectionButton(1),
+        SizedBox(width: 12.0),
+        _buildRadiusSelectionButton(2)
+      ]
+    );
+  }
+
+  Widget _buildRadiusSelectionButton(int index) {
+    return CustomButton(
+      minWidth: 92.0,
+      borderRadius: 4.0,
+      color: _circleRadius == _radiusValuesMetres[index] ? Palette.secondaryDark : Palette.background,
+      content: Text(RADIUS_VALUES_MILES[index].toString() + " " + App.translate("map_screen.distance_button.unit.text"),
+          style: AppTextStyle.style(AppTextStylePattern.body2,
+              color: _circleRadius == _radiusValuesMetres[index] ? Palette.background : Palette.secondaryLight,
+              fontSizeOffset: 1.0,
+              fontWeight: FontWeight.w500
+          )
+      ),
+      onPressedCallback: (){
+        setState(() {
+          _circleRadius = _radiusValuesMetres[index];
+
+          _centralCircle = _centralCircle.copyWith(radiusParam: _circleRadius.toDouble());
+        });
+      },
+    );
+  }
+
+  /*
+    It's better to use fixed marker on screen center,
+    otherwise user will have laggy feeling while moving the map,
+    same feeling he's facing when moving the circle around marker
+  */
+  Widget _centralMarker(){
+    return Padding(
+        /*
+          This padding depends on icon size,
+          needs that padding to be on equal position as it would be if native google marker follows camera
+        */
+        padding: EdgeInsets.only(bottom: 44.0),
+        child: Center(
+            child: Icon(Icons.location_on, color: Palette.ternaryDark, size: 44.0)
         )
     );
   }
 
-  Future<void> _gotoLocation(double lat, double long) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(lat, long),
-      zoom: 15,
-      tilt: 50.0,
-      bearing: 45.0,
-    )));
+  void _letsEatButtonListener(BuildContext context, MunchState state){
+    if(state.hasError){
+      Utility.showErrorFlushbar(state.message, context);
+    } else{
+      if(state is MunchCreatingState){
+        Munch createdMunch = state.data;
+
+        DialogHelper(dialogContent: Text("Munch.app/" + createdMunch.code)).show(context);
+      }
+    }
   }
 
-  Marker gramercyMarker = Marker(
-    markerId: MarkerId('gramercy'),
-    position: LatLng(40.738380, -73.988426),
-    infoWindow: InfoWindow(title: 'Gramercy Tavern'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueRed,
-    ),
-  );
+  Widget _buildLetsEatButtonListener(){
+    return BlocListener<MunchBloc, MunchState>(
+        bloc: _munchBloc,
+        condition: (MunchState previous, MunchState current) => current.hasError || current.ready,
+        listener: (BuildContext context, MunchState state) => _letsEatButtonListener(context, state),
+        child: _letsEatButton(),
+    );
+  }
 
-  Marker bernardinMarker = Marker(
-    markerId: MarkerId('bernardin'),
-    position: LatLng(40.761421, -73.981667),
-    infoWindow: InfoWindow(title: 'Le Bernardin'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueRed,
-    ),
-  );
-  Marker blueMarker = Marker(
-    markerId: MarkerId('bluehill'),
-    position: LatLng(40.732128, -73.999619),
-    infoWindow: InfoWindow(title: 'Blue Hill'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueRed,
-    ),
-  );
+  Widget _letsEatButton() {
+    return CustomButton<MunchState, MunchCreatingState>.bloc(
+      bloc: _munchBloc,
+      minWidth: 200.0,
+      borderRadius: 8.0,
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      content: Text(App.translate("map_screen.submit_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
+      onPressedCallback: (){
+        _onLetsEatButtonClicked();
+      },
+    );
+  }
 
-//New York Marker
+  void _onLetsEatButtonClicked(){
+    Munch munch = Munch(name: widget.munchName, coordinates: Coordinates(latitude: _centralCircle.center.latitude, longitude: _centralCircle.center.longitude), radius: _circleRadius);
 
-  Marker newyork1Marker = Marker(
-    markerId: MarkerId('newyork1'),
-    position: LatLng(40.742451, -74.005959),
-    infoWindow: InfoWindow(title: 'Los Tacos'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueRed,
-    ),
-  );
-  Marker newyork2Marker = Marker(
-    markerId: MarkerId('newyork2'),
-    position: LatLng(40.729640, -73.983510),
-    infoWindow: InfoWindow(title: 'Tree Bistro'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueRed,
-    ),
-  );
-  Marker newyork3Marker = Marker(
-    markerId: MarkerId('newyork3'),
-    position: LatLng(40.719109, -74.000183),
-    infoWindow: InfoWindow(title: 'Le Coucou'),
-    icon: BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueRed,
-    ),
-  );
+    _munchBloc.add(CreateMunchEvent(munch));
+  }
+
+  void _goToCurrentLocation() async {
+    final GoogleMapController controller = await _controller.future;
+
+    if(_currentLocation != null) {
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(_currentLocation.latitude, _currentLocation.longitude),
+          zoom: DEFAULT_MAP_ZOOM
+        ),
+      ));
+    }
+  }
 }

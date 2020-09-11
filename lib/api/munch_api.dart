@@ -42,4 +42,16 @@ class MunchApi extends Api {
 
     return munch;
   }
+
+  Future<Munch> createMunch(Munch munch) async {
+    String postUrl = "/create";
+
+    Map<String, dynamic> fields = MunchJsonSerializer().toMap(munch);
+
+    var data = await post(postUrl, fields);
+
+    Munch createdMunch = MunchJsonSerializer().fromMap(data['munchCompact']);
+
+    return createdMunch;
+  }
 }

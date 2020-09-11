@@ -119,7 +119,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
                 child: content,
                 color: color,
                 textColor: textColor,
-                elevation: 4.0,
+                elevation: 8.0,
                 onPressed: disabled ? null : () => _buttonPressed(context)));
   }
 

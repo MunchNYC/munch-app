@@ -45,6 +45,12 @@
     "munch_list_widget.members.text": "Members",
     "munch_list_widget.munch_status.undecided.text": "Undecided",
 
+    "map_screen.app_bar.leading.text": "Cancel",
+    "map_screen.app_bar.title": "Choose a location",
+    "map_screen.distance_button.unit.text": "mi",
+    "map_screen.submit_button.text": "Let's Eat!",
+    "map_screen.search_field.placeholder.text": "Search a location",
+
     "error_page_widget.text": "Error has occurred",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled",

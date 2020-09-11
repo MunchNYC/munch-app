@@ -44,7 +44,7 @@ class MunchListWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(_munch.name, style: AppTextStyle.style(AppTextStylePattern.body3), maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(_munch.name, style: AppTextStyle.style(AppTextStylePattern.body3, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
           Text(_munch.numberOfMembers.toString() + " " + App.translate("munch_list_widget.members.text"), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
           // TODO: Fill restaurant name
           Text(_munch.munchStatus == MunchStatus.UNDECIDED ? App.translate("munch_list_widget.munch_status.undecided.text") : "Restaurant name", style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
