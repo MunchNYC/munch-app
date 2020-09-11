@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/munch.dart';
@@ -25,6 +27,21 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
 
   String _joinCode;
   String _munchName;
+
+  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 23;
+  String _munchNamePlaceholder;
+
+  final List<String> _munchNamePlaceholders = List<String>();
+
+  CreateJoinDialogState(){
+    for(int i = 0; i < TOTAL_MUNCH_NAME_PLACEHOLDERS; i++){
+        _munchNamePlaceholders.add(App.translate("create_join_dialog_create_form.name_field.placeholder${i + 1}.value"));
+    }
+
+    _munchNamePlaceholder = _munchNamePlaceholders[Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS)];
+  }
+
+  final TextEditingController _joinTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +71,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
 
   String _validateCreateForm(String value) {
     if(value.trim().isEmpty){
-      return App.translate("create_join_dialog.create_form.name_field.required.validation");
+      return null; // validation passed, placeholder will be used
     }
 
     Pattern pattern = r'^([A-Za-z0-9]|\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])*$';
@@ -80,7 +97,14 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
                   hintText: App.translate("create_join_dialog.join_form.code_field.hint"),
                   hintStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight),
                   validator: (String value) => _validateJoinForm(value),
-                  onSaved: (String value) => _joinCode = value
+                  onSaved: (String value) => _joinCode = value,
+                  textCapitalization: TextCapitalization.characters,
+                  controller: _joinTextEditingController,
+                  onChanged: (value) {
+                    _joinTextEditingController.value = TextEditingValue(
+                        text: value.toUpperCase(),
+                        selection: _joinTextEditingController.selection);
+                  },
                 )
             ),
             SizedBox(width: 12.0),
@@ -125,10 +149,16 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
           Expanded(
               child: CustomFormField(
                 textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary),
-                hintText: "Sushi Samurais",
+                hintText: _munchNamePlaceholder,
                 hintStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight),
                 validator: (String value) => _validateCreateForm(value),
-                onSaved: (String value) => _munchName = value
+                onSaved: (String value) {
+                  if(value.trim().isEmpty){
+                    _munchName = _munchNamePlaceholder;
+                  } else{
+                    _munchName = value;
+                  }
+                },
               )
           ),
           SizedBox(width: 12.0),

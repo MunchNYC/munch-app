@@ -163,7 +163,7 @@ class _MunchesTabState extends State<MunchesTab> {
           // must be set because of RefreshIndicator
             physics: AlwaysScrollableScrollPhysics(),
             child:
-            errorOccurred ? ErrorPageWidget(description: App.translate("munches_tab.list_view.error.suggestion.text")) :
+            errorOccurred ? ErrorPageWidget() :
             _stillDecidingMunches.length > 0 ?
             ListView.separated(
                 primary: false,

@@ -8,10 +8,13 @@ class CustomFormField extends StatelessWidget{
   TextStyle textStyle;
   Function validator;
   Function onSaved;
+  TextCapitalization textCapitalization;
+  TextEditingController controller;
+  Function onChanged;
 
-
-  CustomFormField({this.hintText, this.initialValue,
-      this.textStyle, this.hintStyle, this.validator, this.onSaved});
+  CustomFormField({this.hintText, this.initialValue, this.textStyle,
+    this.hintStyle, this.validator, this.onSaved, this.textCapitalization,
+    this.controller, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,9 @@ class CustomFormField extends StatelessWidget{
       validator: validator,
       onSaved: onSaved,
       initialValue: initialValue,
+      textCapitalization: textCapitalization ?? TextCapitalization.none,
+      controller: controller ,
+      onChanged: onChanged,
     );
   }
 

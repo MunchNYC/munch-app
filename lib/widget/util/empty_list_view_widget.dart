@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
-import 'package:munch/util/app.dart';
 
 class EmptyListViewWidget extends StatelessWidget{
   IconData iconData;
@@ -31,12 +30,7 @@ class EmptyListViewWidget extends StatelessWidget{
             Text(
               text,
               style: AppTextStyle.style(AppTextStylePattern.heading5, color: Palette.secondaryLight, fontWeight: FontWeight.normal),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              "(" + App.translate("list_view.empty.suggestion.text") + ")",
-              style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontWeight: FontWeight.bold),
-            ),
+            )
           ],
     ));
   }

@@ -15,7 +15,7 @@ class ErrorPageWidget extends StatelessWidget{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 24.0),
+            SizedBox(height: 40.0),
             Icon(
               Icons.error_outline,
               color: Palette.secondaryDark,
