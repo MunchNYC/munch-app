@@ -21,24 +21,33 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     yield CurrentLocationFetchingState.loading();
 
     Position currentLocation;
+    LocationPermission locationPermission;
 
     try {
-      currentLocation = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      locationPermission = await requestPermission();
 
-      yield CurrentLocationFetchingState.ready(data: currentLocation);
+      if(locationPermission == LocationPermission.whileInUse || locationPermission == LocationPermission.always){
+        currentLocation = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+        yield CurrentLocationFetchingState.ready(data: currentLocation);
+      }
     } catch (error) {
       print("Getting current location failed. " + error.toString());
 
-      // If user doesn't want to enable location services or doesn't want to allow permission try to acquire getLastKnownPosition (can return null)
-      currentLocation = await getLastKnownPosition();
+      if(locationPermission != null && (locationPermission == LocationPermission.whileInUse || locationPermission == LocationPermission.always)){
+        // If user doesn't want to enable location services try to acquire getLastKnownPosition (can return null)
+        currentLocation = await getLastKnownPosition();
 
-      if(currentLocation != null) {
-        yield CurrentLocationFetchingState.ready(data: currentLocation);
-      } else{
-        print("Getting last known location failed. " + error.toString());
-
-        yield CurrentLocationFetchingState.failed(message: error.toString());
+        if(currentLocation != null) {
+          yield CurrentLocationFetchingState.ready(data: currentLocation);
+        }
       }
+    }
+
+    if(currentLocation == null) {
+      print("Getting last known location failed.");
+
+      yield CurrentLocationFetchingState.failed();
     }
   }
 

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/widget/include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
+  Munch munch;
+
+  // will be true if we need to call back-end to get detailed munch instead of compact
+  bool shouldRefreshMunch;
+
+  RestaurantSwipeScreen({this.munch, this.shouldRefreshMunch = false});
+
   @override
   State<StatefulWidget> createState() {
     return _RestaurantSwipeScreenState();
@@ -24,18 +32,28 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     cardList = _getCards();
   }
 
+  Future<bool> _onWillPopScope(BuildContext context) async {
+    // return result to previous route, in order to refresh things
+    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-        body: SafeArea(
-      child: Column(children: [
-        Expanded(
-            child: Container(
-              child: RestaurantCard(),
-              padding: EdgeInsets.only(left: 24, top: 24, right: 24)
-        )),
-      ]),
+    return WillPopScope(
+      onWillPop: () => _onWillPopScope(context),
+      child: Scaffold(
+          backgroundColor: Colors.grey[100],
+          body: SafeArea(
+            child: Column(children: [
+              Expanded(
+                  child: Container(
+                      child: RestaurantCard(),
+                      padding: EdgeInsets.only(left: 24, top: 24, right: 24)
+                  )),
+            ]),
+          )
     ));
   }
 

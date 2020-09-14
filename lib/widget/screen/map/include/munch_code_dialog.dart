@@ -17,7 +17,7 @@ class MunchCodeDialog extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300.0,
+      width: 320.0,
       padding: EdgeInsets.symmetric(horizontal: 32.0),
       child: Column(
           children: <Widget>[
@@ -107,7 +107,10 @@ class MunchCodeDialog extends StatelessWidget{
         // pop modal dialog
         NavigationHelper.popRoute(context);
 
-        // TODO: Navigate to restaurant swipe screen
+        // pop map screen, return result to munches tab to refresh the list
+        NavigationHelper.popRoute(context, result: munch);
+
+        NavigationHelper.navigateToRestaurantSwipeScreen(context);
       },
     );
   }

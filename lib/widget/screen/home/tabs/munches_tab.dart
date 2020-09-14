@@ -20,10 +20,10 @@ import 'package:munch/widget/util/error_page_widget.dart';
 
 class MunchesTab extends StatefulWidget {
   @override
-  _MunchesTabState createState() => _MunchesTabState();
+  MunchesTabState createState() => MunchesTabState();
 }
 
-class _MunchesTabState extends State<MunchesTab> {
+class MunchesTabState extends State<MunchesTab> {
   MunchBloc _munchBloc;
 
   int _currentTab = 0;
@@ -104,19 +104,8 @@ class _MunchesTabState extends State<MunchesTab> {
     );
   }
 
-  Widget _tabsContent(){
-    // IndexedStack must be used instead of TabBarView, because we need unbounded height
-    return IndexedStack(
-        index: _currentTab,
-        children: <Widget>[
-          _stillDecidingListView(),
-          // TODO: Decided/Archived list view
-          _stillDecidingListView(),
-        ]
-    );
-  }
 
-  void _stillDecidingMunchesListener(BuildContext context, MunchState state){
+  void _listViewsListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchesFetchingState){
@@ -124,31 +113,48 @@ class _MunchesTabState extends State<MunchesTab> {
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
 
-      // refresh list view to show joined munch
-      _throwGetStillDecidingMunchesEvent();
-      
-      Utility.showFlushbar(joinedMunch.name + " - " + App.translate("munches_tab.join_munch.successful.message"), context);
+      // pop create join dialog
+      NavigationHelper.popRoute(context);
+
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch).then((value){
+        if(value != null) {
+          // refresh list when user comes back to this screen
+          _throwGetStillDecidingMunchesEvent();
+        }
+      });
     }
   }
 
-  Widget _stillDecidingListView(){
-      return BlocConsumer<MunchBloc, MunchState>(
-          cubit: _munchBloc,
-          listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
-          listener: (BuildContext context, MunchState state) => _stillDecidingMunchesListener(context, state),
-          buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || (current is MunchJoiningState && current.ready),
-          builder: (BuildContext context, MunchState state) => _buildStillDecidingListView(context, state)
-      );
+  Widget _tabsContent(){
+    return BlocConsumer<MunchBloc, MunchState>(
+        cubit: _munchBloc,
+        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
+        listener: (BuildContext context, MunchState state) => _listViewsListener(context, state),
+        buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || (current is MunchJoiningState && current.ready),
+        builder: (BuildContext context, MunchState state) => _buildListViews(context, state)
+    );
   }
 
-  Widget _buildStillDecidingListView(BuildContext context, MunchState state){
+  Widget _buildListViews(BuildContext context, MunchState state){
     if (state.hasError) {
-      return _renderStillDecidingListView(true);
+      return _renderListViews(true);
     } else if (state.initial || state.loading)  {
       return Center(child: AppCircularProgressIndicator());
     } else {
-      return _renderStillDecidingListView();
+      return _renderListViews();
     }
+  }
+
+  Widget _renderListViews([bool errorOccurred = false]){
+    // IndexedStack must be used instead of TabBarView, because we need unbounded height
+    return IndexedStack(
+        index: _currentTab,
+        children: <Widget>[
+          _renderStillDecidingListView(errorOccurred),
+          // TODO: Decided/Archived list view
+          ListView()
+        ]
+    );
   }
 
   Widget _renderStillDecidingListView([bool errorOccurred = false]){
@@ -182,7 +188,7 @@ class _MunchesTabState extends State<MunchesTab> {
   }
 
   void _onPlusButtonClicked(BuildContext context){
-    DialogHelper<MunchBloc>(dialogContent: CreateJoinDialog(), cubit: _munchBloc, showCloseIcon: false).show(context);
+    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), showCloseIcon: false).show(context);
   }
 
   Widget _plusButton(BuildContext context){

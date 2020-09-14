@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
+import 'package:munch/util/navigation_helper.dart';
 
-// Need template T, because in the root of dialog body we have to put bloc, because Dialog has different context
-class DialogHelper<T extends Bloc<dynamic, SuperState>>{
+// DON'T EVER PUT BlocProvider in Context tree of widget which will be disposes (like dialog), because Flutter will disable bloc provided into this BlocProvider
+// Always parametrize dialogContent with required bloc outside of this widget
+class DialogHelper{
   String dialogTitle;
   Widget dialogContent;
   Color dialogTitleColor;
-  T cubit;
   bool showCloseIcon;
   bool isModal;
 
-  DialogHelper({this.dialogTitle, this.dialogContent, this.cubit, this.dialogTitleColor = Palette.primary, this.showCloseIcon = true, this.isModal = false});
+  DialogHelper({this.dialogTitle, this.dialogContent, this.dialogTitleColor = Palette.primary, this.isModal = false, this.showCloseIcon = true});
 
   void show(BuildContext context){
     showDialog(
@@ -38,7 +39,7 @@ class DialogHelper<T extends Bloc<dynamic, SuperState>>{
                             if(dialogTitle != null) SizedBox(height: 5.0),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 12.0),
-                                child: _dialogBody()
+                                child: dialogContent
                             )
                           ]
                       )
@@ -61,23 +62,10 @@ class DialogHelper<T extends Bloc<dynamic, SuperState>>{
         GestureDetector(
           child: Icon(Icons.close, size: 18.0),
           onTap: (){
-            Navigator.pop(context);
+            NavigationHelper.popRoute(context);
           },
         )
       ],
     );
   }
-
-  Widget _dialogBody(){
-    if (cubit != null) {
-      return BlocProvider<T>(
-        create: (context) => cubit,
-        child: dialogContent,
-      );
-    }
-    else {
-      return dialogContent;
-    }
-  }
-
 }
