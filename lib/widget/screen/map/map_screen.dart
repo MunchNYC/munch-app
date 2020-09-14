@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:munch/config/app_config.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/service/location/location_bloc.dart';
@@ -17,11 +18,14 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/map/include/munch_code_dialog.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
+import 'package:google_maps_webservice/places.dart'; // IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
+import 'package:flutter_google_places/flutter_google_places.dart';
 
 class MapScreen extends StatefulWidget {
   String munchName;
@@ -34,6 +38,8 @@ class MapScreen extends StatefulWidget {
 
 class MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
+
+  GoogleMapsPlaces _googleMapsPlaces = GoogleMapsPlaces(apiKey: AppConfig.getInstance().googleMapsApiKey);
 
   static const double DEFAULT_MAP_ZOOM = 14.5;
   static const LatLng DEFAULT_CAMERA_POSITION = LatLng(40.7128, -74.0060);
@@ -49,6 +55,8 @@ class MapScreenState extends State<MapScreen> {
   Position _currentLocation;
 
   LatLng _initialCameraPosition;
+
+  TextEditingController _searchTextController = TextEditingController();
 
   MunchBloc _munchBloc;
   LocationBloc _locationBloc;
@@ -68,7 +76,6 @@ class MapScreenState extends State<MapScreen> {
     _locationBloc?.close();
     super.dispose();
   }
-
 
   Widget _appBar(BuildContext context){
     return AppBar(
@@ -100,7 +107,9 @@ class MapScreenState extends State<MapScreen> {
           backgroundColor: Palette.background,
           child: FaIcon(FontAwesomeIcons.locationArrow, color: Palette.hyperlink, size: 20.0),
           onPressed: (){
-            _goToCurrentLocation();
+            if(_currentLocation != null) {
+              _animateMapToLocation(LatLng(_currentLocation.latitude, _currentLocation.longitude));
+            }
           }
         )
     );
@@ -149,7 +158,7 @@ class MapScreenState extends State<MapScreen> {
     return new Scaffold(
       appBar: _appBar(context),
       body: BlocConsumer<LocationBloc, LocationState>(
-        bloc: _locationBloc,
+        cubit: _locationBloc,
         listenWhen: (LocationState previous, LocationState current) => current.hasError || current.ready,
         listener: (BuildContext context, LocationState state) => _locationListener(context, state),
         buildWhen: (LocationState previous, LocationState current) => current is CurrentLocationFetchingState,
@@ -204,6 +213,17 @@ class MapScreenState extends State<MapScreen> {
     );
   }
 
+  void _animateMapToLocation(LatLng location) async {
+    final GoogleMapController controller = await _controller.future;
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+          target: location ,
+          zoom: DEFAULT_MAP_ZOOM
+      ),
+    ));
+  }
+
   Widget _googleMap(BuildContext context){
     return GoogleMap(
         zoomControlsEnabled: false,
@@ -237,6 +257,11 @@ class MapScreenState extends State<MapScreen> {
         fillColor: Palette.background,
         borderColor: Palette.background,
         borderRadius: 12.0,
+        controller: _searchTextController,
+        onTap: (){
+          _onSearchBarClicked();// Mode.fullscreen
+        },
+        readOnly: true
       )
     );
   }
@@ -300,15 +325,15 @@ class MapScreenState extends State<MapScreen> {
       if(state is MunchCreatingState){
         Munch createdMunch = state.data;
 
-        DialogHelper(dialogContent: Text("Munch.app/" + createdMunch.code)).show(context);
+        DialogHelper(dialogContent: MunchCodeDialog(createdMunch), isModal: true).show(context);
       }
     }
   }
 
   Widget _buildLetsEatButtonListener(){
     return BlocListener<MunchBloc, MunchState>(
-        bloc: _munchBloc,
-        condition: (MunchState previous, MunchState current) => current.hasError || current.ready,
+        cubit: _munchBloc,
+        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
         listener: (BuildContext context, MunchState state) => _letsEatButtonListener(context, state),
         child: _letsEatButton(),
     );
@@ -316,9 +341,9 @@ class MapScreenState extends State<MapScreen> {
 
   Widget _letsEatButton() {
     return CustomButton<MunchState, MunchCreatingState>.bloc(
-      bloc: _munchBloc,
+      cubit: _munchBloc,
       minWidth: 200.0,
-      borderRadius: 8.0,
+      borderRadius: 12.0,
       padding: EdgeInsets.symmetric(vertical: 16.0),
       content: Text(App.translate("map_screen.submit_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: (){
@@ -333,16 +358,22 @@ class MapScreenState extends State<MapScreen> {
     _munchBloc.add(CreateMunchEvent(munch));
   }
 
-  void _goToCurrentLocation() async {
-    final GoogleMapController controller = await _controller.future;
+  Future _onSearchBarClicked() async {
+    Prediction prediction = await PlacesAutocomplete.show(
+        context: context,
+        apiKey: AppConfig.getInstance().googleMapsApiKey,
+        mode: Mode.overlay,
+    );
 
-    if(_currentLocation != null) {
-      controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(_currentLocation.latitude, _currentLocation.longitude),
-          zoom: DEFAULT_MAP_ZOOM
-        ),
-      ));
+    if(prediction != null){
+      PlacesDetailsResponse detail = await _googleMapsPlaces.getDetailsByPlaceId(prediction.placeId);
+
+      final lat = detail.result.geometry.location.lat;
+      final lng = detail.result.geometry.location.lng;
+
+      _animateMapToLocation(LatLng(lat, lng));
+
+      _searchTextController.text = prediction.description;
     }
   }
 }

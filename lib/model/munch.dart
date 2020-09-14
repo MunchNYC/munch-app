@@ -12,6 +12,8 @@ enum MunchStatus{
 }
 
 class Munch{
+  static const String CODE_PREFIX = "Munch.app/";
+
   @Field.decode()
   String id;
 
@@ -50,6 +52,8 @@ class Munch{
   String toString() {
     return "id: $id; name: $name;";
   }
+
+  String get link => CODE_PREFIX + code;
 
   Munch({this.name, this.coordinates, this.radius});
 }

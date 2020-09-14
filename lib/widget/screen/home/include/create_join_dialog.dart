@@ -109,7 +109,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
             ),
             SizedBox(width: 12.0),
             CustomButton<MunchState, MunchJoiningState>.bloc(
-              bloc: BlocProvider.of<MunchBloc>(context),
+              cubit: BlocProvider.of<MunchBloc>(context),
               minWidth: 72.0,
               borderRadius: 4.0,
               content: Text(App.translate("create_join_dialog.join_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),

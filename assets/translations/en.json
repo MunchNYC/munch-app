@@ -24,14 +24,20 @@
     "create_join_dialog_create_form.name_field.placeholder12.value": "Taco Tuesdays 🌮",
     "create_join_dialog_create_form.name_field.placeholder13.value": "Burrito Beauties 🌯",
     "create_join_dialog_create_form.name_field.placeholder14.value": "Ramen Ravers 🍜",
-    "create_join_dialog_create_form.name_field.placeholder17.value": "Sushi Samurais 🍣",
-    "create_join_dialog_create_form.name_field.placeholder18.value": "Bento Believers 🍱",
-    "create_join_dialog_create_form.name_field.placeholder19.value": "Curry Cravers 🍛",
-    "create_join_dialog_create_form.name_field.placeholder20.value": "Dango Dancers 🍡",
-    "create_join_dialog_create_form.name_field.placeholder21.value": "Donut Dreamers 🍩",
-    "create_join_dialog_create_form.name_field.placeholder22.value": "Cookie Crunchers 🍪",
-    "create_join_dialog_create_form.name_field.placeholder23.value": "Coffee Connoisseur ☕",
-    
+    "create_join_dialog_create_form.name_field.placeholder15.value": "Sushi Samurais 🍣",
+    "create_join_dialog_create_form.name_field.placeholder16.value": "Bento Believers 🍱",
+    "create_join_dialog_create_form.name_field.placeholder17.value": "Curry Cravers 🍛",
+    "create_join_dialog_create_form.name_field.placeholder18.value": "Dango Dancers 🍡",
+    "create_join_dialog_create_form.name_field.placeholder19.value": "Donut Dreamers 🍩",
+    "create_join_dialog_create_form.name_field.placeholder20.value": "Cookie Crunchers 🍪",
+    "create_join_dialog_create_form.name_field.placeholder21.value": "Coffee Connoisseur ☕",
+
+    "munch_code_dialog.title": "Invite your friends to start Munch'n!",
+    "munch_code_dialog.continue_button.text": "Continue",
+    "munch_code_dialog.copy_action.successful":"Munch link copied",
+    "munch_code_dialog.share_button.popup.title": "Share Munch link",
+    "munch_code_dialog.share_action.text": "Join my Munch using this link",
+
     "login_screen.google_button.text": "Sign in with Google",
 
     "munches_tab.title": "Munches",

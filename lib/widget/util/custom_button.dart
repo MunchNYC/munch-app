@@ -18,7 +18,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   String dialogText;
   String dialogTitle;
   bool disabled = false;
-  Bloc<dynamic, T> bloc;
+  Bloc<dynamic, T> cubit;
   State widgetState;
   bool flat = false;
   double minWidth = 0.0;
@@ -27,6 +27,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   double borderRadius = 0.0;
   double borderWidth = 0.0;
   Color borderColor;
+  double elevation;
 
   CustomButton.disabled(this.content) {
     this.disabled = true;
@@ -45,11 +46,12 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
         this.flat = false,
         this.borderRadius = 0,
         this.borderWidth = 0.0,
-        this.borderColor
+        this.borderColor,
+        this.elevation = 8.0
       });
 
   CustomButton.bloc(
-      {this.bloc,
+      {this.cubit,
       this.content,
       this.color = Palette.secondaryDark,
       this.textColor = Palette.background,
@@ -62,10 +64,11 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
       this.flat = false,
       this.borderRadius = 0,
       this.borderWidth = 0.0,
-      this.borderColor});
+      this.borderColor,
+      this.elevation = 8.0});
 
   CustomButton.blocWithDialog(
-      {this.bloc,
+      {this.cubit,
       this.content,
       this.color = Palette.secondaryDark,
       this.textColor = Palette.background,
@@ -80,7 +83,8 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
       this.flat = false,
       this.borderRadius = 0.0,
       this.borderWidth = 0.0,
-      this.borderColor}) {
+      this.borderColor,
+      this.elevation = 8.0}) {
     this.openDialog = true;
   }
 
@@ -119,13 +123,13 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
                 child: content,
                 color: color,
                 textColor: textColor,
-                elevation: 8.0,
+                elevation: elevation,
                 onPressed: disabled ? null : () => _buttonPressed(context)));
   }
 
   Widget _renderBlocButton(BuildContext context) {
     return BlocConsumer<Bloc<dynamic, T>, T>(
-      bloc: bloc,
+      cubit: cubit,
       listenWhen: (T previous, T current) => current.ready && current is V,
       listener: (BuildContext context, T state) {
         if (onActionDoneCallback != null) {
@@ -154,7 +158,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (bloc != null && !disabled) {
+    if (cubit != null && !disabled) {
       return _renderBlocButton(context);
     } else {
       return _renderButton(context);

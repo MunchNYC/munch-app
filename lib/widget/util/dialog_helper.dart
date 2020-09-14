@@ -8,36 +8,43 @@ class DialogHelper<T extends Bloc<dynamic, SuperState>>{
   String dialogTitle;
   Widget dialogContent;
   Color dialogTitleColor;
-  T bloc;
+  T cubit;
   bool showCloseIcon;
+  bool isModal;
 
-  DialogHelper({this.dialogTitle, this.dialogContent, this.bloc, this.dialogTitleColor = Palette.primary, this.showCloseIcon = true});
+  DialogHelper({this.dialogTitle, this.dialogContent, this.cubit, this.dialogTitleColor = Palette.primary, this.showCloseIcon = true, this.isModal = false});
 
   void show(BuildContext context){
     showDialog(
         context: context,
         useRootNavigator: false,
+        barrierDismissible: !isModal,
         builder: (BuildContext ctx) {
-          return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-              child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if(dialogTitle != null) _dialogHeader(ctx),
-                        if(dialogTitle != null) Divider(thickness: 1, color: Palette.secondaryLight),
-                        if(dialogTitle != null) SizedBox(height: 5.0),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: _dialogBody()
-                        )
-                      ]
+            return WillPopScope(
+              onWillPop: () async{
+                  return !isModal;
+              },
+              child:  Dialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                  child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(vertical: 20.0),
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if(dialogTitle != null) _dialogHeader(ctx),
+                            if(dialogTitle != null) Divider(thickness: 1, color: Palette.secondaryLight),
+                            if(dialogTitle != null) SizedBox(height: 5.0),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                child: _dialogBody()
+                            )
+                          ]
+                      )
                   )
               )
-          );
+            );
         }
     );
   }
@@ -62,9 +69,9 @@ class DialogHelper<T extends Bloc<dynamic, SuperState>>{
   }
 
   Widget _dialogBody(){
-    if (bloc != null) {
+    if (cubit != null) {
       return BlocProvider<T>(
-        create: (context) => bloc,
+        create: (context) => cubit,
         child: dialogContent,
       );
     }

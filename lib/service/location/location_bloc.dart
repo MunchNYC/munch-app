@@ -8,8 +8,7 @@ import 'location_state.dart';
 
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {
-  @override
-  get initialState => LocationState();
+  LocationBloc() : super(LocationState());
 
   @override
   Stream<LocationState> mapEventToState(LocationEvent event) async* {

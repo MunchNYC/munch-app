@@ -8,6 +8,7 @@ class AppConfig {
   String appTitle;
   String apiUrl;
   String apiVersion;
+  String googleMapsApiKey;
 
   static AppConfig _instance;
 

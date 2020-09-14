@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:munch/theme/palette.dart';
 
 class CustomFormField extends StatelessWidget{
@@ -9,16 +8,19 @@ class CustomFormField extends StatelessWidget{
   TextStyle textStyle;
   Function validator;
   Function onSaved;
+  Function onTap;
   TextCapitalization textCapitalization;
   TextEditingController controller;
   Function onChanged;
   Color fillColor;
   double borderRadius;
   Color borderColor;
+  bool readOnly;
 
   CustomFormField({this.hintText, this.initialValue, this.textStyle,
-    this.hintStyle, this.validator, this.onSaved, this.textCapitalization,
-    this.controller, this.onChanged, this.fillColor, this.borderColor = Palette.secondaryLight, this.borderRadius = 4.0});
+    this.hintStyle, this.validator, this.onSaved, this.onTap, this.textCapitalization,
+    this.controller, this.onChanged, this.fillColor,
+    this.borderColor = Palette.secondaryLight, this.borderRadius = 4.0, this.readOnly = false});
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +39,13 @@ class CustomFormField extends StatelessWidget{
       style: textStyle,
       validator: validator,
       onSaved: onSaved,
+      onTap: onTap,
       initialValue: initialValue,
       textCapitalization: textCapitalization ?? TextCapitalization.none,
       controller: controller ,
       onChanged: onChanged,
       cursorColor: Palette.secondaryDark,
+      readOnly: readOnly
     );
   }
 

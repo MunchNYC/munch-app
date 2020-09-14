@@ -133,7 +133,7 @@ class _MunchesTabState extends State<MunchesTab> {
 
   Widget _stillDecidingListView(){
       return BlocConsumer<MunchBloc, MunchState>(
-          bloc: _munchBloc,
+          cubit: _munchBloc,
           listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
           listener: (BuildContext context, MunchState state) => _stillDecidingMunchesListener(context, state),
           buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || (current is MunchJoiningState && current.ready),
@@ -182,7 +182,7 @@ class _MunchesTabState extends State<MunchesTab> {
   }
 
   void _onPlusButtonClicked(BuildContext context){
-    DialogHelper<MunchBloc>(dialogContent: CreateJoinDialog(), bloc: _munchBloc, showCloseIcon: false).show(context);
+    DialogHelper<MunchBloc>(dialogContent: CreateJoinDialog(), cubit: _munchBloc, showCloseIcon: false).show(context);
   }
 
   Widget _plusButton(BuildContext context){

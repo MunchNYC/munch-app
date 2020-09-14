@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munch/model/munch.dart';
 import 'package:munch/widget/include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
