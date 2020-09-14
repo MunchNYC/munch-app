@@ -20,7 +20,7 @@ class MunchRepo {
   }
 
   Future<Munch> joinMunch(String munchCode) async{
-    String munchId = await _munchApi.exchangeMunchCode(munchCode);
+    String munchId = await _munchApi.getMunchIdForCode(munchCode);
 
     Munch munch = await _munchApi.joinMunch(munchId);
 

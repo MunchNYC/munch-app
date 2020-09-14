@@ -15,7 +15,7 @@ class MunchApi extends Api {
     return munchesList;
   }
 
-  Future<String> exchangeMunchCode(String munchCode) async {
+  Future<String> getMunchIdForCode(String munchCode) async {
     String postUrl = "/code";
 
     Map<String, dynamic> fields = {
@@ -38,7 +38,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['compactMunch']);
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
 
     return munch;
   }
@@ -50,7 +50,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch createdMunch = MunchJsonSerializer().fromMap(data['munchCompact']);
+    Munch createdMunch = MunchJsonSerializer().fromMap(data['munchDetailed']);
 
     return createdMunch;
   }
