@@ -75,6 +75,7 @@ enum AppStrutStylePattern {
 
 class AppTextStyle{
   static const String APP_FONT = 'Montserrat';
+  static const FontWeight DEFAULT_FONT_WEIGHT = FontWeight.w500;
 
   static List<TextStyle> _appTextStyles = [
     TextStyle(color: Palette.primary, fontSize: 12.0),
@@ -155,6 +156,8 @@ class AppTextStyle{
 
     if(fontWeight != null) {
       textStyle = textStyle.copyWith(fontWeight: fontWeight);
+    } else if(textStyle.fontWeight == null){
+      textStyle = textStyle.copyWith(fontWeight: DEFAULT_FONT_WEIGHT);
     }
 
     textStyle = textStyle.copyWith(fontSize: textStyle.fontSize + fontSizeOffset);

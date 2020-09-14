@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               unselectedItemColor: Palette.primary,
               selectedIconTheme: IconThemeData(color: Palette.ternaryDark),
               unselectedIconTheme: IconThemeData(color: Palette.primary),
-              selectedLabelStyle: AppTextStyle.style(AppTextStylePattern.body2, fontWeight: FontWeight.bold, fontSizeOffset: 1.0),
+              selectedLabelStyle: AppTextStyle.style(AppTextStylePattern.body2, fontWeight: FontWeight.w600, fontSizeOffset: 1.0),
               unselectedLabelStyle: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0),
               onTap: onTabTapped,
               currentIndex: _currentIndex,

@@ -28,7 +28,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
   String _joinCode;
   String _munchName;
 
-  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 23;
+  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 21;
   String _munchNamePlaceholder;
 
   final List<String> _munchNamePlaceholders = List<String>();

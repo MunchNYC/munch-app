@@ -94,7 +94,7 @@ class _MunchesTabState extends State<MunchesTab> {
               indicatorColor: Palette.primary,
               indicatorPadding: EdgeInsets.only(left: 0.0, right: 15.0),
               labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-              labelStyle: AppTextStyle.style(AppTextStylePattern.body3),
+              labelStyle: AppTextStyle.style(AppTextStylePattern.body3, fontWeight: FontWeight.w600),
               tabs: [
                 Tab(text: App.translate("munches_tab.deciding_tab.title")),
                 Tab(text: App.translate("munches_tab.decided_tab.title")),

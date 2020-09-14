@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:munch/model/coordinates.dart';
@@ -37,7 +35,7 @@ class MapScreen extends StatefulWidget {
 class MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
 
-  static const double DEFAULT_MAP_ZOOM = 13.0;
+  static const double DEFAULT_MAP_ZOOM = 14.5;
   static const LatLng DEFAULT_CAMERA_POSITION = LatLng(40.7128, -74.0060);
 
   static const double MILES_TO_METERS_RATIO = 1609.344;
@@ -45,7 +43,7 @@ class MapScreenState extends State<MapScreen> {
 
   static List<int> _radiusValuesMetres = RADIUS_VALUES_MILES.map((value) => (value * MILES_TO_METERS_RATIO).floor()).toList();
 
-  int _circleRadius = _radiusValuesMetres[1];
+  int _circleRadius = _radiusValuesMetres[0];
   Circle _centralCircle;
 
   Position _currentLocation;
@@ -96,20 +94,15 @@ class MapScreenState extends State<MapScreen> {
   }
 
   Widget _floatingActionButton(BuildContext context){
-    return Stack(
-      children: [
-        Positioned(
-          left: 36.0,
-          bottom: 4.0,
-          child: FloatingActionButton(
-              backgroundColor: Palette.background,
-              child: Icon(Icons.gps_fixed, color: Palette.hyperlink, size: 32.0),
-              onPressed: (){
-                _goToCurrentLocation();
-              }
-          ),
-        ),
-      ],
+    return Padding(
+        padding: EdgeInsets.only(bottom: 8.0),
+        child: FloatingActionButton(
+          backgroundColor: Palette.background,
+          child: FaIcon(FontAwesomeIcons.locationArrow, color: Palette.hyperlink, size: 20.0),
+          onPressed: (){
+            _goToCurrentLocation();
+          }
+        )
     );
   }
 
@@ -213,6 +206,7 @@ class MapScreenState extends State<MapScreen> {
 
   Widget _googleMap(BuildContext context){
     return GoogleMap(
+        zoomControlsEnabled: false,
         // disable button for my location because it's behind our search bar, make a custom FAB
         myLocationButtonEnabled: false,
         myLocationEnabled: true,
@@ -237,9 +231,9 @@ class MapScreenState extends State<MapScreen> {
       borderRadius: BorderRadius.all(Radius.circular(12.0)),
       elevation: 8.0,
       child: CustomFormField(
-        textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary, fontSizeOffset: 1.0, fontWeight: FontWeight.w500),
+        textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary, fontSizeOffset: 1.0),
         hintText: App.translate("map_screen.search_field.placeholder.text"),
-        hintStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0, fontWeight: FontWeight.w500),
+        hintStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
         fillColor: Palette.background,
         borderColor: Palette.background,
         borderRadius: 12.0,
@@ -268,8 +262,7 @@ class MapScreenState extends State<MapScreen> {
       content: Text(RADIUS_VALUES_MILES[index].toString() + " " + App.translate("map_screen.distance_button.unit.text"),
           style: AppTextStyle.style(AppTextStylePattern.body2,
               color: _circleRadius == _radiusValuesMetres[index] ? Palette.background : Palette.secondaryLight,
-              fontSizeOffset: 1.0,
-              fontWeight: FontWeight.w500
+              fontSizeOffset: 1.0
           )
       ),
       onPressedCallback: (){
