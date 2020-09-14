@@ -40,7 +40,7 @@ class MunchCard extends StatelessWidget {
           borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(18),
               bottomRight: Radius.circular(18)),
-          child: Image.asset('images/sushi1.jpg',
+          child: Image.asset('assets/images/prototype/sushi1.jpg',
               fit: BoxFit.cover, width: constraints.maxWidth - 2),
         );
       }),

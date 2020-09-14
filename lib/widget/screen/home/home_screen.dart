@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         key: _accountsTab,
         onGenerateRoute: (route) => MaterialPageRoute(
           settings: route,
-          builder: (context) => AccountScreen()
+          builder: (context) => Text("a") // TODO: AccountScreen()
         )
     ),
   ];

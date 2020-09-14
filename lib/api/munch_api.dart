@@ -38,7 +38,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['compactMunch']);
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
 
     return munch;
   }

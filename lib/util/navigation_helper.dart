@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:munch/model/munch.dart';
 import 'package:munch/widget/include/map_widget.dart';
 import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
+import 'package:munch/widget/screen/restaurant_swipe_screen.dart';
 
 class NavigationHelper {
   static Future _navigateTo(BuildContext context,
@@ -62,6 +64,12 @@ class NavigationHelper {
       {String munchName, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack,
         screen: MapWidget(munchName: munchName));
+  }
+
+  static Future navigateToRestaurantSwipeScreen(BuildContext context,
+      {Munch munch, bool shouldRefreshMunch: false, bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: RestaurantSwipeScreen(munch: munch, shouldRefreshMunch: shouldRefreshMunch));
   }
 }
 

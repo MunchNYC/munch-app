@@ -13,6 +13,12 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
   final MunchRepo _munchRepo = MunchRepo.getInstance();
 
   @override
+  void onTransition(Transition<MunchEvent, MunchState> transition) {
+    print(transition.toString());
+    super.onTransition(transition);
+  }
+
+  @override
   Stream<MunchState> mapEventToState(MunchEvent event) async* {
     if (event is GetMunchesEvent) {
       yield* getMunches();

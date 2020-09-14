@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:munch/model/munch.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
@@ -14,6 +12,10 @@ import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 
 class CreateJoinDialog extends StatefulWidget{
+  MunchBloc munchBloc;
+
+  CreateJoinDialog({this.munchBloc});
+
   @override
   State<StatefulWidget> createState() => CreateJoinDialogState();
 }
@@ -109,16 +111,12 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
             ),
             SizedBox(width: 12.0),
             CustomButton<MunchState, MunchJoiningState>.bloc(
-              bloc: BlocProvider.of<MunchBloc>(context),
+              bloc: widget.munchBloc,
               minWidth: 72.0,
               borderRadius: 4.0,
               content: Text(App.translate("create_join_dialog.join_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
               onPressedCallback: (){
                 _onJoinButtonClicked(context);
-              },
-              onActionDoneCallback: (Munch munch){
-                // Close dialog
-                NavigationHelper.popRoute(context);
               },
             )
           ],
@@ -168,7 +166,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
             content: Text(App.translate("create_join_dialog.create_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
             onPressedCallback: (){
               _onCreateButtonClicked(context);
-            },
+            }
           )
         ],
       ),
@@ -176,17 +174,20 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
   }
 
   void _onJoinButtonClicked(BuildContext context){
-    // pop Create/Join dialog
     if (_joinFormKey.currentState.validate()) {
       _joinFormKey.currentState.save();
 
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      BlocProvider.of<MunchBloc>(context).add(JoinMunchEvent(_joinCode));
+      widget.munchBloc.add(JoinMunchEvent(_joinCode));
     } else {
       _joinFormAutoValidate = true;
     }
+  }
+
+  void _throwGetStillDecidingMunchesEvent(BuildContext context){
+    widget.munchBloc.add(GetMunchesEvent());
   }
 
   void _onCreateButtonClicked(BuildContext context){
@@ -196,7 +197,15 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      NavigationHelper.navigateToMapScreen(context, munchName: _munchName);
+      NavigationHelper.navigateToMapScreen(context, munchName: _munchName).then((value){
+        if(value != null){
+          // pop dialog if munch is created, otherwise keep it
+          NavigationHelper.popRoute(context);
+
+          // refresh munches list
+          _throwGetStillDecidingMunchesEvent(context);
+        }
+      });
     } else {
       _createFormAutoValidate = true;
     }
