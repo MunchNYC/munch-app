@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
@@ -28,6 +29,10 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   double borderWidth = 0.0;
   Color borderColor;
   double elevation;
+
+  GlobalKey _buttonKey = GlobalKey();
+  double initialWidth;
+  double initialHeight;
 
   CustomButton.disabled(this.content) {
     this.disabled = true;
@@ -89,6 +94,14 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   }
 
   void _buttonPressed(BuildContext context) {
+    // store initialHeight and width of the button to keep button same size when it's content is loading animation
+    if(initialWidth == null){
+      initialWidth = _buttonKey.currentContext.size.width - padding.horizontal * 2;
+
+      // for some strange reason paddingVertical shouldn't be multiplied by 2
+      initialHeight = _buttonKey.currentContext.size.height - padding.vertical;
+    }
+
     if (openDialog) {
       AlertDialogBuilder().showAlertDialogWidget(context, dialogTitle, dialogText, onPressedCallback);
     } else {
@@ -96,8 +109,21 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
     }
   }
 
-  Widget _renderButton(BuildContext context) {
+  Widget _loadingAnimation(){
+    // use initialHeight and width of the button to keep button same size when it's content is loading animation, otherwise button will resize
+    return SizedBox(
+      width: initialWidth,
+      height: initialHeight,
+      child: SpinKitThreeBounce(
+        color: textColor,
+        size: 20.0,
+      )
+    );
+  }
+
+  Widget _renderButton(BuildContext context, {bool isLoading = false}) {
     return ButtonTheme(
+        key: _buttonKey,
         padding: padding,
         //adds padding inside the button
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -112,19 +138,20 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             side: BorderSide(width: borderWidth, color: borderColor ?? color)
         ),
+        disabledColor: !isLoading ? Palette.secondaryLight : color,
         //wraps child's height
         child: (flat)
             ? FlatButton(
-                child: content,
+                child: !isLoading ? content : _loadingAnimation(),
                 color: color,
                 textColor: textColor,
-                onPressed: disabled ? null : () => _buttonPressed(context))
+                onPressed: (disabled || isLoading) ? null : () => _buttonPressed(context))
             : RaisedButton(
-                child: content,
+                child: !isLoading ? content : _loadingAnimation(),
                 color: color,
                 textColor: textColor,
                 elevation: elevation,
-                onPressed: disabled ? null : () => _buttonPressed(context)));
+                onPressed: (disabled || isLoading) ? null : () => _buttonPressed(context)));
   }
 
   Widget _renderBlocButton(BuildContext context) {
@@ -148,12 +175,14 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   }
 
   Widget _buildButton(BuildContext context, SuperState state) {
+    bool isLoading = false;
+
     // Important condition, first time when BlocBuilder is called, condition isn't checked, so state can be different than Initial state
     if (state.loading && state is V) {
-      return AppCircularProgressIndicator();
-    } else {
-      return _renderButton(context);
+      isLoading = true;
     }
+
+    return _renderButton(context, isLoading: isLoading);
   }
 
   @override

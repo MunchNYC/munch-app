@@ -32,6 +32,8 @@ class CustomFormField extends StatelessWidget{
         isDense: true,
         focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: borderColor), borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color:borderColor), borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+        errorBorder: OutlineInputBorder(borderSide: BorderSide(color:Palette.error), borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+        focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color:Palette.error), borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         errorMaxLines: 3,
         filled: true,
         fillColor: fillColor ?? Colors.transparent

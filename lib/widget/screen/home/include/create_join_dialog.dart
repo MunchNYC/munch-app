@@ -114,6 +114,8 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
               cubit: widget.munchBloc,
               minWidth: 72.0,
               borderRadius: 4.0,
+              color: Palette.secondaryDark,
+              textColor: Palette.background,
               content: Text(App.translate("create_join_dialog.join_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
               onPressedCallback: (){
                 _onJoinButtonClicked(context);

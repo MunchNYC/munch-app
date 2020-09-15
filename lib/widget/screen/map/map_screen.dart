@@ -345,6 +345,8 @@ class MapScreenState extends State<MapScreen> {
       minWidth: 200.0,
       borderRadius: 12.0,
       padding: EdgeInsets.symmetric(vertical: 16.0),
+      color: Palette.secondaryDark,
+      textColor: Palette.background,
       content: Text(App.translate("map_screen.submit_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: (){
         _onLetsEatButtonClicked();
