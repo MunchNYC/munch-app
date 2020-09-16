@@ -1,8 +1,22 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 
-class RestaurantCard extends StatelessWidget {
+class RestaurantCard extends StatefulWidget {
+  RestaurantCard(Key key): super(key: key);
+
+  // must be saved here, because of Dragging purposes. Otherwise we cannot keep same image as it was when drag started
+  int currentCarouselPage = 0;
+
+  @override
+  _RestaurantCardState createState() => _RestaurantCardState();
+}
+
+class _RestaurantCardState extends State<RestaurantCard>{
+  // Must be instantiated here to be always created again when drag starts, otherwise we'll get exceptions because carousel controller won't be instantiated again when we start dragging
+  CarouselController _carouselController = CarouselController();
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -54,11 +68,48 @@ class RestaurantCard extends StatelessWidget {
      width: double.infinity,
      child: ClipRRect(
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(18),
-          bottomRight: Radius.circular(18)
+          bottomLeft: Radius.circular(16.0),
+          bottomRight: Radius.circular(16.0)
         ),
-        child: Image.asset('assets/images/prototype/sushi1.jpg', fit: BoxFit.cover),
+        child: Stack(
+          children: [
+            CarouselSlider(
+              items: <Widget>[
+                SizedBox(
+                    width: double.infinity,
+                    child: Image(image: AssetImage("assets/images/prototype/yelp-restaurant-1.jpg"), fit: BoxFit.cover),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Image(image: AssetImage("assets/images/prototype/yelp-restaurant-2.jpg"), fit: BoxFit.cover),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Image(image: AssetImage("assets/images/prototype/yelp-restaurant-3.jpg"), fit: BoxFit.cover),
+                ),
+              ],
+              options: CarouselOptions(
+                height: double.infinity,
+                autoPlay: false,
+                enlargeCenterPage: false,
+                viewportFraction: 1.0,
+                scrollPhysics: NeverScrollableScrollPhysics(),
+                initialPage: widget.currentCarouselPage
+              ),
+              carouselController: _carouselController,
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Expanded(child: GestureDetector(child: Container(color: Colors.transparent),
+                    onTap: (){ _carouselController.previousPage(); widget.currentCarouselPage --; if(widget.currentCarouselPage < 0) widget.currentCarouselPage = 2;})),
+                Expanded(child: GestureDetector(child: Container(color: Colors.transparent),
+                    onTap: (){ _carouselController.nextPage();  widget.currentCarouselPage ++; if(widget.currentCarouselPage > 2) widget.currentCarouselPage = 0; })),
+              ]
+            )
+        ]
       )
+     )
     );
   }
 }

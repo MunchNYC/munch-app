@@ -6,7 +6,9 @@ import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/utility.dart';
 import 'package:munch/widget/include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
@@ -24,21 +26,15 @@ class RestaurantSwipeScreen extends StatefulWidget {
 }
 
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
-  List<Widget> cardList;
+  static const double SWIPE_TO_SCREEN_RATIO_THRESHOLD = 0.2;
+
+  List<RestaurantCard> _cardList = [RestaurantCard(Key('1')), RestaurantCard(Key('2')), RestaurantCard(Key('3')), RestaurantCard(Key('4')), RestaurantCard(Key('5'))];
 
   MunchBloc _munchBloc;
-
-  void _removeCard(index) {
-    setState(() {
-      cardList.removeAt(index);
-    });
-  }
 
   @override
   void initState() {
     _munchBloc = MunchBloc();
-
-    cardList = _getCards();
 
     super.initState();
   }
@@ -134,7 +130,33 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             children: [
               Expanded(
                 child: Container(
-                  child: RestaurantCard(),
+                  /*
+                    must be wrapped inside layout builder,
+                    otherwise feedback widget won't work, width and height of it should be defined, because feedback cannot see Expanded widget above
+                  */
+                  child: LayoutBuilder(
+                      builder: (context, constraints) => Draggable(
+                      child: _cardList.length > 0 ? _cardList[0] : Center(child: Text("No more restaurants")),
+                      ignoringFeedbackSemantics: false,
+                      feedback: Container (
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight,
+                        child: _cardList.length > 0 ? _cardList[0] : Center(child: Text("No more restaurants")),
+                      ),
+                      childWhenDragging: _cardList.length > 1 ? _cardList[1] : Center(child: Text("No more restaurants")),
+                      onDragEnd: (DraggableDetails details){
+                         double swipeToScreenRatio = (details.offset.dx.abs() / App.screenWidth);
+
+                         if(swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD){
+                           if(details.offset.dx < 0){
+                             _onSwipeLeft();
+                           } else{
+                             _onSwipeRight();
+                           }
+                         }
+                      },
+                    ),
+                  ),
                   padding: EdgeInsets.symmetric(horizontal: 24.0)
                 )
               ),
@@ -176,34 +198,17 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
-  List<Widget> _getCards() {
-    // Get Restaurants Here
-    List<RestaurantCard> cards = new List();
-    cards.add(RestaurantCard());
-    cards.add(RestaurantCard());
-    cards.add(RestaurantCard());
+  void _removeCard() {
+    setState(() {
+      _cardList.removeAt(0);
+    });
+  }
 
-    List<Widget> cardList = new List();
+  void _onSwipeLeft(){
+    _removeCard();
+  }
 
-    RestaurantCard getNextCard(index) {
-      if (index + 1 == cards.length) {
-        return null;
-      } else {
-        return cards[index];
-      }
-    }
-
-    for (int x = 0; x < cards.length; x++) {
-      cardList.add(Draggable(
-        onDragEnd: (drag) {
-          _removeCard(x);
-        },
-        child: cards[x],
-        feedback: cards[x],
-        childWhenDragging: getNextCard(x),
-      ));
-    }
-
-    return cardList;
+  void _onSwipeRight(){
+    _removeCard();
   }
 }
