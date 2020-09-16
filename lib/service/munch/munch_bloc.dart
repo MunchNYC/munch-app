@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/restaurant.dart';
 import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/service/munch/munch_state.dart';
 
@@ -25,6 +26,10 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* joinMunch(event.munchCode);
     } else if(event is CreateMunchEvent){
       yield* createMunch(event.munch);
+    } else if(event is GetDetailedMunchEvent){
+      yield* getDetailedMunch(event.munchId);
+    } else if(event is GetSwipeRestaurantsPageEvent){
+      yield* getSwipeRestaurantsPage(event.munchId);
     }
   }
 
@@ -64,4 +69,29 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchCreatingState.failed(message: error.toString());
     }
   }
+
+  Stream<MunchState> getDetailedMunch(String munchId) async* {
+    yield DetailedMunchFetchingState.loading();
+    try {
+      Munch detailedMunch = await _munchRepo.getDetailedMunch(munchId);
+
+      yield DetailedMunchFetchingState.ready(data: detailedMunch);
+    } catch (error) {
+      print("Munch creation failed: " + error.toString());
+      yield DetailedMunchFetchingState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> getSwipeRestaurantsPage(String munchId) async* {
+    yield SwipeRestaurantsPageFetchingState.loading();
+    try {
+      List<Restaurant> restaurantList = await _munchRepo.getSwipeRestaurantsPage(munchId);
+
+      yield SwipeRestaurantsPageFetchingState.ready(data: restaurantList);
+    } catch (error) {
+      print("Munch creation failed: " + error.toString());
+      yield SwipeRestaurantsPageFetchingState.failed(message: error.toString());
+    }
+  }
+
 }

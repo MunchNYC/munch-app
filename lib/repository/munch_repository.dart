@@ -1,5 +1,6 @@
 import 'package:munch/api/munch_api.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/restaurant.dart';
 
 class MunchRepo {
   static MunchRepo _instance;
@@ -31,5 +32,15 @@ class MunchRepo {
     Munch createdMunch = await _munchApi.createMunch(munch);
 
     return createdMunch;
+  }
+
+  Future<Munch> getDetailedMunch(String munchId) async{
+    Munch munch = await _munchApi.getDetailedMunch(munchId);
+
+    return munch;
+  }
+
+  Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async{
+    return await _munchApi.getSwipeRestaurantsPage(munchId);
   }
 }

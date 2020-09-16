@@ -25,3 +25,15 @@ class MunchCreatingState extends MunchState {
   MunchCreatingState.loading({message = ""}):super.loading(message: message);
   MunchCreatingState.failed({message = ""}):super.failed(message: message);
 }
+
+class DetailedMunchFetchingState extends MunchState {
+  DetailedMunchFetchingState.ready({data}):super.ready(data: data);
+  DetailedMunchFetchingState.loading({message = ""}):super.loading(message: message);
+  DetailedMunchFetchingState.failed({message = ""}):super.failed(message: message);
+}
+
+class SwipeRestaurantsPageFetchingState extends MunchState {
+  SwipeRestaurantsPageFetchingState.ready({data}):super.ready(data: data);
+  SwipeRestaurantsPageFetchingState.loading({message = ""}):super.loading(message: message);
+  SwipeRestaurantsPageFetchingState.failed({message = ""}):super.failed(message: message);
+}

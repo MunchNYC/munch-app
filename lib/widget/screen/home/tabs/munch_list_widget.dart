@@ -15,7 +15,7 @@ class MunchListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _munch, shouldRefreshMunch: true);
+        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _munch, shouldFetchDetailedMunch: true);
       },
       child: Container(
         height: 72.0,

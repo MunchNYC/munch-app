@@ -67,9 +67,9 @@ class NavigationHelper {
   }
 
   static Future navigateToRestaurantSwipeScreen(BuildContext context,
-      {Munch munch, bool shouldRefreshMunch: false, bool addToBackStack: true}) {
+      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
-        screen: RestaurantSwipeScreen(munch: munch, shouldRefreshMunch: shouldRefreshMunch));
+        screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
 }
 

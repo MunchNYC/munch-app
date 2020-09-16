@@ -1,10 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:munch/model/restaurant.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 
 class RestaurantCard extends StatefulWidget {
-  RestaurantCard(Key key): super(key: key);
+  Restaurant restaurant;
+
+  RestaurantCard(this.restaurant): super(key: Key(restaurant.id));
 
   // must be saved here, because of Dragging purposes. Otherwise we cannot keep same image as it was when drag started
   int currentCarouselPage = 0;
@@ -35,6 +38,11 @@ class _RestaurantCardState extends State<RestaurantCard>{
     );
   }
 
+  Widget _starsRating(){
+    String afterDecimalPointValue = widget.restaurant.rating.toString().substring(widget.restaurant.rating.toString().indexOf(".") + 1);
+    return Image(image: AssetImage("assets/images/yelp/stars/stars_regular_" + widget.restaurant.rating.floor().toString() + (afterDecimalPointValue == "0" ? "" : "_half") + ".png"), height: 16.0);
+  }
+
   Widget _titleSection(){
     return Container(
       padding: EdgeInsets.all(24.0),
@@ -42,20 +50,20 @@ class _RestaurantCardState extends State<RestaurantCard>{
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Tetsu Sushi', style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500)),
+          Text(widget.restaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
           SizedBox(height: 8.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Image(image: AssetImage("assets/images/yelp/yelp-burst.png"), height: 16.0),
               SizedBox(width: 8.0),
-              Image(image: AssetImage("assets/images/yelp/stars/stars_regular_4_half.png"), height: 16.0),
+              _starsRating(),
               SizedBox(width: 8.0),
               Text('69 Reviews', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
             ],
           ),
           SizedBox(height: 8.0),
-          Text('\$\$\$\$ • Japanese', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+          Text(widget.restaurant.priceSymbol + ' • Japanese', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
           SizedBox(height: 8.0),
           Text('Open until 11:30 pm', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
         ],
@@ -74,20 +82,12 @@ class _RestaurantCardState extends State<RestaurantCard>{
         child: Stack(
           children: [
             CarouselSlider(
-              items: <Widget>[
-                SizedBox(
-                    width: double.infinity,
-                    child: Image(image: AssetImage("assets/images/prototype/yelp-restaurant-1.jpg"), fit: BoxFit.cover),
-                ),
+              items: widget.restaurant.photoUrls.map((photoUrl) =>
                 SizedBox(
                   width: double.infinity,
-                  child: Image(image: AssetImage("assets/images/prototype/yelp-restaurant-2.jpg"), fit: BoxFit.cover),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: Image(image: AssetImage("assets/images/prototype/yelp-restaurant-3.jpg"), fit: BoxFit.cover),
-                ),
-              ],
+                  child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
+                )
+              ).toList(),
               options: CarouselOptions(
                 height: double.infinity,
                 autoPlay: false,

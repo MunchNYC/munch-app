@@ -21,6 +21,7 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   Map<String, dynamic> toMap(Munch model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
+    setMapValue(ret, 'link', model.link);
     setMapValue(ret, 'name', model.name);
     setMapValue(ret, 'coordinates',
         _coordinatesJsonSerializer.toMap(model.coordinates));

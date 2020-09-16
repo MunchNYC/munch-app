@@ -15,3 +15,15 @@ class CreateMunchEvent extends MunchEvent {
 
   CreateMunchEvent(this.munch);
 }
+
+class GetDetailedMunchEvent extends MunchEvent {
+  String munchId;
+
+  GetDetailedMunchEvent(this.munchId);
+}
+
+class GetSwipeRestaurantsPageEvent extends MunchEvent {
+  String munchId;
+
+  GetSwipeRestaurantsPageEvent(this.munchId);
+}
