@@ -64,7 +64,7 @@ class _RestaurantCardState extends State<RestaurantCard>{
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(widget.restaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
+          Text(widget.restaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
           SizedBox(height: 8.0),
           _yelpStatsRow(),
           SizedBox(height: 8.0),

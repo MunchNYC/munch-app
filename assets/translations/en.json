@@ -60,6 +60,9 @@
     "restaurant_swipe_screen.munch_status.decided.action_message.text": "Decision Made!",
     "restaurant_swipe_screen.munch_status.undecided.status.text": "Deciding...",
     "restaurant_swipe_screen.app_bar.second_line.info_label.text": "Tap here for more options",
+    "restaurant_swipe_screen.empty_card_stack.title": "Looks like you're all done!",
+    "restaurant_swipe_screen.empty_card_stack.description": "We'll let you know when your friends are done deciding",
+    "restaurant_swipe_screen.empty_card_stack.back_button.text": "Back",
 
     "error_page_widget.text": "Error has occurred",
 

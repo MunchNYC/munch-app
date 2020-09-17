@@ -13,6 +13,7 @@ import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/include/restaurant_card.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
@@ -228,33 +229,83 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     if (state.hasError) {
       return ErrorPageWidget();
     }
-    else if((state.loading || state is DetailedMunchFetchingState) && !(state is RestaurantSwipeProcessingState) ){
+
+    bool showLoadingIndicator = false;
+
+    if((state.initial || state.loading || state is DetailedMunchFetchingState) && !(state is RestaurantSwipeProcessingState)){
       // even if DetailedMunchFetchingState is ready we have to wait for restaurants page to be ready
       // if RestaurantSwipeProcessingState is loading, don't render this indicator
-      return AppCircularProgressIndicator();
+      showLoadingIndicator = true;
+
+      if(state is RestaurantsPageFetchingState && _currentRestaurants.length != 0){
+        // if RestaurantsPageFetchingState and one (or more) card is on top of the stack, don't render indicator
+        showLoadingIndicator = false;
+      }
     }
 
-    // if RestaurantSwipeProcessingState is loading, just render screen because card should be immediately removed
-    return _renderScreen(context);
+    if(showLoadingIndicator){
+      return AppCircularProgressIndicator();
+    } else{
+      // if RestaurantSwipeProcessingState is loading, just render screen because card should be immediately removed
+      return _renderScreen(context);
+    }
   }
-
 
   Widget _renderScreen(BuildContext context){
     return Column(
-        children: [
-          Expanded(
-            child: Container(
-              child: _cardBuilder(),
-              padding: EdgeInsets.symmetric(horizontal: 24.0)
-            )
-          ),
-          SizedBox(height: 16.0),
-          Divider(height: 16.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
-          Padding(
-            padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
-            child: _decisionInfoBar()
+      children: [
+        Expanded(
+          child: Container(
+            child: _currentRestaurants.length > 0 ? _draggableCard() : _emptyCardStack(),
+            padding: EdgeInsets.symmetric(horizontal: 24.0)
           )
-        ]
+        ),
+        SizedBox(height: 16.0),
+        Divider(height: 16.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
+        Padding(
+          padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
+          child: _decisionInfoBar()
+        )
+      ]
+    );
+  }
+
+  Widget _emptyCardStack(){
+    return Padding(
+      padding: EdgeInsets.only(top: 24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(App.translate("restaurant_swipe_screen.empty_card_stack.title"),
+                  style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w400, fontSizeOffset: 2.0),
+                  textAlign: TextAlign.center),
+              SizedBox(height: 36.0),
+              // TODO: which message to show if munch status is decided
+              if(widget.munch.munchStatus == MunchStatus.UNDECIDED)
+                Text(App.translate("restaurant_swipe_screen.empty_card_stack.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
+            ],
+          ),
+          CustomButton(
+            flat: true,
+            minWidth: 100.0,
+            color: Colors.transparent,
+            borderRadius: 8.0,
+            borderWidth: 1.0,
+            borderColor: Palette.secondaryDark,
+            textColor: Palette.secondaryDark,
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            content: Text(App.translate("restaurant_swipe_screen.empty_card_stack.back_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark)),
+            onPressedCallback: (){
+              NavigationHelper.popRoute(context, rootNavigator: true);
+            },
+          )
+        ],
+      )
     );
   }
 
@@ -262,29 +313,33 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     must be wrapped inside layout builder,
     otherwise feedback widget won't work, width and height of it should be defined, because feedback cannot see Expanded widget above
   */
-  Widget _cardBuilder(){
+  Widget _draggableCard(){
     return LayoutBuilder(
-      builder: (context, constraints) => Draggable(
-        child: _currentRestaurants.length > 0 ? _currentCardMap[_currentRestaurants[0].id] : Center(child: Text("No more restaurants")),
-        ignoringFeedbackSemantics: false,
-        feedback: Container (
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          child: _currentRestaurants.length > 0 ? _currentCardMap[_currentRestaurants[0].id] : Center(child: Text("No more restaurants")),
-        ),
-        childWhenDragging: _currentRestaurants.length > 1 ? _currentCardMap[_currentRestaurants[1].id] : Center(child: Text("No more restaurants")),
-        onDragEnd: (DraggableDetails details){
-          double swipeToScreenRatio = (details.offset.dx.abs() / App.screenWidth);
+      builder: (context, constraints) =>
+          Draggable(
+            child: _currentCardMap[_currentRestaurants[0].id],
+            ignoringFeedbackSemantics: false,
+            feedback: Container(
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: _currentCardMap[_currentRestaurants[0].id],
+            ),
+            childWhenDragging: _currentRestaurants.length > 1
+                ? _currentCardMap[_currentRestaurants[1].id]
+                : Container(),
+            onDragEnd: (DraggableDetails details) {
+              double swipeToScreenRatio = (details.offset.dx.abs() /
+                  App.screenWidth);
 
-          if(swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD){
-            if(details.offset.dx < 0){
-              _onSwipeLeft();
-            } else{
-              _onSwipeRight();
-            }
-          }
-        },
-      ),
+              if (swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD) {
+                if (details.offset.dx < 0) {
+                  _onSwipeLeft();
+                } else {
+                  _onSwipeRight();
+                }
+              }
+            },
+          ),
     );
   }
 
