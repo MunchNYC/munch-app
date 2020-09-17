@@ -68,9 +68,9 @@ class _RestaurantCardState extends State<RestaurantCard>{
           SizedBox(height: 8.0),
           _yelpStatsRow(),
           SizedBox(height: 8.0),
-          Text(widget.restaurant.priceSymbol + ' • Japanese', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+          Text(widget.restaurant.priceSymbol + ' • ' + widget.restaurant.categoryTitles, style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
           SizedBox(height: 8.0),
-          Text('Open until 11:30 pm', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+          Text(widget.restaurant.getWorkingHoursCurrentStatus(), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
         ],
       )
     );

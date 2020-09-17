@@ -193,10 +193,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   void _swipeScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
-      if(state is RestaurantSwipeProcessingState){
-        _throwGetSwipeRestaurantNextPageEvent(); // refresh restaurants list
-      }
-
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
       _updateMunchWithDetailedData(state.data);

@@ -56,6 +56,10 @@
     "map_screen.search_field.placeholder.text": "Search a location",
 
     "restaurant_swipe_screen.restaurant_card.yelp.reviews.text": "Reviews",
+    "restaurant_swipe_screen.restaurant_card.working_hours.closed.text": "Closed",
+    "restaurant_swipe_screen.restaurant_card.working_hours.opens.text": "Opens at",
+    "restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text": "Re-opens at",
+    "restaurant_swipe_screen.restaurant_card.working_hours.open_until.text": "Open until",
     "restaurant_swipe_screen.munch_status.undecided.action_message.text": "Keep Exploring!",
     "restaurant_swipe_screen.munch_status.decided.action_message.text": "Decision Made!",
     "restaurant_swipe_screen.munch_status.undecided.status.text": "Deciding...",
