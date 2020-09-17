@@ -55,6 +55,12 @@
     "map_screen.submit_button.text": "Let's Eat!",
     "map_screen.search_field.placeholder.text": "Search a location",
 
+    "restaurant_swipe_screen.restaurant_card.yelp.reviews.text": "Reviews",
+    "restaurant_swipe_screen.munch_status.undecided.action_message.text": "Keep Exploring!",
+    "restaurant_swipe_screen.munch_status.decided.action_message.text": "Decision Made!",
+    "restaurant_swipe_screen.munch_status.undecided.status.text": "Deciding...",
+    "restaurant_swipe_screen.app_bar.second_line.info_label.text": "Tap here for more options",
+
     "error_page_widget.text": "Error has occurred",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled",

@@ -77,4 +77,19 @@ class MunchApi extends Api {
 
     return restaurantList;
   }
+
+  Future<Munch> swipeRestaurant({String munchId, String restaurantId, bool liked}) async {
+    String postUrl = "/swipe?munchId=$munchId";
+
+    Map<String, dynamic> fields = {
+      "restaurantId": restaurantId,
+      "liked": liked
+    };
+
+    var data = await post(postUrl, fields);
+
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+
+    return munch;
+  }
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
@@ -45,6 +43,11 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     if(widget.shouldFetchDetailedMunch){
       _munchBloc.add(GetDetailedMunchEvent(widget.munch.id));
+    } else{
+      // merge Munch with itself in order to update members array if it's empty to (1 member - current user)
+      _updateMunchWithDetailedData(widget.munch);
+
+      _throwGetSwipeRestaurantNextPageEvent();
     }
 
     super.initState();
@@ -55,6 +58,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _munchBloc?.close();
 
     super.dispose();
+  }
+
+  void _throwGetSwipeRestaurantNextPageEvent(){
+    _munchBloc.add(GetRestaurantsPageEvent(widget.munch.id));
   }
 
   Widget _appBarTitle(){
@@ -86,12 +93,24 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               style: AppTextStyle.style(AppTextStylePattern.body2)
             ),
             SizedBox(width: 2.0),
-            Text("Tap here for more options",
+            Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
                 style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
             ),
           ],
         )
       ],
+    );
+  }
+
+  /*
+    Listener (solo or inside BlocConsumer) is always called before builder method for same state, wherever it's defined
+    _swipeScreenListener is always called first even if it's deeper in widget tree
+  */
+  Widget _appBarTitleBuilder(){
+    return BlocBuilder<MunchBloc, MunchState>(
+      cubit: _munchBloc,
+      buildWhen: (MunchState previous, MunchState current) => (current is DetailedMunchFetchingState) && current.ready,
+      builder: (BuildContext context, MunchState state) => _appBarTitle(),
     );
   }
 
@@ -104,7 +123,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         elevation: 0.0,
         automaticallyImplyLeading: true,
         backgroundColor: Palette.background,
-        title: _appBarTitle(),
+        title: _appBarTitleBuilder(),
         centerTitle: true,
         actions: <Widget>[
           Padding(padding:
@@ -143,6 +162,16 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
+  void _updateMunchWithDetailedData(Munch detailedMunch){
+    /*
+      Take old data from munch which can be missing from detailedMunch response
+      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
+    */
+    detailedMunch.merge(widget.munch);
+
+    widget.munch = detailedMunch;
+  }
+
   void _updateRestaurantsPage(List<Restaurant> restaurantList){
     _currentRestaurants = restaurantList;
 
@@ -161,24 +190,36 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _currentCardMap = _newCardMap;
   }
 
-  void _detailedMunchListener(BuildContext context, MunchState state){
+  void _swipeScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
+      if(state is RestaurantSwipeProcessingState){
+        _throwGetSwipeRestaurantNextPageEvent(); // refresh restaurants list
+      }
+
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
-      widget.munch = state.data;
+      _updateMunchWithDetailedData(state.data);
 
-      _munchBloc.add(GetSwipeRestaurantsPageEvent(widget.munch.id));
-    } else if(state is SwipeRestaurantsPageFetchingState){
+      // when we open this screen and received DetailedMunch data we can fetch restaurants
+      _throwGetSwipeRestaurantNextPageEvent();
+    } else if(state is RestaurantsPageFetchingState){
       _updateRestaurantsPage(state.data);
+    } else if(state is RestaurantSwipeProcessingState){
+      if(state.loading){
+        _removeTopCard();
+      } else {
+        // ready state
+        _updateMunchWithDetailedData(state.data);
+      }
     }
   }
 
   Widget _buildMunchBloc(){
     return BlocConsumer<MunchBloc, MunchState>(
         cubit: _munchBloc,
-        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
-        listener: (BuildContext context, MunchState state) => _detailedMunchListener(context, state),
-        buildWhen: (MunchState previous, MunchState current) => current is DetailedMunchFetchingState || current is SwipeRestaurantsPageFetchingState,
+        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready || (current.loading && current is RestaurantSwipeProcessingState),
+        listener: (BuildContext context, MunchState state) => _swipeScreenListener(context, state),
+        buildWhen: (MunchState previous, MunchState current) => ! (current is RestaurantSwipeProcessingState && current.hasError) , // in every other condition enter builder
         builder: (BuildContext context, MunchState state) => _buildSwipeScreen(context, state)
     );
   }
@@ -186,99 +227,133 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _buildSwipeScreen(BuildContext context, MunchState state){
     if (state.hasError) {
       return ErrorPageWidget();
-    } else if(state.loading || (state.ready && state is DetailedMunchFetchingState)){
+    }
+    else if((state.loading || state is DetailedMunchFetchingState) && !(state is RestaurantSwipeProcessingState) ){
+      // even if DetailedMunchFetchingState is ready we have to wait for restaurants page to be ready
+      // if RestaurantSwipeProcessingState is loading, don't render this indicator
       return AppCircularProgressIndicator();
     }
 
+    // if RestaurantSwipeProcessingState is loading, just render screen because card should be immediately removed
     return _renderScreen(context);
   }
+
 
   Widget _renderScreen(BuildContext context){
     return Column(
         children: [
           Expanded(
-              child: Container(
-                /*
-                  must be wrapped inside layout builder,
-                  otherwise feedback widget won't work, width and height of it should be defined, because feedback cannot see Expanded widget above
-                */
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => Draggable(
-                      child: _currentRestaurants.length > 0 ? _currentCardMap[_currentRestaurants[0].id] : Center(child: Text("No more restaurants")),
-                      ignoringFeedbackSemantics: false,
-                      feedback: Container (
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                        child: _currentRestaurants.length > 0 ? _currentCardMap[_currentRestaurants[0].id] : Center(child: Text("No more restaurants")),
-                      ),
-                      childWhenDragging: _currentRestaurants.length > 1 ? _currentCardMap[_currentRestaurants[1].id] : Center(child: Text("No more restaurants")),
-                      onDragEnd: (DraggableDetails details){
-                        double swipeToScreenRatio = (details.offset.dx.abs() / App.screenWidth);
-
-                        if(swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD){
-                          if(details.offset.dx < 0){
-                            _onSwipeLeft();
-                          } else{
-                            _onSwipeRight();
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 24.0)
-              )
+            child: Container(
+              child: _cardBuilder(),
+              padding: EdgeInsets.symmetric(horizontal: 24.0)
+            )
           ),
           SizedBox(height: 16.0),
-          Column(
-            children: <Widget>[
-              Divider(height: 16.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Expanded(
-                      child: Text("Keep Exploring!", style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                  width: 1.0,
-                                  color: Palette.secondaryDark
-                              )
-                          ),
-                          child: Center(child: Text("Deciding...", style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w500))),
-                        )
-                    )
-                  ],
-                ),
-              )
-            ],
+          Divider(height: 16.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
+          Padding(
+            padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
+            child: _decisionInfoBar()
           )
         ]
     );
   }
 
-  void _removeCard() {
-    setState(() {
-      _currentCardMap.remove(_currentRestaurants[0].id);
-      _currentRestaurants.removeAt(0);
+  /*
+    must be wrapped inside layout builder,
+    otherwise feedback widget won't work, width and height of it should be defined, because feedback cannot see Expanded widget above
+  */
+  Widget _cardBuilder(){
+    return LayoutBuilder(
+      builder: (context, constraints) => Draggable(
+        child: _currentRestaurants.length > 0 ? _currentCardMap[_currentRestaurants[0].id] : Center(child: Text("No more restaurants")),
+        ignoringFeedbackSemantics: false,
+        feedback: Container (
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          child: _currentRestaurants.length > 0 ? _currentCardMap[_currentRestaurants[0].id] : Center(child: Text("No more restaurants")),
+        ),
+        childWhenDragging: _currentRestaurants.length > 1 ? _currentCardMap[_currentRestaurants[1].id] : Center(child: Text("No more restaurants")),
+        onDragEnd: (DraggableDetails details){
+          double swipeToScreenRatio = (details.offset.dx.abs() / App.screenWidth);
 
-      if(_currentRestaurants.length == 1){
-        _munchBloc.add(GetSwipeRestaurantsPageEvent(widget.munch.id));
-      }
-    });
+          if(swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD){
+            if(details.offset.dx < 0){
+              _onSwipeLeft();
+            } else{
+              _onSwipeRight();
+            }
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _decisionInfoBar(){
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Expanded(
+          child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                    App.translate("restaurant_swipe_screen.munch_status.undecided.action_message.text") :
+                    App.translate("restaurant_swipe_screen.munch_status.decided.action_message.text"),
+              style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w500)
+          ),
+        ),
+        Expanded(
+          child: Material(
+            elevation: widget.munch.munchStatus == MunchStatus.UNDECIDED ? 0.0 : 4.0,
+            borderRadius: BorderRadius.circular(8.0),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+              decoration: BoxDecoration(
+                  color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.background : Palette.secondaryDark,
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(
+                      width: 1.0,
+                      color: Palette.secondaryDark
+                  )
+              ),
+              child: Center(
+                  child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                    App.translate("restaurant_swipe_screen.munch_status.undecided.status.text") :
+                    "Restaurant Name", // TODO: put decided restaurant name here
+                    style: AppTextStyle.style(AppTextStylePattern.body3,
+                        color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.primary : Palette.background,
+                        fontSizeOffset: 1.0,
+                        fontWeight: FontWeight.w500
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis
+                )
+              ),
+            )
+          )
+        )
+      ],
+    );
+  }
+
+  void _removeTopCard() {
+    _currentCardMap.remove(_currentRestaurants[0].id);
+    _currentRestaurants.removeAt(0);
+
+    if(_currentRestaurants.length <= 1){
+      _throwGetSwipeRestaurantNextPageEvent();
+    }
   }
 
   void _onSwipeLeft(){
-    _removeCard();
+    _munchBloc.add(RestaurantSwipeLeftEvent(
+        munchId: widget.munch.id,
+        restaurantId: _currentRestaurants[0].id)
+    );
   }
 
   void _onSwipeRight(){
-    _removeCard();
+    _munchBloc.add(RestaurantSwipeRightEvent(
+        munchId: widget.munch.id,
+        restaurantId: _currentRestaurants[0].id)
+    );
   }
 }

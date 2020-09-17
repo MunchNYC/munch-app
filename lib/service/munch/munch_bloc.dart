@@ -28,8 +28,10 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* createMunch(event.munch);
     } else if(event is GetDetailedMunchEvent){
       yield* getDetailedMunch(event.munchId);
-    } else if(event is GetSwipeRestaurantsPageEvent){
-      yield* getSwipeRestaurantsPage(event.munchId);
+    } else if(event is GetRestaurantsPageEvent){
+      yield* getRestaurantsPage(event.munchId);
+    } else if(event is RestaurantSwipeEvent){
+      yield* processRestaurantSwipe(event);
     }
   }
 
@@ -77,20 +79,37 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
 
       yield DetailedMunchFetchingState.ready(data: detailedMunch);
     } catch (error) {
-      print("Munch creation failed: " + error.toString());
+      print("Get detailed munch failed: " + error.toString());
       yield DetailedMunchFetchingState.failed(message: error.toString());
     }
   }
 
-  Stream<MunchState> getSwipeRestaurantsPage(String munchId) async* {
-    yield SwipeRestaurantsPageFetchingState.loading();
+  Stream<MunchState> getRestaurantsPage(String munchId) async* {
+    yield RestaurantsPageFetchingState.loading();
     try {
       List<Restaurant> restaurantList = await _munchRepo.getSwipeRestaurantsPage(munchId);
 
-      yield SwipeRestaurantsPageFetchingState.ready(data: restaurantList);
+      yield RestaurantsPageFetchingState.ready(data: restaurantList);
     } catch (error) {
-      print("Munch creation failed: " + error.toString());
-      yield SwipeRestaurantsPageFetchingState.failed(message: error.toString());
+      print("Get restaurants page failed: " + error.toString());
+      yield RestaurantsPageFetchingState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> processRestaurantSwipe(RestaurantSwipeEvent restaurantSwipeEvent) async* {
+    yield RestaurantSwipeProcessingState.loading();
+
+    try {
+      Munch munch = await _munchRepo.swipeRestaurant(
+          munchId: restaurantSwipeEvent.munchId,
+          restaurantId: restaurantSwipeEvent.restaurantId,
+          liked: restaurantSwipeEvent.liked
+      );
+
+      yield RestaurantSwipeProcessingState.ready(data: munch);
+    } catch (error) {
+      print("Munch swiping failed: " + error.toString());
+      yield RestaurantSwipeProcessingState.failed(message: error.toString());
     }
   }
 

@@ -33,6 +33,9 @@ class Restaurant{
   @Alias('photos')
   List<String> photoUrls;
 
+  @Alias('reviewCount')
+  int reviewsNumber;
+
   @override
   String toString() {
     return "id: $id; name: $name;";

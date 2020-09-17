@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/app.dart';
 
 class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
@@ -43,6 +44,19 @@ class _RestaurantCardState extends State<RestaurantCard>{
     return Image(image: AssetImage("assets/images/yelp/stars/stars_regular_" + widget.restaurant.rating.floor().toString() + (afterDecimalPointValue == "0" ? "" : "_half") + ".png"), height: 16.0);
   }
 
+  Widget _yelpStatsRow(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Image(image: AssetImage("assets/images/yelp/yelp-burst.png"), height: 16.0),
+        SizedBox(width: 8.0),
+        _starsRating(),
+        SizedBox(width: 8.0),
+        Text(widget.restaurant.reviewsNumber.toString() + ' ' + App.translate('restaurant_swipe_screen.restaurant_card.yelp.reviews.text'), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+      ],
+    );
+  }
+
   Widget _titleSection(){
     return Container(
       padding: EdgeInsets.all(24.0),
@@ -52,16 +66,7 @@ class _RestaurantCardState extends State<RestaurantCard>{
         children: <Widget>[
           Text(widget.restaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
           SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Image(image: AssetImage("assets/images/yelp/yelp-burst.png"), height: 16.0),
-              SizedBox(width: 8.0),
-              _starsRating(),
-              SizedBox(width: 8.0),
-              Text('69 Reviews', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
-            ],
-          ),
+          _yelpStatsRow(),
           SizedBox(height: 8.0),
           Text(widget.restaurant.priceSymbol + ' • Japanese', style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
           SizedBox(height: 8.0),
@@ -94,22 +99,51 @@ class _RestaurantCardState extends State<RestaurantCard>{
                 enlargeCenterPage: false,
                 viewportFraction: 1.0,
                 scrollPhysics: NeverScrollableScrollPhysics(),
-                initialPage: widget.currentCarouselPage
+                initialPage: widget.currentCarouselPage,
+                enableInfiniteScroll: false
               ),
               carouselController: _carouselController,
             ),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Expanded(child: GestureDetector(child: Container(color: Colors.transparent),
-                    onTap: (){ _carouselController.previousPage(); widget.currentCarouselPage --; if(widget.currentCarouselPage < 0) widget.currentCarouselPage = 2;})),
-                Expanded(child: GestureDetector(child: Container(color: Colors.transparent),
-                    onTap: (){ _carouselController.nextPage();  widget.currentCarouselPage ++; if(widget.currentCarouselPage > 2) widget.currentCarouselPage = 0; })),
-              ]
-            )
+            _carouselControlsRow()
         ]
       )
      )
+    );
+  }
+
+  void _onCarouselLeftSideTapped(){
+    _carouselController.previousPage();
+    widget.currentCarouselPage --;
+
+    if(widget.currentCarouselPage < 0){
+      widget.currentCarouselPage = widget.restaurant.photoUrls.length - 1;
+    }
+  }
+
+  void _onCarouselRightHalfTapped(){
+    _carouselController.nextPage();
+    widget.currentCarouselPage ++;
+
+    if(widget.currentCarouselPage >= widget.restaurant.photoUrls.length){
+      widget.currentCarouselPage = 0;
+    }
+  }
+
+  Widget _carouselControlsRow(){
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Expanded(child: GestureDetector(
+              child: Container(color: Colors.transparent),
+              onTap: _onCarouselLeftSideTapped
+            )
+          ),
+          Expanded(child: GestureDetector(
+              child: Container(color: Colors.transparent),
+              onTap: _onCarouselRightHalfTapped
+            )
+          ),
+        ]
     );
   }
 }

@@ -41,6 +41,18 @@ class MunchRepo {
   }
 
   Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async{
-    return await _munchApi.getSwipeRestaurantsPage(munchId);
+    List<Restaurant> restaurantList = await _munchApi.getSwipeRestaurantsPage(munchId);
+
+    return restaurantList;
+  }
+
+  Future<Munch> swipeRestaurant({String munchId, String restaurantId, bool liked}) async {
+    Munch munch = await _munchApi.swipeRestaurant(
+        munchId: munchId,
+        restaurantId: restaurantId,
+        liked: liked
+    );
+
+    return munch;
   }
 }

@@ -38,6 +38,7 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     setMapValue(ret, 'rating', model.rating);
     setMapValue(
         ret, 'photos', codeIterable(model.photoUrls, (val) => val as String));
+    setMapValue(ret, 'reviewCount', model.reviewsNumber);
     return ret;
   }
 
@@ -62,6 +63,7 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     obj.rating = map['rating'] as double;
     obj.photoUrls =
         codeIterable<String>(map['photos'] as Iterable, (val) => val as String);
+    obj.reviewsNumber = map['reviewCount'] as int;
     return obj;
   }
 }

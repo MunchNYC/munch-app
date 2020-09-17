@@ -32,8 +32,14 @@ class DetailedMunchFetchingState extends MunchState {
   DetailedMunchFetchingState.failed({message = ""}):super.failed(message: message);
 }
 
-class SwipeRestaurantsPageFetchingState extends MunchState {
-  SwipeRestaurantsPageFetchingState.ready({data}):super.ready(data: data);
-  SwipeRestaurantsPageFetchingState.loading({message = ""}):super.loading(message: message);
-  SwipeRestaurantsPageFetchingState.failed({message = ""}):super.failed(message: message);
+class RestaurantsPageFetchingState extends MunchState {
+  RestaurantsPageFetchingState.ready({data}):super.ready(data: data);
+  RestaurantsPageFetchingState.loading({message = ""}):super.loading(message: message);
+  RestaurantsPageFetchingState.failed({message = ""}):super.failed(message: message);
+}
+
+class RestaurantSwipeProcessingState extends MunchState{
+  RestaurantSwipeProcessingState.ready({data}):super.ready(data: data);
+  RestaurantSwipeProcessingState.loading({message = ""}):super.loading(message: message);
+  RestaurantSwipeProcessingState.failed({message = ""}):super.failed(message: message);
 }
