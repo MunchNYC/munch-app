@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 class Palette {
   static const Color primary = Colors.black;
   static const Color background = Colors.white;
-  static const Color secondaryDark = Color(0xFFFF2C5B);
+  static const Color secondaryDark = Color(0xFFFF6A6A);
   static const Color secondaryLight = Color(0xFF959595);
+  static const Color ternaryDark = Color(0xFFFF2C5B);
   static const Color error = Color(0xFFD32F2F);
   static const Color success = Color(0xFF228B22);
   static const Color warning = Color(0xFFFFAE42);
-  static const Color hyperlink = Color(0xFF0077CC);
+  static const Color hyperlink = Color(0xFF007AFF);
 
   static MaterialColor generateMaterialColor(Color color) {
     return MaterialColor(color.value, {

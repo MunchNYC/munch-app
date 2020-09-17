@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         padding: AppDimensions.padding(AppPaddingType.screenOnly),
         child: BlocConsumer<AuthenticationBloc, AuthenticationState>(
-            bloc: _authenticationBloc,
+            cubit: _authenticationBloc,
             listenWhen: (AuthenticationState previous, AuthenticationState current) => current.hasError || current.ready,
             listener: (BuildContext context, AuthenticationState state) => _loginListener(context, state),
             buildWhen: (AuthenticationState previous, AuthenticationState current) => current is LoginWithGoogleState || current.ready,
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _signInButton() {
    return CustomButton<AuthenticationState, LoginWithGoogleState>.bloc(
-        bloc: _authenticationBloc,
+        cubit: _authenticationBloc,
         onPressedCallback: _onSignInButtonTapped,
         color: Palette.background,
         borderColor: Palette.secondaryLight,

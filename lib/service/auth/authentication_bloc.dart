@@ -1,20 +1,15 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/auth_repository.dart';
-import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
 import 'authentication_state.dart';
 import 'authentication_event.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
-  @override
-  AuthenticationState get initialState => AuthenticationState();
+  AuthenticationBloc() : super(AuthenticationState());
 
   final AuthRepo _authRepo = AuthRepo.getInstance();
-
 
   @override
   Stream<AuthenticationState> mapEventToState(AuthenticationEvent event) async* {

@@ -7,8 +7,7 @@ import 'package:munch/service/munch/munch_state.dart';
 import 'munch_event.dart';
 
 class MunchBloc extends Bloc<MunchEvent, MunchState> {
-  @override
-  MunchState get initialState => MunchState();
+  MunchBloc() : super(MunchState());
 
   final MunchRepo _munchRepo = MunchRepo.getInstance();
 
@@ -24,6 +23,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* getMunches();
     } else if (event is JoinMunchEvent){
       yield* joinMunch(event.munchCode);
+    } else if(event is CreateMunchEvent){
+      yield* createMunch(event.munch);
     }
   }
 
@@ -49,6 +50,18 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     } catch (error) {
       print("Joining munch failed: " + error.toString());
       yield MunchJoiningState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> createMunch(Munch munch) async* {
+    yield MunchCreatingState.loading();
+    try {
+      Munch createdMunch = await _munchRepo.createMunch(munch);
+
+      yield MunchCreatingState.ready(data: createdMunch);
+    } catch (error) {
+      print("Munch creation failed: " + error.toString());
+      yield MunchCreatingState.failed(message: error.toString());
     }
   }
 }

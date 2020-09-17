@@ -30,7 +30,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
   String _joinCode;
   String _munchName;
 
-  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 23;
+  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 21;
   String _munchNamePlaceholder;
 
   final List<String> _munchNamePlaceholders = List<String>();
@@ -111,9 +111,11 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
             ),
             SizedBox(width: 12.0),
             CustomButton<MunchState, MunchJoiningState>.bloc(
-              bloc: widget.munchBloc,
+              cubit: widget.munchBloc,
               minWidth: 72.0,
               borderRadius: 4.0,
+              color: Palette.secondaryDark,
+              textColor: Palette.background,
               content: Text(App.translate("create_join_dialog.join_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
               onPressedCallback: (){
                 _onJoinButtonClicked(context);

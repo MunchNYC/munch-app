@@ -94,7 +94,7 @@ class MunchesTabState extends State<MunchesTab> {
               indicatorColor: Palette.primary,
               indicatorPadding: EdgeInsets.only(left: 0.0, right: 15.0),
               labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-              labelStyle: AppTextStyle.style(AppTextStylePattern.body3),
+              labelStyle: AppTextStyle.style(AppTextStylePattern.body3, fontWeight: FontWeight.w600),
               tabs: [
                 Tab(text: App.translate("munches_tab.deciding_tab.title")),
                 Tab(text: App.translate("munches_tab.decided_tab.title")),
@@ -127,7 +127,7 @@ class MunchesTabState extends State<MunchesTab> {
 
   Widget _tabsContent(){
     return BlocConsumer<MunchBloc, MunchState>(
-        bloc: _munchBloc,
+        cubit: _munchBloc,
         listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
         listener: (BuildContext context, MunchState state) => _listViewsListener(context, state),
         buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || (current is MunchJoiningState && current.ready),

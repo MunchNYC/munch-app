@@ -11,34 +11,41 @@ class DialogHelper{
   Widget dialogContent;
   Color dialogTitleColor;
   bool showCloseIcon;
+  bool isModal;
 
-  DialogHelper({this.dialogTitle, this.dialogContent, this.dialogTitleColor = Palette.primary, this.showCloseIcon = true});
+  DialogHelper({this.dialogTitle, this.dialogContent, this.dialogTitleColor = Palette.primary, this.isModal = false, this.showCloseIcon = true});
 
   void show(BuildContext context){
     showDialog(
         context: context,
         useRootNavigator: false,
+        barrierDismissible: !isModal,
         builder: (BuildContext ctx) {
-          return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-              child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if(dialogTitle != null) _dialogHeader(ctx),
-                        if(dialogTitle != null) Divider(thickness: 1, color: Palette.secondaryLight),
-                        if(dialogTitle != null) SizedBox(height: 5.0),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: dialogContent
-                        )
-                      ]
+            return WillPopScope(
+              onWillPop: () async{
+                  return !isModal;
+              },
+              child:  Dialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                  child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(vertical: 20.0),
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if(dialogTitle != null) _dialogHeader(ctx),
+                            if(dialogTitle != null) Divider(thickness: 1, color: Palette.secondaryLight),
+                            if(dialogTitle != null) SizedBox(height: 5.0),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                child: dialogContent
+                            )
+                          ]
+                      )
                   )
               )
-          );
+            );
         }
     );
   }

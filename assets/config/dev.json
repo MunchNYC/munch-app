@@ -1,5 +1,6 @@
 {
   "appTitle": "Munch",
   "apiUrl": "http://10.0.2.2:8080/munch",
-  "apiVersion": "1"
+  "apiVersion": "1",
+  "googleMapsApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE"
 }

@@ -8,7 +8,6 @@ import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/stateful_wrapper.dart';
-
 import 'config/app_config.dart';
 import 'config/firebase_listener.dart';
 import 'config/localizations.dart';
