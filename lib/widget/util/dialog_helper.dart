@@ -1,39 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
-import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/navigation_helper.dart';
 
-// Need template T, because in the root of dialog body we have to put bloc, because Dialog has different context
+// DON'T EVER PUT BlocProvider in Context tree of widget which will be disposes (like dialog), because Flutter will disable bloc provided into this BlocProvider
+// Always parametrize dialogContent with required bloc outside of this widget
 class DialogHelper{
   String dialogTitle;
   Widget dialogContent;
-
   Color dialogTitleColor;
+  bool showCloseIcon;
 
-  DialogHelper({this.dialogTitle, this.dialogContent, this.dialogTitleColor = Palette.primary});
+  DialogHelper({this.dialogTitle, this.dialogContent, this.dialogTitleColor = Palette.primary, this.showCloseIcon = true});
 
   void show(BuildContext context){
     showDialog(
         context: context,
-        useRootNavigator: true,
+        useRootNavigator: false,
         builder: (BuildContext ctx) {
           return Dialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
               child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if(dialogTitle != null) Text(dialogTitle, style: AppTextStyle.style(AppTextStylePattern.heading3, color: dialogTitleColor)),
-                        if(dialogTitle != null) Divider(thickness: 1, color: Palette.secondaryDark),
+                        if(dialogTitle != null) _dialogHeader(ctx),
+                        if(dialogTitle != null) Divider(thickness: 1, color: Palette.secondaryLight),
                         if(dialogTitle != null) SizedBox(height: 5.0),
-                        dialogContent
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.0),
+                          child: dialogContent
+                        )
                       ]
                   )
               )
           );
         }
+    );
+  }
+
+  Widget _dialogHeader(BuildContext context){
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+            child:Text(dialogTitle, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600), textAlign: TextAlign.center)
+        ),
+        if(showCloseIcon)
+        GestureDetector(
+          child: Icon(Icons.close, size: 18.0),
+          onTap: (){
+            NavigationHelper.popRoute(context);
+          },
+        )
+      ],
     );
   }
 }

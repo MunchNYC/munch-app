@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 
 import 'alert_dialog_builder.dart';
 
@@ -22,7 +23,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   bool flat = false;
   double minWidth = 0.0;
   double height = 0.0;
-  EdgeInsetsGeometry padding = EdgeInsets.all(7.0);
+  EdgeInsetsGeometry padding = EdgeInsets.all(8.0);
   double borderRadius = 0.0;
   double borderWidth = 0.0;
   Color borderColor;
@@ -118,6 +119,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
                 child: content,
                 color: color,
                 textColor: textColor,
+                elevation: 4.0,
                 onPressed: disabled ? null : () => _buttonPressed(context)));
   }
 
@@ -144,7 +146,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   Widget _buildButton(BuildContext context, SuperState state) {
     // Important condition, first time when BlocBuilder is called, condition isn't checked, so state can be different than Initial state
     if (state.loading && state is V) {
-      return Center(child: CircularProgressIndicator());
+      return AppCircularProgressIndicator();
     } else {
       return _renderButton(context);
     }

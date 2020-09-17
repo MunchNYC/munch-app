@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
 abstract class Api{
-  static String backendBaseUrl = AppConfig.getInstance().apiUrl;
+  static String backendBaseUrl = AppConfig.getInstance().apiUrl + "/v" + AppConfig.getInstance().apiVersion;
 
   String baseUrl;
 
@@ -148,31 +148,36 @@ abstract class Api{
   dynamic _returnResponse(http.Response response) {
     print(response.statusCode);
     print(response.body);
+
+    var responseJson = json.decode(response.body.toString());
+
     if(response.statusCode >= 200 && response.statusCode < 300){
       // if that's response with no content
       if (response.statusCode == 204) {
-        return null;
+         return null;
       }
 
-      var responseJson = json.decode(response.body.toString());
-      return responseJson;
+      if(responseJson['status']['successful'] == false){
+         throw FetchDataException.fromMessage(json.decode(response.body.toString()));
+      }
+
+      return responseJson['data'];
     }
 
     switch (response.statusCode) {
       case 400:
         throw BadRequestException(
-            response.statusCode, json.decode(response.body.toString()));
+            response.statusCode, responseJson['status']);
       case 401:
       case 403:
         throw UnauthorisedException(
             response.statusCode, {"message": App.translate("api.error.unauthorized")});
       case 422:
         throw ValidationException(
-            response.statusCode, json.decode(response.body.toString()));
+            response.statusCode, responseJson['status']);
       case 500:
       default:
-        throw FetchDataException(
-            response.statusCode, json.decode(response.body.toString()));
+        throw FetchDataException(response.statusCode, responseJson['status']);
     }
   }
 }

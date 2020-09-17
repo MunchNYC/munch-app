@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapWidget extends StatefulWidget {
+  String munchName;
+
+  MapWidget({this.munchName});
+
   @override
   State<MapWidget> createState() => MapWidgetState();
 }

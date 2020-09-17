@@ -74,6 +74,8 @@ enum AppStrutStylePattern {
 }
 
 class AppTextStyle{
+  static const String APP_FONT = 'Montserrat';
+
   static List<TextStyle> _appTextStyles = [
     TextStyle(color: Palette.primary, fontSize: 12.0),
     TextStyle(color: Palette.background, fontSize: 12.0),
@@ -142,15 +144,17 @@ class AppTextStyle{
     StrutStyle(fontSize: 12.0, height: 1.2, forceStrutHeight: true),
   ];
 
-  static TextStyle style(AppTextStylePattern atsp, {Color color, bool bold, double fontSizeOffset = 0}){
+  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0}){
     TextStyle textStyle = _appTextStyles[atsp.index];
+
+    textStyle = textStyle.copyWith(fontFamily: APP_FONT);
 
     if(color != null){
       textStyle = textStyle.copyWith(color: color);
     }
 
-    if(bold != null){
-      textStyle = textStyle.copyWith(fontWeight: bold ? FontWeight.bold : FontWeight.normal);
+    if(fontWeight != null) {
+      textStyle = textStyle.copyWith(fontWeight: fontWeight);
     }
 
     textStyle = textStyle.copyWith(fontSize: textStyle.fontSize + fontSizeOffset);
