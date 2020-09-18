@@ -8,7 +8,7 @@ class Palette {
   static const Color secondaryDark = Color(0xFFFF6A6A);
   static const Color secondaryLight = Color(0xFF959595);
   static const Color ternaryDark = Color(0xFFFF2C5B);
-  static const Color error = Color(0xFFD32F2F);
+  static const Color error = Color(0xFFFF0000);
   static const Color success = Color(0xFF228B22);
   static const Color warning = Color(0xFFFFAE42);
   static const Color hyperlink = Color(0xFF007AFF);

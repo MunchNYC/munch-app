@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/processors/timestamp_processor.dart';
@@ -24,6 +26,9 @@ class Munch{
   String name;
 
   // isNullable means - put null conditions (maybe better name is @nullable, this is not logical)
+  @Field.decode(isNullable: false, alias: 'host') // if Field.decode is defined alias must be defined inside it
+  String hostUserId;
+
   @Field.decode(isNullable: false)
   int numberOfMembers;
 

@@ -16,19 +16,29 @@ class CustomFormField extends StatelessWidget{
   double borderRadius;
   Color borderColor;
   bool readOnly;
+  FocusNode focusNode;
+  String labelText;
+  TextStyle labelStyle;
+  EdgeInsets contentPadding;
+  int maxLines;
 
   CustomFormField({this.hintText, this.initialValue, this.textStyle,
     this.hintStyle, this.validator, this.onSaved, this.onTap, this.textCapitalization,
     this.controller, this.onChanged, this.fillColor,
-    this.borderColor = Palette.secondaryLight, this.borderRadius = 4.0, this.readOnly = false});
+    this.borderColor = Palette.secondaryLight, this.borderRadius = 4.0, this.readOnly = false,
+    this.focusNode, this.labelText, this.labelStyle, this.contentPadding = const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+    this.maxLines = 1});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: labelStyle.copyWith(height: -12.0),
         hintText: hintText,
         hintStyle: hintStyle,
-        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        contentPadding: contentPadding,
         isDense: true,
         focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: borderColor), borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color:borderColor), borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
@@ -47,7 +57,9 @@ class CustomFormField extends StatelessWidget{
       controller: controller ,
       onChanged: onChanged,
       cursorColor: Palette.secondaryDark,
-      readOnly: readOnly
+      readOnly: readOnly,
+      focusNode: focusNode,
+      maxLines: maxLines,
     );
   }
 

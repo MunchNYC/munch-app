@@ -12,6 +12,7 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/include/restaurant_card.dart';
+import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
@@ -94,9 +95,21 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               style: AppTextStyle.style(AppTextStylePattern.body2)
             ),
             SizedBox(width: 2.0),
-            Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
-                style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
-            ),
+            GestureDetector(
+              onTap: (){
+                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((munch){
+                  if(munch != null){
+                    setState(() {
+                      widget.munch = munch;
+                    });
+                  }
+                });
+              },
+              child: Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
+                  style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
+              ),
+            )
+
           ],
         )
       ],
@@ -117,12 +130,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   Widget _appBar(BuildContext context){
     return AppBar(
-        // this will change icon color of back icon
-        iconTheme: IconThemeData(
-          color: Palette.secondaryLight,
-        ),
         elevation: 0.0,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
+        leading: AppBarBackButton(),
         backgroundColor: Palette.background,
         title: _appBarTitleBuilder(),
         centerTitle: true,

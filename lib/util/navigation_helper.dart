@@ -3,6 +3,7 @@ import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
 import 'package:munch/widget/screen/map/map_screen.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
 import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
 
 class NavigationHelper {
@@ -13,6 +14,16 @@ class NavigationHelper {
     } else {
       return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(MaterialPageRoute(builder: (context) => screen), result: result);
     }
+  }
+
+  static Future openFullScreenDialog(BuildContext context,
+      {bool addToBackStack: true, Widget fullScreenDialog, rootNavigator: true}) {
+      return Navigator.of(context, rootNavigator: rootNavigator).push(PageRouteBuilder(
+          opaque: false,
+          pageBuilder: (BuildContext context, _, __){
+            return fullScreenDialog;
+          }
+      ));
   }
 
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
@@ -70,6 +81,12 @@ class NavigationHelper {
       {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
+  }
+
+  static Future navigateToMunchOptionsScreen(BuildContext context,
+      {Munch munch, bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: MunchOptionsScreen(munch: munch));
   }
 }
 

@@ -35,6 +35,8 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     obj.id = map['id'] as String;
     obj.code = map['code'] as String;
     obj.name = map['name'] as String;
+    obj.hostUserId =
+        map['host'] as String ?? getJserDefault('hostUserId') ?? obj.hostUserId;
     obj.numberOfMembers = map['numberOfMembers'] as int ??
         getJserDefault('numberOfMembers') ??
         obj.numberOfMembers;
