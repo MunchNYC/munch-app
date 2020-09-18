@@ -12,6 +12,7 @@ import 'config/app_config.dart';
 import 'config/firebase_listener.dart';
 import 'config/localizations.dart';
 import 'model/user.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 Future loadEnvironment() async{
   const ENV = String.fromEnvironment('ENV', defaultValue: 'dev');
@@ -47,6 +48,8 @@ class MunchApp extends StatelessWidget {
   void initializeApp(){
     _setSystemSettings();
     _configureFirebase();
+
+    tz.initializeTimeZones();
   }
 
   @override

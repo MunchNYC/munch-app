@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/util/app.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 part 'restaurant.jser.dart';
 
@@ -43,11 +42,19 @@ class Restaurant{
   @Alias('reviewCount')
   int reviewsNumber;
 
+  String timezone;
+
+  String url;
+
   @Field.ignore()
   String get categoryTitles => categories.map((RestaurantCategory restaurantCategory) => restaurantCategory.title).join(", ");
 
   String getWorkingHoursCurrentStatus(){
-    String currentDayOfWeek =  DateFormat('EEEE').format(DateTime.now());
+    tz.Location location = tz.getLocation(timezone);
+
+    tz.TZDateTime nowWithTimezone = tz.TZDateTime.parse(location, DateTime.now().toString());
+
+    String currentDayOfWeek =  DateFormat('EEEE').format(nowWithTimezone);
 
     WorkingHours dayWorkingHours = workingHours.where((WorkingHours workingHours) => workingHours.dayOfWeek.toLowerCase() == currentDayOfWeek.toLowerCase()).first;
 

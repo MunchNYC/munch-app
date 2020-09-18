@@ -4,6 +4,7 @@ import 'package:munch/model/restaurant.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/utility.dart';
 
 class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
@@ -45,15 +46,20 @@ class _RestaurantCardState extends State<RestaurantCard>{
   }
 
   Widget _yelpStatsRow(){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Image(image: AssetImage("assets/images/yelp/yelp-burst.png"), height: 16.0),
-        SizedBox(width: 8.0),
-        _starsRating(),
-        SizedBox(width: 8.0),
-        Text(widget.restaurant.reviewsNumber.toString() + ' ' + App.translate('restaurant_swipe_screen.restaurant_card.yelp.reviews.text'), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
-      ],
+    return GestureDetector(
+        onTap: (){
+          Utility.launchUrl(context, widget.restaurant.url);
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Image(image: AssetImage("assets/images/yelp/yelp-burst.png"), height: 16.0),
+            SizedBox(width: 8.0),
+            _starsRating(),
+            SizedBox(width: 8.0),
+            Text(widget.restaurant.reviewsNumber.toString() + ' ' + App.translate('restaurant_swipe_screen.restaurant_card.yelp.reviews.text'), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+          ],
+        )
     );
   }
 

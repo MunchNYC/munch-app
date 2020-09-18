@@ -228,13 +228,13 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     bool showLoadingIndicator = false;
 
-    if((state.initial || state.loading || state is DetailedMunchFetchingState) && !(state is RestaurantSwipeProcessingState)){
+    if((state.initial || state.loading || state is DetailedMunchFetchingState)){
       // even if DetailedMunchFetchingState is ready we have to wait for restaurants page to be ready
       // if RestaurantSwipeProcessingState is loading, don't render this indicator
       showLoadingIndicator = true;
 
-      if(state is RestaurantsPageFetchingState && _currentRestaurants.length != 0){
-        // if RestaurantsPageFetchingState and one (or more) card is on top of the stack, don't render indicator
+      if((state is RestaurantsPageFetchingState || state is RestaurantSwipeProcessingState) && _currentRestaurants.length != 0){
+        // if RestaurantsPageFetchingState or RestaurantSwipeProcessingState and one (or more) card is on top of the stack, don't render indicator
         showLoadingIndicator = false;
       }
     }

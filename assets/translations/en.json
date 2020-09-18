@@ -81,5 +81,7 @@
 
     "api.error.request_timeout": "Request has timed out",
     "api.error.internet_connection": "Internet connection problem",
-    "api.error.unauthorized": "You are not authorized for this action"
+    "api.error.unauthorized": "You are not authorized for this action",
+
+    "url_launcher.error.message": "Url cannot be opened"
 }
