@@ -3,10 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
-import 'package:munch/util/app.dart';
-import 'package:munch/widget/util/app_circular_progress_indicator.dart';
-
-import 'alert_dialog_builder.dart';
 
 class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   Widget content;
@@ -15,9 +11,6 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   Color splashColor;
   Function onPressedCallback;
   Function onActionDoneCallback;
-  bool openDialog = false;
-  String dialogText;
-  String dialogTitle;
   bool disabled = false;
   Bloc<dynamic, T> cubit;
   State widgetState;
@@ -72,27 +65,6 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
       this.borderColor,
       this.elevation = 8.0});
 
-  CustomButton.blocWithDialog(
-      {this.cubit,
-      this.content,
-      this.color = Palette.secondaryDark,
-      this.textColor = Palette.background,
-      this.splashColor = Palette.secondaryLight,
-      this.onPressedCallback,
-      this.onActionDoneCallback,
-      this.dialogText,
-      this.dialogTitle,
-      this.minWidth = 0.0,
-      this.height = 0.0,
-      this.padding = const EdgeInsets.all(8.0),
-      this.flat = false,
-      this.borderRadius = 0.0,
-      this.borderWidth = 0.0,
-      this.borderColor,
-      this.elevation = 8.0}) {
-    this.openDialog = true;
-  }
-
   void _buttonPressed(BuildContext context) {
     // store initialHeight and width of the button to keep button same size when it's content is loading animation
     if(initialWidth == null){
@@ -102,11 +74,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
       initialHeight = _buttonKey.currentContext.size.height - padding.vertical;
     }
 
-    if (openDialog) {
-      AlertDialogBuilder().showAlertDialogWidget(context, dialogTitle, dialogText, onPressedCallback);
-    } else {
-      onPressedCallback();
-    }
+    onPressedCallback();
   }
 
   Widget _loadingAnimation(){

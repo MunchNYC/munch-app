@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +9,7 @@ import 'package:munch/model/munch.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
+import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
@@ -16,9 +19,9 @@ import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/include/kick_member_alert_dialog.dart';
 import 'package:munch/widget/screen/swipe/include/leave_munch_alert_dialog.dart';
-import 'package:munch/widget/screen/swipe/include/save_changes_alert_dialog.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/cupertion_alert_dialog_builder.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
@@ -43,7 +46,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   TextEditingController _munchNameTextController = TextEditingController();
 
+  String _munchName;
   bool _pushNotificationsEnabled = true;
+
+  Completer<bool> _popScopeCompleter;
 
   MunchBloc _munchBloc;
 
@@ -85,15 +91,19 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       actions: <Widget>[
         Padding(padding:
           EdgeInsets.only(right: 24.0),
-            child:  CustomButton(
+            child:  CustomButton<MunchState, MunchPreferencesSavingState>.bloc(
+              cubit: _munchBloc,
               flat: true,
               // very important to set, otherwise title won't be aligned good
               padding: EdgeInsets.zero,
               color: Colors.transparent,
-              content: Text(App.translate("options_screen.app_bar.action.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w600, fontSizeOffset: 1.0, color: Palette.primary.withOpacity(0.6))),
-              onPressedCallback: (){
-
-              },
+              textColor: Palette.primary.withOpacity(0.6),
+              content: Text(App.translate("options_screen.app_bar.action.text"),
+                  style: AppTextStyle.style(AppTextStylePattern.heading6,
+                      fontWeight: FontWeight.w600,
+                      fontSizeOffset: 1.0,
+                      color: Palette.primary.withOpacity(0.6))),
+              onPressedCallback: _onSaveButtonClicked,
             )
         ),
       ],
@@ -101,11 +111,29 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   Future<bool> _onWillPopScope(BuildContext context) async {
-    showDialog(
-        context: context,
-        useRootNavigator: false,
-        child: SaveChangesAlertDialog()
-    );
+    // TODO: add condition for notifications dirty
+    if(widget.munch.name != _munchNameTextController.text) {
+      _popScopeCompleter = Completer<bool>();
+
+      CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
+        dialogTitle: App.translate("save_changes_alert_dialog.title"),
+        dialogDescription:App.translate("save_changes_alert_dialog.description"),
+        confirmText: App.translate("save_changes_alert_dialog.confirm_button.text"),
+        cancelText: App.translate("save_changes_alert_dialog.cancel_button.text"),
+        confirmCallback: _onSaveChangesDialogButtonClicked,
+        cancelCallback: _onDiscardChangesDialogButtonClicked
+      );
+
+      // decision will be made after dialog clicking
+      bool shouldReturn = await _popScopeCompleter.future;
+
+      if(!shouldReturn){
+        // save button clicked and something is wrong
+        return false;
+      }
+    }
+
+    NavigationHelper.popRoute(context, result: widget.munch);
 
     return false;
   }
@@ -122,9 +150,27 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
+  void _updateMunchWithDetailedData(Munch detailedMunch){
+    /*
+      Take old data from munch which can be missing from detailedMunch response
+      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
+    */
+    detailedMunch.merge(widget.munch);
+
+    widget.munch = detailedMunch;
+  }
+
   void _optionsScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
+    } else if(state is MunchPreferencesSavingState){
+      _updateMunchWithDetailedData(state.data);
+
+      if(_popScopeCompleter != null){
+        _popScopeCompleter.complete(true);
+      } else{
+        Utility.showFlushbar(App.translate("options_screen.munch_preferences.save.successful"), context);
+      }
     }
   }
 
@@ -133,7 +179,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
         cubit: _munchBloc,
         listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
         listener: (BuildContext context, MunchState state) => _optionsScreenListener(context, state),
-        buildWhen: (MunchState previous, MunchState current) => current.loading || current.ready, // in every other condition enter builder
+        buildWhen: (MunchState previous, MunchState current) => current.loading || current.ready,
         builder: (BuildContext context, MunchState state) => _buildOptionsScreen(context, state)
     );
   }
@@ -141,11 +187,23 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   Widget _buildOptionsScreen(BuildContext context, MunchState state){
     if (state.hasError) {
       return ErrorPageWidget();
-    } else if (state.loading){
-      return AppCircularProgressIndicator();
     }
 
-    return _renderScreen(context);
+    bool showLoadingIndicator = false;
+
+    if (state.loading){
+      showLoadingIndicator = true;
+
+      if(state is MunchPreferencesSavingState){
+        showLoadingIndicator = false;
+      }
+    }
+
+    if(showLoadingIndicator){
+      return AppCircularProgressIndicator();
+    } else {
+      return _renderScreen(context);
+    }
   }
 
   Widget _renderScreen(BuildContext context){
@@ -188,7 +246,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
               textStyle: AppTextStyle.style(
                   AppTextStylePattern.heading6,
                   fontWeight: FontWeight.w500,
-                  color: widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid ? Palette.primary : Palette.secondaryLight
+                  color: Palette.primary
               ),
               fillColor: Palette.background,
               contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
@@ -197,10 +255,12 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
               readOnly: _munchNameFieldReadOnly,
               focusNode: _munchNameFieldFocusNode,
               controller: _munchNameTextController,
+              onSaved: (value) => _munchName = value,
+              validator: (value) => _validateMunchName(value),
+              errorHasBorders: false
             )
         ),
         SizedBox(width: 12.0),
-        if(widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid)
         CustomButton(
           flat: true,
           // very important to set, otherwise title won't be aligned good
@@ -287,8 +347,6 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
-
-
   Widget _membersListTrailing(User user){
     print(widget.munch.hostUserId);
     print(user.uid);
@@ -312,6 +370,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(App.translate("options_screen.members.title"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7))),
         SizedBox(height: 8.0),
@@ -349,6 +408,40 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
+  String _validateMunchName(String munchName){
+    if(munchName.trim().isEmpty){
+      return App.translate("options_screen.preferences_form.name_field.required.validation");
+    }
+
+    Pattern pattern = r'^([A-Za-z0-9\s]|\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])*$';
+    RegExp regex = new RegExp(pattern);
+
+    if (!regex.hasMatch(munchName)) {
+      return App.translate("options_screen.preferences_form.name_field.regex.validation");
+    } else{
+      return null;
+    }
+  }
+
+  bool _onSaveButtonClicked(){
+    bool validationSuccess = true;
+
+    if (_munchOptionsFormKey.currentState.validate()) {
+      _munchOptionsFormKey.currentState.save();
+
+      // close keyboard by giving focus to unnamed node
+      FocusScope.of(context).unfocus();
+
+      _munchBloc.add(SaveMunchPreferencesEvent(munchId: widget.munch.id, munchName: _munchName, notificationsEnabled: _pushNotificationsEnabled));
+    } else {
+      validationSuccess = false;
+
+      _munchOptionsFormAutoValidate = true;
+    }
+
+    return validationSuccess;
+  }
+
   void _onMunchLinkClicked(){
     Clipboard.setData(ClipboardData(text: widget.munch.link));
 
@@ -371,6 +464,23 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     NavigationHelper.openFullScreenDialog(context, fullScreenDialog: LeaveMunchAlertDialog());
   }
 
+  void _onSaveChangesDialogButtonClicked(){
+    // close dialog
+    NavigationHelper.popRoute(context, rootNavigator: true);
+
+    bool validationSuccess = _onSaveButtonClicked();
+
+    if(!validationSuccess){
+      _popScopeCompleter.complete(false);
+    }
+  }
+
+  void _onDiscardChangesDialogButtonClicked(){
+    // close dialog
+    NavigationHelper.popRoute(context, rootNavigator: true);
+
+    _popScopeCompleter.complete(true);
+  }
 }
 
 

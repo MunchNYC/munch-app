@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/processors/timestamp_processor.dart';
+import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 
@@ -48,6 +49,9 @@ class Munch{
 
   @Field.decode(isNullable: false)
   List<Filter> whitelistFilters;
+
+  @Field.decode(isNullable: false)
+  Restaurant matchedRestaurant;
 
   @Field.ignore()
   MunchStatus munchStatus = MunchStatus.UNDECIDED;

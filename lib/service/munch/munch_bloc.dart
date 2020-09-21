@@ -32,6 +32,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* getRestaurantsPage(event.munchId);
     } else if(event is RestaurantSwipeEvent){
       yield* processRestaurantSwipe(event);
+    } else if(event is SaveMunchPreferencesEvent){
+      yield* saveMunchPreferences(event);
     }
   }
 
@@ -113,4 +115,20 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     }
   }
 
+  Stream<MunchState> saveMunchPreferences(SaveMunchPreferencesEvent saveMunchPreferencesEvent) async* {
+    yield MunchPreferencesSavingState.loading();
+
+    try {
+      Munch munch = await _munchRepo.saveMunchPreferences(
+          munchId: saveMunchPreferencesEvent.munchId,
+          munchName: saveMunchPreferencesEvent.munchName,
+          notificationsEnabled: saveMunchPreferencesEvent.notificationsEnabled
+      );
+
+      yield MunchPreferencesSavingState.ready(data: munch);
+    } catch (error) {
+      print("Munch preferences saving failed: " + error.toString());
+      yield MunchPreferencesSavingState.failed(message: error.toString());
+    }
+  }
 }

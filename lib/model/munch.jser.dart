@@ -17,6 +17,9 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   Serializer<Filter> __filterJsonSerializer;
   Serializer<Filter> get _filterJsonSerializer =>
       __filterJsonSerializer ??= FilterJsonSerializer();
+  Serializer<Restaurant> __restaurantJsonSerializer;
+  Serializer<Restaurant> get _restaurantJsonSerializer =>
+      __restaurantJsonSerializer ??= RestaurantJsonSerializer();
   @override
   Map<String, dynamic> toMap(Munch model) {
     if (model == null) return null;
@@ -60,6 +63,10 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
             (val) => _filterJsonSerializer.fromMap(val as Map), <Filter>[]) ??
         getJserDefault('whitelistFilters') ??
         obj.whitelistFilters;
+    obj.matchedRestaurant =
+        _restaurantJsonSerializer.fromMap(map['matchedRestaurant'] as Map) ??
+            getJserDefault('matchedRestaurant') ??
+            obj.matchedRestaurant;
     return obj;
   }
 }

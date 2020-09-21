@@ -55,4 +55,14 @@ class MunchRepo {
 
     return munch;
   }
+
+  Future<Munch> saveMunchPreferences({String munchId, String munchName, bool notificationsEnabled}) async {
+    Munch munch = await _munchApi.saveMunchPreferences(
+        munchId: munchId,
+        munchName: munchName,
+        notificationsEnabled: notificationsEnabled,
+    );
+
+    return munch;
+  }
 }
