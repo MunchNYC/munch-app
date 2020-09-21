@@ -292,8 +292,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   textAlign: TextAlign.center),
               SizedBox(height: 36.0),
               // TODO: which message to show if munch status is decided
-              if(widget.munch.munchStatus == MunchStatus.UNDECIDED)
-                Text(App.translate("restaurant_swipe_screen.empty_card_stack.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
+              widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                Text(App.translate("restaurant_swipe_screen.empty_card_stack.undecided.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center)
+              : Text(App.translate("restaurant_swipe_screen.empty_card_stack.decided.description") + " " + widget.munch.matchedRestaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
             ],
           ),
           CustomButton(
@@ -378,7 +379,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               child: Center(
                   child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
                     App.translate("restaurant_swipe_screen.munch_status.undecided.status.text") :
-                    "Restaurant Name", // TODO: put decided restaurant name here
+                    widget.munch.matchedRestaurant.name,
                     style: AppTextStyle.style(AppTextStylePattern.body3,
                         color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.primary : Palette.background,
                         fontSizeOffset: 1.0,
