@@ -3,6 +3,7 @@ import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
 import 'package:munch/widget/screen/map/map_screen.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/widget/screen/swipe/decision_screen.dart';
 import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
 import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
 
@@ -87,6 +88,12 @@ class NavigationHelper {
       {Munch munch, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: MunchOptionsScreen(munch: munch));
+  }
+
+  static Future navigateToDecisionScreen(BuildContext context,
+      {Munch munch, bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: DecisionScreen(munch: munch));
   }
 }
 

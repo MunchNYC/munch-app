@@ -98,6 +98,20 @@
     "save_changes_alert_dialog.confirm_button.text": "Save",
     "save_changes_alert_dialog.cancel_button.text": "Discard",
 
+    "decision_screen.restaurant.hours.subtitle": "Hours",
+    "decision_screen.call_button.label.text": "Call",
+    "decision_screen.map_button.label.text": "View Map",
+    "decision_screen.yelp_button.label.text": "Yelp",
+    "decision_screen.share_button.label.text": "Share",
+    "decision_screen.restaurant_card.yelp.reviews.text": "Reviews",
+    "decision_screen.share_button.popup.title": "Share decided restaurant",
+    "decision_screen.share_action.text": "Munch decided to go to this restaurant",
+    "decision_screen.continue_exploring_button.text": "Continue Exploring",
+    "decision_screen.new_restaurant_button.text": "New Restaurant",
+    "decision_screen.yelp.reviews.text": "Reviews",
+
+    "restaurant.working_hours.closed.text": "Closed",
+
     "error_page_widget.text": "Error has occurred",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled",

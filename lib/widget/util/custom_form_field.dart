@@ -35,7 +35,7 @@ class CustomFormField extends StatelessWidget{
     return TextFormField(
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: labelStyle.copyWith(height: -12.0),
+        labelStyle: labelStyle != null ? labelStyle.copyWith(height: -12.0) : null,
         hintText: hintText,
         hintStyle: hintStyle,
         floatingLabelBehavior: FloatingLabelBehavior.always,

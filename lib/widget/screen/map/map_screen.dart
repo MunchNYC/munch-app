@@ -105,7 +105,7 @@ class MapScreenState extends State<MapScreen> {
         padding: EdgeInsets.only(bottom: 8.0),
         child: FloatingActionButton(
           backgroundColor: Palette.background,
-          child: FaIcon(FontAwesomeIcons.locationArrow, color: Palette.hyperlink, size: 20.0),
+          child: ImageIcon(AssetImage("assets/icons/locateMe.png"), size: 20.0, color: Palette.hyperlink),
           onPressed: (){
             if(_currentLocation != null) {
               _animateMapToLocation(LatLng(_currentLocation.latitude, _currentLocation.longitude));
