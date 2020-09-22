@@ -84,7 +84,6 @@
     "options_screen.share_button.popup.title": "Share Munch link",
     "options_screen.share_action.text": "Join my Munch using this link",
     "options_screen.copy_action.successful":"Munch link copied",
-    "options_screen.munch_preferences.save.successful": "Munch preferences successfully saved",
     "options_screen.preferences_form.name_field.required.validation": "Munch name cannot be blank",
     "options_screen.preferences_form.name_field.regex.validation": "Only alphanumerical chars and emojis are allowed",
     "options_screen.kick_member.successful": "Member kicked successfully",

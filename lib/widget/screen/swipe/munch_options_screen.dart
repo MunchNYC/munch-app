@@ -170,7 +170,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     if(_popScopeCompleter != null){
       _popScopeCompleter.complete(true);
     } else{
-      Utility.showFlushbar(App.translate("options_screen.munch_preferences.save.successful"), context);
+      _onWillPopScope(context);
     }
   }
 
