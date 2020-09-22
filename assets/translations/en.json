@@ -44,6 +44,7 @@
     "munches_tab.deciding_tab.title": "Still deciding",
     "munches_tab.decided_tab.title": "Decided",
     "munches_tab.still_deciding_list_view.empty.text": "No munches yet",
+    "munches_tab.decided_list_view.empty.text": "No munches yet",
     "munches_tab.join_munch.successful.message": "Munch successfully joined",
 
     "munch_list_widget.members.text": "Members",

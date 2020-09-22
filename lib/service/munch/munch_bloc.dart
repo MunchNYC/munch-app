@@ -45,7 +45,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield MunchesFetchingState.loading();
 
     try {
-      List<Munch> munches = await _munchRepo.getMunches();
+      Map<MunchStatus, List<Munch>> munches = await _munchRepo.getMunches();
 
       yield MunchesFetchingState.ready(data: munches);
     } catch (error) {

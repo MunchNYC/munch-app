@@ -29,8 +29,10 @@ class MunchesTabState extends State<MunchesTab> {
   int _currentTab = 0;
 
   List<Munch> _stillDecidingMunches;
+  List<Munch> _decidedMunches;
+  List<Munch> _archivedMunches;
 
-  void _throwGetStillDecidingMunchesEvent(){
+  void _throwGetMunchesEvent(){
     _munchBloc.add(GetMunchesEvent());
   }
 
@@ -38,7 +40,7 @@ class MunchesTabState extends State<MunchesTab> {
   void initState() {
     _munchBloc = MunchBloc();
 
-    _throwGetStillDecidingMunchesEvent();
+    _throwGetMunchesEvent();
 
     super.initState();
   }
@@ -104,12 +106,15 @@ class MunchesTabState extends State<MunchesTab> {
     );
   }
 
-
   void _listViewsListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchesFetchingState){
-      _stillDecidingMunches = state.data;
+      Map<MunchStatus, List<Munch>> munchesStatusMap = state.data;
+
+      _stillDecidingMunches = munchesStatusMap[MunchStatus.UNDECIDED];
+      _decidedMunches = munchesStatusMap[MunchStatus.DECIDED];
+      _archivedMunches = munchesStatusMap[MunchStatus.ARCHIVED];
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
 
@@ -119,7 +124,7 @@ class MunchesTabState extends State<MunchesTab> {
       NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch).then((value){
         if(value != null) {
           // refresh list when user comes back to this screen
-          _throwGetStillDecidingMunchesEvent();
+          _throwGetMunchesEvent();
         }
       });
     }
@@ -151,8 +156,7 @@ class MunchesTabState extends State<MunchesTab> {
         index: _currentTab,
         children: <Widget>[
           _renderStillDecidingListView(errorOccurred),
-          // TODO: Decided/Archived list view
-          ListView()
+          _renderDecidedArchivedListView(errorOccurred)
         ]
     );
   }
@@ -162,7 +166,7 @@ class MunchesTabState extends State<MunchesTab> {
     return RefreshIndicator(
         color: Palette.secondaryDark,
         onRefresh: () async {
-          _throwGetStillDecidingMunchesEvent();
+          _throwGetMunchesEvent();
         },
         // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
         child: SingleChildScrollView(
@@ -183,6 +187,40 @@ class MunchesTabState extends State<MunchesTab> {
                     return Divider(height: 40.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5));
                 },
             ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.still_deciding_list_view.empty.text"))
+        )
+    );
+  }
+
+  Widget _renderDecidedArchivedListView([bool errorOccurred = false]){
+    // RefreshIndicator must be placed above scroll view
+    return RefreshIndicator(
+        color: Palette.secondaryDark,
+        onRefresh: () async {
+          _throwGetMunchesEvent();
+        },
+        // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
+        child: SingleChildScrollView(
+          // must be set because of RefreshIndicator
+            physics: AlwaysScrollableScrollPhysics(),
+            child:
+            errorOccurred ? ErrorPageWidget() :
+            _decidedMunches.length + _archivedMunches.length > 0 ?
+            ListView.separated(
+              primary: false,
+              shrinkWrap: true,
+              itemCount: _decidedMunches.length + _archivedMunches.length,
+              itemBuilder: (BuildContext context, int index){
+                if(index < _decidedMunches.length) {
+                  return MunchListWidget(_decidedMunches[index]);
+                } else{
+                  return MunchListWidget(_archivedMunches[index]);
+                }
+              },
+              padding: EdgeInsets.symmetric(vertical: 20.0),
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(height: 40.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5));
+              },
+            ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.decided_list_view.empty.text"))
         )
     );
   }
