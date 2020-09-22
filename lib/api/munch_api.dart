@@ -1,4 +1,5 @@
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/restaurant.dart';
 
 import 'api.dart';
 
@@ -53,5 +54,42 @@ class MunchApi extends Api {
     Munch createdMunch = MunchJsonSerializer().fromMap(data['munchDetailed']);
 
     return createdMunch;
+  }
+
+  Future<Munch> getDetailedMunch(String munchId) async {
+    String getUrl = "/munch?munchId=$munchId";
+
+    var data = await get(getUrl);
+
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+
+    return munch;
+  }
+
+  Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async {
+    String getUrl = "/restaurants?munchId=$munchId";
+
+    var data = await get(getUrl);
+
+    List<Restaurant> restaurantList = List<Restaurant>.from(data['restaurants'].map((restaurantData){
+      return RestaurantJsonSerializer().fromMap(restaurantData);
+    }));
+
+    return restaurantList;
+  }
+
+  Future<Munch> swipeRestaurant({String munchId, String restaurantId, bool liked}) async {
+    String postUrl = "/swipe?munchId=$munchId";
+
+    Map<String, dynamic> fields = {
+      "restaurantId": restaurantId,
+      "liked": liked
+    };
+
+    var data = await post(postUrl, fields);
+
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+
+    return munch;
   }
 }

@@ -110,7 +110,7 @@ class MunchCodeDialog extends StatelessWidget{
         // pop map screen, return result to munches tab to refresh the list
         NavigationHelper.popRoute(context, result: munch);
 
-        NavigationHelper.navigateToRestaurantSwipeScreen(context);
+        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: munch);
       },
     );
   }

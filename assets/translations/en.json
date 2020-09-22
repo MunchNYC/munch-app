@@ -55,6 +55,19 @@
     "map_screen.submit_button.text": "Let's Eat!",
     "map_screen.search_field.placeholder.text": "Search a location",
 
+    "restaurant_swipe_screen.restaurant_card.yelp.reviews.text": "Reviews",
+    "restaurant_swipe_screen.restaurant_card.working_hours.closed.text": "Closed",
+    "restaurant_swipe_screen.restaurant_card.working_hours.opens.text": "Opens at",
+    "restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text": "Re-opens at",
+    "restaurant_swipe_screen.restaurant_card.working_hours.open_until.text": "Open until",
+    "restaurant_swipe_screen.munch_status.undecided.action_message.text": "Keep Exploring!",
+    "restaurant_swipe_screen.munch_status.decided.action_message.text": "Decision Made!",
+    "restaurant_swipe_screen.munch_status.undecided.status.text": "Deciding...",
+    "restaurant_swipe_screen.app_bar.second_line.info_label.text": "Tap here for more options",
+    "restaurant_swipe_screen.empty_card_stack.title": "Looks like you're all done!",
+    "restaurant_swipe_screen.empty_card_stack.description": "We'll let you know when your friends are done deciding",
+    "restaurant_swipe_screen.empty_card_stack.back_button.text": "Back",
+
     "error_page_widget.text": "Error has occurred",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled",
@@ -68,5 +81,7 @@
 
     "api.error.request_timeout": "Request has timed out",
     "api.error.internet_connection": "Internet connection problem",
-    "api.error.unauthorized": "You are not authorized for this action"
+    "api.error.unauthorized": "You are not authorized for this action",
+
+    "url_launcher.error.message": "Url cannot be opened"
 }

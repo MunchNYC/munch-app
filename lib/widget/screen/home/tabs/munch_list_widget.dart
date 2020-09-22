@@ -5,6 +5,7 @@ import 'package:munch/model/munch.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/navigation_helper.dart';
 
 class MunchListWidget extends StatelessWidget {
   Munch _munch;
@@ -14,7 +15,7 @@ class MunchListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        // TODO: Navigate to munch
+        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _munch, shouldFetchDetailedMunch: true);
       },
       child: Container(
         height: 72.0,

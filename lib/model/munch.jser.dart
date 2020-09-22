@@ -24,22 +24,7 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     setMapValue(ret, 'name', model.name);
     setMapValue(ret, 'coordinates',
         _coordinatesJsonSerializer.toMap(model.coordinates));
-    setMapValueIfNotNull(ret, 'radius', model.radius);
-    setMapValueIfNotNull(
-        ret,
-        'members',
-        codeNonNullIterable(model.members,
-            (val) => _userJsonSerializer.toMap(val as User), []));
-    setMapValueIfNotNull(
-        ret,
-        'blacklistFilters',
-        codeNonNullIterable(model.blacklistFilters,
-            (val) => _filterJsonSerializer.toMap(val as Filter), []));
-    setMapValueIfNotNull(
-        ret,
-        'whitelistFilters',
-        codeNonNullIterable(model.whitelistFilters,
-            (val) => _filterJsonSerializer.toMap(val as Filter), []));
+    setMapValue(ret, 'radius', model.radius);
     return ret;
   }
 
@@ -50,14 +35,15 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     obj.id = map['id'] as String;
     obj.code = map['code'] as String;
     obj.name = map['name'] as String;
-    obj.numberOfMembers = map['numberOfMembers'] as int;
+    obj.numberOfMembers = map['numberOfMembers'] as int ??
+        getJserDefault('numberOfMembers') ??
+        obj.numberOfMembers;
     obj.creationTimestamp =
         _timestampProcessor.deserialize(map['creationTimestamp'] as int) ??
             getJserDefault('creationTimestamp') ??
             obj.creationTimestamp;
     obj.coordinates =
         _coordinatesJsonSerializer.fromMap(map['coordinates'] as Map);
-    obj.radius = map['radius'] as int ?? getJserDefault('radius') ?? obj.radius;
     obj.members = codeNonNullIterable<User>(map['members'] as Iterable,
             (val) => _userJsonSerializer.fromMap(val as Map), <User>[]) ??
         getJserDefault('members') ??

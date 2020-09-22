@@ -76,7 +76,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
       return null; // validation passed, placeholder will be used
     }
 
-    Pattern pattern = r'^([A-Za-z0-9]|\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])*$';
+    Pattern pattern = r'^([A-Za-z0-9\s]|\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])*$';
     RegExp regex = new RegExp(pattern);
 
     if (!regex.hasMatch(value)) {
