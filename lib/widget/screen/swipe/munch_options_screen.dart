@@ -55,14 +55,19 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   @override
   void initState() {
-    _munchNameFieldFocusNode.addListener(_onMunchNameFieldFocusChange);
+    _initializeFormFields();
 
-    // cannot set initial value to the Form field if controller is supplied, so initialization must be done here
-    _munchNameTextController.text = widget.munch.name;
+    _munchNameFieldFocusNode.addListener(_onMunchNameFieldFocusChange);
 
     _munchBloc = MunchBloc();
 
     super.initState();
+  }
+
+  void _initializeFormFields(){
+    // cannot set initial value to the Form field if controller is supplied, so initialization must be done here
+    _munchNameTextController.text = widget.munch.name;
+    _pushNotificationsEnabled = widget.munch.receivePushNotifications;
   }
 
   @override
@@ -111,8 +116,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   Future<bool> _onWillPopScope(BuildContext context) async {
-    // TODO: add condition for notifications dirty
-    if(widget.munch.name != _munchNameTextController.text) {
+    if(widget.munch.name != _munchNameTextController.text || widget.munch.receivePushNotifications != _pushNotificationsEnabled) {
       _popScopeCompleter = Completer<bool>();
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
@@ -160,17 +164,42 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     widget.munch = detailedMunch;
   }
 
+  void _preferencesListener(MunchPreferencesSavingState state){
+    _updateMunchWithDetailedData(state.data);
+
+    if(_popScopeCompleter != null){
+      _popScopeCompleter.complete(true);
+    } else{
+      Utility.showFlushbar(App.translate("options_screen.munch_preferences.save.successful"), context);
+    }
+  }
+
+  void _kickMemberListener(KickingMemberState state){
+    Munch detailedMunch = state.data['detailedMunch'];
+
+    // if response munch has empty members array (partial result 206)
+    if(detailedMunch.members.length == 0){
+      String kickedUserId = state.data['kickedUserId'];
+
+      // manually remove user from members list, after that we can merge munches
+      widget.munch.members.removeWhere((User user)=> user.uid == kickedUserId);
+      widget.munch.numberOfMembers--;
+    }
+
+    _updateMunchWithDetailedData(detailedMunch);
+
+    Utility.showFlushbar(App.translate("options_screen.kick_member.successful"), context);
+  }
+
   void _optionsScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchPreferencesSavingState){
-      _updateMunchWithDetailedData(state.data);
-
-      if(_popScopeCompleter != null){
-        _popScopeCompleter.complete(true);
-      } else{
-        Utility.showFlushbar(App.translate("options_screen.munch_preferences.save.successful"), context);
-      }
+      _preferencesListener(state);
+    } else if(state is KickingMemberState){
+      _kickMemberListener(state);
+    } else if(state is MunchLeavingState){
+      NavigationHelper.navigateToHome(context);
     }
   }
 
@@ -194,7 +223,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     if (state.loading){
       showLoadingIndicator = true;
 
-      if(state is MunchPreferencesSavingState){
+      if(state is MunchPreferencesSavingState || state is KickingMemberState){
         showLoadingIndicator = false;
       }
     }
@@ -353,11 +382,13 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     if(user.uid == widget.munch.hostUserId){
       return Text(App.translate("options_screen.member_list.host.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary));
     } else if(widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid){
-      return CustomButton(
+      return CustomButton<MunchState, KickingMemberState>.bloc(
+          cubit: _munchBloc,
           flat: true,
           // very important to set, otherwise title won't be aligned good
           padding: EdgeInsets.zero,
           color: Colors.transparent,
+          textColor: Palette.error,
           content: Text(App.translate("options_screen.member_list.kick_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.error)),
           onPressedCallback: () => _onKickButtonClicked(user)
       );
@@ -396,7 +427,8 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Text(App.translate("options_screen.leave_munch.label.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary)),
-        CustomButton(
+        CustomButton<MunchState, MunchLeavingState>.bloc(
+          cubit: _munchBloc,
           flat: true,
           // very important to set, otherwise title won't be aligned good
           padding: EdgeInsets.zero,
@@ -457,11 +489,11 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onKickButtonClicked(User user){
-    NavigationHelper.openFullScreenDialog(context, fullScreenDialog: KickMemberAlertDialog());
+    NavigationHelper.openFullScreenDialog(context, fullScreenDialog: KickMemberAlertDialog(user: user, munchId: widget.munch.id, munchBloc: _munchBloc));
   }
 
   void _onLeaveButtonClicked(){
-    NavigationHelper.openFullScreenDialog(context, fullScreenDialog: LeaveMunchAlertDialog());
+    NavigationHelper.openFullScreenDialog(context, fullScreenDialog: LeaveMunchAlertDialog(munchId: widget.munch.id, munchBloc: _munchBloc));
   }
 
   void _onSaveChangesDialogButtonClicked(){

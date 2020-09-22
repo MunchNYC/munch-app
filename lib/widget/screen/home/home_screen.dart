@@ -8,6 +8,14 @@ import 'package:munch/widget/screen/map/include/munch_code_dialog.dart';
 import 'account_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  static GlobalKey<NavigatorState> munchesTab;
+  static GlobalKey<NavigatorState> accountsTab;
+
+  HomeScreen(){
+    munchesTab = GlobalKey<NavigatorState>();
+    accountsTab = GlobalKey<NavigatorState>();
+  }
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -15,24 +23,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  static final GlobalKey<NavigatorState> _munchesTab = GlobalKey<NavigatorState>();
-  static final GlobalKey<NavigatorState> _accountsTab = GlobalKey<NavigatorState>();
-
   final List<GlobalKey<NavigatorState>> _tabs = [
-      _munchesTab,
-      _accountsTab
+      HomeScreen.munchesTab,
+      HomeScreen.accountsTab
   ];
 
   final List<Navigator> _navigators = [
     Navigator(
-      key: _munchesTab,
+      key: HomeScreen.munchesTab,
       onGenerateRoute: (route) => MaterialPageRoute(
         settings: route,
         builder: (context) =>  MunchesTab()
       ),
     ),
     Navigator(
-        key: _accountsTab,
+        key: HomeScreen.accountsTab,
         onGenerateRoute: (route) => MaterialPageRoute(
           settings: route,
           builder: (context) => Text("a") // TODO: AccountScreen()

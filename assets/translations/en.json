@@ -44,6 +44,7 @@
     "munches_tab.deciding_tab.title": "Still deciding",
     "munches_tab.decided_tab.title": "Decided",
     "munches_tab.still_deciding_list_view.empty.text": "No munches yet",
+    "munches_tab.decided_list_view.empty.text": "No munches yet",
     "munches_tab.join_munch.successful.message": "Munch successfully joined",
 
     "munch_list_widget.members.text": "Members",
@@ -86,6 +87,7 @@
     "options_screen.munch_preferences.save.successful": "Munch preferences successfully saved",
     "options_screen.preferences_form.name_field.required.validation": "Munch name cannot be blank",
     "options_screen.preferences_form.name_field.regex.validation": "Only alphanumerical chars and emojis are allowed",
+    "options_screen.kick_member.successful": "Member kicked successfully",
 
     "leave_munch_alert_dialog.confirm_button.text":  "Leave",
     "leave_munch_alert_dialog.cancel_button.text":  "Cancel",

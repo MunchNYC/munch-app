@@ -50,8 +50,20 @@ class MunchPreferencesSavingState extends MunchState{
   MunchPreferencesSavingState.failed({message = ""}):super.failed(message: message);
 }
 
-class CancellingMunchDecisionState extends MunchState{
-  CancellingMunchDecisionState.ready({data}):super.ready(data: data);
-  CancellingMunchDecisionState.loading({message = ""}):super.loading(message: message);
-  CancellingMunchDecisionState.failed({message = ""}):super.failed(message: message);
+class KickingMemberState extends MunchState{
+  KickingMemberState.ready({data}):super.ready(data: data);
+  KickingMemberState.loading({message = ""}):super.loading(message: message);
+  KickingMemberState.failed({message = ""}):super.failed(message: message);
+}
+
+class MunchLeavingState extends MunchState{
+  MunchLeavingState.ready({data}):super.ready(data: data);
+  MunchLeavingState.loading({message = ""}):super.loading(message: message);
+  MunchLeavingState.failed({message = ""}):super.failed(message: message);
+}
+
+class CancellingMunchDecisionState extends MunchState {
+  CancellingMunchDecisionState.ready({data}) :super.ready(data: data);
+  CancellingMunchDecisionState.loading({message = ""}) :super.loading(message: message);
+  CancellingMunchDecisionState.failed({message = ""}) :super.failed(message: message);
 }
