@@ -86,6 +86,7 @@
     "options_screen.munch_preferences.save.successful": "Munch preferences successfully saved",
     "options_screen.preferences_form.name_field.required.validation": "Munch name cannot be blank",
     "options_screen.preferences_form.name_field.regex.validation": "Only alphanumerical chars and emojis are allowed",
+    "options_screen.kick_member.successful": "Member kicked successfully",
 
     "leave_munch_alert_dialog.confirm_button.text":  "Leave",
     "leave_munch_alert_dialog.cancel_button.text":  "Cancel",

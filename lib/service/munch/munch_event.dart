@@ -52,3 +52,16 @@ class SaveMunchPreferencesEvent extends MunchEvent {
 
   SaveMunchPreferencesEvent({this.munchId, this.munchName, this.notificationsEnabled});
 }
+
+class KickMemberEvent extends MunchEvent {
+  String munchId;
+  String userId;
+
+  KickMemberEvent({this.munchId, this.userId});
+}
+
+class LeaveMunchEvent extends MunchEvent {
+  String munchId;
+
+  LeaveMunchEvent({this.munchId});
+}

@@ -107,4 +107,24 @@ class MunchApi extends Api {
 
     return munch;
   }
+
+  Future<Munch> removeUserFromMunch({String munchId, String userId}) async {
+    String postUrl = "/user/remove?munchId=$munchId";
+
+    Map<String, dynamic> fields = {
+      "userId": userId,
+    };
+
+    var data = await post(postUrl, fields);
+
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+
+    return munch;
+  }
+
+  Future deleteSelfFromMunch({String munchId}) async {
+    String deleteUrl = "/munch/user?munchId=$munchId";
+
+    await delete(deleteUrl);
+  }
 }

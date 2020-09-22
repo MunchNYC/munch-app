@@ -8,6 +8,7 @@ part of 'munch.dart';
 
 abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   final _timestampProcessor = const TimestampProcessor();
+  final _munchStatusProcessor = const MunchStatusProcessor();
   Serializer<Coordinates> __coordinatesJsonSerializer;
   Serializer<Coordinates> get _coordinatesJsonSerializer =>
       __coordinatesJsonSerializer ??= CoordinatesJsonSerializer();
@@ -67,6 +68,13 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
         _restaurantJsonSerializer.fromMap(map['matchedRestaurant'] as Map) ??
             getJserDefault('matchedRestaurant') ??
             obj.matchedRestaurant;
+    obj.matchedRestaurantName = map['matchedRestaurantName'] as String ??
+        getJserDefault('matchedRestaurantName') ??
+        obj.matchedRestaurantName;
+    obj.receivePushNotifications = map['receivePushNotifications'] as bool ??
+        getJserDefault('receivePushNotifications') ??
+        obj.receivePushNotifications;
+    obj.munchStatus = _munchStatusProcessor.deserialize(map['state'] as String);
     return obj;
   }
 }

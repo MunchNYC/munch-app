@@ -65,4 +65,17 @@ class MunchRepo {
 
     return munch;
   }
+
+  Future<Munch> kickMember({String munchId, String userId}) async{
+    Munch munch = await _munchApi.removeUserFromMunch(
+      munchId: munchId,
+      userId: userId
+    );
+
+    return munch;
+  }
+
+  Future leaveMunch({String munchId}) async{
+    await _munchApi.deleteSelfFromMunch(munchId: munchId,);
+  }
 }

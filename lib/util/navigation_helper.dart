@@ -36,7 +36,7 @@ class NavigationHelper {
   }
 
   static Future _popAllRoutesAndNavigateTo(BuildContext context,
-      {Widget screen, bool rootNavigator: false}) {
+      {Widget screen, bool rootNavigator: false, var result}) {
       return Navigator.of(context, rootNavigator: rootNavigator).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => screen), (Route<dynamic> route) => false
       );
@@ -60,10 +60,10 @@ class NavigationHelper {
   }
 
   static Future navigateToHome(BuildContext context,
-      {bool popAllRoutes: true, bool addToBackStack: false}) {
+      {bool popAllRoutes: false, bool addToBackStack: false}) {
     if(popAllRoutes){
       return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(), rootNavigator: true);
-    } else {
+    } else{
       // addToBackStack is considered if popAllRoutes = false
       return _navigateTo(context, addToBackStack: addToBackStack,
           screen: HomeScreen(),

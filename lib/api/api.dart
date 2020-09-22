@@ -149,14 +149,14 @@ abstract class Api{
     print(response.statusCode);
     print(response.body);
 
+    // if that's response with no content
+    if (response.statusCode == 204) {
+      return null;
+    }
+
     var responseJson = json.decode(response.body.toString());
 
     if(response.statusCode >= 200 && response.statusCode < 300){
-      // if that's response with no content
-      if (response.statusCode == 204) {
-         return null;
-      }
-
       if(responseJson['status']['successful'] == false){
          throw FetchDataException.fromMessage(json.decode(response.body.toString()));
       }
