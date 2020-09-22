@@ -49,3 +49,9 @@ class MunchPreferencesSavingState extends MunchState{
   MunchPreferencesSavingState.loading({message = ""}):super.loading(message: message);
   MunchPreferencesSavingState.failed({message = ""}):super.failed(message: message);
 }
+
+class CancellingMunchDecisionState extends MunchState{
+  CancellingMunchDecisionState.ready({data}):super.ready(data: data);
+  CancellingMunchDecisionState.loading({message = ""}):super.loading(message: message);
+  CancellingMunchDecisionState.failed({message = ""}):super.failed(message: message);
+}

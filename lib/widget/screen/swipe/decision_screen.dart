@@ -16,6 +16,8 @@ import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
+import 'include/new_restaurant_alert_dialog.dart';
+
 class DecisionScreen extends StatefulWidget{
   Munch munch;
   Restaurant restaurant;
@@ -57,9 +59,23 @@ class _DecisionScreenState extends State<DecisionScreen>{
     );
   }
 
+  void _updateMunchWithDetailedData(Munch detailedMunch){
+    /*
+      Take old data from munch which can be missing from detailedMunch response
+      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
+    */
+    detailedMunch.merge(widget.munch);
+
+    widget.munch = detailedMunch;
+  }
+
   void _decisionScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
+    } else if(state is CancellingMunchDecisionState){
+      _updateMunchWithDetailedData(state.data);
+
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false);
     }
   }
 
@@ -76,8 +92,6 @@ class _DecisionScreenState extends State<DecisionScreen>{
   Widget _buildDecisionScreen(BuildContext context, MunchState state){
     if (state.hasError) {
       return ErrorPageWidget();
-    } else if (state.loading){
-      return AppCircularProgressIndicator();
     }
 
     return _renderScreen(context);
@@ -414,13 +428,14 @@ class _DecisionScreenState extends State<DecisionScreen>{
             padding: EdgeInsets.symmetric(vertical: 12.0),
             content: Text(App.translate("decision_screen.continue_exploring_button.text"), style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark)),
             onPressedCallback: (){
-              NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch);
+              NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false);
             },
           )
         ),
         SizedBox(width:32.0),
         Expanded(
-          child:  CustomButton(
+          child:  CustomButton<MunchState, CancellingMunchDecisionState>.bloc(
+            cubit: _munchBloc,
             flat: true,
             color: Colors.transparent,
             borderRadius: 8.0,
@@ -430,7 +445,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
             padding: EdgeInsets.symmetric(vertical: 12.0),
             content: Text(App.translate("decision_screen.new_restaurant_button.text"), style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark)),
             onPressedCallback: (){
-
+              NavigationHelper.openFullScreenDialog(context, fullScreenDialog: NewRestaurantAlertDialog(munchId: widget.munch.id, munchBloc: _munchBloc));
             },
           )
         ),

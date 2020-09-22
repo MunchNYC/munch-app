@@ -107,4 +107,14 @@ class MunchApi extends Api {
 
     return munch;
   }
+
+  Future<Munch> cancelMunchDecision({String munchId}) async{
+    String deleteUrl = "/match?munchId=$munchId";
+
+    var data = await delete(deleteUrl);
+
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+
+    return munch;
+  }
 }

@@ -391,7 +391,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                     )
                   : GestureDetector(
                     onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch);
+                      NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
                     },
                     child: Text(widget.munch.matchedRestaurant.name,
                       style: AppTextStyle.style(AppTextStylePattern.body3,

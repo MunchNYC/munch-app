@@ -110,6 +110,11 @@
     "decision_screen.new_restaurant_button.text": "New Restaurant",
     "decision_screen.yelp.reviews.text": "Reviews",
 
+    "new_restaurant_alert_dialog.cancel_action.text": "cancel",
+    "new_restaurant_alert_dialog.title": "Are you sure?",
+    "new_restaurant_alert_dialog.description": "This will reset the decision for the entire group and is irreversible",
+    "new_restaurant_alert_dialog.new_restaurant_button.text": "New Restaurant",
+
     "restaurant.working_hours.closed.text": "Closed",
 
     "error_page_widget.text": "Error has occurred",

@@ -65,4 +65,12 @@ class MunchRepo {
 
     return munch;
   }
+
+  Future<Munch> cancelMunchDecision({String munchId}) async {
+    Munch munch = await _munchApi.cancelMunchDecision(
+      munchId: munchId,
+    );
+
+    return munch;
+  }
 }

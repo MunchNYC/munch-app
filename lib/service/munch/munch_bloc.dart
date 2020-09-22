@@ -34,6 +34,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* processRestaurantSwipe(event);
     } else if(event is SaveMunchPreferencesEvent){
       yield* saveMunchPreferences(event);
+    } else if(event is NewMunchRestaurantEvent){
+      yield* cancelMunchDecision(event.munchId);
     }
   }
 
@@ -129,6 +131,21 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     } catch (error) {
       print("Munch preferences saving failed: " + error.toString());
       yield MunchPreferencesSavingState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> cancelMunchDecision(String munchId) async* {
+    yield CancellingMunchDecisionState.loading();
+
+    try {
+      Munch munch = await _munchRepo.cancelMunchDecision(
+          munchId: munchId,
+      );
+
+      yield CancellingMunchDecisionState.ready(data: munch);
+    } catch (error) {
+      print("Munch decision cancellation failed: " + error.toString());
+      yield CancellingMunchDecisionState.failed(message: error.toString());
     }
   }
 }
