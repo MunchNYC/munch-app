@@ -5,6 +5,7 @@ import 'package:maps_launcher/maps_launcher.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
+import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
@@ -21,10 +22,9 @@ import 'include/new_restaurant_alert_dialog.dart';
 class DecisionScreen extends StatefulWidget{
   Munch munch;
   Restaurant restaurant;
+  bool shouldFetchDetailedMunch;
 
-  DecisionScreen({this.munch}){
-    this.restaurant = munch.matchedRestaurant;
-  }
+  DecisionScreen({this.munch, this.shouldFetchDetailedMunch});
 
   @override
   State<DecisionScreen> createState() => _DecisionScreenState();
@@ -40,6 +40,13 @@ class _DecisionScreenState extends State<DecisionScreen>{
   @override
   void initState() {
     _munchBloc = MunchBloc();
+
+    if(widget.shouldFetchDetailedMunch){
+      _munchBloc.add(GetDetailedMunchEvent(widget.munch.id));
+    } else{
+      // merge Munch with itself in order to update members array if it's empty to (1 member - current user)
+      _updateMunchWithDetailedData(widget.munch);
+    }
 
     super.initState();
   }
@@ -67,15 +74,19 @@ class _DecisionScreenState extends State<DecisionScreen>{
     detailedMunch.merge(widget.munch);
 
     widget.munch = detailedMunch;
+
+    widget.restaurant = widget.munch.matchedRestaurant;
   }
 
   void _decisionScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
-    } else if(state is CancellingMunchDecisionState){
+    } else if(state is DetailedMunchFetchingState){
+      _updateMunchWithDetailedData(state.data);
+    } if(state is CancellingMunchDecisionState){
       _updateMunchWithDetailedData(state.data);
 
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false);
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false, result: widget.munch);
     }
   }
 
@@ -92,6 +103,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
   Widget _buildDecisionScreen(BuildContext context, MunchState state){
     if (state.hasError) {
       return ErrorPageWidget();
+    } else if((state.initial && widget.shouldFetchDetailedMunch) || (state.loading && state is DetailedMunchFetchingState)){
+      return AppCircularProgressIndicator();
     }
 
     return _renderScreen(context);
@@ -99,6 +112,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
 
   Widget _renderScreen(BuildContext context){
     return SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 24.0),
         child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

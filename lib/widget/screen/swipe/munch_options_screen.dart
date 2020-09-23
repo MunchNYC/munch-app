@@ -377,8 +377,6 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   Widget _membersListTrailing(User user){
-    print(widget.munch.hostUserId);
-    print(user.uid);
     if(user.uid == widget.munch.hostUserId){
       return Text(App.translate("options_screen.member_list.host.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary));
     } else if(widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid){

@@ -79,8 +79,8 @@ class NavigationHelper {
   }
 
   static Future navigateToRestaurantSwipeScreen(BuildContext context,
-      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true}) {
-    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true, var result}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true, result: result,
         screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
 
@@ -91,9 +91,9 @@ class NavigationHelper {
   }
 
   static Future navigateToDecisionScreen(BuildContext context,
-      {Munch munch, bool addToBackStack: true}) {
+      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
-        screen: DecisionScreen(munch: munch));
+        screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
 }
 

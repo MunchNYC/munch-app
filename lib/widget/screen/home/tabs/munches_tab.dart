@@ -180,7 +180,14 @@ class MunchesTabState extends State<MunchesTab> {
                 shrinkWrap: true,
                 itemCount: _stillDecidingMunches.length,
                 itemBuilder: (BuildContext context, int index){
-                  return MunchListWidget(_stillDecidingMunches[index]);
+                  return GestureDetector(
+                      onTap: (){
+                        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true).then((value){
+                          _throwGetMunchesEvent();
+                        });
+                      },
+                      child: MunchListWidget(munch: _stillDecidingMunches[index])
+                  );
                 },
                 padding: EdgeInsets.symmetric(vertical: 20.0),
                 separatorBuilder: (BuildContext context, int index) {
@@ -210,11 +217,14 @@ class MunchesTabState extends State<MunchesTab> {
               shrinkWrap: true,
               itemCount: _decidedMunches.length + _archivedMunches.length,
               itemBuilder: (BuildContext context, int index){
-                if(index < _decidedMunches.length) {
-                  return MunchListWidget(_decidedMunches[index]);
-                } else{
-                  return MunchListWidget(_archivedMunches[index]);
-                }
+                return GestureDetector(
+                    onTap: (){
+                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true).then((value){
+                        _throwGetMunchesEvent();
+                      });
+                    },
+                    child: MunchListWidget(munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index])
+                );
               },
               padding: EdgeInsets.symmetric(vertical: 20.0),
               separatorBuilder: (BuildContext context, int index) {
