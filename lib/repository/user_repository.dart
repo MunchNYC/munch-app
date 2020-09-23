@@ -1,12 +1,13 @@
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
+// firebase recommends to prefix this import with namespace to avoid collisions
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
 
 class UserRepo {
   static UserRepo _instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
 
   User _currentUser;
 
@@ -21,14 +22,14 @@ class UserRepo {
 
   User get currentUser => _currentUser;
 
-  Future setCurrentUser(FirebaseUser firebaseUser) async {
+  Future setCurrentUser(firebase_auth.User firebaseUser) async {
     final idToken = await firebaseUser.getIdToken();
 
-    _currentUser = User.fromFirebaseUser(firebaseUser: firebaseUser, accessToken: idToken.token);
+    _currentUser = User.fromFirebaseUser(firebaseUser: firebaseUser, accessToken: idToken);
   }
 
   Future<User> fetchCurrentUser() async {
-    FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
+    firebase_auth.User firebaseUser = await firebase_auth.FirebaseAuth.instance.currentUser;
 
     // User is not logged in
     if(firebaseUser == null){
@@ -49,8 +50,9 @@ class UserRepo {
   Future<String> refreshAccessToken() async {
     print("Refreshing access token");
 
-    FirebaseUser currentFirebaseUser = await _firebaseAuth.currentUser();
-    String newAuthToken = (await currentFirebaseUser.getIdToken(refresh: true)).token;
+    firebase_auth.User currentFirebaseUser = _firebaseAuth.currentUser;
+    // getIdToken force refresh
+    String newAuthToken = (await currentFirebaseUser.getIdToken(true));
 
     await setAccessToken(newAuthToken);
 
