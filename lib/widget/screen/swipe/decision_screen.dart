@@ -292,6 +292,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
         Expanded(
           child: _callButton()
         ),
+        if(widget.restaurant.coordinates != null)
         Expanded(
           child: _mapButton()
         ),
