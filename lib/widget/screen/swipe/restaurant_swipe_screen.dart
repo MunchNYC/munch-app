@@ -12,6 +12,7 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/include/restaurant_card.dart';
+import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
@@ -94,9 +95,21 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               style: AppTextStyle.style(AppTextStylePattern.body2)
             ),
             SizedBox(width: 2.0),
-            Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
-                style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
-            ),
+            GestureDetector(
+              onTap: (){
+                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((munch){
+                  if(munch != null){
+                    setState(() {
+                      widget.munch = munch;
+                    });
+                  }
+                });
+              },
+              child: Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
+                  style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
+              ),
+            )
+
           ],
         )
       ],
@@ -117,12 +130,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   Widget _appBar(BuildContext context){
     return AppBar(
-        // this will change icon color of back icon
-        iconTheme: IconThemeData(
-          color: Palette.secondaryLight,
-        ),
         elevation: 0.0,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
+        leading: AppBarBackButton(),
         backgroundColor: Palette.background,
         title: _appBarTitleBuilder(),
         centerTitle: true,
@@ -282,8 +292,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   textAlign: TextAlign.center),
               SizedBox(height: 36.0),
               // TODO: which message to show if munch status is decided
-              if(widget.munch.munchStatus == MunchStatus.UNDECIDED)
-                Text(App.translate("restaurant_swipe_screen.empty_card_stack.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
+              widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                Text(App.translate("restaurant_swipe_screen.empty_card_stack.undecided.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center)
+              : Text(App.translate("restaurant_swipe_screen.empty_card_stack.decided.description") + " " + widget.munch.matchedRestaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
             ],
           ),
           CustomButton(
@@ -368,7 +379,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               child: Center(
                   child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
                     App.translate("restaurant_swipe_screen.munch_status.undecided.status.text") :
-                    "Restaurant Name", // TODO: put decided restaurant name here
+                    widget.munch.matchedRestaurant.name,
                     style: AppTextStyle.style(AppTextStylePattern.body3,
                         color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.primary : Palette.background,
                         fontSizeOffset: 1.0,

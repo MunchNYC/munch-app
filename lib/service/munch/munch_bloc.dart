@@ -32,6 +32,12 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* getRestaurantsPage(event.munchId);
     } else if(event is RestaurantSwipeEvent){
       yield* processRestaurantSwipe(event);
+    } else if(event is SaveMunchPreferencesEvent){
+      yield* saveMunchPreferences(event);
+    } else if(event is KickMemberEvent){
+      yield* kickMember(event);
+    } else if(event is LeaveMunchEvent){
+      yield* leaveMunch(event.munchId);
     }
   }
 
@@ -39,7 +45,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield MunchesFetchingState.loading();
 
     try {
-      List<Munch> munches = await _munchRepo.getMunches();
+      Map<MunchStatus, List<Munch>> munches = await _munchRepo.getMunches();
 
       yield MunchesFetchingState.ready(data: munches);
     } catch (error) {
@@ -113,4 +119,58 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     }
   }
 
+  Stream<MunchState> saveMunchPreferences(SaveMunchPreferencesEvent saveMunchPreferencesEvent) async* {
+    yield MunchPreferencesSavingState.loading();
+
+    try {
+      Munch munch = await _munchRepo.saveMunchPreferences(
+          munchId: saveMunchPreferencesEvent.munchId,
+          munchName: saveMunchPreferencesEvent.munchName,
+          notificationsEnabled: saveMunchPreferencesEvent.notificationsEnabled
+      );
+
+      yield MunchPreferencesSavingState.ready(data: munch);
+    } catch (error) {
+      print("Munch preferences saving failed: " + error.toString());
+      yield MunchPreferencesSavingState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> kickMember(KickMemberEvent kickMemberEvent) async* {
+    yield KickingMemberState.loading();
+
+    try {
+      Munch munch = await _munchRepo.kickMember(
+          munchId: kickMemberEvent.munchId,
+          userId: kickMemberEvent.userId,
+      );
+
+      /*
+         We're returning kickedUserId in case of partial response (without members) is retrieved from server
+         to be able to remove that user from previous munch data stored in view
+      */
+      Map<String, dynamic> data = {
+        'detailedMunch': munch,
+        'kickedUserId': kickMemberEvent.userId
+      };
+
+      yield KickingMemberState.ready(data: data);
+    } catch (error) {
+      print("Member kicking failed: " + error.toString());
+      yield KickingMemberState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> leaveMunch(String munchId) async* {
+    yield MunchLeavingState.loading();
+
+    try {
+      await _munchRepo.leaveMunch(munchId: munchId);
+
+      yield MunchLeavingState.ready();
+    } catch (error) {
+      print("Leaving munch failed: " + error.toString());
+      yield MunchLeavingState.failed(message: error.toString());
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:munch/model/munch.dart';
+import 'package:munch/service/munch/munch_state.dart';
 
 abstract class MunchEvent {}
 
@@ -35,10 +36,32 @@ abstract class RestaurantSwipeEvent extends MunchEvent{
 
   RestaurantSwipeEvent({this.munchId, this.restaurantId, this.liked});
 }
+
 class RestaurantSwipeLeftEvent extends RestaurantSwipeEvent {
   RestaurantSwipeLeftEvent({munchId, restaurantId}): super(munchId: munchId, restaurantId: restaurantId, liked: false);
 }
 
 class RestaurantSwipeRightEvent extends RestaurantSwipeEvent {
   RestaurantSwipeRightEvent({munchId, restaurantId}): super(munchId: munchId, restaurantId: restaurantId, liked: true);
+}
+
+class SaveMunchPreferencesEvent extends MunchEvent {
+  String munchId;
+  String munchName;
+  bool notificationsEnabled;
+
+  SaveMunchPreferencesEvent({this.munchId, this.munchName, this.notificationsEnabled});
+}
+
+class KickMemberEvent extends MunchEvent {
+  String munchId;
+  String userId;
+
+  KickMemberEvent({this.munchId, this.userId});
+}
+
+class LeaveMunchEvent extends MunchEvent {
+  String munchId;
+
+  LeaveMunchEvent({this.munchId});
 }

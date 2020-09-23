@@ -61,7 +61,9 @@ class MunchApp extends StatelessWidget {
             theme: ThemeData(
               primarySwatch: Palette.generateMaterialColor(Palette.primary),
               backgroundColor: Palette.background,
-              fontFamily: AppTextStyle.APP_FONT
+              fontFamily: AppTextStyle.APP_FONT,
+              textSelectionHandleColor: Palette.secondaryDark.withOpacity(0.7),
+              textSelectionColor: Palette.secondaryDark.withOpacity(0.7),
             ),
             locale: Locale("en"), // switch between en and ru to see effect
             localizationsDelegates: [const AppLocalizationsDelegate()],

@@ -3,21 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
-import 'package:munch/util/app.dart';
-import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 
-import 'alert_dialog_builder.dart';
-
-class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
+class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
   Widget content;
   Color color;
   Color textColor;
   Color splashColor;
   Function onPressedCallback;
   Function onActionDoneCallback;
-  bool openDialog = false;
-  String dialogText;
-  String dialogTitle;
   bool disabled = false;
   Bloc<dynamic, T> cubit;
   State widgetState;
@@ -30,83 +23,74 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   Color borderColor;
   double elevation;
 
-  GlobalKey _buttonKey = GlobalKey();
-  double initialWidth;
-  double initialHeight;
-
   CustomButton.disabled(this.content) {
     this.disabled = true;
   }
 
-  CustomButton(
-      {this.content,
-        this.color = Palette.secondaryDark,
-        this.textColor = Palette.background,
-        this.splashColor = Palette.secondaryLight,
-        this.onPressedCallback,
-        this.onActionDoneCallback,
-        this.minWidth = 0.0,
-        this.height = 0.0,
-        this.padding = const EdgeInsets.all(8.0),
-        this.flat = false,
-        this.borderRadius = 0,
-        this.borderWidth = 0.0,
-        this.borderColor,
-        this.elevation = 8.0
-      });
+  CustomButton({this.content,
+    this.color = Palette.secondaryDark,
+    this.textColor = Palette.background,
+    this.splashColor = Palette.secondaryLight,
+    this.onPressedCallback,
+    this.onActionDoneCallback,
+    this.minWidth = 0.0,
+    this.height = 0.0,
+    this.padding = const EdgeInsets.all(8.0),
+    this.flat = false,
+    this.borderRadius = 0,
+    this.borderWidth = 0.0,
+    this.borderColor,
+    this.elevation = 8.0
+  });
 
-  CustomButton.bloc(
-      {this.cubit,
-      this.content,
-      this.color = Palette.secondaryDark,
-      this.textColor = Palette.background,
-      this.splashColor = Palette.secondaryLight,
-      this.onPressedCallback,
-      this.onActionDoneCallback,
-      this.minWidth = 0.0,
-      this.height = 0.0,
-      this.padding = const EdgeInsets.all(8.0),
-      this.flat = false,
-      this.borderRadius = 0,
-      this.borderWidth = 0.0,
-      this.borderColor,
-      this.elevation = 8.0});
+  CustomButton.bloc({this.cubit,
+    this.content,
+    this.color = Palette.secondaryDark,
+    this.textColor = Palette.background,
+    this.splashColor = Palette.secondaryLight,
+    this.onPressedCallback,
+    this.onActionDoneCallback,
+    this.minWidth = 0.0,
+    this.height = 0.0,
+    this.padding = const EdgeInsets.all(8.0),
+    this.flat = false,
+    this.borderRadius = 0,
+    this.borderWidth = 0.0,
+    this.borderColor,
+    this.elevation = 8.0});
 
-  CustomButton.blocWithDialog(
-      {this.cubit,
-      this.content,
-      this.color = Palette.secondaryDark,
-      this.textColor = Palette.background,
-      this.splashColor = Palette.secondaryLight,
-      this.onPressedCallback,
-      this.onActionDoneCallback,
-      this.dialogText,
-      this.dialogTitle,
-      this.minWidth = 0.0,
-      this.height = 0.0,
-      this.padding = const EdgeInsets.all(8.0),
-      this.flat = false,
-      this.borderRadius = 0.0,
-      this.borderWidth = 0.0,
-      this.borderColor,
-      this.elevation = 8.0}) {
-    this.openDialog = true;
+  @override
+  State<CustomButton> createState() => _CustomButtonState<T, V>();
+}
+
+class _CustomButtonState<T extends SuperState, V extends T> extends State<CustomButton>{
+  GlobalKey _buttonKey = GlobalKey();
+  double initialWidth;
+  double initialHeight;
+
+  @override
+  void initState() {
+    // CustomButton is stateless widget in order to calculate initial sizes of it, to be possible to print _loadingAnimation without resizing
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // after render is done, button size is calculated to be used in loading animation if necessary (bloc called)
+      _calculateInitialSizes();
+    });
+
+    super.initState();
+  }
+
+  // store initialHeight and width of the button to keep button same size when it's content is loading animation
+  void _calculateInitialSizes() {
+    if (initialWidth == null) {
+      initialWidth =
+          _buttonKey.currentContext.size.width - widget.padding.horizontal * 2;
+      // for some strange reason paddingVertical shouldn't be multiplied by 2
+      initialHeight = _buttonKey.currentContext.size.height - widget.padding.vertical;
+    }
   }
 
   void _buttonPressed(BuildContext context) {
-    // store initialHeight and width of the button to keep button same size when it's content is loading animation
-    if(initialWidth == null){
-      initialWidth = _buttonKey.currentContext.size.width - padding.horizontal * 2;
-
-      // for some strange reason paddingVertical shouldn't be multiplied by 2
-      initialHeight = _buttonKey.currentContext.size.height - padding.vertical;
-    }
-
-    if (openDialog) {
-      AlertDialogBuilder().showAlertDialogWidget(context, dialogTitle, dialogText, onPressedCallback);
-    } else {
-      onPressedCallback();
-    }
+    widget.onPressedCallback();
   }
 
   Widget _loadingAnimation(){
@@ -115,7 +99,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
       width: initialWidth,
       height: initialHeight,
       child: SpinKitThreeBounce(
-        color: textColor,
+        color: widget.textColor,
         size: 20.0,
       )
     );
@@ -124,46 +108,46 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
   Widget _renderButton(BuildContext context, {bool isLoading = false}) {
     return ButtonTheme(
         key: _buttonKey,
-        padding: padding,
+        padding: widget.padding,
         //adds padding inside the button
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         //limits the touch area to the button area
-        minWidth: minWidth,
+        minWidth: widget.minWidth,
         //wraps child's width
-        height: height,
+        height: widget.height,
         // splash color on button tap
-        splashColor: splashColor,
+        splashColor: widget.splashColor,
         // shape with border color
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-            side: BorderSide(width: borderWidth, color: borderColor ?? color)
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            side: BorderSide(width: widget.borderWidth, color: widget.borderColor ?? widget.color)
         ),
-        disabledColor: !isLoading ? Palette.secondaryLight : color,
+        disabledColor: !isLoading ? Palette.secondaryLight : widget.color,
         //wraps child's height
-        child: (flat)
+        child: (widget.flat)
             ? FlatButton(
-                child: !isLoading ? content : _loadingAnimation(),
-                color: color,
-                textColor: textColor,
-                onPressed: (disabled || isLoading) ? null : () => _buttonPressed(context))
+                child: !isLoading ? widget.content : _loadingAnimation(),
+                color: widget.color,
+                textColor: widget.textColor,
+                onPressed: (widget.disabled || isLoading) ? null : () => _buttonPressed(context))
             : RaisedButton(
-                child: !isLoading ? content : _loadingAnimation(),
-                color: color,
-                textColor: textColor,
-                elevation: elevation,
-                onPressed: (disabled || isLoading) ? null : () => _buttonPressed(context)));
+                child: !isLoading ? widget.content : _loadingAnimation(),
+                color: widget.color,
+                textColor: widget.textColor,
+                elevation: widget.elevation,
+                onPressed: (widget.disabled || isLoading) ? null : () => _buttonPressed(context)));
   }
 
   Widget _renderBlocButton(BuildContext context) {
     return BlocConsumer<Bloc<dynamic, T>, T>(
-      cubit: cubit,
+      cubit: widget.cubit,
       listenWhen: (T previous, T current) => current.ready && current is V,
       listener: (BuildContext context, T state) {
-        if (onActionDoneCallback != null) {
+        if (widget.onActionDoneCallback != null) {
           if (state.data != null) {
-            onActionDoneCallback(state.data);
+            widget.onActionDoneCallback(state.data);
           } else {
-            onActionDoneCallback();
+            widget.onActionDoneCallback();
           }
         }
       },
@@ -187,7 +171,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (cubit != null && !disabled) {
+    if (widget.cubit != null && !widget.disabled) {
       return _renderBlocButton(context);
     } else {
       return _renderButton(context);

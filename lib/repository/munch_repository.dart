@@ -16,8 +16,22 @@ class MunchRepo {
 
   MunchApi _munchApi = MunchApi();
 
-  Future<List<Munch>> getMunches() async{
-      return await _munchApi.getMunches();
+  Future<Map<MunchStatus, List<Munch>>> getMunches() async{
+    List<Munch> munches = await _munchApi.getMunches();
+
+    Map<MunchStatus, List<Munch>> munchesMap = Map<MunchStatus, List<Munch>>();
+
+    for(int i = 0; i < MunchStatus.values.length; i++){
+      munchesMap[MunchStatus.values[i]] = List<Munch>();
+    }
+
+    for(int i = 0; i < munches.length; i++){
+      Munch munch = munches[i];
+
+      munchesMap[munch.munchStatus].add(munch);
+    }
+
+    return munchesMap;
   }
 
   Future<Munch> joinMunch(String munchCode) async{
@@ -54,5 +68,28 @@ class MunchRepo {
     );
 
     return munch;
+  }
+
+  Future<Munch> saveMunchPreferences({String munchId, String munchName, bool notificationsEnabled}) async {
+    Munch munch = await _munchApi.saveMunchPreferences(
+      munchId: munchId,
+      munchName: munchName,
+      notificationsEnabled: notificationsEnabled,
+    );
+
+    return munch;
+  }
+
+  Future<Munch> kickMember({String munchId, String userId}) async{
+    Munch munch = await _munchApi.removeUserFromMunch(
+        munchId: munchId,
+        userId: userId
+    );
+
+    return munch;
+  }
+
+  Future leaveMunch({String munchId}) async{
+    await _munchApi.deleteSelfFromMunch(munchId: munchId,);
   }
 }

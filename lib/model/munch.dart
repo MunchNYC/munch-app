@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:munch/model/coordinates.dart';
+import 'package:munch/model/processors/munch_status_processor.dart';
 import 'package:munch/model/processors/timestamp_processor.dart';
+import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 
@@ -24,10 +28,13 @@ class Munch{
   String name;
 
   // isNullable means - put null conditions (maybe better name is @nullable, this is not logical)
+  @Field.decode(isNullable: false, alias: 'host') // if Field.decode is defined alias must be defined inside it
+  String hostUserId;
+
   @Field.decode(isNullable: false)
   int numberOfMembers;
 
-  @Field.decode(isNullable: false)
+  // special processor
   DateTime creationTimestamp;
 
   Coordinates coordinates;
@@ -44,8 +51,19 @@ class Munch{
   @Field.decode(isNullable: false)
   List<Filter> whitelistFilters;
 
-  @Field.ignore()
-  MunchStatus munchStatus = MunchStatus.UNDECIDED;
+  // will be fetched totally in detailed munch
+  @Field.decode(isNullable: false)
+  Restaurant matchedRestaurant;
+
+  // will be get for compact munches list
+  @Field.decode(isNullable: false)
+  String matchedRestaurantName;
+
+  @Field.decode(isNullable: false)
+  bool receivePushNotifications;
+
+  // special processor, alias specified there
+  MunchStatus munchStatus;
 
   @Field.ignore()
   String get link => CODE_PREFIX + code;
@@ -78,5 +96,6 @@ class Munch{
 @GenSerializer(fields: const {
   // dontEncode must be specified here if we define custom processor, isNullable means that it CAN be nullable
   'creationTimestamp': const Field(processor: TimestampProcessor(), dontEncode: true, isNullable: false),
+  'munchStatus': const Field(processor: MunchStatusProcessor(), dontEncode: true, decodeFrom: 'state')
 })
 class MunchJsonSerializer extends Serializer<Munch> with _$MunchJsonSerializer {}

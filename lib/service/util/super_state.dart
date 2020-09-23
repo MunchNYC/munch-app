@@ -3,7 +3,7 @@ abstract class SuperState {
   bool loading;
   bool hasError;
   String message;
-  Object data;
+  dynamic data;
   bool get hasData => (data != null);
 
   SuperState({this.loading = false, this.hasError = false, this.initial = true, this.message = ""});

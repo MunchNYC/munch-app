@@ -8,6 +8,7 @@ part of 'munch.dart';
 
 abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   final _timestampProcessor = const TimestampProcessor();
+  final _munchStatusProcessor = const MunchStatusProcessor();
   Serializer<Coordinates> __coordinatesJsonSerializer;
   Serializer<Coordinates> get _coordinatesJsonSerializer =>
       __coordinatesJsonSerializer ??= CoordinatesJsonSerializer();
@@ -17,6 +18,9 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   Serializer<Filter> __filterJsonSerializer;
   Serializer<Filter> get _filterJsonSerializer =>
       __filterJsonSerializer ??= FilterJsonSerializer();
+  Serializer<Restaurant> __restaurantJsonSerializer;
+  Serializer<Restaurant> get _restaurantJsonSerializer =>
+      __restaurantJsonSerializer ??= RestaurantJsonSerializer();
   @override
   Map<String, dynamic> toMap(Munch model) {
     if (model == null) return null;
@@ -35,6 +39,8 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     obj.id = map['id'] as String;
     obj.code = map['code'] as String;
     obj.name = map['name'] as String;
+    obj.hostUserId =
+        map['host'] as String ?? getJserDefault('hostUserId') ?? obj.hostUserId;
     obj.numberOfMembers = map['numberOfMembers'] as int ??
         getJserDefault('numberOfMembers') ??
         obj.numberOfMembers;
@@ -58,6 +64,17 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
             (val) => _filterJsonSerializer.fromMap(val as Map), <Filter>[]) ??
         getJserDefault('whitelistFilters') ??
         obj.whitelistFilters;
+    obj.matchedRestaurant =
+        _restaurantJsonSerializer.fromMap(map['matchedRestaurant'] as Map) ??
+            getJserDefault('matchedRestaurant') ??
+            obj.matchedRestaurant;
+    obj.matchedRestaurantName = map['matchedRestaurantName'] as String ??
+        getJserDefault('matchedRestaurantName') ??
+        obj.matchedRestaurantName;
+    obj.receivePushNotifications = map['receivePushNotifications'] as bool ??
+        getJserDefault('receivePushNotifications') ??
+        obj.receivePushNotifications;
+    obj.munchStatus = _munchStatusProcessor.deserialize(map['state'] as String);
     return obj;
   }
 }
