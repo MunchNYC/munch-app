@@ -5,14 +5,15 @@ import 'package:munch/widget/screen/map/map_screen.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
 import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 class NavigationHelper {
   static Future _navigateTo(BuildContext context,
       {bool addToBackStack: false, Widget screen, bool rootNavigator: false, var result}) {
     if (addToBackStack) {
-      return Navigator.of(context, rootNavigator: rootNavigator).push(MaterialPageRoute(builder: (context) => screen));
+      return Navigator.of(context, rootNavigator: rootNavigator).push(PageTransition(type: PageTransitionType.rightToLeft, child: screen));
     } else {
-      return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(MaterialPageRoute(builder: (context) => screen), result: result);
+      return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(PageTransition(type: PageTransitionType.downToUp, child: screen));
     }
   }
 
@@ -29,16 +30,16 @@ class NavigationHelper {
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
       {bool addToBackStack: true, Widget screen, var result}) {
     if (addToBackStack) {
-      return navigatorState.push(MaterialPageRoute(builder: (context) => screen));
+      return navigatorState.push(PageTransition(type: PageTransitionType.rightToLeft, child: screen));
     } else {
-      return navigatorState.pushReplacement(MaterialPageRoute(builder: (context) => screen), result: result);
+      return navigatorState.pushReplacement(PageTransition(type: PageTransitionType.downToUp, child: screen));
     }
   }
 
   static Future _popAllRoutesAndNavigateTo(BuildContext context,
       {Widget screen, bool rootNavigator: false, var result}) {
       return Navigator.of(context, rootNavigator: rootNavigator).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => screen), (Route<dynamic> route) => false
+          PageTransition(type: PageTransitionType.downToUp, child: screen), (Route<dynamic> route) => false
       );
   }
 
