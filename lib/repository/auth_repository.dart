@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/Api.dart';
@@ -8,7 +8,7 @@ import 'package:munch/util/app.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
 
   AuthRepo._internal();
 
@@ -21,13 +21,13 @@ class AuthRepo {
 
   final UserRepo _userRepo = UserRepo.getInstance();
 
-  Future<User> _signIn(AuthCredential credentials) async {
-    AuthResult authResult;
+  Future<User> _signIn(firebase_auth.AuthCredential credentials) async {
+    firebase_auth.UserCredential userCredential;
 
     try {
-      authResult = await _auth.signInWithCredential(credentials);
+      userCredential = await _auth.signInWithCredential(credentials);
 
-      await _userRepo.setCurrentUser(authResult.user);
+      await _userRepo.setCurrentUser(userCredential.user);
 
       return _userRepo.currentUser;
     } catch (error) {
@@ -49,7 +49,7 @@ class AuthRepo {
 
     if(account != null) {
       final authentication = await account.authentication;
-      final credentials = GoogleAuthProvider.getCredential(
+      final credentials = firebase_auth.GoogleAuthProvider.credential(
           idToken: authentication.idToken,
           accessToken: authentication.accessToken);
 

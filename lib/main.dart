@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:munch/repository/user_repository.dart';
@@ -17,6 +18,8 @@ import 'package:timezone/data/latest.dart' as tz;
 Future loadEnvironment() async{
   const ENV = String.fromEnvironment('ENV', defaultValue: 'dev');
   await AppConfig.forEnvironment(ENV);
+
+  await Firebase.initializeApp();
 }
 
 void main() {
