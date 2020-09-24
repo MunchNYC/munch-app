@@ -281,39 +281,19 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return Padding(
       padding: EdgeInsets.only(top: 24.0),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(App.translate("restaurant_swipe_screen.empty_card_stack.title"),
                   style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w400, fontSizeOffset: 2.0),
                   textAlign: TextAlign.center),
               SizedBox(height: 36.0),
-              // TODO: which message to show if munch status is decided
               widget.munch.munchStatus == MunchStatus.UNDECIDED ?
-                Text(App.translate("restaurant_swipe_screen.empty_card_stack.undecided.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center)
-              : Text(App.translate("restaurant_swipe_screen.empty_card_stack.decided.description") + " " + widget.munch.matchedRestaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
-            ],
-          ),
-          CustomButton(
-            flat: true,
-            minWidth: 100.0,
-            color: Colors.transparent,
-            borderRadius: 8.0,
-            borderWidth: 1.0,
-            borderColor: Palette.secondaryDark,
-            textColor: Palette.secondaryDark,
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            content: Text(App.translate("restaurant_swipe_screen.empty_card_stack.back_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark)),
-            onPressedCallback: (){
-              NavigationHelper.popRoute(context, rootNavigator: true);
-            },
-          )
-        ],
-      )
+                Text(App.translate("restaurant_swipe_screen.empty_card_stack.undecided.description"),
+                    style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center)
+              : Text(App.translate("restaurant_swipe_screen.empty_card_stack.decided.description.first_sentence") + " " + widget.munch.matchedRestaurant.name + ". " + App.translate("restaurant_swipe_screen.empty_card_stack.decided.description.second_sentence"),
+                    style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)), textAlign: TextAlign.center),
+        ]
+      ),
     );
   }
 

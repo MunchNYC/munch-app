@@ -67,7 +67,8 @@
     "restaurant_swipe_screen.app_bar.second_line.info_label.text": "Tap here for more options",
     "restaurant_swipe_screen.empty_card_stack.title": "Looks like you're all done!",
     "restaurant_swipe_screen.empty_card_stack.undecided.description": "We'll let you know when your friends are done deciding.",
-    "restaurant_swipe_screen.empty_card_stack.decided.description": "Munch decision is",
+    "restaurant_swipe_screen.empty_card_stack.decided.description.first_sentence": "Looks like everyone likes",
+    "restaurant_swipe_screen.empty_card_stack.decided.description.second_sentence": "Tap the bottom button to check it out!",
     "restaurant_swipe_screen.empty_card_stack.back_button.text": "Back",
 
     "options_screen.app_bar.action.text": "Save",
