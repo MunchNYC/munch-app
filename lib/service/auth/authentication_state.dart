@@ -14,6 +14,18 @@ class LoginWithGoogleState extends AuthenticationState {
   LoginWithGoogleState.failed({message = ""}):super.failed(message: message);
 }
 
+class LoginWithFacebookState extends AuthenticationState {
+  LoginWithFacebookState.ready({data}):super.ready(data: data);
+  LoginWithFacebookState.loading({message = ""}):super.loading(message: message);
+  LoginWithFacebookState.failed({message = ""}):super.failed(message: message);
+}
+
+class LoginWithAppleState extends AuthenticationState {
+  LoginWithAppleState.ready({data}):super.ready(data: data);
+  LoginWithAppleState.loading({message = ""}):super.loading(message: message);
+  LoginWithAppleState.failed({message = ""}):super.failed(message: message);
+}
+
 class LogoutState extends AuthenticationState {
   LogoutState.ready({data}):super.ready(data: data);
   LogoutState.loading({message = ""}):super.loading(message: message);

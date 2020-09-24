@@ -39,6 +39,8 @@
     "munch_code_dialog.share_action.text": "Let's get Munch'n! Tap the link to join now.",
 
     "login_screen.google_button.text": "Sign in with Google",
+    "login_screen.facebook_button.text": "Sign in with Facebook",
+    "login_screen.apple_button.text": "Sign in with Apple",
 
     "munches_tab.title": "Munches",
     "munches_tab.deciding_tab.title": "Still deciding",
@@ -121,18 +123,20 @@
 
     "error_page_widget.text": "Error has occurred",
 
-    "firebase_auth.google_login.cancelled.error": "Google login cancelled",
-    "firebase_auth.logout.error": "Failed to logout",
-    "firebase_auth.credentials_clash.error": "You are already using another authentication provider. Consider using it as authentication method",
-    "firebase_auth.no_account.error": "Couldn't find your account",
+    "firebase_auth.google_login.cancelled.error": "Google login cancelled.",
+    "firebase_auth.facebook_login.cancelled.error": "Facebook login cancelled.",
+    "firebase_auth.apple_login.cancelled.error": "Apple login cancelled.",
+    "firebase_auth.logout.error": "Failed to logout.",
+    "firebase_auth.credentials_clash.error": "You are already using another authentication provider. Consider using it as authentication method.",
+    "firebase_auth.no_account.error": "Couldn't find your account.",
 
     "alert_dialog.positive_button.text.default": "Continue",
     "alert_dialog.negative_button.text.default": "Cancel",
     "alert_dialog.title.default": "Warning",
 
-    "api.error.request_timeout": "Request has timed out",
-    "api.error.internet_connection": "Internet connection problem",
-    "api.error.unauthorized": "You are not authorized for this action",
+    "api.error.request_timeout": "Request has timed out.",
+    "api.error.internet_connection": "Internet connection problem.",
+    "api.error.unauthorized": "You are not authorized for this action.",
 
     "url_launcher.error.message": "Url cannot be opened"
 }

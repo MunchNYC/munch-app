@@ -1,4 +1,8 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart' as auth_buttons;
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/auth/authentication_bloc.dart';
 import 'package:munch/service/auth/authentication_event.dart';
@@ -10,7 +14,6 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
-import 'package:munch/widget/util/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -34,8 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _loginListener(BuildContext context, AuthenticationState state){
     if (state.hasError) {
-      Utility.showErrorFlushbar(state.message, context);
-    } else if(state is LoginWithGoogleState){
+      Utility.showErrorFlushbar(state.message, context, color: Palette.background, textColor: Palette.error);
+    } else if(state is LoginWithGoogleState || state is LoginWithFacebookState || state is LoginWithAppleState){
       NavigationHelper.navigateToHome(context);
     }
   }
@@ -44,13 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: AppDimensions.padding(AppPaddingType.screenOnly),
-        child: BlocConsumer<AuthenticationBloc, AuthenticationState>(
-            cubit: _authenticationBloc,
-            listenWhen: (AuthenticationState previous, AuthenticationState current) => current.hasError || current.ready,
-            listener: (BuildContext context, AuthenticationState state) => _loginListener(context, state),
-            buildWhen: (AuthenticationState previous, AuthenticationState current) => current is LoginWithGoogleState || current.ready,
-            builder: (BuildContext context, AuthenticationState state) => _buildLoginView(context, state)
+        padding: EdgeInsets.symmetric(horizontal: App.screenWidth/6),
+        color: Palette.ternaryDark,
+        child:BlocConsumer<AuthenticationBloc, AuthenticationState>(
+          cubit: _authenticationBloc,
+          listenWhen: (AuthenticationState previous, AuthenticationState current) => current.hasError || current.ready,
+          listener: (BuildContext context, AuthenticationState state) => _loginListener(context, state),
+          builder: (BuildContext context, AuthenticationState state) => _buildLoginView(context, state)
         )
       )
     );
@@ -58,54 +61,105 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginView(BuildContext context, AuthenticationState state){
     /*
-      (state is LoginWithGoogleState && state.ready) is added in order to prevent rendering login page again,
+      (state.ready) is added in order to prevent rendering login page again,
        while we're waiting for _loginListener to navigate to home page (about 1 sec of delay)
      */
-    if(state.loading || (state is LoginWithGoogleState && state.ready)){
-      return AppCircularProgressIndicator();
+    if(state.loading || state.ready){
+      return AppCircularProgressIndicator(color: Palette.background);
     }
 
+    // if state is initial or hasError render view
     return _renderView(context);
   }
 
   Widget _renderView(BuildContext context){
-    return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _signInButton(),
-          ],
-        )
-    );
-  }
-
-  Widget _signInButton() {
-   return CustomButton<AuthenticationState, LoginWithGoogleState>.bloc(
-        cubit: _authenticationBloc,
-        onPressedCallback: _onSignInButtonTapped,
-        color: Palette.background,
-        borderColor: Palette.secondaryLight,
-        borderWidth: 1.0,
-        borderRadius: 40.0,
-        padding: EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image(image: AssetImage("assets/images/google_logo.png"), height: 35.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(App.translate("login_screen.google_button.text"),
-                  style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.bold, color: Palette.secondaryLight)
+    return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: App.screenWidth/8),
+              child: Image(
+                image: AssetImage("assets/images/logo/logo_NoBG_Red.png"),
+                color: Palette.background
               )
+            ),
+          ),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: _googleButton(),
+                ),
+                SizedBox(height: 12.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: _facebookButton(),
+                ),
+                SizedBox(height: 12.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildAppleButton(),
+                )
+              ],
             )
-          ],
-        )
+          )
+        ],
     );
   }
 
-  void _onSignInButtonTapped() {
-      _authenticationBloc.add(LoginWithGoogleEvent());
+  Widget _googleButton() {
+    return auth_buttons.GoogleSignInButton(
+      darkMode: false,
+      textStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+          fontWeight: FontWeight.w600,
+          scaleToWidth: true
+      ),
+      text: App.translate("login_screen.google_button.text"),
+      onPressed: (){
+        _authenticationBloc.add(LoginWithGoogleEvent());
+      },
+    );
   }
+
+  Widget _facebookButton() {
+    return auth_buttons.FacebookSignInButton(
+      textStyle: AppTextStyle.style(AppTextStylePattern.heading6Inverse,
+          fontWeight: FontWeight.w600,
+          scaleToWidth: true
+      ),
+      text: " " +  App.translate("login_screen.facebook_button.text"),
+      onPressed: (){
+        _authenticationBloc.add(LoginWithFacebookEvent());
+      },
+    );
+  }
+
+  Widget _buildAppleButton() {
+    return FutureBuilder<bool>(
+      future: AppleSignIn.isAvailable(), // render button if apple sign in is available for device
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData && snapshot.data == true) {
+          return auth_buttons.AppleSignInButton(
+            textStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+                fontWeight: FontWeight.w600,
+                scaleToWidth: true
+            ),
+            text: App.translate("login_screen.apple_button.text"),
+            style: AppleButtonStyle.white,
+            onPressed: (){
+              _authenticationBloc.add(LoginWithAppleEvent());
+            },
+          );
+        }
+
+        return Container();
+    });
+  }
+
 }

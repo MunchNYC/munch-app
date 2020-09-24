@@ -170,11 +170,11 @@ class AppTextStyle{
 
     double fontSizeScaleFactor = 1.0;
 
-    if(scaleToWidth){
-      fontSizeScaleFactor = (App.screenWidth) / (App.REF_DEVICE_WIDTH);
-    } else {
-      // scale to height
-      fontSizeScaleFactor = (App.screenHeight) / (App.REF_DEVICE_HEIGHT);
+    // scale to height
+    fontSizeScaleFactor = (App.screenHeight) / (App.REF_DEVICE_HEIGHT);
+
+    if(scaleToWidth) {
+      fontSizeScaleFactor *= (App.screenWidth) / (App.REF_DEVICE_WIDTH);
     }
 
     textStyle = textStyle.copyWith(fontSize: fontSizeScaleFactor * textStyle.fontSize);
