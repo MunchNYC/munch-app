@@ -100,7 +100,6 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
                   hintText: App.translate("create_join_dialog.join_form.code_field.hint"),
                   hintStyle: AppTextStyle.style(AppTextStylePattern.body2,
                       color: Palette.secondaryLight,
-                      scaleToWidth: true,
                   ),
                   validator: (String value) => _validateJoinForm(value),
                   onSaved: (String value) => _joinCode = value,
@@ -157,7 +156,6 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
                 hintText: _munchNamePlaceholder,
                 hintStyle: AppTextStyle.style(AppTextStylePattern.body2,
                     color: Palette.secondaryLight,
-                    scaleToWidth: true,
                 ),
                 validator: (String value) => _validateCreateForm(value),
                 onSaved: (String value) {

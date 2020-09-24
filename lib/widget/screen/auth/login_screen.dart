@@ -116,9 +116,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _googleButton() {
     return auth_buttons.GoogleSignInButton(
       darkMode: false,
-      textStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+      textStyle: AppTextStyle.style(AppTextStylePattern.body3,
           fontWeight: FontWeight.w600,
-          scaleToWidth: true
       ),
       text: App.translate("login_screen.google_button.text"),
       onPressed: (){
@@ -129,9 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _facebookButton() {
     return auth_buttons.FacebookSignInButton(
-      textStyle: AppTextStyle.style(AppTextStylePattern.heading6Inverse,
-          fontWeight: FontWeight.w600,
-          scaleToWidth: true
+      textStyle: AppTextStyle.style(AppTextStylePattern.body3Inverse,
+          fontWeight: FontWeight.w600
       ),
       text: " " +  App.translate("login_screen.facebook_button.text"),
       onPressed: (){
@@ -146,9 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData && snapshot.data == true) {
           return auth_buttons.AppleSignInButton(
-            textStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+            textStyle: AppTextStyle.style(AppTextStylePattern.body3,
                 fontWeight: FontWeight.w600,
-                scaleToWidth: true
             ),
             text: App.translate("login_screen.apple_button.text"),
             style: AppleButtonStyle.white,

@@ -17,8 +17,8 @@ class MunchCodeDialog extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 320.0,
-      padding: EdgeInsets.symmetric(horizontal: 32.0),
+      width: 360.0,
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
           children: <Widget>[
             _titleText(),
@@ -89,7 +89,7 @@ class MunchCodeDialog extends StatelessWidget{
           _copyButton(context),
           SizedBox(width: 8.0),
           Text(munch.link,
-              style: AppTextStyle.style(AppTextStylePattern.body3, scaleToWidth: true),
+              style: AppTextStyle.style(AppTextStylePattern.body3),
               textAlign: TextAlign.center),
           SizedBox(width: 8.0),
           _shareButton()

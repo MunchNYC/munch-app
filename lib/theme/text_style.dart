@@ -151,7 +151,7 @@ class AppTextStyle{
     return textStyle.fontSize;
   }
 
-  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0, scaleToWidth = false}){
+  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0}){
     TextStyle textStyle = _appTextStyles[atsp.index];
 
     textStyle = textStyle.copyWith(fontFamily: APP_FONT);
@@ -170,10 +170,11 @@ class AppTextStyle{
 
     double fontSizeScaleFactor = 1.0;
 
-    // scale to height
-    fontSizeScaleFactor = (App.screenHeight) / (App.REF_DEVICE_HEIGHT);
+    if(App.screenHeight < App.REF_DEVICE_HEIGHT){
+      fontSizeScaleFactor *= App.screenHeight / App.REF_DEVICE_HEIGHT;
+    }
 
-    if(scaleToWidth) {
+    if(App.screenWidth < App.REF_DEVICE_WIDTH){
       fontSizeScaleFactor *= (App.screenWidth) / (App.REF_DEVICE_WIDTH);
     }
 
