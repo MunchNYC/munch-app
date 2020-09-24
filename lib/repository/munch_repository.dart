@@ -92,4 +92,12 @@ class MunchRepo {
   Future leaveMunch({String munchId}) async{
     await _munchApi.deleteSelfFromMunch(munchId: munchId,);
   }
+
+  Future<Munch> cancelMunchDecision({String munchId}) async {
+    Munch munch = await _munchApi.cancelMunchDecision(
+      munchId: munchId,
+    );
+
+    return munch;
+  }
 }

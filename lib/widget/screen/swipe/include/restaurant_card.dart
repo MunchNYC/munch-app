@@ -74,7 +74,7 @@ class _RestaurantCardState extends State<RestaurantCard>{
           SizedBox(height: 8.0),
           _yelpStatsRow(),
           SizedBox(height: 8.0),
-          Text((widget.restaurant.priceSymbol != null ? widget.restaurant.priceSymbol + ' • ' : '' ) + widget.restaurant.categoryTitles, style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+          Text((widget.restaurant.priceSymbol != null ? widget.restaurant.priceSymbol + ' • ' : "") + widget.restaurant.categoryTitles, style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary.withOpacity(0.7))),
           SizedBox(height: 8.0),
           Text(widget.restaurant.getWorkingHoursCurrentStatus(), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
         ],
@@ -119,19 +119,17 @@ class _RestaurantCardState extends State<RestaurantCard>{
 
   void _onCarouselLeftSideTapped(){
     _carouselController.previousPage();
-    widget.currentCarouselPage --;
 
-    if(widget.currentCarouselPage < 0){
-      widget.currentCarouselPage = widget.restaurant.photoUrls.length - 1;
+    if(widget.currentCarouselPage - 1 >= 0){
+      widget.currentCarouselPage--;
     }
   }
 
   void _onCarouselRightHalfTapped(){
     _carouselController.nextPage();
-    widget.currentCarouselPage ++;
 
-    if(widget.currentCarouselPage >= widget.restaurant.photoUrls.length){
-      widget.currentCarouselPage = 0;
+    if(widget.currentCarouselPage + 1 < widget.restaurant.photoUrls.length){
+      widget.currentCarouselPage++;
     }
   }
 

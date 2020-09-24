@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/theme/palette.dart';
 
 class AppCircularProgressIndicator extends StatelessWidget {
-  final double strokeWidth;
   final bool centered;
 
-  AppCircularProgressIndicator({this.strokeWidth = 4.0, this.centered = true});
+  AppCircularProgressIndicator({this.centered = true});
 
   @override
   Widget build(BuildContext context) {
-    Widget _circularProgressIndicator =  CircularProgressIndicator(
-        backgroundColor: Palette.ternaryDark,
-        valueColor: AlwaysStoppedAnimation<Color>(Palette.secondaryLight),
-        strokeWidth: this.strokeWidth,
+    Widget _spinKitThreeBounce = SpinKitThreeBounce(
+      color: Palette.secondaryDark,
+      size: 32.0,
     );
 
     if(centered){
-      _circularProgressIndicator = Center(child: _circularProgressIndicator);
+      _spinKitThreeBounce = Center(child: _spinKitThreeBounce);
     }
 
-    return _circularProgressIndicator;
+    return _spinKitThreeBounce;
   }
 }

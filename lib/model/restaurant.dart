@@ -123,6 +123,20 @@ class WorkingHours{
 
   @Alias('times')
   List<WorkingTimes> workingTimes;
+
+  String getWorkingTimesFormatted(){
+      List<String> workingTimesStringList = List<String>();
+
+      if(workingTimes.length == 0){
+        workingTimesStringList.add(App.translate("restaurant.working_hours.closed.text"));
+      } else {
+        for (WorkingTimes wt in workingTimes) {
+          workingTimesStringList.add(wt.open + " - " + wt.closed);
+        }
+      }
+
+      return workingTimesStringList.join(", ");
+  }
 }
 
 @GenSerializer()

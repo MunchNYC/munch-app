@@ -11,11 +11,12 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
-import 'package:munch/widget/include/restaurant_card.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
+
+import 'include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
   Munch munch;
@@ -140,7 +141,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           Padding(padding:
             EdgeInsets.only(right: 24.0),
             child: ImageIcon(
-              AssetImage("assets/icons/filter.png"),
+              AssetImage("assets/icons/filters.png"),
               color: Palette.primary.withOpacity(0.5),
               size: 24.0,
             )
@@ -377,17 +378,32 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   )
               ),
               child: Center(
-                  child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
-                    App.translate("restaurant_swipe_screen.munch_status.undecided.status.text") :
-                    widget.munch.matchedRestaurant.name,
-                    style: AppTextStyle.style(AppTextStylePattern.body3,
-                        color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.primary : Palette.background,
-                        fontSizeOffset: 1.0,
-                        fontWeight: FontWeight.w500
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis
-                )
+                  child: widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                    Text(App.translate("restaurant_swipe_screen.munch_status.undecided.status.text"),
+                      style: AppTextStyle.style(AppTextStylePattern.body3,
+                      color:  Palette.primary,
+                      fontSizeOffset: 1.0,
+                      fontWeight: FontWeight.w500
+                      ),
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis
+                    )
+                  : GestureDetector(
+                    onTap: (){
+                      NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
+                    },
+                    child: Text(widget.munch.matchedRestaurant.name,
+                      style: AppTextStyle.style(AppTextStylePattern.body3,
+                          color: Palette.background,
+                          fontSizeOffset: 1.0,
+                          fontWeight: FontWeight.w500
+                      ),
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.clip
+                    )
+                  )
               ),
             )
           )
