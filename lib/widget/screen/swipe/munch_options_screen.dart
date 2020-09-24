@@ -379,7 +379,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   Widget _membersListTrailing(User user){
     if(user.uid == widget.munch.hostUserId){
       return Text(App.translate("options_screen.member_list.host.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary));
-    } else if(widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid){
+    } else if(widget.munch.munchStatus != MunchStatus.ARCHIVED && widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid){
       return CustomButton<MunchState, KickingMemberState>.bloc(
           cubit: _munchBloc,
           flat: true,
