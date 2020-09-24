@@ -96,10 +96,11 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
             Expanded(
                 child: CustomFormField(
                   textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
                   hintText: App.translate("create_join_dialog.join_form.code_field.hint"),
-                  hintStyle: AppTextStyle.style(AppTextStylePattern.body2,
+                  hintStyle: AppTextStyle.style(AppTextStylePattern.body,
                       color: Palette.secondaryLight,
-                      fontSizeOffset: AppTextStyle.fontSize(AppTextStylePattern.body2) - (App.screenWidth/App.REF_DEVICE_WIDTH) * AppTextStyle.fontSize(AppTextStylePattern.body2)
+                      scaleToWidth: true,
                   ),
                   validator: (String value) => _validateJoinForm(value),
                   onSaved: (String value) => _joinCode = value,
@@ -152,10 +153,11 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
           Expanded(
               child: CustomFormField(
                 textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
                 hintText: _munchNamePlaceholder,
-                hintStyle: AppTextStyle.style(AppTextStylePattern.body2,
+                hintStyle: AppTextStyle.style(AppTextStylePattern.body,
                     color: Palette.secondaryLight,
-                    fontSizeOffset: AppTextStyle.fontSize(AppTextStylePattern.body2) - (App.screenWidth/App.REF_DEVICE_WIDTH) * AppTextStyle.fontSize(AppTextStylePattern.body2)
+                    scaleToWidth: true,
                 ),
                 validator: (String value) => _validateCreateForm(value),
                 onSaved: (String value) {

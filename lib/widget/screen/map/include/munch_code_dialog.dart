@@ -88,7 +88,9 @@ class MunchCodeDialog extends StatelessWidget{
         children: <Widget>[
           _copyButton(context),
           SizedBox(width: 8.0),
-          Text(munch.link, style: AppTextStyle.style(AppTextStylePattern.body3), textAlign: TextAlign.center),
+          Text(munch.link,
+              style: AppTextStyle.style(AppTextStylePattern.body2, scaleToWidth: true),
+              textAlign: TextAlign.center),
           SizedBox(width: 8.0),
           _shareButton()
         ],
