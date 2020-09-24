@@ -145,6 +145,12 @@ class AppTextStyle{
     StrutStyle(fontSize: 12.0, height: 1.2, forceStrutHeight: true),
   ];
 
+  static double fontSize(AppTextStylePattern atsp){
+    TextStyle textStyle = _appTextStyles[atsp.index];
+
+    return textStyle.fontSize;
+  }
+
   static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0}){
     TextStyle textStyle = _appTextStyles[atsp.index];
 

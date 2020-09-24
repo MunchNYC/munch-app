@@ -6,9 +6,9 @@
     "create_join_dialog.join_button.text": "Join",
     "create_join_dialog.divider.text": "Or",
     "create_join_dialog.create_button.text": "Create",
-    "create_join_dialog.join_form.code_field.regex.validation": "Enter a valid 6-char code",
-    "create_join_dialog.create_form.name_field.required.validation": "Enter munch name",
-    "create_join_dialog.create_form.name_field.regex.validation": "Only alphanumerical chars and emojis are allowed",
+    "create_join_dialog.join_form.code_field.regex.validation": "Enter a valid 6-characters code.",
+    "create_join_dialog.create_form.name_field.required.validation": "Enter munch name.",
+    "create_join_dialog.create_form.name_field.regex.validation": "Only alphanumerical characters and emojis are allowed.",
 
     "create_join_dialog_create_form.name_field.placeholder1.value": "Spicy Spiffies 🌶",
     "create_join_dialog_create_form.name_field.placeholder2.value": "Honey Hunnies 🍯",
@@ -34,9 +34,9 @@
 
     "munch_code_dialog.title": "Invite your friends to start Munch'n!",
     "munch_code_dialog.continue_button.text": "Continue",
-    "munch_code_dialog.copy_action.successful":"Munch link copied",
+    "munch_code_dialog.copy_action.successful":"Munch link copied.",
     "munch_code_dialog.share_button.popup.title": "Share Munch link",
-    "munch_code_dialog.share_action.text": "Join my Munch using this link",
+    "munch_code_dialog.share_action.text": "Let's get Munch'n! Tap the link to join now.",
 
     "login_screen.google_button.text": "Sign in with Google",
 
@@ -45,7 +45,7 @@
     "munches_tab.decided_tab.title": "Decided",
     "munches_tab.still_deciding_list_view.empty.text": "No munches yet",
     "munches_tab.decided_list_view.empty.text": "No munches yet",
-    "munches_tab.join_munch.successful.message": "Munch successfully joined",
+    "munches_tab.join_munch.successful.message": "Munch successfully joined.",
 
     "munch_list_widget.members.text": "Members",
     "munch_list_widget.munch_status.undecided.text": "Undecided",
@@ -66,7 +66,7 @@
     "restaurant_swipe_screen.munch_status.undecided.status.text": "Deciding...",
     "restaurant_swipe_screen.app_bar.second_line.info_label.text": "Tap here for more options",
     "restaurant_swipe_screen.empty_card_stack.title": "Looks like you're all done!",
-    "restaurant_swipe_screen.empty_card_stack.undecided.description": "We'll let you know when your friends are done deciding",
+    "restaurant_swipe_screen.empty_card_stack.undecided.description": "We'll let you know when your friends are done deciding.",
     "restaurant_swipe_screen.empty_card_stack.decided.description": "Munch decision is",
     "restaurant_swipe_screen.empty_card_stack.back_button.text": "Back",
 
@@ -82,11 +82,11 @@
     "options_screen.member_list.host.text": "Host",
     "options_screen.member_list.kick_button.text": "Kick",
     "options_screen.share_button.popup.title": "Share Munch link",
-    "options_screen.share_action.text": "Join my Munch using this link",
-    "options_screen.copy_action.successful":"Munch link copied",
-    "options_screen.preferences_form.name_field.required.validation": "Munch name cannot be blank",
-    "options_screen.preferences_form.name_field.regex.validation": "Only alphanumerical chars and emojis are allowed",
-    "options_screen.kick_member.successful": "Member kicked successfully",
+    "options_screen.share_action.text": "Let's get Munch'n! Tap the link to join now.",
+    "options_screen.copy_action.successful":"Munch link copied.",
+    "options_screen.preferences_form.name_field.required.validation": "Munch name cannot be blank.",
+    "options_screen.preferences_form.name_field.regex.validation": "Only alphanumerical characters and emojis are allowed.",
+    "options_screen.kick_member.successful": "Member kicked successfully.",
 
     "leave_munch_alert_dialog.confirm_button.text":  "Leave",
     "leave_munch_alert_dialog.cancel_button.text":  "Cancel",
