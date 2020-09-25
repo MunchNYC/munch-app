@@ -167,7 +167,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         body: Container(
             width: double.infinity,
             height: double.infinity,
-            padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(left: 0.0, right: 0.0),
+            padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(left: 0.0, right: 0.0, bottom: 16.0),
             child: _buildMunchBloc()
         )
       )
