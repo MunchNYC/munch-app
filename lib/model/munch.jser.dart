@@ -15,9 +15,6 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   Serializer<User> __userJsonSerializer;
   Serializer<User> get _userJsonSerializer =>
       __userJsonSerializer ??= UserJsonSerializer();
-  Serializer<Filter> __filterJsonSerializer;
-  Serializer<Filter> get _filterJsonSerializer =>
-      __filterJsonSerializer ??= FilterJsonSerializer();
   Serializer<Restaurant> __restaurantJsonSerializer;
   Serializer<Restaurant> get _restaurantJsonSerializer =>
       __restaurantJsonSerializer ??= RestaurantJsonSerializer();
@@ -54,16 +51,16 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
             (val) => _userJsonSerializer.fromMap(val as Map), <User>[]) ??
         getJserDefault('members') ??
         obj.members;
-    obj.blacklistFilters = codeNonNullIterable<Filter>(
+    obj.blacklistFiltersKeys = codeNonNullIterable<String>(
             map['blacklistFilters'] as Iterable,
-            (val) => _filterJsonSerializer.fromMap(val as Map), <Filter>[]) ??
-        getJserDefault('blacklistFilters') ??
-        obj.blacklistFilters;
-    obj.whitelistFilters = codeNonNullIterable<Filter>(
+            (val) => val as String, <String>[]) ??
+        getJserDefault('blacklistFiltersKeys') ??
+        obj.blacklistFiltersKeys;
+    obj.whitelistFiltersKeys = codeNonNullIterable<String>(
             map['whitelistFilters'] as Iterable,
-            (val) => _filterJsonSerializer.fromMap(val as Map), <Filter>[]) ??
-        getJserDefault('whitelistFilters') ??
-        obj.whitelistFilters;
+            (val) => val as String, <String>[]) ??
+        getJserDefault('whitelistFiltersKeys') ??
+        obj.whitelistFiltersKeys;
     obj.matchedRestaurant =
         _restaurantJsonSerializer.fromMap(map['matchedRestaurant'] as Map) ??
             getJserDefault('matchedRestaurant') ??

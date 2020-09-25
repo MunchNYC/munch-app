@@ -151,10 +151,10 @@ class AppTextStyle{
     return textStyle.fontSize;
   }
 
-  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0}){
+  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0, TextDecoration textDecoration = TextDecoration.none}){
     TextStyle textStyle = _appTextStyles[atsp.index];
 
-    textStyle = textStyle.copyWith(fontFamily: APP_FONT);
+    textStyle = textStyle.copyWith(fontFamily: APP_FONT, decoration: textDecoration);
 
     if(color != null){
       textStyle = textStyle.copyWith(color: color);

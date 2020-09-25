@@ -140,10 +140,15 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         actions: <Widget>[
           Padding(padding:
             EdgeInsets.only(right: 24.0),
-            child: ImageIcon(
-              AssetImage("assets/icons/filters.png"),
-              color: Palette.primary.withOpacity(0.5),
-              size: 24.0,
+            child: GestureDetector(
+              onTap: (){
+                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch);
+              },
+              child: ImageIcon(
+                AssetImage("assets/icons/filters.png"),
+                color: Palette.primary.withOpacity(0.5),
+                size: 24.0,
+              ),
             )
           ),
         ],

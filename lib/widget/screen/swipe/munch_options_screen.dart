@@ -120,10 +120,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       _popScopeCompleter = Completer<bool>();
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
-        dialogTitle: App.translate("save_changes_alert_dialog.title"),
-        dialogDescription:App.translate("save_changes_alert_dialog.description"),
-        confirmText: App.translate("save_changes_alert_dialog.confirm_button.text"),
-        cancelText: App.translate("save_changes_alert_dialog.cancel_button.text"),
+        dialogTitle: App.translate("options_screen.save_changes_alert_dialog.title"),
+        dialogDescription:App.translate("options_screen.save_changes_alert_dialog.description"),
+        confirmText: App.translate("options_screen.save_changes_alert_dialog.confirm_button.text"),
+        cancelText: App.translate("options_screen.save_changes_alert_dialog.cancel_button.text"),
         confirmCallback: _onSaveChangesDialogButtonClicked,
         cancelCallback: _onDiscardChangesDialogButtonClicked
       );
@@ -137,7 +137,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       }
     }
 
-    NavigationHelper.popRoute(context, result: widget.munch);
+    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
 
     return false;
   }

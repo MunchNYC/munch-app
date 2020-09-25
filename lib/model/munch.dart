@@ -45,11 +45,11 @@ class Munch{
   @Field.decode(isNullable: false)
   List<User> members;
 
-  @Field.decode(isNullable: false)
-  List<Filter> blacklistFilters;
+  @Field.decode(isNullable: false, alias: 'blacklistFilters')
+  List<String> blacklistFiltersKeys;
 
-  @Field.decode(isNullable: false)
-  List<Filter> whitelistFilters;
+  @Field.decode(isNullable: false, alias: 'whitelistFilters')
+  List<String> whitelistFiltersKeys;
 
   // will be fetched totally in detailed munch
   @Field.decode(isNullable: false)
