@@ -140,6 +140,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
       elevation: 0.0,
       automaticallyImplyLeading: false,
       leading: AppBarBackButton(),
+      title: Text(App.translate("filters_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500)),
       backgroundColor: Palette.background,
       actions: <Widget>[
         Padding(padding:

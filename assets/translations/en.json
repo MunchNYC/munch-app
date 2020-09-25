@@ -106,6 +106,7 @@
     "kick_member_alert_dialog.confirm_button.text":  "Kick Member",
     "kick_member_alert_dialog.cancel_button.text":  "Cancel",
 
+    "filters_screen.app_bar.title": "Filters",
     "filters_screen.app_bar.action.text": "Save",
     "filters_screen.personal_tab.title": "Personal",
     "filters_screen.group_tab.title": "Group",
