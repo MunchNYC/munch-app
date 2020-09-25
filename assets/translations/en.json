@@ -41,6 +41,11 @@
     "login_screen.google_button.text": "Sign in with Google",
     "login_screen.facebook_button.text": "Sign in with Facebook",
     "login_screen.apple_button.text": "Sign in with Apple",
+    "login_screen.title": "Munch",
+    "login_screen.footer.text": "By continuing you are indicating that you accept our",
+    "login_screen.footer.terms_of_service.text": "Terms of Service",
+    "login_screen.footer.conjunction": "and",
+    "login_screen.footer.privacy_policy.text": "Privacy Policy",
 
     "munches_tab.title": "Munches",
     "munches_tab.deciding_tab.title": "Still deciding",

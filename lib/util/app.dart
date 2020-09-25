@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:munch/config/localizations.dart';
 
 class App {
-  static const REF_DEVICE_PIXEL_RATIO = 1.75;
+  static const double REF_DEVICE_PIXEL_RATIO = 1.75;
 
   // SAMSUNG GALAXY s8+
-  static const REF_DEVICE_HEIGHT = 800;
-  static const REF_DEVICE_WIDTH = 411;
+  static const double REF_DEVICE_HEIGHT = 800;
+  static const double REF_DEVICE_WIDTH = 411;
 
   static double screenWidth;
   static double screenHeight;

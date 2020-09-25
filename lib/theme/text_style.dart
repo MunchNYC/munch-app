@@ -124,7 +124,7 @@ class AppTextStyle{
     TextStyle(color: Palette.error, fontSize: 12.0, fontWeight: FontWeight.bold),
     TextStyle(color: Palette.error, fontSize: 14.0),
     TextStyle(color: Palette.error, fontSize: 14.0, fontWeight: FontWeight.bold),
-    TextStyle(color: Palette.hyperlink, fontSize: 12.0, decoration: TextDecoration.underline),
+    TextStyle(color: Palette.hyperlink, fontSize: 12.0),
   ];
 
   static List<StrutStyle> _appStrutStyles = [
