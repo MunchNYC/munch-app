@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
@@ -11,10 +12,14 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/swipe/tutorial_restaurant_swipe_screen.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
+import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
+import 'package:munch/widget/util/overlay_dialog_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'include/restaurant_card.dart';
 
@@ -32,11 +37,17 @@ class RestaurantSwipeScreen extends StatefulWidget {
   }
 }
 
+enum TutorialState{
+  TUTORIAL_CAROUSEL, TUTORIAL_SWIPE, FINISHED
+}
+
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_SCREEN_RATIO_THRESHOLD = 0.2;
 
   Map<String, RestaurantCard> _currentCardMap = Map<String, RestaurantCard>();
   List<Restaurant> _currentRestaurants = List<Restaurant>();
+
+  TutorialState _tutorialState = TutorialState.FINISHED;
 
   MunchBloc _munchBloc;
 
@@ -61,6 +72,44 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _munchBloc?.close();
 
     super.dispose();
+  }
+
+  Widget _tutorialOverlayDialog(Restaurant restaurant){
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          _tutorialState = TutorialState.values[_tutorialState.index + 1];
+        });
+
+        if(_tutorialState == TutorialState.FINISHED){
+          // pop overlay dialog
+          NavigationHelper.popRoute(context, rootNavigator: true);
+        }
+      },
+      child: Container(
+        height: double.infinity,
+        width: double.infinity,
+        // color must be set otherwise container will be zero-sized, so gesture detectors won't be recognized
+        color: Colors.transparent,
+        child: TutorialRestaurantSwipeScreen(munch: widget.munch, restaurant: restaurant),
+      )
+    );
+  }
+
+  void _initializeTutorialState(Restaurant restaurant) async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    int tutorialState = sharedPreferences.getInt(StorageKeys.SWIPE_TUTORIAL_STATE);
+
+    if(tutorialState == null){
+      _tutorialState = TutorialState.TUTORIAL_CAROUSEL;
+    } else{
+      _tutorialState = TutorialState.values[tutorialState];
+    }
+
+    if(_tutorialState != TutorialState.FINISHED){
+      OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(restaurant)).show(context);
+    }
   }
 
   void _throwGetSwipeRestaurantNextPageEvent(){
@@ -162,14 +211,14 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return WillPopScope(
         onWillPop: () => _onWillPopScope(context),
         child: Scaffold(
-        appBar: _appBar(context),
-        backgroundColor: Palette.background,
-        body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(left: 0.0, right: 0.0, bottom: 16.0),
-            child: _buildMunchBloc()
-        )
+          appBar: _appBar(context),
+          backgroundColor: Palette.background,
+          body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(left: 0.0, right: 0.0),
+              child: _buildMunchBloc()
+          )
       )
     );
   }
@@ -200,6 +249,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _currentCardMap.clear();
 
     _currentCardMap = _newCardMap;
+
+    if(restaurantList.length > 0){
+      _initializeTutorialState(restaurantList[0]);
+    }
   }
 
   void _swipeScreenListener(BuildContext context, MunchState state){
@@ -304,91 +357,96 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _draggableCard(){
     return LayoutBuilder(
       builder: (context, constraints) =>
-          Draggable(
-            child: _currentCardMap[_currentRestaurants[0].id],
-            ignoringFeedbackSemantics: false,
-            feedback: Container(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: _currentCardMap[_currentRestaurants[0].id],
-            ),
-            childWhenDragging: _currentRestaurants.length > 1
-                ? _currentCardMap[_currentRestaurants[1].id]
-                : Container(),
-            onDragEnd: (DraggableDetails details) {
-              double swipeToScreenRatio = (details.offset.dx.abs() /
-                  App.screenWidth);
+          Stack(
+            children:[
+              Draggable(
+                child: _currentCardMap[_currentRestaurants[0].id],
+                ignoringFeedbackSemantics: false,
+                feedback: Container(
+                  width: constraints.maxWidth,
+                  height: constraints.maxHeight,
+                  child: _currentCardMap[_currentRestaurants[0].id],
+                ),
+                childWhenDragging: _currentRestaurants.length > 1
+                    ? _currentCardMap[_currentRestaurants[1].id]
+                    : Container(),
+                onDragEnd: (DraggableDetails details) {
+                  double swipeToScreenRatio = (details.offset.dx.abs() /
+                      App.screenWidth);
 
-              if (swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD) {
-                if (details.offset.dx < 0) {
-                  _onSwipeLeft();
-                } else {
-                  _onSwipeRight();
-                }
-              }
-            },
-          ),
+                  if (swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD) {
+                    if (details.offset.dx < 0) {
+                      _onSwipeLeft();
+                    } else {
+                      _onSwipeRight();
+                    }
+                  }
+                },
+              ),
+          ]),
     );
   }
 
   Widget _decisionInfoBar(){
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Expanded(
-          child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
-                    App.translate("restaurant_swipe_screen.munch_status.undecided.action_message.text") :
-                    App.translate("restaurant_swipe_screen.munch_status.decided.action_message.text"),
-              style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w500)
+    return SafeArea(
+      child:Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Expanded(
+            child: Text(widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                      App.translate("restaurant_swipe_screen.munch_status.undecided.action_message.text") :
+                      App.translate("restaurant_swipe_screen.munch_status.decided.action_message.text"),
+                style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w500)
+            ),
           ),
-        ),
-        Expanded(
-          child: Material(
-            elevation: widget.munch.munchStatus == MunchStatus.UNDECIDED ? 0.0 : 4.0,
-            borderRadius: BorderRadius.circular(8.0),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-              decoration: BoxDecoration(
-                  color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.background : Palette.secondaryDark,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(
-                      width: 1.0,
-                      color: Palette.secondaryDark
-                  )
-              ),
-              child: Center(
-                  child: widget.munch.munchStatus == MunchStatus.UNDECIDED ?
-                    Text(App.translate("restaurant_swipe_screen.munch_status.undecided.status.text"),
-                      style: AppTextStyle.style(AppTextStylePattern.body3,
-                      color:  Palette.primary,
-                      fontSizeOffset: 1.0,
-                      fontWeight: FontWeight.w500
-                      ),
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis
+          Expanded(
+            child: Material(
+              elevation: widget.munch.munchStatus == MunchStatus.UNDECIDED ? 0.0 : 4.0,
+              borderRadius: BorderRadius.circular(8.0),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                decoration: BoxDecoration(
+                    color: widget.munch.munchStatus == MunchStatus.UNDECIDED ? Palette.background : Palette.secondaryDark,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(
+                        width: 1.0,
+                        color: Palette.secondaryDark
                     )
-                  : GestureDetector(
-                    onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
-                    },
-                    child: Text(widget.munch.matchedRestaurant.name,
-                      style: AppTextStyle.style(AppTextStylePattern.body3,
-                          color: Palette.background,
-                          fontSizeOffset: 1.0,
-                          fontWeight: FontWeight.w500
-                      ),
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.clip
+                ),
+                child: Center(
+                    child: widget.munch.munchStatus == MunchStatus.UNDECIDED ?
+                      Text(App.translate("restaurant_swipe_screen.munch_status.undecided.status.text"),
+                        style: AppTextStyle.style(AppTextStylePattern.body3,
+                        color:  Palette.primary,
+                        fontSizeOffset: 1.0,
+                        fontWeight: FontWeight.w500
+                        ),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis
+                      )
+                    : GestureDetector(
+                      onTap: (){
+                        NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
+                      },
+                      child: Text(widget.munch.matchedRestaurant.name,
+                        style: AppTextStyle.style(AppTextStylePattern.body3,
+                            color: Palette.background,
+                            fontSizeOffset: 1.0,
+                            fontWeight: FontWeight.w500
+                        ),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.clip
+                      )
                     )
-                  )
-              ),
+                ),
+              )
             )
           )
-        )
-      ],
+        ],
+      )
     );
   }
 
