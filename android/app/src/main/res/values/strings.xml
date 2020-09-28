@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Munch</string>
+    <string name="facebook_app_id">741959219991997</string>
+    <string name="fb_login_protocol_scheme">fb741959219991997</string>
+</resources>

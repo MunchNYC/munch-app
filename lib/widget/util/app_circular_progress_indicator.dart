@@ -4,13 +4,14 @@ import 'package:munch/theme/palette.dart';
 
 class AppCircularProgressIndicator extends StatelessWidget {
   final bool centered;
+  final Color color;
 
-  AppCircularProgressIndicator({this.centered = true});
+  AppCircularProgressIndicator({this.centered = true, this.color = Palette.secondaryDark});
 
   @override
   Widget build(BuildContext context) {
     Widget _spinKitThreeBounce = SpinKitThreeBounce(
-      color: Palette.secondaryDark,
+      color: color,
       size: 32.0,
     );
 

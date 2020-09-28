@@ -124,7 +124,7 @@ class AppTextStyle{
     TextStyle(color: Palette.error, fontSize: 12.0, fontWeight: FontWeight.bold),
     TextStyle(color: Palette.error, fontSize: 14.0),
     TextStyle(color: Palette.error, fontSize: 14.0, fontWeight: FontWeight.bold),
-    TextStyle(color: Palette.hyperlink, fontSize: 12.0, decoration: TextDecoration.underline),
+    TextStyle(color: Palette.hyperlink, fontSize: 12.0),
   ];
 
   static List<StrutStyle> _appStrutStyles = [
@@ -151,7 +151,7 @@ class AppTextStyle{
     return textStyle.fontSize;
   }
 
-  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0, scaleToWidth = false}){
+  static TextStyle style(AppTextStylePattern atsp, {Color color, FontWeight fontWeight, double fontSizeOffset = 0}){
     TextStyle textStyle = _appTextStyles[atsp.index];
 
     textStyle = textStyle.copyWith(fontFamily: APP_FONT);
@@ -170,11 +170,12 @@ class AppTextStyle{
 
     double fontSizeScaleFactor = 1.0;
 
-    if(scaleToWidth){
-      fontSizeScaleFactor = (App.screenWidth) / (App.REF_DEVICE_WIDTH);
-    } else {
-      // scale to height
-      fontSizeScaleFactor = (App.screenHeight) / (App.REF_DEVICE_HEIGHT);
+    if(App.screenHeight < App.REF_DEVICE_HEIGHT){
+      fontSizeScaleFactor *= App.screenHeight / App.REF_DEVICE_HEIGHT;
+    }
+
+    if(App.screenWidth < App.REF_DEVICE_WIDTH){
+      fontSizeScaleFactor *= (App.screenWidth) / (App.REF_DEVICE_WIDTH);
     }
 
     textStyle = textStyle.copyWith(fontSize: fontSizeScaleFactor * textStyle.fontSize);
