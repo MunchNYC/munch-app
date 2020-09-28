@@ -49,6 +49,7 @@ dependencies:
   maps_launcher: ^1.2.2+1
   flutter_facebook_login: ^3.0.0
   apple_sign_in: ^0.1.0
+  flutter_launcher_icons: ^0.8.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -59,6 +60,16 @@ dev_dependencies:
     sdk: flutter
   build_runner:
   jaguar_serializer_cli:
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path_ios: "assets/images/logo/app-store-logo.png"
+  # Fallback image path, must have transparent BG
+  image_path_android: "assets/images/logo/google-play-logo.png"
+  # This combination below will be used on regular devices
+  adaptive_icon_background: "#FF2C5B"
+  adaptive_icon_foreground: "assets/images/logo/google-play-adaptive-foreground.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
