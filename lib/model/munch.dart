@@ -68,6 +68,14 @@ class Munch{
   @Field.ignore()
   String get link => CODE_PREFIX + code;
 
+  User getMunchMember(String userId){
+    User user = members.firstWhere((User user){
+      return user.uid == userId;
+    });
+
+    return user;
+  }
+
   // lastMunchData - last fetched munch data from back-end
   // called with instance of detailed munch
   void merge(Munch lastMunchData){

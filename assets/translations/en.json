@@ -123,6 +123,11 @@
     "filters_screen.filter_controls.top_cuisines_mode.link.text": "show all cuisines",
     "filters_screen.filter_controls.all_cuisines_mode.link.text": "close all cuisines",
 
+    "filters_screen.group_tab.whitelist_container.subtitle": "Only These Cuisines",
+    "filters_screen.group_tab.blacklist_container.subtitle": "Anything Except These",
+    "filters_screen.group_tab.description1.text": "The list of filters above is a smart combination of all personal filters within this Munch.",
+    "filters_screen.group_tab.description2.text": "You can change your votes in the Personal tab",
+
     "filters_screen.save_changes_alert_dialog.title": "Unsaved changes",
     "filters_screen.save_changes_alert_dialog.description": "Do you want to save the changes to your filters?",
     "filters_screen.save_changes_alert_dialog.confirm_button.text": "Save",

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/user.dart';
 import 'package:munch/repository/filters_repository.dart';
 import 'package:munch/service/munch/filter/filters_bloc.dart';
 import 'package:munch/service/munch/filter/filters_event.dart';
@@ -619,7 +620,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                  _filterControlRow(filter),
-                 Divider(height: 32.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.3)),
+                 Divider(height: 24.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
               ]
              )
           ],
@@ -630,7 +631,91 @@ class _FiltersScreenState extends State<FiltersScreen>{
   }
 
   Widget _renderGroupTab(){
-    return Container();
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _groupWhitelistCuisines(),
+            SizedBox(height: 24.0),
+            _groupBlacklistCuisines(),
+            SizedBox(height: 12.0),
+            Text(App.translate("filters_screen.group_tab.description1.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5))),
+            SizedBox(height: 12.0),
+            Text(App.translate("filters_screen.group_tab.description2.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5)))
+          ],
+        )
+    );
+  }
+
+  Widget _groupCuisinesListItem(MunchGroupFilter munchGroupFilter){
+      return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Text(_filtersMap[munchGroupFilter.key].label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500)),
+                ),
+                SizedBox(width: 4.0),
+                Flexible(
+                  flex: 1,
+                  child: Wrap(
+                    spacing: 4.0,
+                    runSpacing: 4.0,
+                    alignment: WrapAlignment.end,
+                    children: [
+                      for(User user in munchGroupFilter.userIds.map((String userId) => widget.munch.getMunchMember(userId)).toList())
+                        CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: 12.0)
+                    ],
+                  )
+                )
+              ],
+            ),
+            Divider(height: 24.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
+          ]
+      );
+  }
+
+  Widget _groupWhitelistCuisines(){
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(App.translate("filters_screen.group_tab.whitelist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
+        SizedBox(height: 24.0),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for(MunchGroupFilter munchGroupFilter in widget.munch.munchFilters.whitelist)
+              _groupCuisinesListItem(munchGroupFilter)
+            ],
+        )
+      ],
+    );
+  }
+
+  Widget _groupBlacklistCuisines(){
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(App.translate("filters_screen.group_tab.blacklist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
+        SizedBox(height: 24.0),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for(MunchGroupFilter munchGroupFilter in widget.munch.munchFilters.blacklist)
+              _groupCuisinesListItem(munchGroupFilter)
+          ],
+        )
+      ],
+    );
   }
 
   void _onSaveButtonClicked(){
