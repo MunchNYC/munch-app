@@ -126,12 +126,12 @@ class _FiltersScreenState extends State<FiltersScreen>{
       _topFilters.add(_filtersMap[_filtersRepo.topFilters[i].key]);
     }
 
-    for(int i = 0; i < widget.munch.whitelistFiltersKeys.length; i++){
-      _addFilterToWhitelist(widget.munch.whitelistFiltersKeys[i]);
+    for(int i = 0; i < widget.munch.munchMemberFilters.whitelistFiltersKeys.length; i++){
+      _addFilterToWhitelist(widget.munch.munchMemberFilters.whitelistFiltersKeys[i]);
     }
 
-    for(int i = 0; i < widget.munch.blacklistFiltersKeys.length; i++){
-      _addFilterToBlacklist(widget.munch.blacklistFiltersKeys[i]);
+    for(int i = 0; i < widget.munch.munchMemberFilters.blacklistFiltersKeys.length; i++){
+      _addFilterToBlacklist(widget.munch.munchMemberFilters.blacklistFiltersKeys[i]);
     }
   }
 
@@ -140,7 +140,8 @@ class _FiltersScreenState extends State<FiltersScreen>{
       elevation: 0.0,
       automaticallyImplyLeading: false,
       leading: AppBarBackButton(),
-      title: Text(App.translate("filters_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500)),
+      title: Text(App.translate("filters_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, fontSizeOffset: 1.0)),
+      centerTitle: true,
       backgroundColor: Palette.background,
       actions: <Widget>[
         Padding(padding:
@@ -164,9 +165,37 @@ class _FiltersScreenState extends State<FiltersScreen>{
     );
   }
 
+  bool _checkFiltersChangesMade(){
+    List<String> munchWhitelistFiltersKeys = widget.munch.munchMemberFilters.whitelistFiltersKeys;
+    List<String> munchBlacklistFiltersKeys = widget.munch.munchMemberFilters.blacklistFiltersKeys;
+
+    bool changesMade = false;
+
+    if((munchWhitelistFiltersKeys.length + munchBlacklistFiltersKeys.length) == (_whitelistFilters.length + _blacklistFilters.length)){
+      // every single filter should match with _filtersMap statuses, otherwise changes are made
+      for(int i = 0; i < munchWhitelistFiltersKeys.length; i++){
+        if(_filtersMap[munchWhitelistFiltersKeys[i]].filterStatus != FilterStatus.WHITELISTED){
+          changesMade = true;
+          break;
+        }
+      }
+
+      // every single filter should match with _filtersMap statuses, otherwise changes are made
+      for(int i = 0; i < munchBlacklistFiltersKeys.length; i++){
+        if(_filtersMap[munchBlacklistFiltersKeys[i]].filterStatus != FilterStatus.BLACKLISTED){
+          changesMade = true;
+          break;
+        }
+      }
+    } else{
+      changesMade = true;
+    }
+
+    return changesMade;
+  }
+
   Future<bool> _onWillPopScope(BuildContext context) async {
-    // TODO: put condition are changes dirty
-   /* if(widget.munch.name != _munchNameTextController.text || widget.munch.receivePushNotifications != _pushNotificationsEnabled) {*/
+    if(_checkFiltersChangesMade()) {
       _popScopeCompleter = Completer<bool>();
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
@@ -185,9 +214,9 @@ class _FiltersScreenState extends State<FiltersScreen>{
         // save button clicked and something is wrong
         return false;
       }
-    /*}*/
+    }
 
-    NavigationHelper.popRoute(context, rootNavigator: true);
+    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
 
     return false;
   }
@@ -204,18 +233,52 @@ class _FiltersScreenState extends State<FiltersScreen>{
     );
   }
 
+  void _updateMunchWithDetailedData(Munch detailedMunch){
+    /*
+      Take old data from munch which can be missing from detailedMunch response
+      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
+    */
+    detailedMunch.merge(widget.munch);
+
+    widget.munch = detailedMunch;
+  }
+
+  void _filtersUpdatingStateListener(FiltersState state){
+    if(state.loading){
+      _whitelistContainerReadonly = true;
+      _blacklistContainerReadonly = true;
+    } else{
+      // ready
+      Munch detailedMunch = state.data;
+
+      _updateMunchWithDetailedData(detailedMunch);
+
+      if(_popScopeCompleter != null){
+        _popScopeCompleter.complete(true);
+      } else{
+        _onWillPopScope(context);
+      }
+    }
+  }
+
   void _filtersScreenListener(BuildContext context, FiltersState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
+
+      if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
+        _popScopeCompleter.complete(false);
+      }
     } else if(state is FiltersFetchingState){
       _initializeFilters();
+    } else if(state is FiltersUpdatingState){
+      _filtersUpdatingStateListener( state);
     }
   }
 
   Widget _buildFiltersBloc(){
     return BlocConsumer<FiltersBloc, FiltersState>(
         cubit: _filtersBloc,
-        listenWhen: (FiltersState previous, FiltersState current) => current.hasError || current.ready,
+        listenWhen: (FiltersState previous, FiltersState current) => current.hasError || current.ready || (current.loading && current is FiltersUpdatingState),
         listener: (BuildContext context, FiltersState state) => _filtersScreenListener(context, state),
         buildWhen: (FiltersState previous, FiltersState current) => current.loading || current.ready,
         builder: (BuildContext context, FiltersState state) => _buildFiltersScreen(context, state)
@@ -229,8 +292,12 @@ class _FiltersScreenState extends State<FiltersScreen>{
 
     bool showLoadingIndicator = false;
 
-    if ((state.initial && (_allFilters == null || _topFilters == null))|| state.loading){
+    if ((state.initial && (_allFilters == null || _topFilters == null)) || state.loading){
       showLoadingIndicator = true;
+
+      if(state is FiltersUpdatingState){
+        showLoadingIndicator = false;
+      }
     }
 
     if(showLoadingIndicator){
@@ -567,7 +634,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
   }
 
   void _onSaveButtonClicked(){
-
+    _filtersBloc.add(UpdateFiltersEvent(whitelistFilters: _whitelistFilters, blacklistFilters: _blacklistFilters, munchId: widget.munch.id));
   }
 
   void _onSaveChangesDialogButtonClicked(){
@@ -575,8 +642,6 @@ class _FiltersScreenState extends State<FiltersScreen>{
     NavigationHelper.popRoute(context, rootNavigator: true);
 
     _onSaveButtonClicked();
-
-    _popScopeCompleter.complete(false);
   }
 
   void _onDiscardChangesDialogButtonClicked(){

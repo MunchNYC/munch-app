@@ -45,11 +45,11 @@ class Munch{
   @Field.decode(isNullable: false)
   List<User> members;
 
-  @Field.decode(isNullable: false, alias: 'blacklistFilters')
-  List<String> blacklistFiltersKeys;
+  @Field.decode(isNullable: false)
+  MunchMemberFilters munchMemberFilters;
 
-  @Field.decode(isNullable: false, alias: 'whitelistFilters')
-  List<String> whitelistFiltersKeys;
+  @Field.decode(isNullable: false)
+  MunchFilters munchFilters;
 
   // will be fetched totally in detailed munch
   @Field.decode(isNullable: false)
@@ -99,3 +99,34 @@ class Munch{
   'munchStatus': const Field(processor: MunchStatusProcessor(), dontEncode: true, decodeFrom: 'state')
 })
 class MunchJsonSerializer extends Serializer<Munch> with _$MunchJsonSerializer {}
+
+class MunchMemberFilters{
+  @Alias('whitelist')
+  List<String> whitelistFiltersKeys;
+
+  @Alias('blacklist')
+  List<String> blacklistFiltersKeys;
+}
+
+@GenSerializer()
+class MunchMemberFiltersJsonSerializer extends Serializer<MunchMemberFilters> with _$MunchMemberFiltersJsonSerializer {}
+
+class MunchFilters{
+  List<MunchGroupFilter> blacklist;
+
+  List<MunchGroupFilter> whitelist;
+}
+
+@GenSerializer()
+class MunchFiltersJsonSerializer extends Serializer<MunchFilters> with _$MunchFiltersJsonSerializer {}
+
+class MunchGroupFilter{
+  String key;
+
+  List<String> userIds;
+}
+
+@GenSerializer()
+class MunchGroupFilterJsonSerializer extends Serializer<MunchGroupFilter> with _$MunchGroupFilterJsonSerializer {}
+
+

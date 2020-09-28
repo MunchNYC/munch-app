@@ -142,7 +142,13 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             EdgeInsets.only(right: 24.0),
             child: GestureDetector(
               onTap: (){
-                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch);
+                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((munch) {
+                  if (munch != null) {
+                    setState(() {
+                      widget.munch = munch;
+                    });
+                  }
+                });
               },
               child: ImageIcon(
                 AssetImage("assets/icons/filters.png"),

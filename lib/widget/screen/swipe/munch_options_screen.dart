@@ -117,6 +117,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   Future<bool> _onWillPopScope(BuildContext context) async {
     if(widget.munch.name != _munchNameTextController.text || widget.munch.receivePushNotifications != _pushNotificationsEnabled) {
+      if(_popScopeCompleter != null){
+        _popScopeCompleter.complete(false);
+      }
+
       _popScopeCompleter = Completer<bool>();
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
@@ -194,6 +198,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   void _optionsScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
+
+      if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
+        _popScopeCompleter.complete(false);
+      }
     } else if(state is MunchPreferencesSavingState){
       _preferencesListener(state);
     } else if(state is KickingMemberState){

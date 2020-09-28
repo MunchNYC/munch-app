@@ -13,3 +13,9 @@ class FiltersFetchingState extends FiltersState {
   FiltersFetchingState.loading({message = ""}):super.loading(message: message);
   FiltersFetchingState.failed({message = ""}):super.failed(message: message);
 }
+
+class FiltersUpdatingState extends FiltersState {
+  FiltersUpdatingState.ready({data}):super.ready(data: data);
+  FiltersUpdatingState.loading({message = ""}):super.loading(message: message);
+  FiltersUpdatingState.failed({message = ""}):super.failed(message: message);
+}

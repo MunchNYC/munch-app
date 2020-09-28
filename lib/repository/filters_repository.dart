@@ -37,4 +37,16 @@ class FiltersRepo {
     return getFiltersResponse;
   }
 
+  Future<Munch> updateFilters({List<Filter> whitelistFilters, List<Filter> blacklistFilters, String munchId}) async{
+    List<String> whitelistFiltersKeys = whitelistFilters.map((Filter filter) => filter.key).toList();
+    List<String> blacklistFiltersKeys = blacklistFilters.map((Filter filter) => filter.key).toList();
+
+    Munch munch = await _filtersApi.updateFilters(
+        whitelistFiltersKeys: whitelistFiltersKeys,
+        blacklistFiltersKeys: blacklistFiltersKeys,
+        munchId: munchId
+    );
+
+    return munch;
+  }
 }
