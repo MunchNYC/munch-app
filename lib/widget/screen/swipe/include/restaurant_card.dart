@@ -65,7 +65,7 @@ class _RestaurantCardState extends State<RestaurantCard>{
 
   Widget _titleSection(){
     return Container(
-      padding: EdgeInsets.all(24.0),
+      padding: EdgeInsets.only(top: 24.0, bottom: 16.0, left: 16.0, right: 16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

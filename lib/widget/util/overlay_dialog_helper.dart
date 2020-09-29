@@ -15,6 +15,7 @@ class OverlayDialogHelper{
         context: context,
         useRootNavigator: false,
         barrierDismissible: !isModal,
+        barrierLabel: "",
         barrierColor: Palette.secondaryLight.withAlpha(150),
         transitionDuration: const Duration(milliseconds: 200),
         pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {

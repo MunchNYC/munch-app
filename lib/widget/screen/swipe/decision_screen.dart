@@ -15,6 +15,7 @@ import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
+import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'include/new_restaurant_alert_dialog.dart';
@@ -459,7 +460,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
             padding: EdgeInsets.symmetric(vertical: 12.0),
             content: Text(App.translate("decision_screen.new_restaurant_button.text"), style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark)),
             onPressedCallback: (){
-              NavigationHelper.openFullScreenDialog(context, fullScreenDialog: NewRestaurantAlertDialog(munchId: widget.munch.id, munchBloc: _munchBloc));
+              OverlayDialogHelper(widget: NewRestaurantAlertDialog(munchId: widget.munch.id, munchBloc: _munchBloc)).show(context);
             },
           )
         ),

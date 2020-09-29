@@ -18,16 +18,6 @@ class NavigationHelper {
     }
   }
 
-  static Future openFullScreenDialog(BuildContext context,
-      {bool addToBackStack: true, Widget fullScreenDialog, rootNavigator: true}) {
-      return Navigator.of(context, rootNavigator: rootNavigator).push(PageRouteBuilder(
-          opaque: false,
-          pageBuilder: (BuildContext context, _, __){
-            return fullScreenDialog;
-          }
-      ));
-  }
-
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
       {bool addToBackStack: true, Widget screen, var result}) {
     if (addToBackStack) {

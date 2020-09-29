@@ -15,8 +15,6 @@ import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/tutorial_restaurant_swipe_screen.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
-import 'package:munch/widget/util/custom_button.dart';
-import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +23,7 @@ import 'include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
   Munch munch;
+  bool tutorialStateInitialized = false;
 
   // will be true if we need to call back-end to get detailed munch instead of compact
   bool shouldFetchDetailedMunch;
@@ -46,8 +45,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   Map<String, RestaurantCard> _currentCardMap = Map<String, RestaurantCard>();
   List<Restaurant> _currentRestaurants = List<Restaurant>();
-
-  TutorialState _tutorialState = TutorialState.FINISHED;
 
   MunchBloc _munchBloc;
 
@@ -74,42 +71,34 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     super.dispose();
   }
 
-  Widget _tutorialOverlayDialog(Restaurant restaurant){
-    return GestureDetector(
-      onTap: (){
-        setState(() {
-          _tutorialState = TutorialState.values[_tutorialState.index + 1];
-        });
-
-        if(_tutorialState == TutorialState.FINISHED){
-          // pop overlay dialog
-          NavigationHelper.popRoute(context, rootNavigator: true);
-        }
-      },
-      child: Container(
+  Widget _tutorialOverlayDialog(Restaurant restaurant, TutorialState tutorialState){
+    return Container(
         height: double.infinity,
         width: double.infinity,
         // color must be set otherwise container will be zero-sized, so gesture detectors won't be recognized
         color: Colors.transparent,
-        child: TutorialRestaurantSwipeScreen(munch: widget.munch, restaurant: restaurant),
-      )
+        child: TutorialRestaurantSwipeScreen(munch: widget.munch, restaurant: restaurant, tutorialState: tutorialState),
     );
   }
 
   void _initializeTutorialState(Restaurant restaurant) async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    int tutorialState = sharedPreferences.getInt(StorageKeys.SWIPE_TUTORIAL_STATE);
+    int tutorialStateIndex = sharedPreferences.getInt(StorageKeys.SWIPE_TUTORIAL_STATE);
 
-    if(tutorialState == null){
-      _tutorialState = TutorialState.TUTORIAL_CAROUSEL;
+    TutorialState tutorialState;
+
+    if(tutorialStateIndex == null){
+      tutorialState = TutorialState.TUTORIAL_CAROUSEL;
     } else{
-      _tutorialState = TutorialState.values[tutorialState];
+      tutorialState = TutorialState.values[tutorialStateIndex];
     }
 
-    if(_tutorialState != TutorialState.FINISHED){
-      OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(restaurant)).show(context);
+    if(tutorialState != TutorialState.FINISHED){
+      OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(restaurant, tutorialState)).show(context);
     }
+
+    widget.tutorialStateInitialized = true;
   }
 
   void _throwGetSwipeRestaurantNextPageEvent(){
@@ -216,7 +205,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           body: Container(
               width: double.infinity,
               height: double.infinity,
-              padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(left: 0.0, right: 0.0),
+              padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 8.0, left: 0.0, right: 0.0),
               child: _buildMunchBloc()
           )
       )
@@ -250,7 +239,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     _currentCardMap = _newCardMap;
 
-    if(restaurantList.length > 0){
+    if(restaurantList.length > 0 && !widget.tutorialStateInitialized){
       _initializeTutorialState(restaurantList[0]);
     }
   }
@@ -317,11 +306,11 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         Expanded(
           child: Container(
             child: _currentRestaurants.length > 0 ? _draggableCard() : _emptyCardStack(),
-            padding: EdgeInsets.symmetric(horizontal: 24.0)
+            padding: EdgeInsets.symmetric(horizontal: 8.0)
           )
         ),
-        SizedBox(height: 16.0),
-        Divider(height: 16.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
+        SizedBox(height: 8.0),
+        Divider(height: 1.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
         Padding(
           padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
           child: _decisionInfoBar()

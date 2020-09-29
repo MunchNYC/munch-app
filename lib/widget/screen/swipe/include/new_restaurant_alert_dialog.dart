@@ -17,9 +17,7 @@ class NewRestaurantAlertDialog extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Palette.secondaryLight.withAlpha(220),
-        body: Column(
+    return Column(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Expanded(
@@ -78,8 +76,6 @@ class NewRestaurantAlertDialog extends StatelessWidget{
                 )
             )
           ],
-        )
-
     );
   }
 

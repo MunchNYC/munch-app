@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/widget/screen/swipe/include/tutorial_restaurant_card.dart';
+import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
+import 'package:munch/widget/util/invisible_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TutorialRestaurantSwipeScreen extends StatefulWidget {
   Munch munch;
   Restaurant restaurant;
+  TutorialState tutorialState;
 
-  TutorialRestaurantSwipeScreen({this.munch, this.restaurant});
+  TutorialRestaurantSwipeScreen({this.munch, this.restaurant, this.tutorialState});
 
   @override
   State<TutorialRestaurantSwipeScreen> createState() {
@@ -20,21 +26,36 @@ class TutorialRestaurantSwipeScreen extends StatefulWidget {
 }
 
 class _TutorialRestaurantSwipeScreenState extends State<TutorialRestaurantSwipeScreen> {
+  void _onScreenTapped() async{
+    setState(() {
+      widget.tutorialState = TutorialState.values[widget.tutorialState.index + 1];
+    });
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setInt(StorageKeys.SWIPE_TUTORIAL_STATE, widget.tutorialState.index);
+
+    if(widget.tutorialState == TutorialState.FINISHED){
+      // pop overlay dialog
+      NavigationHelper.popRoute(context, rootNavigator: true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-          appBar: AppBar(backgroundColor: Colors.transparent, automaticallyImplyLeading: false,elevation: 0.0),
-          backgroundColor: Colors.transparent,
-          body: Container(
-              width: double.infinity,
-              height: double.infinity,
-              padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(left: 0.0, right: 0.0),
-              child: _renderScreen(context)
-          )
+    return GestureDetector(
+        onTap: _onScreenTapped,
+        child: Scaffold(
+            appBar: AppBar(backgroundColor: Colors.transparent, automaticallyImplyLeading: false,elevation: 0.0),
+            backgroundColor: Colors.transparent,
+            body: Container(
+                width: double.infinity,
+                height: double.infinity,
+                padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 8.0, left: 0.0, right: 0.0),
+                child: _renderScreen(context)
+            )
+        )
     );
   }
-
 
   Widget _renderScreen(BuildContext context){
     return Column(
@@ -42,14 +63,14 @@ class _TutorialRestaurantSwipeScreenState extends State<TutorialRestaurantSwipeS
           Expanded(
               child: Container(
                   child: _draggableCard(),
-                  padding: EdgeInsets.symmetric(horizontal: 24.0)
+                  padding: EdgeInsets.symmetric(horizontal: 8.0)
               )
           ),
-          SizedBox(height: 16.0),
-          Visibility(visible: false, maintainAnimation: true, maintainState: true, maintainSize: true, child: Divider(height: 16.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7))),
+          SizedBox(height: 8.0),
+          InvisibleWidget(child: Divider(height: 1.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7))),
           Padding(
               padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
-              child: Visibility(visible: false, maintainState: true, maintainAnimation: true, maintainSize: true, child: _decisionInfoBar())
+              child: InvisibleWidget(child: _decisionInfoBar())
           )
         ]
     );
@@ -64,13 +85,14 @@ class _TutorialRestaurantSwipeScreenState extends State<TutorialRestaurantSwipeS
       builder: (context, constraints) =>
         Stack(
           children:[
-              TutorialRestaurantCard(widget.restaurant),
+            TutorialRestaurantCard(widget.restaurant, widget.tutorialState),
+            if(widget.tutorialState == TutorialState.TUTORIAL_SWIPE)
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16.0),
                   border: Border.all(color: Palette.background, width: 2.0)
-                ),
-              )
+                )
+            )
           ]
         ),
     );
