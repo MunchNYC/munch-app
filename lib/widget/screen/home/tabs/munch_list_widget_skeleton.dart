@@ -10,52 +10,22 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:shimmer/shimmer.dart';
 
-class MunchListWidgetSkeleton extends StatefulWidget {
-  Munch munch;
+class MunchListWidgetSkeleton extends StatelessWidget {
+  int index;
 
-  MunchListWidgetSkeleton({this.munch});
+  MunchListWidgetSkeleton({this.index});
 
-  @override
-  State<MunchListWidgetSkeleton> createState() => _MunchListWidgetSkeletonState();
-}
-
-class _MunchListWidgetSkeletonState extends State<MunchListWidgetSkeleton> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-
-  Animation _gradientPosition;
-
-  @override
-  void initState() {
-    _controller = AnimationController(duration: Duration(milliseconds: 1000), vsync: this);
-
-    _gradientPosition = Tween<double>(
-      begin: -3,
-      end: 10,
-    ).animate(
-      CurvedAnimation(
-          parent: _controller,
-          curve: Curves.linear
-      ),
-    )..addListener(() {
-      setState(() {});
-    });
-
-    _controller.repeat();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
+  // 3 different combinations
+  List<List<double>> _skeletonScreenWidthPercentages= [
+      [0.5, 0.2, 0.3], // munch name skeleton screen width %, munch members screen width %, munch status screen width %
+      [0.4, 0.2, 0.3],
+      [0.6, 0.3, 0.4]
+  ];
 
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
       baseColor: Palette.secondaryLight.withOpacity(0.7),
-      highlightColor: Palette.secondaryLight.withOpacity(0.3),
+      highlightColor: Palette.secondaryLight.withOpacity(0.45),
       child: Container(
           height: 72.0,
           child: Row(
@@ -85,17 +55,17 @@ class _MunchListWidgetSkeletonState extends State<MunchListWidgetSkeleton> with 
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            width: 120.0,
+            width: App.screenWidth * _skeletonScreenWidthPercentages[index % 3][0],
             height: 16.0,
             color: Palette.secondaryLight.withOpacity(0.5),
           ),
           Container(
-            width: 60.0,
+            width: App.screenWidth * _skeletonScreenWidthPercentages[index % 3][1],
             height: 16.0,
             color: Palette.secondaryLight.withOpacity(0.5),
           ),
           Container(
-            width: 80.0,
+            width: App.screenWidth * _skeletonScreenWidthPercentages[index % 3][2],
             height: 16.0,
             color: Palette.secondaryLight.withOpacity(0.5),
           )

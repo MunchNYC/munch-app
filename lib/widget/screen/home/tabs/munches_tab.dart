@@ -182,7 +182,7 @@ class MunchesTabState extends State<MunchesTab> {
                 shrinkWrap: true,
                 itemCount: loading ? 15 : _stillDecidingMunches.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(loading) return MunchListWidgetSkeleton();
+                  if(loading) return MunchListWidgetSkeleton(index: index);
 
                   return GestureDetector(
                       onTap: (){
@@ -221,7 +221,7 @@ class MunchesTabState extends State<MunchesTab> {
               shrinkWrap: true,
               itemCount: loading ? 15 : _decidedMunches.length + _archivedMunches.length,
               itemBuilder: (BuildContext context, int index){
-                if(loading) return MunchListWidgetSkeleton();
+                if(loading) return MunchListWidgetSkeleton(index: index);
 
                 return GestureDetector(
                     onTap: (){
