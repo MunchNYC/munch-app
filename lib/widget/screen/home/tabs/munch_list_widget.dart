@@ -14,7 +14,6 @@ class MunchListWidget extends StatelessWidget {
 
   MunchListWidget({this.munch});
 
-
   Widget build(BuildContext context) {
     return Container(
       height: 72.0,

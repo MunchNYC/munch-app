@@ -18,6 +18,8 @@ import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/empty_list_view_widget.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 
+import 'munch_list_widget_skeleton.dart';
+
 class MunchesTab extends StatefulWidget {
   @override
   MunchesTabState createState() => MunchesTabState();
@@ -142,26 +144,26 @@ class MunchesTabState extends State<MunchesTab> {
 
   Widget _buildListViews(BuildContext context, MunchState state){
     if (state.hasError) {
-      return _renderListViews(true);
+      return _renderListViews(errorOccurred: true);
     } else if (state.initial || state.loading)  {
-      return Center(child: AppCircularProgressIndicator());
+      return _renderListViews(loading: true);
     } else {
       return _renderListViews();
     }
   }
 
-  Widget _renderListViews([bool errorOccurred = false]){
+  Widget _renderListViews({bool errorOccurred = false, bool loading = false}){
     // IndexedStack must be used instead of TabBarView, because we need unbounded height
     return IndexedStack(
         index: _currentTab,
         children: <Widget>[
-          _renderStillDecidingListView(errorOccurred),
-          _renderDecidedArchivedListView(errorOccurred)
+          _renderStillDecidingListView(errorOccurred: errorOccurred, loading: loading),
+          _renderDecidedArchivedListView(errorOccurred: errorOccurred, loading: loading)
         ]
     );
   }
 
-  Widget _renderStillDecidingListView([bool errorOccurred = false]){
+  Widget _renderStillDecidingListView({bool errorOccurred = false, bool loading = false}){
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
         color: Palette.secondaryDark,
@@ -174,12 +176,14 @@ class MunchesTabState extends State<MunchesTab> {
             physics: AlwaysScrollableScrollPhysics(),
             child:
             errorOccurred ? ErrorPageWidget() :
-            _stillDecidingMunches.length > 0 ?
+            loading || _stillDecidingMunches.length > 0 ?
             ListView.separated(
                 primary: false,
                 shrinkWrap: true,
-                itemCount: _stillDecidingMunches.length,
+                itemCount: loading ? 15 : _stillDecidingMunches.length,
                 itemBuilder: (BuildContext context, int index){
+                  if(loading) return MunchListWidgetSkeleton();
+
                   return GestureDetector(
                       onTap: (){
                         NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true).then((value){
@@ -198,7 +202,7 @@ class MunchesTabState extends State<MunchesTab> {
     );
   }
 
-  Widget _renderDecidedArchivedListView([bool errorOccurred = false]){
+  Widget _renderDecidedArchivedListView({bool errorOccurred = false, bool loading = false}){
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
         color: Palette.secondaryDark,
@@ -211,12 +215,14 @@ class MunchesTabState extends State<MunchesTab> {
             physics: AlwaysScrollableScrollPhysics(),
             child:
             errorOccurred ? ErrorPageWidget() :
-            _decidedMunches.length + _archivedMunches.length > 0 ?
+            loading || _decidedMunches.length + _archivedMunches.length > 0 ?
             ListView.separated(
               primary: false,
               shrinkWrap: true,
-              itemCount: _decidedMunches.length + _archivedMunches.length,
+              itemCount: loading ? 15 : _decidedMunches.length + _archivedMunches.length,
               itemBuilder: (BuildContext context, int index){
+                if(loading) return MunchListWidgetSkeleton();
+
                 return GestureDetector(
                     onTap: (){
                       NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true).then((value){
