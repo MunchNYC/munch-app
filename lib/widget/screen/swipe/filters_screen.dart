@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/filter.dart';
@@ -30,7 +32,12 @@ class FiltersScreen extends StatefulWidget{
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen>{
+class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProviderStateMixin {
+  //use "with SingleThickerProviderStateMixin" at last of class declaration
+  //where you have to pass "vsync" argument, add this
+
+  Animation<double> animation;
+  AnimationController _controller; //controller for animation
   Completer<bool> _popScopeCompleter;
 
   List<Filter> _whitelistFilters;
@@ -50,8 +57,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
   FiltersRepo _filtersRepo = FiltersRepo.getInstance();
   FiltersBloc _filtersBloc;
 
-  bool _whitelistContainerReadonly = true;
-  bool _blacklistContainerReadonly = true;
+  bool _selectedFiltersContainerReadonly = true;
 
   bool _allCuisinesMode = false;
 
@@ -66,6 +72,17 @@ class _FiltersScreenState extends State<FiltersScreen>{
     } else{
       _initializeFilters();
     }
+
+    _controller = AnimationController(duration: Duration(seconds: 4), vsync: this);
+    _controller.repeat();
+    //we set animation duration, and repeat for infinity
+
+    animation = Tween<double>(begin: -400, end: 0).animate(_controller);
+    //we have set begin to -600 and end to 0, it will provide the value for
+    //left or right position for Positioned() widget to creat movement from left to right
+    animation.addListener(() {
+      setState(() {}); //update UI on every animation value update
+    });
 
     super.initState();
   }
@@ -147,7 +164,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
       actions: <Widget>[
         Padding(padding:
         EdgeInsets.only(right: 24.0),
-            child:  CustomButton.bloc(
+            child:  CustomButton<FiltersState, FiltersUpdatingState>.bloc(
               cubit: _filtersBloc,
               flat: true,
               // very important to set, otherwise title won't be aligned good
@@ -246,8 +263,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
 
   void _filtersUpdatingStateListener(FiltersState state){
     if(state.loading){
-      _whitelistContainerReadonly = true;
-      _blacklistContainerReadonly = true;
+      _selectedFiltersContainerReadonly = true;
     } else{
       // ready
       Munch detailedMunch = state.data;
@@ -309,13 +325,13 @@ class _FiltersScreenState extends State<FiltersScreen>{
   }
 
   Widget _renderScreen(BuildContext context){
-    return SingleChildScrollView(
+    return Padding(
         padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 12.0),
         child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               _tabHeaders(),
-              _tabsContent()
+              Expanded(child:_tabsContent())
             ]
         )
     );
@@ -359,21 +375,46 @@ class _FiltersScreenState extends State<FiltersScreen>{
   }
 
   Widget _renderPersonalTab(){
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 24.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _whitelistContainerArea(),
-          SizedBox(height: 24.0),
-          _blacklistContainerArea(),
-          SizedBox(height: 24.0),
-          _filtersControlArea()
-        ],
-      )
+    return SingleChildScrollView(
+       child: Container(
+          padding: EdgeInsets.symmetric(vertical: 24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _whitelistContainerArea(),
+              SizedBox(height: 24.0),
+              _blacklistContainerArea(),
+              SizedBox(height: 24.0),
+              _filtersControlArea()
+            ],
+          )
+       )
     );
   }
+
+
+  Widget _renderGroupTab(){
+    return SingleChildScrollView(
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _groupWhitelistCuisines(),
+                SizedBox(height: 24.0),
+                _groupBlacklistCuisines(),
+                SizedBox(height: 12.0),
+                Text(App.translate("filters_screen.group_tab.description1.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5))),
+                SizedBox(height: 12.0),
+                Text(App.translate("filters_screen.group_tab.description2.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5)))
+              ],
+            )
+        )
+    );
+  }
+
 
   Widget _whitelistContainerHeader(){
     return Row(
@@ -386,13 +427,13 @@ class _FiltersScreenState extends State<FiltersScreen>{
             // very important to set, otherwise title won't be aligned good
             padding: EdgeInsets.zero,
             color: Colors.transparent,
-            content: Text(_whitelistContainerReadonly ?
+            content: Text(_selectedFiltersContainerReadonly ?
             App.translate("filters_screen.whitelist_container.readonly_state.text")
                 : App.translate("filters_screen.whitelist_container.edit_state.text"),
                 style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.hyperlink)),
             onPressedCallback: (){
               setState(() {
-                _whitelistContainerReadonly = !_whitelistContainerReadonly;
+                _selectedFiltersContainerReadonly = !_selectedFiltersContainerReadonly;
               });
             },
           )
@@ -411,35 +452,40 @@ class _FiltersScreenState extends State<FiltersScreen>{
     );
   }
 
-  Widget _whitelistContainerFilters(){
+  Widget _selectedFiltersContainer(List<Filter> filters, Color color){
     return Wrap(
         spacing: 16.0,
         runSpacing: 16.0,
-        children: _whitelistFilters.map((Filter filter) =>
-            Container(
-              padding: EdgeInsets.only(left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(
-                      width: 1.0,
-                      color: Palette.hyperlink
-                  )
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if(!_whitelistContainerReadonly)
-                    _filterRemoveIcon(filter),
-                  SizedBox(width: 4.0),
-                  Flexible(
-                      fit: FlexFit.loose,
-                      child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
-                  )
-                ],
-              ),
-            )
+        children: filters.map((Filter filter) =>
+        ShakeAnimatedWidget(
+          enabled: !_selectedFiltersContainerReadonly,
+          duration: Duration(milliseconds: 750),
+          shakeAngle: Rotation.deg(z: 1),
+          curve: Curves.linear,
+          child: Container(
+                padding: EdgeInsets.only(left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                        width: 1.0,
+                        color: color
+                    )
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if(!_selectedFiltersContainerReadonly)
+                      _filterRemoveIcon(filter),
+                    SizedBox(width: 4.0),
+                    Flexible(
+                        fit: FlexFit.loose,
+                        child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
+                    )
+                  ],
+                ),
+              ))
         ).toList()
     );
   }
@@ -451,7 +497,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
       children: [
         _whitelistContainerHeader(),
         SizedBox(height: 24.0),
-        _whitelistContainerFilters()
+        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink)
       ],
     );
   }
@@ -468,50 +514,17 @@ class _FiltersScreenState extends State<FiltersScreen>{
             // very important to set, otherwise title won't be aligned good
             padding: EdgeInsets.zero,
             color: Colors.transparent,
-            content: Text(_blacklistContainerReadonly ?
+            content: Text(_selectedFiltersContainerReadonly ?
             App.translate("filters_screen.blacklist_container.readonly_state.text")
                 : App.translate("filters_screen.blacklist_container.edit_state.text"),
                 style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.hyperlink)),
             onPressedCallback: (){
               setState(() {
-                _blacklistContainerReadonly = !_blacklistContainerReadonly;
+                _selectedFiltersContainerReadonly = !_selectedFiltersContainerReadonly;
               });
             },
           )
         ]
-    );
-  }
-
-  Widget _blacklistContainerFilters(){
-    return Wrap(
-      spacing: 16.0,
-      runSpacing: 16.0,
-      children: _blacklistFilters.map((Filter filter) =>
-          Container(
-            padding: EdgeInsets.only(left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
-                border: Border.all(
-                    width: 1.0,
-                    color: Palette.secondaryDark
-                )
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if(!_blacklistContainerReadonly)
-                  _filterRemoveIcon(filter),
-                SizedBox(width: 4.0),
-                Flexible(
-                    fit: FlexFit.loose,
-                    child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
-                )
-              ],
-            ),
-          )
-      ).toList()
     );
   }
 
@@ -522,7 +535,7 @@ class _FiltersScreenState extends State<FiltersScreen>{
       children: [
         _blacklistContainerHeader(),
         SizedBox(height: 24.0),
-        _blacklistContainerFilters()
+        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark)
       ],
     );
   }
@@ -627,25 +640,6 @@ class _FiltersScreenState extends State<FiltersScreen>{
         ),
         _allCuisinesModeLink()
       ]
-    );
-  }
-
-  Widget _renderGroupTab(){
-    return Container(
-        padding: EdgeInsets.symmetric(vertical: 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _groupWhitelistCuisines(),
-            SizedBox(height: 24.0),
-            _groupBlacklistCuisines(),
-            SizedBox(height: 12.0),
-            Text(App.translate("filters_screen.group_tab.description1.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5))),
-            SizedBox(height: 12.0),
-            Text(App.translate("filters_screen.group_tab.description2.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5)))
-          ],
-        )
     );
   }
 

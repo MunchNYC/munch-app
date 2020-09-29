@@ -110,7 +110,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
               ),
             )
-
           ],
         )
       ],
@@ -147,6 +146,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                     setState(() {
                       widget.munch = munch;
                     });
+
+                    _currentRestaurants.clear();
+
+                    _throwGetSwipeRestaurantNextPageEvent();
                   }
                 });
               },
