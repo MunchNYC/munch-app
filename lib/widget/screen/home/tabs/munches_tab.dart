@@ -236,7 +236,7 @@ class MunchesTabState extends State<MunchesTab> {
   }
 
   void _onPlusButtonClicked(BuildContext context){
-    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), showCloseIcon: false).show(context);
+    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc)).show(context);
   }
 
   Widget _plusButton(BuildContext context){

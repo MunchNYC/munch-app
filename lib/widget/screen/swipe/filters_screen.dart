@@ -17,10 +17,12 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/swipe/include/filters_info_dialog.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/cupertion_alert_dialog_builder.dart';
 import 'package:munch/widget/util/custom_button.dart';
+import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 
 class FiltersScreen extends StatefulWidget{
@@ -32,12 +34,16 @@ class FiltersScreen extends StatefulWidget{
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProviderStateMixin {
-  //use "with SingleThickerProviderStateMixin" at last of class declaration
-  //where you have to pass "vsync" argument, add this
+class _FiltersScreenState extends State<FiltersScreen> {
+  static const double AVATAR_RADIUS = 12.0;
+  static const double AVATAR_CONTAINER_PARENT_PERCENT = 0.5;
+  static const double AVATAR_SPACING = 4.0;
 
-  Animation<double> animation;
-  AnimationController _controller; //controller for animation
+  // avatar size calculations
+  static final double _totalAvatarWidth =  (AVATAR_RADIUS * 2 + AVATAR_SPACING);
+  static final double _maxAvatarContainerWidth = (App.screenWidth- AppDimensions.padding(AppPaddingType.screenWithAppBar).horizontal) * AVATAR_CONTAINER_PARENT_PERCENT;
+  static final int _maxAvatarsPerRow = (_maxAvatarContainerWidth / _totalAvatarWidth).floor();
+  
   Completer<bool> _popScopeCompleter;
 
   List<Filter> _whitelistFilters;
@@ -73,17 +79,6 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
       _initializeFilters();
     }
 
-    _controller = AnimationController(duration: Duration(seconds: 4), vsync: this);
-    _controller.repeat();
-    //we set animation duration, and repeat for infinity
-
-    animation = Tween<double>(begin: -400, end: 0).animate(_controller);
-    //we have set begin to -600 and end to 0, it will provide the value for
-    //left or right position for Positioned() widget to creat movement from left to right
-    animation.addListener(() {
-      setState(() {}); //update UI on every animation value update
-    });
-
     super.initState();
   }
 
@@ -93,7 +88,6 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
 
     super.dispose();
   }
-
 
   void _addFilterToWhitelist(String filterKey){
     Filter filter = _filtersMap[filterKey];
@@ -337,29 +331,42 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
     );
   }
 
+  void _showInfoDialog() {
+    DialogHelper(dialogContent: FiltersInfoDialog()).show(context);
+  }
+
   Widget _tabHeaders(){
     return Align(
         alignment: Alignment.centerLeft,
         child:  DefaultTabController(
             length: 2,
-            child: TabBar(
-              onTap: (int index){
-                setState(() {
-                  _currentTab = index;
-                });
-              },
-              isScrollable: true, // needs to be set to true in order to make Align widget workable
-              labelColor: Palette.primary,
-              unselectedLabelColor: Palette.secondaryLight,
-              indicatorColor: Palette.primary,
-              indicatorPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-              labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-              labelStyle: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w600),
-              tabs: [
-                Tab(text: App.translate("filters_screen.personal_tab.title")),
-                Tab(text: App.translate("filters_screen.group_tab.title")),
-              ]
-            )
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children:[
+                TabBar(
+                  onTap: (int index){
+                    setState(() {
+                      _currentTab = index;
+                    });
+                  },
+                  isScrollable: true, // needs to be set to true in order to make Align widget workable
+                  labelColor: Palette.primary,
+                  unselectedLabelColor: Palette.secondaryLight,
+                  indicatorColor: Palette.primary,
+                  indicatorPadding: EdgeInsets.only(left: 0.0, right: 15.0),
+                  labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
+                  labelStyle: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w600),
+                  tabs: [
+                    Tab(text: App.translate("filters_screen.personal_tab.title")),
+                    Tab(text: App.translate("filters_screen.group_tab.title")),
+                  ]
+               ),
+               GestureDetector(
+                 onTap: _showInfoDialog,
+                 child: ImageIcon(AssetImage("assets/icons/info.png"), size: 18.0, color: Palette.primary),
+               )
+            ]
+          )
         )
     );
   }
@@ -623,9 +630,9 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
       children: [
         Text(App.translate("filters_screen.filters_control.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
         SizedBox(height: 20.0),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        ListView(
+          primary: false,
+          shrinkWrap: true,
           children: [
            for(Filter filter in (_allCuisinesMode ? _allFilters : _topFilters))
             Column(
@@ -643,6 +650,46 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
     );
   }
 
+  Widget _userAvatars(MunchGroupFilter munchGroupFilter){
+    List<Widget> _avatarList = List<Widget>();
+
+    double avatarContainerWidth;
+
+    if(_maxAvatarsPerRow < munchGroupFilter.userIds.length){
+      avatarContainerWidth = _maxAvatarContainerWidth;
+    } else{
+      avatarContainerWidth = munchGroupFilter.userIds.length * _totalAvatarWidth;
+    }
+
+    for(int i = 0; i < munchGroupFilter.userIds.length; i++){
+      if(i + 1 == _maxAvatarsPerRow && _maxAvatarsPerRow < munchGroupFilter.userIds.length){
+        int avatarsLeft = munchGroupFilter.userIds.length - i;
+        _avatarList.add(Padding(
+          padding: EdgeInsets.only(left: AVATAR_SPACING),
+          child: CircleAvatar(backgroundColor: Palette.secondaryLight, child: Text(avatarsLeft.toString() + "+", style: AppTextStyle.style(AppTextStylePattern.body2Inverse)), radius: AVATAR_RADIUS),
+        ));
+
+        break;
+      } else {
+        User user = widget.munch.getMunchMember(munchGroupFilter.userIds[0]);
+
+        _avatarList.add(Padding(
+          padding: EdgeInsets.only(left: AVATAR_SPACING),
+          child: CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: AVATAR_RADIUS),
+        ));
+      }
+    }
+
+    return SizedBox(
+      width: avatarContainerWidth,
+      child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: _avatarList
+      )
+    );
+  }
+  
   Widget _groupCuisinesListItem(MunchGroupFilter munchGroupFilter){
       return Column(
           mainAxisSize: MainAxisSize.min,
@@ -652,23 +699,9 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  flex: 1,
-                  child: Text(_filtersMap[munchGroupFilter.key].label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500)),
-                ),
+                Expanded(child: Text(_filtersMap[munchGroupFilter.key].label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))),
                 SizedBox(width: 4.0),
-                Flexible(
-                  flex: 1,
-                  child: Wrap(
-                    spacing: 4.0,
-                    runSpacing: 4.0,
-                    alignment: WrapAlignment.end,
-                    children: [
-                      for(User user in munchGroupFilter.userIds.map((String userId) => widget.munch.getMunchMember(userId)).toList())
-                        CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: 12.0)
-                    ],
-                  )
-                )
+                _userAvatars(munchGroupFilter)
               ],
             ),
             Divider(height: 24.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
@@ -683,8 +716,9 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
       children: [
         Text(App.translate("filters_screen.group_tab.whitelist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
         SizedBox(height: 24.0),
-        Column(
-          mainAxisSize: MainAxisSize.min,
+        ListView(
+          primary: false,
+          shrinkWrap: true,
           children: [
             for(MunchGroupFilter munchGroupFilter in widget.munch.munchFilters.whitelist)
               _groupCuisinesListItem(munchGroupFilter)
@@ -701,8 +735,9 @@ class _FiltersScreenState extends State<FiltersScreen> with SingleTickerProvider
       children: [
         Text(App.translate("filters_screen.group_tab.blacklist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
         SizedBox(height: 24.0),
-        Column(
-          mainAxisSize: MainAxisSize.min,
+        ListView(
+          primary: false,
+          shrinkWrap: true,
           children: [
             for(MunchGroupFilter munchGroupFilter in widget.munch.munchFilters.blacklist)
               _groupCuisinesListItem(munchGroupFilter)
