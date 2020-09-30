@@ -133,6 +133,18 @@
     "filters_screen.save_changes_alert_dialog.confirm_button.text": "Save",
     "filters_screen.save_changes_alert_dialog.cancel_button.text": "Discard",
 
+    "filters_screen.info_dialog.personal_filters.title": "Personal Filters",
+    "filters_screen.info_dialog.personal_filters.whitelist.title": "Only These",
+    "filters_screen.info_dialog.personal_filters.whitelist.description":  "Restaurant you see will have at least one of these cuisines types.",
+    "filters_screen.info_dialog.personal_filters.blacklist.title":  "Definitely No",
+    "filters_screen.info_dialog.personal_filters.blacklist.description":  "Restaurant you see will not include these cuisine types.",
+    "filters_screen.info_dialog.personal_filters.neutral.title":  "I'm Okay With",
+    "filters_screen.info_dialog.personal_filters.neutral.description":  "Restaurant you see may or may not include these cuisine types.",
+    "filters_screen.info_dialog.group_filters.title": "Group Filters",
+    "filters_screen.info_dialog.group_filters.description": "A smart combination of all personal filters within this Munch. Restaurants shown to everyone will be based on these filters.",
+    "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
+    "filters_screen.info_dialog.close_button.text": "Close",
+
     "decision_screen.restaurant.hours.subtitle": "Hours",
     "decision_screen.call_button.label.text": "Call",
     "decision_screen.map_button.label.text": "View Map",
