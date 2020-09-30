@@ -213,19 +213,14 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     } else if(state is RestaurantsPageFetchingState){
       _updateRestaurantsPage(state.data);
     } else if(state is RestaurantSwipeProcessingState){
-      if(state.loading){
-        _removeTopCard();
-      } else {
-        // ready state
-        _updateMunchWithDetailedData(state.data);
-      }
+      _updateMunchWithDetailedData(state.data);
     }
   }
 
   Widget _buildMunchBloc(){
     return BlocConsumer<MunchBloc, MunchState>(
         cubit: _munchBloc,
-        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready || (current.loading && current is RestaurantSwipeProcessingState),
+        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
         listener: (BuildContext context, MunchState state) => _swipeScreenListener(context, state),
         buildWhen: (MunchState previous, MunchState current) => ! (current is RestaurantSwipeProcessingState && current.hasError) , // in every other condition enter builder
         builder: (BuildContext context, MunchState state) => _buildSwipeScreen(context, state)
@@ -406,6 +401,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         munchId: widget.munch.id,
         restaurantId: _currentRestaurants[0].id)
     );
+
+    setState(() {
+      _removeTopCard();
+    });
   }
 
   void _onSwipeRight(){
@@ -413,5 +412,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         munchId: widget.munch.id,
         restaurantId: _currentRestaurants[0].id)
     );
+
+    setState(() {
+      _removeTopCard();
+    });
   }
 }
