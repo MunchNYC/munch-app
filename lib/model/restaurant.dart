@@ -60,7 +60,7 @@ class Restaurant{
 
     TimeOfDay currentTimeOfDay = TimeOfDay.now();
 
-    int currentTimeOfDayValue = 3 * 60 + currentTimeOfDay.minute;
+    int currentTimeOfDayValue = currentTimeOfDay.hour * 60 + currentTimeOfDay.minute;
 
     String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
 
@@ -94,6 +94,25 @@ class Restaurant{
   String toString() {
     return "id: $id; name: $name;";
   }
+
+  Restaurant({
+      this.id,
+      this.name,
+      this.categories,
+      this.workingHours,
+      this.coordinates,
+      this.city,
+      this.state,
+      this.country,
+      this.address,
+      this.zipCode,
+      this.phoneNumber,
+      this.priceSymbol,
+      this.rating,
+      this.photoUrls,
+      this.reviewsNumber,
+      this.timezone,
+      this.url});
 }
 
 @GenSerializer()
@@ -137,6 +156,8 @@ class WorkingHours{
 
       return workingTimesStringList.join(", ");
   }
+
+  WorkingHours({this.dayOfWeek, this.workingTimes});
 }
 
 @GenSerializer()
@@ -147,6 +168,8 @@ class WorkingTimes{
   String open;
 
   String closed;
+
+  WorkingTimes({this.open, this.closed});
 }
 
 @GenSerializer()
