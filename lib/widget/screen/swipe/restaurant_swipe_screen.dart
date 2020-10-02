@@ -34,9 +34,16 @@ class RestaurantSwipeScreen extends StatefulWidget {
 
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_SCREEN_RATIO_THRESHOLD = 0.2;
+  static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 3;
 
   Map<String, RestaurantCard> _currentCardMap = Map<String, RestaurantCard>();
   List<Restaurant> _currentRestaurants = List<Restaurant>();
+
+  // Sometimes from back-end are return restaurants which swipes are currently processing so don't need to show them in card stack
+  // Because of that we're storing last swiped restaurants in buffer with LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY
+  // Map is created just to optimize speed of detection algorithm
+  Map<String, Restaurant> _lastSwipedRestaurantsMap = Map<String, Restaurant>();
+  List<Restaurant> _lastSwipedRestaurants = List<Restaurant>();
 
   MunchBloc _munchBloc;
 
@@ -187,16 +194,23 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   void _updateRestaurantsPage(List<Restaurant> restaurantList){
     _currentRestaurants = restaurantList;
 
+    for(int i = 0; i < _currentRestaurants.length; i++){
+      if(_lastSwipedRestaurantsMap.containsKey(_currentRestaurants[i].id)){
+        _currentRestaurants.removeAt(i);
+        i--;
+      }
+    }
+
     Map<String, RestaurantCard> _newCardMap = Map<String, RestaurantCard>();
 
     _currentRestaurants.forEach((Restaurant restaurant) {
-      if(_currentCardMap.containsKey(restaurant.id)){
+      // if restaurant is in swipe history buffer, don't include it in new card map
+      if (_currentCardMap.containsKey(restaurant.id)) {
         _newCardMap[restaurant.id] = _currentCardMap[restaurant.id];
-      } else{
+      } else {
         _newCardMap[restaurant.id] = RestaurantCard(restaurant);
       }
     });
-
     _currentCardMap.clear();
 
     _currentCardMap = _newCardMap;
@@ -389,11 +403,21 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   void _removeTopCard() {
     _currentCardMap.remove(_currentRestaurants[0].id);
-    _currentRestaurants.removeAt(0);
+
+    Restaurant restaurant = _currentRestaurants.removeAt(0);
+
+    if(_lastSwipedRestaurants.length +  1 == LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY) {
+      Restaurant restaurantRemovedFromLastSwipedList = _lastSwipedRestaurants.removeLast();
+      _lastSwipedRestaurantsMap.remove(restaurantRemovedFromLastSwipedList.id);
+    }
+
+    _lastSwipedRestaurants.insert(0, restaurant);
+    _lastSwipedRestaurantsMap[restaurant.id] = restaurant;
 
     if(_currentRestaurants.length <= 1){
       _throwGetSwipeRestaurantNextPageEvent();
     }
+
   }
 
   void _onSwipeLeft(){
