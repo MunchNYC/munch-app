@@ -11,8 +11,8 @@ abstract class _$FilterJsonSerializer implements Serializer<Filter> {
   Map<String, dynamic> toMap(Filter model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'alias', model.alias);
-    setMapValue(ret, 'title', model.title);
+    setMapValue(ret, 'key', model.key);
+    setMapValue(ret, 'label', model.label);
     return ret;
   }
 
@@ -20,8 +20,8 @@ abstract class _$FilterJsonSerializer implements Serializer<Filter> {
   Filter fromMap(Map map) {
     if (map == null) return null;
     final obj = Filter();
-    obj.alias = map['alias'] as String;
-    obj.title = map['title'] as String;
+    obj.key = map['key'] as String;
+    obj.label = map['label'] as String;
     return obj;
   }
 }

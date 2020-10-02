@@ -20,8 +20,8 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
   Map<String, dynamic> toMap(Restaurant model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'id', model.id);
-    setMapValue(ret, 'name', model.name);
+    setMapValue(ret, 'id', passProcessor.serialize(model.id));
+    setMapValue(ret, 'name', passProcessor.serialize(model.name));
     setMapValue(
         ret,
         'categories',
@@ -36,19 +36,19 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
             (val) => _workingHoursJsonSerializer.toMap(val as WorkingHours)));
     setMapValue(ret, 'coordinates',
         _coordinatesJsonSerializer.toMap(model.coordinates));
-    setMapValue(ret, 'city', model.city);
-    setMapValue(ret, 'state', model.state);
-    setMapValue(ret, 'country', model.country);
-    setMapValue(ret, 'address', model.address);
-    setMapValue(ret, 'zipCode', model.zipCode);
-    setMapValue(ret, 'phoneNumber', model.phoneNumber);
-    setMapValue(ret, 'price', model.priceSymbol);
+    setMapValue(ret, 'city', passProcessor.serialize(model.city));
+    setMapValue(ret, 'state', passProcessor.serialize(model.state));
+    setMapValue(ret, 'country', passProcessor.serialize(model.country));
+    setMapValue(ret, 'address', passProcessor.serialize(model.address));
+    setMapValue(ret, 'zipCode', passProcessor.serialize(model.zipCode));
+    setMapValue(ret, 'phoneNumber', passProcessor.serialize(model.phoneNumber));
+    setMapValue(ret, 'price', passProcessor.serialize(model.priceSymbol));
     setMapValue(ret, 'rating', model.rating);
-    setMapValue(
-        ret, 'photos', codeIterable(model.photoUrls, (val) => val as String));
+    setMapValue(ret, 'photos',
+        codeIterable(model.photoUrls, (val) => passProcessor.serialize(val)));
     setMapValue(ret, 'reviewCount', model.reviewsNumber);
-    setMapValue(ret, 'timezone', model.timezone);
-    setMapValue(ret, 'url', model.url);
+    setMapValue(ret, 'timezone', passProcessor.serialize(model.timezone));
+    setMapValue(ret, 'url', passProcessor.serialize(model.url));
     return ret;
   }
 
@@ -56,8 +56,8 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
   Restaurant fromMap(Map map) {
     if (map == null) return null;
     final obj = Restaurant();
-    obj.id = map['id'] as String;
-    obj.name = map['name'] as String;
+    obj.id = passProcessor.deserialize(map['id']);
+    obj.name = passProcessor.deserialize(map['name']);
     obj.categories = codeIterable<RestaurantCategory>(
         map['categories'] as Iterable,
         (val) => _restaurantCategoryJsonSerializer.fromMap(val as Map));
@@ -65,19 +65,19 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
         (val) => _workingHoursJsonSerializer.fromMap(val as Map));
     obj.coordinates =
         _coordinatesJsonSerializer.fromMap(map['coordinates'] as Map);
-    obj.city = map['city'] as String;
-    obj.state = map['state'] as String;
-    obj.country = map['country'] as String;
-    obj.address = map['address'] as String;
-    obj.zipCode = map['zipCode'] as String;
-    obj.phoneNumber = map['phoneNumber'] as String;
-    obj.priceSymbol = map['price'] as String;
+    obj.city = passProcessor.deserialize(map['city']);
+    obj.state = passProcessor.deserialize(map['state']);
+    obj.country = passProcessor.deserialize(map['country']);
+    obj.address = passProcessor.deserialize(map['address']);
+    obj.zipCode = passProcessor.deserialize(map['zipCode']);
+    obj.phoneNumber = passProcessor.deserialize(map['phoneNumber']);
+    obj.priceSymbol = passProcessor.deserialize(map['price']);
     obj.rating = map['rating'] as double;
-    obj.photoUrls =
-        codeIterable<String>(map['photos'] as Iterable, (val) => val as String);
+    obj.photoUrls = codeIterable<String>(
+        map['photos'] as Iterable, (val) => passProcessor.deserialize(val));
     obj.reviewsNumber = map['reviewCount'] as int;
-    obj.timezone = map['timezone'] as String;
-    obj.url = map['url'] as String;
+    obj.timezone = passProcessor.deserialize(map['timezone']);
+    obj.url = passProcessor.deserialize(map['url']);
     return obj;
   }
 }
@@ -88,8 +88,8 @@ abstract class _$RestaurantCategoryJsonSerializer
   Map<String, dynamic> toMap(RestaurantCategory model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'alias', model.alias);
-    setMapValue(ret, 'title', model.title);
+    setMapValue(ret, 'alias', passProcessor.serialize(model.alias));
+    setMapValue(ret, 'title', passProcessor.serialize(model.title));
     return ret;
   }
 
@@ -97,8 +97,8 @@ abstract class _$RestaurantCategoryJsonSerializer
   RestaurantCategory fromMap(Map map) {
     if (map == null) return null;
     final obj = RestaurantCategory();
-    obj.alias = map['alias'] as String;
-    obj.title = map['title'] as String;
+    obj.alias = passProcessor.deserialize(map['alias']);
+    obj.title = passProcessor.deserialize(map['title']);
     return obj;
   }
 }
@@ -112,7 +112,7 @@ abstract class _$WorkingHoursJsonSerializer
   Map<String, dynamic> toMap(WorkingHours model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'dayOfWeek', model.dayOfWeek);
+    setMapValue(ret, 'dayOfWeek', passProcessor.serialize(model.dayOfWeek));
     setMapValue(
         ret,
         'times',
@@ -125,7 +125,7 @@ abstract class _$WorkingHoursJsonSerializer
   WorkingHours fromMap(Map map) {
     if (map == null) return null;
     final obj = WorkingHours();
-    obj.dayOfWeek = map['dayOfWeek'] as String;
+    obj.dayOfWeek = passProcessor.deserialize(map['dayOfWeek']);
     obj.workingTimes = codeIterable<WorkingTimes>(map['times'] as Iterable,
         (val) => _workingTimesJsonSerializer.fromMap(val as Map));
     return obj;
@@ -138,8 +138,8 @@ abstract class _$WorkingTimesJsonSerializer
   Map<String, dynamic> toMap(WorkingTimes model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'open', model.open);
-    setMapValue(ret, 'closed', model.closed);
+    setMapValue(ret, 'open', passProcessor.serialize(model.open));
+    setMapValue(ret, 'closed', passProcessor.serialize(model.closed));
     return ret;
   }
 
@@ -147,8 +147,8 @@ abstract class _$WorkingTimesJsonSerializer
   WorkingTimes fromMap(Map map) {
     if (map == null) return null;
     final obj = WorkingTimes();
-    obj.open = map['open'] as String;
-    obj.closed = map['closed'] as String;
+    obj.open = passProcessor.deserialize(map['open']);
+    obj.closed = passProcessor.deserialize(map['closed']);
     return obj;
   }
 }

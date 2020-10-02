@@ -155,7 +155,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
               ),
             )
-
           ],
         )
       ],
@@ -185,10 +184,25 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         actions: <Widget>[
           Padding(padding:
             EdgeInsets.only(right: 24.0),
-            child: ImageIcon(
-              AssetImage("assets/icons/filters.png"),
-              color: Palette.primary.withOpacity(0.5),
-              size: 24.0,
+            child: GestureDetector(
+              onTap: (){
+                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((munch) {
+                  if (munch != null) {
+                    setState(() {
+                      widget.munch = munch;
+                    });
+
+                    _currentRestaurants.clear();
+
+                    _throwGetSwipeRestaurantNextPageEvent();
+                  }
+                });
+              },
+              child: ImageIcon(
+                AssetImage("assets/icons/filters.png"),
+                color: Palette.primary.withOpacity(0.5),
+                size: 24.0,
+              ),
             )
           ),
         ],

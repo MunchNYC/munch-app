@@ -14,6 +14,7 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     setMapValue(ret, 'userId', model.uid);
     setMapValueIfNotNull(ret, 'email', model.email);
     setMapValue(ret, 'displayName', model.displayName);
+    setMapValue(ret, 'photoUrl', model.photoUrl);
     return ret;
   }
 
@@ -24,6 +25,7 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     obj.uid = map['userId'] as String;
     obj.email = map['email'] as String ?? getJserDefault('email') ?? obj.email;
     obj.displayName = map['displayName'] as String;
+    obj.photoUrl = map['photoUrl'] as String;
     return obj;
   }
 }

@@ -2,17 +2,28 @@ import 'package:jaguar_serializer/jaguar_serializer.dart';
 
 part 'filter.jser.dart';
 
-class Filter{
-  String alias;
+enum FilterStatus{
+  BLACKLISTED, NEUTRAL, WHITELISTED
+}
 
-  String title;
+class Filter{
+  String key;
+
+  String label;
+
+  @Field.ignore()
+  FilterStatus filterStatus;
 
   @override
   String toString() {
-    return "alias: $alias; title: $title";
+    return "key: $key; label: $label";
   }
 
-  Filter({this.alias, this.title});
+  Filter({this.key, this.label, this.filterStatus});
+
+  Filter cloneWithStatus(FilterStatus filterStatus){
+    return Filter(key: key, label: label, filterStatus: filterStatus);
+  }
 }
 
 @GenSerializer()

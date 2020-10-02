@@ -118,13 +118,17 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   Future<bool> _onWillPopScope(BuildContext context) async {
     if(widget.munch.name != _munchNameTextController.text || widget.munch.receivePushNotifications != _pushNotificationsEnabled) {
+      if(_popScopeCompleter != null){
+        _popScopeCompleter.complete(false);
+      }
+
       _popScopeCompleter = Completer<bool>();
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
-        dialogTitle: App.translate("save_changes_alert_dialog.title"),
-        dialogDescription:App.translate("save_changes_alert_dialog.description"),
-        confirmText: App.translate("save_changes_alert_dialog.confirm_button.text"),
-        cancelText: App.translate("save_changes_alert_dialog.cancel_button.text"),
+        dialogTitle: App.translate("options_screen.save_changes_alert_dialog.title"),
+        dialogDescription:App.translate("options_screen.save_changes_alert_dialog.description"),
+        confirmText: App.translate("options_screen.save_changes_alert_dialog.confirm_button.text"),
+        cancelText: App.translate("options_screen.save_changes_alert_dialog.cancel_button.text"),
         confirmCallback: _onSaveChangesDialogButtonClicked,
         cancelCallback: _onDiscardChangesDialogButtonClicked
       );
@@ -138,7 +142,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       }
     }
 
-    NavigationHelper.popRoute(context, result: widget.munch);
+    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
 
     return false;
   }
@@ -195,6 +199,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   void _optionsScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
+
+      if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
+        _popScopeCompleter.complete(false);
+      }
     } else if(state is MunchPreferencesSavingState){
       _preferencesListener(state);
     } else if(state is KickingMemberState){
@@ -410,7 +418,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             children: widget.munch.members.map((User user) =>
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(backgroundImage: AssetImage('assets/images/prototype/user-avatar.jpg'), radius: 20.0),
+                  leading: CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: 20.0),
                   title: Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary), maxLines: 2, overflow: TextOverflow.ellipsis),
                   trailing: _membersListTrailing(user),
                 )

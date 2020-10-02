@@ -16,6 +16,8 @@ class User{
 
   String displayName;
 
+  String photoUrl;
+
   @override
   String toString() {
     return "uid: $uid; displayName: $displayName";
