@@ -1,5 +1,6 @@
 class StorageKeys {
   static const String ACCESS_TOKEN = "access_token";
+  static const String SWIPE_TUTORIAL_STATE = "swipe_tutorial_state";
 }
 
 class CommunicationSettings {

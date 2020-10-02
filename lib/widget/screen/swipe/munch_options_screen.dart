@@ -25,6 +25,7 @@ import 'package:munch/widget/util/cupertion_alert_dialog_builder.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
+import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 class MunchOptionsScreen extends StatefulWidget{
@@ -487,11 +488,11 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onKickButtonClicked(User user){
-    NavigationHelper.openFullScreenDialog(context, fullScreenDialog: KickMemberAlertDialog(user: user, munchId: widget.munch.id, munchBloc: _munchBloc));
+    OverlayDialogHelper(widget: KickMemberAlertDialog(user: user, munchId: widget.munch.id, munchBloc: _munchBloc)).show(context);
   }
 
   void _onLeaveButtonClicked(){
-    NavigationHelper.openFullScreenDialog(context, fullScreenDialog: LeaveMunchAlertDialog(munchId: widget.munch.id, munchBloc: _munchBloc));
+    OverlayDialogHelper(widget: LeaveMunchAlertDialog(munchId: widget.munch.id, munchBloc: _munchBloc)).show(context);
   }
 
   void _onSaveChangesDialogButtonClicked(){

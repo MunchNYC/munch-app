@@ -19,9 +19,7 @@ class KickMemberAlertDialog extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Palette.secondaryLight.withAlpha(220),
-      body: Container(
+    return Container(
         padding: AppDimensions.padding(AppPaddingType.screenOnly).copyWith(bottom: 24.0),
         width: double.infinity,
         height: double.infinity,
@@ -58,7 +56,6 @@ class KickMemberAlertDialog extends StatelessWidget{
                 }
               )
             ],
-          )
         )
     );
   }

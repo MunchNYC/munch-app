@@ -78,6 +78,16 @@
     "restaurant_swipe_screen.empty_card_stack.decided.description.second_sentence": "Tap the bottom button to check it out!",
     "restaurant_swipe_screen.empty_card_stack.back_button.text": "Back",
 
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.text":  "Tap",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.description": "either side\nto see more\nphotos.",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.previous_control.text": "Previous\nPhoto\nHere",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.next_control.text": "Next\nPhoto\nHere",
+
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.text":  "Drag",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.description": "to either\nside based on\ninterest.",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.controls.left.text": "No Thanks",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.controls.right.text": "Yes Please",
+
     "options_screen.app_bar.action.text": "Save",
     "options_screen.munch_name_field.readonly_state.text": "Edit",
     "options_screen.munch_name_field.label.text": "Munch Name",
