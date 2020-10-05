@@ -23,10 +23,10 @@ class User{
     return "uid: $uid; displayName: $displayName";
   }
 
-  User({this.uid, this.email, this.displayName, this.accessToken = ""});
+  User({this.uid, this.email, this.displayName, this.photoUrl, this.accessToken = ""});
 
   User.fromFirebaseUser({final firebase_auth.User firebaseUser, final String accessToken = ""})
-      :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, accessToken: accessToken);
+      :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, photoUrl: firebaseUser.photoURL, accessToken: accessToken);
 }
 
 @GenSerializer()

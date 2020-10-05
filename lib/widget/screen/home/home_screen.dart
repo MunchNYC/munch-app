@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/widget/screen/home/tabs/account_tab.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
-import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
-import 'package:munch/widget/screen/map/include/munch_code_dialog.dart';
-import 'account_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTab;
@@ -40,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         key: HomeScreen.accountsTab,
         onGenerateRoute: (route) => MaterialPageRoute(
           settings: route,
-          builder: (context) => Text("a") // TODO: AccountScreen()
+          builder: (context) => AccountTab()
         )
     ),
   ];

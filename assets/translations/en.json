@@ -54,6 +54,16 @@
     "munches_tab.decided_list_view.empty.text": "No munches yet",
     "munches_tab.join_munch.successful.message": "Munch successfully joined.",
 
+    "accounts_tab.profile_button.text": "Show Profile",
+    "accounts_tab.menu_item1.text": "Refer a Friend",
+    "accounts_tab.menu_item2.text": "Notifications",
+    "accounts_tab.menu_item3.text": "Privacy",
+    "accounts_tab.menu_item4.text": "Support",
+    "accounts_tab.menu_item5.text": "Sign Out",
+
+    "accounts_tab.refer_a_friend.item.share_popup.title": "Let's Munch'n",
+    "accounts_tab.refer_a_friend.item.share_popup.text": "Install Munch App which can help us find a distinct place to feast!",
+
     "munch_list_widget.members.text": "Members",
     "munch_list_widget.munch_status.undecided.text": "Undecided",
 
