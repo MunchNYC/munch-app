@@ -1,9 +1,9 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:munch/config/localizations.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class Utility{
   static void showFlushbar(String text, BuildContext context,
@@ -32,5 +32,15 @@ class Utility{
       } else {
         Utility.showFlushbar(App.translate("url_launcher.error.message"), context);
       }
+  }
+
+  static String getTimezoneNameFromOffset(Duration offset){
+    for(tz.Location location in tz.timeZoneDatabase.locations.values){
+      if(location.currentTimeZone.offset == offset.inMilliseconds){
+        return location.name;
+      }
+    }
+
+    return null;
   }
 }

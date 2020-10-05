@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:munch/model/coordinates.dart';
@@ -60,15 +61,16 @@ class Restaurant{
 
     TimeOfDay currentTimeOfDay = TimeOfDay.now();
 
-    int currentTimeOfDayValue = 3 * 60 + currentTimeOfDay.minute;
+    int currentTimeOfDayValue = currentTimeOfDay.hour * 60 + currentTimeOfDay.minute;
 
     String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
 
     for(int i = 0; i < dayWorkingHours.workingTimes.length; i++){
       WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
 
-      TimeOfDay openTime = TimeOfDay.fromDateTime(DateFormat('jm').parse(workingTimes.open));
-      TimeOfDay closeTime = TimeOfDay.fromDateTime(DateFormat('jm').parse(workingTimes.closed));
+      // date must be hardcoded otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed
+      TimeOfDay openTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.open));
+      TimeOfDay closeTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.closed));
 
       int openTimeValue = openTime.hour * 60 + openTime.minute;
       int closeTimeValue = closeTime.hour * 60 + closeTime.minute;
@@ -94,6 +96,25 @@ class Restaurant{
   String toString() {
     return "id: $id; name: $name;";
   }
+
+  Restaurant({
+      this.id,
+      this.name,
+      this.categories,
+      this.workingHours,
+      this.coordinates,
+      this.city,
+      this.state,
+      this.country,
+      this.address,
+      this.zipCode,
+      this.phoneNumber,
+      this.priceSymbol,
+      this.rating,
+      this.photoUrls,
+      this.reviewsNumber,
+      this.timezone,
+      this.url});
 }
 
 @GenSerializer()
@@ -137,6 +158,8 @@ class WorkingHours{
 
       return workingTimesStringList.join(", ");
   }
+
+  WorkingHours({this.dayOfWeek, this.workingTimes});
 }
 
 @GenSerializer()
@@ -147,6 +170,8 @@ class WorkingTimes{
   String open;
 
   String closed;
+
+  WorkingTimes({this.open, this.closed});
 }
 
 @GenSerializer()
