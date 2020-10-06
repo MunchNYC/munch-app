@@ -184,7 +184,7 @@ class MunchesTabState extends State<MunchesTab> {
                 itemBuilder: (BuildContext context, int index){
                   if(loading) return MunchListWidgetSkeleton(index: index);
 
-                  return GestureDetector(
+                  return InkWell(
                       onTap: (){
                         NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true).then((value){
                           _throwGetMunchesEvent();
@@ -223,7 +223,8 @@ class MunchesTabState extends State<MunchesTab> {
               itemBuilder: (BuildContext context, int index){
                 if(loading) return MunchListWidgetSkeleton(index: index);
 
-                return GestureDetector(
+                // InkWell is making empty space clickable also
+                return InkWell(
                     onTap: (){
                       NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true).then((value){
                         _throwGetMunchesEvent();

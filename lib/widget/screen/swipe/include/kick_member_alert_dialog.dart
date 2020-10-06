@@ -19,11 +19,8 @@ class KickMemberAlertDialog extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
         padding: AppDimensions.padding(AppPaddingType.screenOnly).copyWith(bottom: 24.0),
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.transparent,
         child:  Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,

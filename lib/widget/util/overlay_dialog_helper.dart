@@ -7,13 +7,14 @@ import 'package:munch/util/navigation_helper.dart';
 class OverlayDialogHelper{
   bool isModal;
   Widget widget;
+  bool useRootNavigator;
 
-  OverlayDialogHelper({this.isModal = false, this.widget});
+  OverlayDialogHelper({this.isModal = false, this.widget, this.useRootNavigator = true});
 
   void show(BuildContext context){
     showGeneralDialog(
         context: context,
-        useRootNavigator: false,
+        useRootNavigator: useRootNavigator,
         barrierDismissible: !isModal,
         barrierLabel: "",
         barrierColor: Palette.secondaryLight.withAlpha(150),

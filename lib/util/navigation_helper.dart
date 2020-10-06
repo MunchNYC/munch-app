@@ -13,25 +13,49 @@ class NavigationHelper {
   static Future _navigateTo(BuildContext context,
       {bool addToBackStack: false, Widget screen, bool rootNavigator: false, var result}) {
     if (addToBackStack) {
-      return Navigator.of(context, rootNavigator: rootNavigator).push(PageTransition(type: PageTransitionType.rightToLeft, child: screen));
+      return Navigator.of(context, rootNavigator: rootNavigator).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => screen,
+          transitionsBuilder: NavigationAnimationHelper._rightToLeftAnimation
+        )
+      );
     } else {
-      return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(PageTransition(type: PageTransitionType.downToUp, child: screen));
+      return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(
+          PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => screen,
+              transitionsBuilder: NavigationAnimationHelper._bottomToTopAnimation
+          )
+      );
     }
   }
 
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
       {bool addToBackStack: true, Widget screen, var result}) {
     if (addToBackStack) {
-      return navigatorState.push(PageTransition(type: PageTransitionType.rightToLeft, child: screen));
+      return navigatorState.push(
+          PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => screen,
+              transitionsBuilder: NavigationAnimationHelper._rightToLeftAnimation
+          )
+      );
     } else {
-      return navigatorState.pushReplacement(PageTransition(type: PageTransitionType.downToUp, child: screen));
+      return navigatorState.pushReplacement(
+          PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => screen,
+              transitionsBuilder: NavigationAnimationHelper._bottomToTopAnimation
+          )
+      );
     }
   }
 
   static Future _popAllRoutesAndNavigateTo(BuildContext context,
       {Widget screen, bool rootNavigator: false, var result}) {
       return Navigator.of(context, rootNavigator: rootNavigator).pushAndRemoveUntil(
-          PageTransition(type: PageTransitionType.downToUp, child: screen), (Route<dynamic> route) => false
+          PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => screen,
+              transitionsBuilder: NavigationAnimationHelper._bottomToTopAnimation
+          ),
+          (Route<dynamic> route) => false
       );
   }
 
@@ -93,6 +117,35 @@ class NavigationHelper {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
+}
+
+class NavigationAnimationHelper{
+  static SlideTransition _rightToLeftAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
+    var begin = Offset(1.0, 0.0);
+    var end = Offset.zero;
+    var curve = Curves.ease;
+
+    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+    return SlideTransition(
+        position: animation.drive(tween),
+        child: child
+    );
+  }
+
+  static SlideTransition _bottomToTopAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
+    var begin = Offset(0.0, 1.0);
+    var end = Offset.zero;
+    var curve = Curves.ease;
+
+    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+    return SlideTransition(
+        position: animation.drive(tween),
+        child: child
+    );
+  }
+
 }
 
 

@@ -193,6 +193,15 @@ class _DecisionScreenState extends State<DecisionScreen>{
         ),
         color: Palette.background,
         textColor: Palette.primary,
+        onPressedCallback: (){
+          NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((munch){
+            if(munch != null){
+              setState(() {
+                widget.munch = munch;
+              });
+            }
+          });
+        },
       ),
     );
   }

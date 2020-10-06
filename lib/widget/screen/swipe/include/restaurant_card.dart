@@ -26,9 +26,11 @@ class _RestaurantCardState extends State<RestaurantCard>{
   Widget build(BuildContext context) {
     return Material(
       elevation: 8.0,
+      // must be transparent otherwise we'll have Z-axis fight below the image, slight colored line will be there if Material has defined color
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(16.0),
-      color: Colors.white,
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _titleSection(),
@@ -66,6 +68,13 @@ class _RestaurantCardState extends State<RestaurantCard>{
   Widget _titleSection(){
     return Container(
       padding: EdgeInsets.only(top: 24.0, bottom: 16.0, left: 16.0, right: 16.0),
+      decoration: BoxDecoration(
+        color: Palette.background,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16.0),
+            topRight: Radius.circular(16.0)
+        )
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -176,7 +176,8 @@ class _AccountScreenState extends State<AccountScreen> {
         appBar: null,
         body: SafeArea(
             child: ListView(
-          children: <Widget>[
+              padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
+              children: <Widget>[
             SizedBox(height: spacingUnit.w * 3),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

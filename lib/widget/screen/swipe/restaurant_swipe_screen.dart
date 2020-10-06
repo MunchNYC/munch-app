@@ -335,7 +335,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         SizedBox(height: 8.0),
         Divider(height: 1.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
         Padding(
-          padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
+          padding: EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 12.0),
           child: _decisionInfoBar()
         )
       ]
@@ -348,9 +348,12 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(App.translate("restaurant_swipe_screen.empty_card_stack.title"),
-                  style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w400, fontSizeOffset: 2.0),
-                  textAlign: TextAlign.center),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(App.translate("restaurant_swipe_screen.empty_card_stack.title"),
+                    style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w400, fontSizeOffset: 2.0),
+                    textAlign: TextAlign.center),
+              ),
               SizedBox(height: 36.0),
               widget.munch.munchStatus == MunchStatus.UNDECIDED ?
                 Text(App.translate("restaurant_swipe_screen.empty_card_stack.undecided.description"),

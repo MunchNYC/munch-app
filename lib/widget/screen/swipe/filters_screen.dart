@@ -67,6 +67,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   bool _allCuisinesMode = false;
 
+  ScrollController _personalTabScrollController = ScrollController();
+
   int _currentTab = 0;
 
   @override
@@ -320,7 +322,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   Widget _renderScreen(BuildContext context){
     return Padding(
-        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 12.0),
+        padding: EdgeInsets.only(top: 12.0),
         child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -336,7 +338,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
   }
 
   Widget _tabHeaders(){
-    return Align(
+    return Padding(
+        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
+        child: Align(
         alignment: Alignment.centerLeft,
         child:  DefaultTabController(
             length: 2,
@@ -368,7 +372,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             ]
           )
         )
-    );
+    ));
   }
 
   Widget _tabsContent(){
@@ -383,6 +387,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   Widget _renderPersonalTab(){
     return SingleChildScrollView(
+       padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
+       controller: _personalTabScrollController,
        child: Container(
           padding: EdgeInsets.symmetric(vertical: 24.0),
           child: Column(
@@ -403,8 +409,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   Widget _renderGroupTab(){
     return SingleChildScrollView(
+        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
         child: Container(
-            padding: EdgeInsets.symmetric(vertical: 24.0),
+            padding: EdgeInsets.only(top: 24.0, bottom: 12.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,6 +621,15 @@ class _FiltersScreenState extends State<FiltersScreen> {
         setState(() {
           _allCuisinesMode = !_allCuisinesMode;
         });
+
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          if(_allCuisinesMode) {
+            _personalTabScrollController.animateTo(_personalTabScrollController.offset + App.screenHeight / 2, curve: Curves.ease, duration: Duration(milliseconds: 2000));
+          } else{
+            _personalTabScrollController.animateTo(0.0, curve: Curves.ease, duration: Duration(milliseconds: 1000));
+          }
+        });
+
       },
       child: Text(_allCuisinesMode ?
       App.translate("filters_screen.filter_controls.all_cuisines_mode.link.text")
@@ -631,6 +647,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Text(App.translate("filters_screen.filters_control.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
         SizedBox(height: 20.0),
         ListView(
+          padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
           primary: false,
           shrinkWrap: true,
           children: [
@@ -645,7 +662,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
              )
           ],
         ),
-        _allCuisinesModeLink()
+        SafeArea(child: _allCuisinesModeLink())
       ]
     );
   }
@@ -717,6 +734,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Text(App.translate("filters_screen.group_tab.whitelist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
         SizedBox(height: 24.0),
         ListView(
+          padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
           primary: false,
           shrinkWrap: true,
           children: [
@@ -736,6 +754,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Text(App.translate("filters_screen.group_tab.blacklist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
         SizedBox(height: 24.0),
         ListView(
+          padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
           primary: false,
           shrinkWrap: true,
           children: [

@@ -15,7 +15,7 @@ class AccountListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: target,
       child: Container(
         height: spacingUnit.w * 5.5,
