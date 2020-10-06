@@ -71,13 +71,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   int _currentTab = 0;
 
-  double _whitelistContainerHeight = 0;
-  double _blacklistContainerHeight = 0;
-
-  GlobalKey _whitelistContainerKey = GlobalKey();
-  GlobalKey _blacklistContainerKey = GlobalKey();
-
-
   @override
   void initState() {
     _filtersBloc = FiltersBloc();
@@ -473,9 +466,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
     );
   }
 
-  Widget _selectedFiltersContainer(List<Filter> filters, Color color, Key containerKey){
+  Widget _selectedFiltersContainer(List<Filter> filters, Color color){
     return Wrap(
-        key: containerKey,
         spacing: 16.0,
         runSpacing: 16.0,
         children: filters.map((Filter filter) =>
@@ -519,7 +511,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: [
         _whitelistContainerHeader(),
         SizedBox(height: 24.0),
-        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink, _whitelistContainerKey)
+        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink)
       ],
     );
   }
@@ -557,24 +549,17 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: [
         _blacklistContainerHeader(),
         SizedBox(height: 24.0),
-        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark, _blacklistContainerKey)
+        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark)
       ],
     );
   }
 
   void _adjustScrollPositionOnFilterControl(){
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      double _currentWhitelistContainerHeight = _whitelistContainerKey.currentContext.size.height;
-      double _currentBlacklistContainerHeight = _blacklistContainerKey.currentContext.size.height;
-
-      double difference = _currentWhitelistContainerHeight + _currentBlacklistContainerHeight - (_whitelistContainerHeight + _blacklistContainerHeight);
-
-      _personalTabScrollController.animateTo(_personalTabScrollController.position.pixels + difference, curve: Curves.ease, duration: Duration(milliseconds: 2000));
-
-      _whitelistContainerHeight = _whitelistContainerKey.currentContext.size.height;
-      _blacklistContainerHeight = _blacklistContainerKey.currentContext.size.height;
-    });
-
+    _personalTabScrollController.animateTo(
+        _personalTabScrollController.position.pixels + 48.0,
+        curve: Curves.easeInOut,
+        duration: Duration(milliseconds: 2000)
+    );
   }
 
   Widget _previousFilterStatusButton(Filter filter){
@@ -651,7 +636,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if(_allCuisinesMode) {
-            _personalTabScrollController.animateTo(_personalTabScrollController.offset + App.screenHeight / 2, curve: Curves.ease, duration: Duration(milliseconds: 2000));
+            _personalTabScrollController.animateTo(_personalTabScrollController.offset + App.screenHeight / 2, curve: Curves.easeInOut, duration: Duration(milliseconds: 2000));
           } else{
             _personalTabScrollController.animateTo(0.0, curve: Curves.ease, duration: Duration(milliseconds: 1000));
           }
