@@ -7,7 +7,6 @@ import 'package:munch/widget/screen/swipe/decision_screen.dart';
 import 'package:munch/widget/screen/swipe/filters_screen.dart';
 import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
 import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
-import 'package:page_transition/page_transition.dart';
 
 class NavigationHelper {
   static Future _navigateTo(BuildContext context,
