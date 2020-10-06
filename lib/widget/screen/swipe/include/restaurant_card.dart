@@ -94,6 +94,13 @@ class _RestaurantCardState extends State<RestaurantCard>{
   Widget _imageCarousel(){
     return Container(
      width: double.infinity,
+     decoration: BoxDecoration(
+         color: Palette.background, // this is duplicated in order to show background while we're  waiting for image to be rendered
+         borderRadius: BorderRadius.only(
+             bottomLeft: Radius.circular(16.0),
+             bottomRight: Radius.circular(16.0)
+         )
+     ),
      child: ClipRRect(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(16.0),

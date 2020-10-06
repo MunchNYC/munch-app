@@ -100,6 +100,9 @@ class _TutorialRestaurantSwipeScreenState extends State<TutorialRestaurantSwipeS
 
   Widget _decisionInfoBar(){
     return SafeArea(
+        top: false,
+        right: false,
+        left: false,
         child:Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[

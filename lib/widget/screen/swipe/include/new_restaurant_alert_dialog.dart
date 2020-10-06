@@ -53,6 +53,9 @@ class NewRestaurantAlertDialog extends StatelessWidget{
                     Text(App.translate("new_restaurant_alert_dialog.description"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
                     SizedBox(height: 20.0),
                     SafeArea(
+                      top: false,
+                      right: false,
+                      left: false,
                       child: CustomButton(
                         flat: true,
                         color: Colors.transparent,
