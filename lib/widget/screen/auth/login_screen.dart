@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       text: App.translate("login_screen.footer.terms_of_service.text"),
                       style: AppTextStyle.style(AppTextStylePattern.hyperlink),
                       recognizer: TapGestureRecognizer()..onTap = (){
-                          // TODO: open terms of service
+                          NavigationHelper.navigateToTermsOfServiceScreen(context);
                       }
                   ),
                   TextSpan(
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       text: App.translate("login_screen.footer.privacy_policy.text"),
                       style: AppTextStyle.style(AppTextStylePattern.hyperlink),
                       recognizer: TapGestureRecognizer()..onTap = (){
-                        // TODO: open privacy policy
+                        NavigationHelper.navigateToPrivacyPolicyScreen(context);
                       }
                   ),
                   TextSpan(

@@ -41,19 +41,45 @@ class _AccountScreenState extends State<AccountTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        padding: AppDimensions.padding(AppPaddingType.screenOnly),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _avatarRow(),
-            SizedBox(height: 36.0),
-            _menuItems()
-          ],
-        )
+    // All this logic is made in order to have footer at the bottom of scroll view if scrollable, or at the bottom of the page if view fits less then max height of the screen
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return SingleChildScrollView(
+            padding: AppDimensions.padding(AppPaddingType.screenOnly).copyWith(bottom: 8.0),
+            child: ConstrainedBox(
+              constraints: constraints.copyWith(
+                minHeight: constraints.maxHeight - kToolbarHeight, // kToolbarHeight gives approx. height of appBar/bottomNavigationBar
+                maxHeight: double.infinity,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _avatarRow(),
+                    SizedBox(height: 4.0),
+                    _menuListItemDivider(),
+                    _menuItems(),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Text(App.translate("account_tab.version.text") + " " + AppConfig.getInstance().packageInfo.version,
+                          style: AppTextStyle.style(AppTextStylePattern.body)
+                        )
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
     );
+  }
+
+  Widget _menuListItemDivider(){
+    return Divider(height: 44.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3));
   }
 
   Widget _avatarRow(){
@@ -68,9 +94,9 @@ class _AccountScreenState extends State<AccountTab> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading4, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.fade),
+            Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade),
             SizedBox(height: 4.0),
-            Text(App.translate("accounts_tab.profile_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3SecondaryDark))
+            Text(user.email, style: AppTextStyle.style(AppTextStylePattern.heading6, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade)
           ],
         )
       ]
@@ -82,25 +108,37 @@ class _AccountScreenState extends State<AccountTab> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AccountTabMenuItem(text: App.translate("accounts_tab.menu_item1.text"), onTap: _onReferFriendItemClicked, trailingIcon: Icon(Icons.supervisor_account, size: 24.0)),
-          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
-          AccountTabMenuItem(text: App.translate("accounts_tab.menu_item2.text"), onTap: _onNotificationsItemClicked, trailingIcon: Icon(Icons.notifications_none, size: 24.0)),
-          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
-          AccountTabMenuItem(text: App.translate("accounts_tab.menu_item3.text"), onTap: _onPrivacyItemClicked, trailingIcon: Icon(Icons.security, size: 24.0)),
-          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
-          AccountTabMenuItem(text: App.translate("accounts_tab.menu_item4.text"), onTap: _onSupportItemClicked, trailingIcon: Icon(Icons.email, size: 24.0)),
-          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
-          AccountTabMenuItem(text: App.translate("accounts_tab.menu_item5.text"), onTap: _onSignOutItemClicked, trailingIcon: Icon(Icons.exit_to_app, size: 24.0)),
-          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item1.text"),
+              onTap: _onNotificationsItemClicked,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/notification.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item2.text"),
+              onTap: _onInviteFriendsItemClicked,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/inviteFriends.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item3.text"),
+              onTap: _onFeedbackItemClicked,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/giveUsFeedback.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item4.text"),
+              onTap: _onPrivacyItemClicked,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/privacy.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item5.text"),
+              onTap: _onTermsItemClicked,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/termsAndConditions.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item6.text"),
+              onTap: _onSignOutItemClicked,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/logout.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
         ]
-    );
-  }
-
-  void _onReferFriendItemClicked() async{
-    await WcFlutterShare.share(
-        sharePopupTitle: App.translate("accounts_tab.refer_a_friend.item.share_popup.title"),
-        text: App.translate("accounts_tab.refer_a_friend.item.share_popup.text") + "\n" + "https://munch.com",
-        mimeType: "text/plain"
     );
   }
 
@@ -108,12 +146,24 @@ class _AccountScreenState extends State<AccountTab> {
     AppSettings.openAppSettings();
   }
 
-  void _onPrivacyItemClicked() async{
-
+  void _onInviteFriendsItemClicked() async{
+    await WcFlutterShare.share(
+        sharePopupTitle: App.translate("account_tab.invite_friends.item.share_popup.title"),
+        text: App.translate("account_tab.invite_friends.item.share_popup.text") + "\n" + "https://munch.com",
+        mimeType: "text/plain"
+    );
   }
 
-  void _onSupportItemClicked() async{
+  void _onFeedbackItemClicked() async{
     Utility.launchUrl(context, "mailto:" + AppConfig.getInstance().supportEmail);
+  }
+
+  void _onPrivacyItemClicked() async{
+    NavigationHelper.navigateToPrivacyPolicyScreen(context);
+  }
+
+  void _onTermsItemClicked() async{
+    NavigationHelper.navigateToTermsOfServiceScreen(context);
   }
 
   void _onSignOutItemClicked() {

@@ -7,11 +7,11 @@ import 'package:munch/theme/palette.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTab;
-  static GlobalKey<NavigatorState> accountsTab;
+  static GlobalKey<NavigatorState> accountTab;
 
   HomeScreen(){
     munchesTab = GlobalKey<NavigatorState>();
-    accountsTab = GlobalKey<NavigatorState>();
+    accountTab = GlobalKey<NavigatorState>();
   }
 
   @override
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<GlobalKey<NavigatorState>> _tabs = [
       HomeScreen.munchesTab,
-      HomeScreen.accountsTab
+      HomeScreen.accountTab
   ];
 
   final List<Navigator> _navigators = [
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     Navigator(
-        key: HomeScreen.accountsTab,
+        key: HomeScreen.accountTab,
         onGenerateRoute: (route) => MaterialPageRoute(
           settings: route,
           builder: (context) => AccountTab()
@@ -90,11 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
               currentIndex: _currentIndex,
               items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.people_outline),
+                  icon:  ImageIcon(AssetImage("assets/icons/munchIcon.png"), size: 32.0),
                   title: Text(App.translate('home_screen.bottom_navigation.tab1.title')),
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
+                  icon:  Padding(padding: EdgeInsets.only(top: 8.0), child: ImageIcon(AssetImage("assets/icons/profile.png"), size: 24.0)),
                   title: Text(App.translate('home_screen.bottom_navigation.tab2.title')),
                 ),
               ],

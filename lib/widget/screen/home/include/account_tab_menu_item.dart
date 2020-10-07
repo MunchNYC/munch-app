@@ -15,7 +15,7 @@ class AccountTabMenuItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(text, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500)),
+          Text(text, style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w400)),
           trailingIcon
         ]
       )

@@ -3,5 +3,7 @@
   "apiUrl": "http://10.0.2.2:8080/munch",
   "apiVersion": "1",
   "googleMapsApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE",
-  "supportEmail": "munchappdev@gmail.com"
+  "supportEmail": "munchappdev@gmail.com",
+  "privacyPolicyUrl": "https://munch.com/privacy-policy",
+  "termsOfServiceUrl": "https://munch.com/terms-of-service"
 }
