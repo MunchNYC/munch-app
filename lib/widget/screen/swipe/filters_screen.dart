@@ -71,6 +71,12 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   int _currentTab = 0;
 
+  double _whitelistContainerHeight = 0;
+  double _blacklistContainerHeight = 0;
+
+  GlobalKey _whitelistContainerKey = GlobalKey();
+  GlobalKey _blacklistContainerKey = GlobalKey();
+
   @override
   void initState() {
     _filtersBloc = FiltersBloc();
@@ -466,8 +472,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
     );
   }
 
-  Widget _selectedFiltersContainer(List<Filter> filters, Color color){
+  Widget _selectedFiltersContainer(List<Filter> filters, Color color, Key key){
     return Wrap(
+        key: key,
         spacing: 16.0,
         runSpacing: 16.0,
         children: filters.map((Filter filter) =>
@@ -511,7 +518,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: [
         _whitelistContainerHeader(),
         SizedBox(height: 24.0),
-        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink)
+        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink, _whitelistContainerKey)
       ],
     );
   }
@@ -549,17 +556,23 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: [
         _blacklistContainerHeader(),
         SizedBox(height: 24.0),
-        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark)
+        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark, _blacklistContainerKey)
       ],
     );
   }
 
   void _adjustScrollPositionOnFilterControl(){
-    _personalTabScrollController.animateTo(
-        _personalTabScrollController.position.pixels + 48.0,
-        curve: Curves.easeInOut,
-        duration: Duration(milliseconds: 2000)
-    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      double _currentWhitelistContainerHeight = _whitelistContainerKey.currentContext.size.height;
+      double _currentBlacklistContainerHeight = _blacklistContainerKey.currentContext.size.height;
+
+      double difference = _currentWhitelistContainerHeight + _currentBlacklistContainerHeight - (_whitelistContainerHeight + _blacklistContainerHeight);
+
+      _personalTabScrollController.animateTo(_personalTabScrollController.position.pixels + difference, curve: Curves.ease, duration: Duration(milliseconds: 2000));
+
+      _whitelistContainerHeight = _whitelistContainerKey.currentContext.size.height;
+      _blacklistContainerHeight = _blacklistContainerKey.currentContext.size.height;
+    });
   }
 
   Widget _previousFilterStatusButton(Filter filter){
