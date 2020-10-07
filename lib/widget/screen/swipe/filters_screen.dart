@@ -34,7 +34,7 @@ class FiltersScreen extends StatefulWidget{
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen> {
+class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateMixin {
   static const double AVATAR_RADIUS = 12.0;
   static const double AVATAR_CONTAINER_PARENT_PERCENT = 0.5;
   static const double AVATAR_SPACING = 4.0;
@@ -70,12 +70,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
   ScrollController _personalTabScrollController = ScrollController();
 
   int _currentTab = 0;
-
-  double _whitelistContainerHeight = 0;
-  double _blacklistContainerHeight = 0;
-
-  GlobalKey _whitelistContainerKey = GlobalKey();
-  GlobalKey _blacklistContainerKey = GlobalKey();
 
   @override
   void initState() {
@@ -391,19 +385,29 @@ class _FiltersScreenState extends State<FiltersScreen> {
     );
   }
 
+  Widget _animatedSizeWrapper(Widget child){
+    return AnimatedSize(
+        duration: Duration(milliseconds: 1000),
+        vsync: this,
+        curve: Curves.easeInOut,
+        alignment: Alignment(0.0, -1.0), // -1.0 means top side will be fixed, bottom is expandable
+        child: child
+    );
+  }
+
   Widget _renderPersonalTab(){
     return SingleChildScrollView(
        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
        controller: _personalTabScrollController,
        child: Container(
           padding: EdgeInsets.symmetric(vertical: 24.0),
-          child: Column(
+          child:  Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _whitelistContainerArea(),
+              _animatedSizeWrapper(_whitelistContainerArea()),
               SizedBox(height: 24.0),
-              _blacklistContainerArea(),
+              _animatedSizeWrapper(_blacklistContainerArea()),
               SizedBox(height: 24.0),
               _filtersControlArea()
             ],
@@ -472,9 +476,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
     );
   }
 
-  Widget _selectedFiltersContainer(List<Filter> filters, Color color, Key key){
+  Widget _selectedFiltersContainer(List<Filter> filters, Color color){
     return Wrap(
-        key: key,
         spacing: 16.0,
         runSpacing: 16.0,
         children: filters.map((Filter filter) =>
@@ -518,7 +521,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: [
         _whitelistContainerHeader(),
         SizedBox(height: 24.0),
-        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink, _whitelistContainerKey)
+        _selectedFiltersContainer(_whitelistFilters, Palette.hyperlink)
       ],
     );
   }
@@ -556,23 +559,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
       children: [
         _blacklistContainerHeader(),
         SizedBox(height: 24.0),
-        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark, _blacklistContainerKey)
+        _selectedFiltersContainer(_blacklistFilters, Palette.secondaryDark)
       ],
     );
-  }
-
-  void _adjustScrollPositionOnFilterControl(){
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      double _currentWhitelistContainerHeight = _whitelistContainerKey.currentContext.size.height;
-      double _currentBlacklistContainerHeight = _blacklistContainerKey.currentContext.size.height;
-
-      double difference = _currentWhitelistContainerHeight + _currentBlacklistContainerHeight - (_whitelistContainerHeight + _blacklistContainerHeight);
-
-      _personalTabScrollController.animateTo(_personalTabScrollController.position.pixels + difference, curve: Curves.ease, duration: Duration(milliseconds: 2000));
-
-      _whitelistContainerHeight = _whitelistContainerKey.currentContext.size.height;
-      _blacklistContainerHeight = _blacklistContainerKey.currentContext.size.height;
-    });
   }
 
   Widget _previousFilterStatusButton(Filter filter){
@@ -587,8 +576,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
         setState(() {
           _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
         });
-
-        _adjustScrollPositionOnFilterControl();
       },
       child: Icon(Icons.arrow_back_ios, color: Palette.secondaryLight, size: 16.0),
     );
@@ -606,8 +593,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
         setState(() {
           _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
         });
-
-        _adjustScrollPositionOnFilterControl();
       },
       child: Icon(Icons.arrow_forward_ios, color: Palette.secondaryLight, size: 16.0),
     );
