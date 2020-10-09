@@ -15,12 +15,12 @@ import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/home/include/account_tab_menu_item.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
-class AccountTab extends StatefulWidget {
+class ProfileTab extends StatefulWidget {
   @override
-  State<AccountTab> createState() => _AccountScreenState();
+  State<ProfileTab> createState() => _ProfileTabScreenState();
 }
 
-class _AccountScreenState extends State<AccountTab> {
+class _ProfileTabScreenState extends State<ProfileTab> {
   AuthenticationBloc _authenticationBloc;
 
   User user = UserRepo.getInstance().currentUser;

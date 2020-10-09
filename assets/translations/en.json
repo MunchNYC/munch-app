@@ -190,6 +190,7 @@
     "restaurant.working_hours.closed.text": "Closed",
 
     "error_page_widget.text": "Error has occurred",
+    "error_list_widget.action_button.text": "Refresh",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled.",
     "firebase_auth.facebook_login.cancelled.error": "Facebook login cancelled.",
