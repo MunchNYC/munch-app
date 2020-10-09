@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:package_info/package_info.dart';
 
 part 'app_config.jser.dart';
 
@@ -9,6 +10,12 @@ class AppConfig {
   String apiUrl;
   String apiVersion;
   String googleMapsApiKey;
+  String supportEmail;
+  String privacyPolicyUrl;
+  String termsOfServiceUrl;
+
+  @Field.ignore()
+  PackageInfo packageInfo;
 
   static AppConfig _instance;
 
@@ -26,6 +33,8 @@ class AppConfig {
 
     // convert our JSON into an instance of our AppConfig class
     _instance = AppConfigJsonSerializer().fromMap(json);
+
+    _instance.packageInfo =  await PackageInfo.fromPlatform();
   }
 
   static AppConfig getInstance(){

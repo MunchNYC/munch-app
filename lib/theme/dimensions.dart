@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:munch/util/app.dart';
 
 enum AppPaddingType {
   screenOnly,
@@ -13,5 +14,17 @@ class AppDimensions{
 
   static EdgeInsets padding(AppPaddingType pd){
     return _appPaddingTypes[pd.index];
+  }
+
+  static double scaleSizeToScreen(double size){
+    if(App.screenHeight < App.REF_DEVICE_HEIGHT){
+      size *= App.screenHeight / App.REF_DEVICE_HEIGHT;
+    }
+
+    if(App.screenWidth < App.REF_DEVICE_WIDTH){
+      size *= App.screenWidth / App.REF_DEVICE_WIDTH;
+    }
+
+    return size;
   }
 }

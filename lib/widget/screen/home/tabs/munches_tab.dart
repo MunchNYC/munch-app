@@ -12,10 +12,10 @@ import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munch_list_widget.dart';
-import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/empty_list_view_widget.dart';
+import 'package:munch/widget/util/error_list_widget.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 
 import 'munch_list_widget_skeleton.dart';
@@ -163,19 +163,21 @@ class MunchesTabState extends State<MunchesTab> {
     );
   }
 
+  Future _refreshListView() async{
+    _throwGetMunchesEvent();
+  }
+
   Widget _renderStillDecidingListView({bool errorOccurred = false, bool loading = false}){
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
         color: Palette.secondaryDark,
-        onRefresh: () async {
-          _throwGetMunchesEvent();
-        },
+        onRefresh: _refreshListView,
         // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
         child: SingleChildScrollView(
           // must be set because of RefreshIndicator
             physics: AlwaysScrollableScrollPhysics(),
             child:
-            errorOccurred ? ErrorPageWidget() :
+            errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
             loading || _stillDecidingMunches.length > 0 ?
             ListView.separated(
                 primary: false,
@@ -206,15 +208,13 @@ class MunchesTabState extends State<MunchesTab> {
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
         color: Palette.secondaryDark,
-        onRefresh: () async {
-          _throwGetMunchesEvent();
-        },
+        onRefresh: _refreshListView,
         // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
         child: SingleChildScrollView(
           // must be set because of RefreshIndicator
             physics: AlwaysScrollableScrollPhysics(),
             child:
-            errorOccurred ? ErrorPageWidget() :
+            errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
             loading || _decidedMunches.length + _archivedMunches.length > 0 ?
             ListView.separated(
               primary: false,

@@ -47,12 +47,27 @@
     "login_screen.footer.conjunction": "and",
     "login_screen.footer.privacy_policy.text": "Privacy Policy",
 
+    "terms_of_service_screen.app_bar.title": "Terms of Service",
+    "privacy_policy_screen.app_bar.title": "Privacy Policy",
+
     "munches_tab.title": "Munches",
     "munches_tab.deciding_tab.title": "Still deciding",
     "munches_tab.decided_tab.title": "Decided",
     "munches_tab.still_deciding_list_view.empty.text": "No munches yet",
     "munches_tab.decided_list_view.empty.text": "No munches yet",
     "munches_tab.join_munch.successful.message": "Munch successfully joined.",
+
+    "account_tab.menu_item1.text": "Notifications",
+    "account_tab.menu_item2.text": "Invite friends",
+    "account_tab.menu_item3.text": "Give us feedback",
+    "account_tab.menu_item4.text": "Privacy Policy",
+    "account_tab.menu_item5.text": "Terms of Service",
+    "account_tab.menu_item6.text": "Sign Out",
+
+    "account_tab.version.text": "version",
+
+    "account_tab.invite_friends.item.share_popup.title": "Invite Friends",
+    "account_tab.invite_friends.item.share_popup.text": "Munch helps users explore restaurants and make decisions! Tap the link to join me and start Munch'n!",
 
     "munch_list_widget.members.text": "Members",
     "munch_list_widget.munch_status.undecided.text": "Undecided",
@@ -175,6 +190,7 @@
     "restaurant.working_hours.closed.text": "Closed",
 
     "error_page_widget.text": "Error has occurred",
+    "error_list_widget.action_button.text": "Refresh",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled.",
     "firebase_auth.facebook_login.cancelled.error": "Facebook login cancelled.",

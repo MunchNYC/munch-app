@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
-import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
-import 'package:munch/widget/screen/map/include/munch_code_dialog.dart';
-import 'account_screen.dart';
+import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTab;
-  static GlobalKey<NavigatorState> accountsTab;
+  static GlobalKey<NavigatorState> accountTab;
 
   HomeScreen(){
     munchesTab = GlobalKey<NavigatorState>();
-    accountsTab = GlobalKey<NavigatorState>();
+    accountTab = GlobalKey<NavigatorState>();
   }
 
   @override
@@ -25,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<GlobalKey<NavigatorState>> _tabs = [
       HomeScreen.munchesTab,
-      HomeScreen.accountsTab
+      HomeScreen.accountTab
   ];
 
   final List<Navigator> _navigators = [
@@ -37,10 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     Navigator(
-        key: HomeScreen.accountsTab,
+        key: HomeScreen.accountTab,
         onGenerateRoute: (route) => MaterialPageRoute(
           settings: route,
-          builder: (context) => Text("a") // TODO: AccountScreen()
+          builder: (context) => ProfileTab()
         )
     ),
   ];
@@ -92,11 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
               currentIndex: _currentIndex,
               items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.people_outline),
+                  icon:  ImageIcon(AssetImage("assets/icons/munchIcon.png"), size: 32.0),
                   title: Text(App.translate('home_screen.bottom_navigation.tab1.title')),
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
+                  icon:  Padding(padding: EdgeInsets.only(top: 8.0), child: ImageIcon(AssetImage("assets/icons/profile.png"), size: 24.0)),
                   title: Text(App.translate('home_screen.bottom_navigation.tab2.title')),
                 ),
               ],

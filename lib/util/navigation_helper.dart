@@ -7,6 +7,8 @@ import 'package:munch/widget/screen/swipe/decision_screen.dart';
 import 'package:munch/widget/screen/swipe/filters_screen.dart';
 import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
 import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
+import 'package:munch/widget/screen/webviews/privacy_policy_screen.dart';
+import 'package:munch/widget/screen/webviews/terms_of_service_screen.dart';
 
 class NavigationHelper {
   static Future _navigateTo(BuildContext context,
@@ -115,6 +117,18 @@ class NavigationHelper {
       {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
+  }
+
+  static Future navigateToPrivacyPolicyScreen(BuildContext context,
+      {bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: PrivacyPolicyScreen());
+  }
+
+  static Future navigateToTermsOfServiceScreen(BuildContext context,
+      {bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: TermsOfServiceScreen());
   }
 }
 

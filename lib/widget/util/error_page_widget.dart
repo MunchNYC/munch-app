@@ -3,6 +3,8 @@ import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 
+import 'custom_button.dart';
+
 class ErrorPageWidget extends StatelessWidget{
   String errorMessage;
   String description;
@@ -21,7 +23,7 @@ class ErrorPageWidget extends StatelessWidget{
               color: Palette.secondaryDark,
               size: 40.0,
             ),
-            SizedBox(height: 4.0),
+            SizedBox(height: 8.0),
             Text(
               errorMessage ?? App.translate("error_page_widget.text"),
               style: AppTextStyle.style(AppTextStylePattern.heading6, color: Palette.secondaryLight, fontWeight: FontWeight.normal),

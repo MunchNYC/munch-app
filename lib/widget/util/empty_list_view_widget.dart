@@ -30,7 +30,7 @@ class EmptyListViewWidget extends StatelessWidget{
             Text(
               text,
               style: AppTextStyle.style(AppTextStylePattern.heading5, color: Palette.secondaryLight, fontWeight: FontWeight.normal),
-            )
+            ),
           ],
     ));
   }
