@@ -11,51 +11,49 @@ import 'package:munch/widget/screen/webviews/privacy_policy_screen.dart';
 import 'package:munch/widget/screen/webviews/terms_of_service_screen.dart';
 
 class NavigationHelper {
-  static Future _navigateTo(BuildContext context,
-      {bool addToBackStack: false, Widget screen, bool rootNavigator: false, var result}) {
+  static PageRouteBuilder _buildPageScreen({Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder}){
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => screen,
+        transitionDuration: transitionDuration,
+        transitionsBuilder: slideTransitionBuilder
+    );
+  }
+
+  static Future _navigateTo(BuildContext context, {bool addToBackStack: false, Widget screen, bool rootNavigator: false,
+        Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result}) {
     if (addToBackStack) {
       return Navigator.of(context, rootNavigator: rootNavigator).push(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => screen,
-          transitionsBuilder: NavigationAnimationHelper._rightToLeftAnimation
-        )
+         _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+             slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
       );
     } else {
       return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(
-          PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => screen,
-              transitionsBuilder: NavigationAnimationHelper._bottomToTopAnimation
-          )
+         _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+             slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
       );
     }
   }
 
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
-      {bool addToBackStack: true, Widget screen, var result}) {
+      {bool addToBackStack: true, Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result}) {
     if (addToBackStack) {
       return navigatorState.push(
-          PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => screen,
-              transitionsBuilder: NavigationAnimationHelper._rightToLeftAnimation
-          )
+          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
       );
     } else {
       return navigatorState.pushReplacement(
-          PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => screen,
-              transitionsBuilder: NavigationAnimationHelper._bottomToTopAnimation
-          )
+          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
       );
     }
   }
 
   static Future _popAllRoutesAndNavigateTo(BuildContext context,
-      {Widget screen, bool rootNavigator: false, var result}) {
+      {Widget screen, bool rootNavigator: false, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder}) {
       return Navigator.of(context, rootNavigator: rootNavigator).pushAndRemoveUntil(
-          PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => screen,
-              transitionsBuilder: NavigationAnimationHelper._bottomToTopAnimation
-          ),
+          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation),
           (Route<dynamic> route) => false
       );
   }
@@ -66,26 +64,44 @@ class NavigationHelper {
   }
 
   static Future navigateToLogin(BuildContext context,
-      {bool popAllRoutes: true, bool addToBackStack: false}) {
+      {bool popAllRoutes: true, bool addToBackStack: false, bool fromSplashScreen: false}) {
+    Duration transitionDuration;
+
+    Function slideTransitionBuilder;
+
+    if(!fromSplashScreen){
+      transitionDuration = Duration(milliseconds: 300);
+    } else{
+      // Transition duration which will use Hero Widget for Munch Splash Logo
+      transitionDuration = Duration(milliseconds: 2000);
+      // noAnimation must be set, otherwise all contents of the page will go from one side to the other side, we want just fade effect
+      slideTransitionBuilder = NavigationAnimationHelper.noAnimation;
+    }
+
     if(popAllRoutes){
-      return _popAllRoutesAndNavigateTo(context, screen: LoginScreen(), rootNavigator: true);
+      return _popAllRoutesAndNavigateTo(context, screen: LoginScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true,
+          transitionDuration: transitionDuration, slideTransitionBuilder: slideTransitionBuilder);
     } else {
       // addToBackStack is considered if popAllRoutes = false
-      return _navigateTo(context, addToBackStack: addToBackStack,
-          screen: LoginScreen(),
-          rootNavigator: true);
+      return _navigateTo(context, addToBackStack: addToBackStack, screen: LoginScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true,
+        transitionDuration: transitionDuration, slideTransitionBuilder: slideTransitionBuilder);
     }
   }
 
   static Future navigateToHome(BuildContext context,
-      {bool popAllRoutes: false, bool addToBackStack: false}) {
+      {bool popAllRoutes: false, bool addToBackStack: false, bool fromSplashScreen: false}) {
+    Function slideTransitionBuilder;
+
+    if(fromSplashScreen){
+      slideTransitionBuilder = NavigationAnimationHelper.noAnimation;
+    }
+
     if(popAllRoutes){
-      return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(), rootNavigator: true);
+      return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true, slideTransitionBuilder: slideTransitionBuilder);
     } else{
       // addToBackStack is considered if popAllRoutes = false
-      return _navigateTo(context, addToBackStack: addToBackStack,
-          screen: HomeScreen(),
-          rootNavigator: true);
+      return _navigateTo(context, addToBackStack: addToBackStack, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true,
+          slideTransitionBuilder: slideTransitionBuilder);
     }
   }
 
@@ -133,10 +149,23 @@ class NavigationHelper {
 }
 
 class NavigationAnimationHelper{
-  static SlideTransition _rightToLeftAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
+  static SlideTransition noAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
+    var begin = Offset(0.0, 0.0);
+    var end = Offset.zero;
+    var curve = Curves.easeInOut;
+
+    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+    return SlideTransition(
+        position: animation.drive(tween),
+        child: child
+    );
+  }
+
+  static SlideTransition rightToLeftAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
     var begin = Offset(1.0, 0.0);
     var end = Offset.zero;
-    var curve = Curves.ease;
+    var curve = Curves.easeInOut;
 
     var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
@@ -146,10 +175,10 @@ class NavigationAnimationHelper{
     );
   }
 
-  static SlideTransition _bottomToTopAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
+  static SlideTransition bottomToTopAnimation(BuildContext context, Animation animation, Animation secondaryAnimation, Widget child){
     var begin = Offset(0.0, 1.0);
     var end = Offset.zero;
-    var curve = Curves.ease;
+    var curve = Curves.easeInOut;
 
     var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
@@ -158,6 +187,7 @@ class NavigationAnimationHelper{
         child: child
     );
   }
+
 
 }
 

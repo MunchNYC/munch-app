@@ -16,17 +16,23 @@ import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/empty_list_view_widget.dart';
 import 'package:munch/widget/util/error_list_widget.dart';
-import 'package:munch/widget/util/error_page_widget.dart';
 
 import 'munch_list_widget_skeleton.dart';
 
 class MunchesTab extends StatefulWidget {
+  MunchBloc munchBloc;
+
+  MunchesTab({this.munchBloc});
+
   @override
-  MunchesTabState createState() => MunchesTabState();
+  MunchesTabState createState() => MunchesTabState(munchBloc: munchBloc);
 }
 
 class MunchesTabState extends State<MunchesTab> {
-  MunchBloc _munchBloc;
+  MunchBloc munchBloc;
+  
+  // sent as an argument in order to be used in initState method, widget is null there
+  MunchesTabState({this.munchBloc});
 
   int _currentTab = 0;
 
@@ -35,23 +41,14 @@ class MunchesTabState extends State<MunchesTab> {
   List<Munch> _archivedMunches;
 
   void _throwGetMunchesEvent(){
-    _munchBloc.add(GetMunchesEvent());
+    munchBloc.add(GetMunchesEvent());
   }
 
   @override
   void initState() {
-    _munchBloc = MunchBloc();
-
     _throwGetMunchesEvent();
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _munchBloc?.close();
-
-    super.dispose();
   }
 
   @override
@@ -117,6 +114,7 @@ class MunchesTabState extends State<MunchesTab> {
       _stillDecidingMunches = munchesStatusMap[MunchStatus.UNDECIDED];
       _decidedMunches = munchesStatusMap[MunchStatus.DECIDED];
       _archivedMunches = munchesStatusMap[MunchStatus.ARCHIVED];
+
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
 
@@ -134,7 +132,7 @@ class MunchesTabState extends State<MunchesTab> {
 
   Widget _tabsContent(){
     return BlocConsumer<MunchBloc, MunchState>(
-        cubit: _munchBloc,
+        cubit: munchBloc,
         listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
         listener: (BuildContext context, MunchState state) => _listViewsListener(context, state),
         buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || (current is MunchJoiningState && current.ready),
@@ -145,9 +143,9 @@ class MunchesTabState extends State<MunchesTab> {
   Widget _buildListViews(BuildContext context, MunchState state){
     if (state.hasError) {
       return _renderListViews(errorOccurred: true);
-    } else if (state.initial || state.loading)  {
+    } else if(state.initial || state.loading){
       return _renderListViews(loading: true);
-    } else {
+    } else{
       return _renderListViews();
     }
   }
@@ -243,7 +241,7 @@ class MunchesTabState extends State<MunchesTab> {
   }
 
   void _onPlusButtonClicked(BuildContext context){
-    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc)).show(context);
+    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc)).show(context);
   }
 
   Widget _plusButton(BuildContext context){

@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/service/munch/munch_bloc.dart';
+import 'package:munch/service/munch/munch_event.dart';
+import 'package:munch/service/munch/munch_state.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
+import 'package:munch/widget/screen/splash/include/splash_logo.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTab;
   static GlobalKey<NavigatorState> accountTab;
 
-  HomeScreen(){
+  bool fromSplashScreen;
+
+  HomeScreen({this.fromSplashScreen}) {
     munchesTab = GlobalKey<NavigatorState>();
     accountTab = GlobalKey<NavigatorState>();
   }
@@ -19,29 +26,56 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  MunchBloc _munchBloc;
+
+  double _screenOpacity = 1;
+
   int _currentIndex = 0;
 
   final List<GlobalKey<NavigatorState>> _tabs = [
-      HomeScreen.munchesTab,
-      HomeScreen.accountTab
+    HomeScreen.munchesTab,
+    HomeScreen.accountTab
   ];
 
-  final List<Navigator> _navigators = [
-    Navigator(
-      key: HomeScreen.munchesTab,
-      onGenerateRoute: (route) => MaterialPageRoute(
-        settings: route,
-        builder: (context) =>  MunchesTab()
-      ),
-    ),
-    Navigator(
-        key: HomeScreen.accountTab,
+  List<Navigator> _navigators;
+
+  // must be set as an argument because we cannot use widget.fromSplashScreen in field initializer
+  _HomeScreenState() {
+    _navigators = [
+      Navigator(
+        key: HomeScreen.munchesTab,
         onGenerateRoute: (route) => MaterialPageRoute(
-          settings: route,
-          builder: (context) => ProfileTab()
-        )
-    ),
-  ];
+            settings: route,
+            builder: (context) =>
+                MunchesTab(munchBloc: _munchBloc)
+        ),
+      ),
+      Navigator(
+          key: HomeScreen.accountTab,
+          onGenerateRoute: (route) => MaterialPageRoute(
+              settings: route, builder: (context) => ProfileTab()
+          )
+      ),
+    ];
+  }
+
+  @override
+  void initState() {
+    _munchBloc = MunchBloc();
+
+    if(widget.fromSplashScreen){
+      _screenOpacity = 0;
+    }
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _munchBloc?.close();
+
+    super.dispose();
+  }
 
   GlobalKey<NavigatorState> getCurrentScreen() {
     return _tabs[_currentIndex];
@@ -63,44 +97,101 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () => _onBackButtonPressed(context),
-        child: Scaffold(
+        child: _munchBlocBuilder()
+    );
+  }
+
+  Widget _munchBlocBuilder(){
+    return BlocBuilder<MunchBloc, MunchState>(
+        cubit: _munchBloc,
+        buildWhen: (MunchState previous, MunchState current) => widget.fromSplashScreen && (current is MunchesFetchingState),
+        builder: (BuildContext context, MunchState state) => _buildHomeView(context, state)
+    );
+  }
+
+  Widget _buildHomeView(BuildContext context, MunchState state){
+    bool showSplashLogo = false;
+
+    if(widget.fromSplashScreen && (state.initial || state.loading)){
+      showSplashLogo = true;
+    } else{
+      // show splash just first time
+      widget.fromSplashScreen = false;
+      _screenOpacity = 1;
+    }
+
+    return Stack(
+      children: [
+        AnimatedOpacity(
+          opacity: 1.0 - _screenOpacity,
+          duration: Duration(milliseconds: 3000),
+          curve: Curves.easeInOut,
+          child: SplashLogo(isHero: false),
+        ),
+        AnimatedOpacity(
+          opacity: _screenOpacity,
+          curve: Curves.linear,
+          duration: Duration(milliseconds: 1500),
+          child:Container(
+            color: Palette.background,
+            child: _renderScreen()
+          )
+        )
+      ],
+    );
+  }
+
+  Widget _renderScreen(){
+    return Scaffold(
           backgroundColor: Palette.background,
-          body: IndexedStack(index: _currentIndex, children: _navigators),// new
+          body: IndexedStack(
+              index: _currentIndex, children: _navigators), // new
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               boxShadow: [
-                BoxShadow(
-                  color: Palette.secondaryLight
-                ),
+                BoxShadow(color: Palette.secondaryLight),
               ],
             ),
             child: BottomNavigationBar(
               elevation: 0.0,
               iconSize: 32.0,
-              selectedFontSize: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0).fontSize,
-              unselectedFontSize: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0).fontSize,
+              selectedFontSize: AppTextStyle.style(AppTextStylePattern.body2,
+                  fontSizeOffset: 1.0)
+                  .fontSize,
+              unselectedFontSize: AppTextStyle.style(
+                  AppTextStylePattern.body2,
+                  fontSizeOffset: 1.0)
+                  .fontSize,
               backgroundColor: Palette.background,
               selectedItemColor: Palette.primary,
               unselectedItemColor: Palette.primary,
               selectedIconTheme: IconThemeData(color: Palette.ternaryDark),
               unselectedIconTheme: IconThemeData(color: Palette.primary),
-              selectedLabelStyle: AppTextStyle.style(AppTextStylePattern.body2, fontWeight: FontWeight.w600, fontSizeOffset: 1.0),
-              unselectedLabelStyle: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0),
+              selectedLabelStyle: AppTextStyle.style(
+                  AppTextStylePattern.body2,
+                  fontWeight: FontWeight.w600,
+                  fontSizeOffset: 1.0),
+              unselectedLabelStyle: AppTextStyle.style(
+                  AppTextStylePattern.body2,
+                  fontSizeOffset: 1.0),
               onTap: onTabTapped,
               currentIndex: _currentIndex,
               items: [
                 BottomNavigationBarItem(
-                  icon:  ImageIcon(AssetImage("assets/icons/munchIcon.png"), size: 32.0),
-                  title: Text(App.translate('home_screen.bottom_navigation.tab1.title')),
+                  icon: ImageIcon(AssetImage("assets/icons/munchIcon.png"),
+                      size: 32.0),
+                  label: App.translate('home_screen.bottom_navigation.tab1.title'),
                 ),
                 BottomNavigationBarItem(
-                  icon:  Padding(padding: EdgeInsets.only(top: 8.0), child: ImageIcon(AssetImage("assets/icons/profile.png"), size: 24.0)),
-                  title: Text(App.translate('home_screen.bottom_navigation.tab2.title')),
+                  icon: Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: ImageIcon(AssetImage("assets/icons/profile.png"),
+                          size: 24.0)),
+                  label: App.translate('home_screen.bottom_navigation.tab2.title'),
                 ),
               ],
             ),
           )
-        )
     );
   }
 

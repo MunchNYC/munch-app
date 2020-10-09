@@ -8,3 +8,7 @@ class CommunicationSettings {
   static const int maxWaitTimeSec = 10;
   static const int numOfRetries = 1;
 }
+
+class WidgetKeys{
+  static const String SPLASH_LOGO_HERO_TAG = "splash_logo";
+}
