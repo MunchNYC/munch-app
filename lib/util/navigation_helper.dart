@@ -114,8 +114,8 @@ class NavigationHelper {
   }
 
   static Future navigateToDecisionScreen(BuildContext context,
-      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false}) {
-    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false, var result}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true, result: result,
         screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
 

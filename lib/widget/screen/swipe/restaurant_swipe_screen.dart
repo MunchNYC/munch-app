@@ -146,7 +146,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((munch){
                   if(munch != null){
                     setState(() {
-                      widget.munch = munch;
+                      _updateMunchWithDetailedData(munch);
                     });
                   }
                 });
@@ -189,7 +189,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((munch) {
                   if (munch != null) {
                     setState(() {
-                      widget.munch = munch;
+                      _updateMunchWithDetailedData(munch);
                     });
 
                     _currentRestaurants.clear();
@@ -233,6 +233,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
+  void _navigateToDecisionScreen(){
+    NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false, result: widget.munch);
+  }
+
   void _updateMunchWithDetailedData(Munch detailedMunch){
     /*
       Take old data from munch which can be missing from detailedMunch response
@@ -240,7 +244,13 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     */
     detailedMunch.merge(widget.munch);
 
+    Munch currentMunch = widget.munch;
+
     widget.munch = detailedMunch;
+
+    if(currentMunch.munchStatus != detailedMunch.munchStatus && detailedMunch.munchStatus != MunchStatus.UNDECIDED){
+      _navigateToDecisionScreen();
+    }
   }
 
   void _updateRestaurantsPage(List<Restaurant> restaurantList){
@@ -442,9 +452,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                         overflow: TextOverflow.ellipsis
                       )
                     : GestureDetector(
-                      onTap: (){
-                        NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
-                      },
+                      onTap: _navigateToDecisionScreen,
                       child: Text(widget.munch.matchedRestaurant.name,
                         style: AppTextStyle.style(AppTextStylePattern.body3,
                             color: Palette.background,

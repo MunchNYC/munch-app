@@ -67,6 +67,10 @@ class _DecisionScreenState extends State<DecisionScreen>{
     );
   }
 
+  void _navigateToSwipeScreen(){
+    NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false, result: widget.munch);
+  }
+
   void _updateMunchWithDetailedData(Munch detailedMunch){
     /*
       Take old data from munch which can be missing from detailedMunch response
@@ -74,9 +78,15 @@ class _DecisionScreenState extends State<DecisionScreen>{
     */
     detailedMunch.merge(widget.munch);
 
+    Munch currentMunch = widget.munch;
+
     widget.munch = detailedMunch;
 
-    widget.restaurant = widget.munch.matchedRestaurant;
+    if(currentMunch.munchStatus != detailedMunch.munchStatus && detailedMunch.munchStatus == MunchStatus.UNDECIDED){
+      _navigateToSwipeScreen();
+    } else{
+      widget.restaurant = widget.munch.matchedRestaurant;
+    }
   }
 
   void _decisionScreenListener(BuildContext context, MunchState state){
@@ -86,8 +96,6 @@ class _DecisionScreenState extends State<DecisionScreen>{
       _updateMunchWithDetailedData(state.data);
     } if(state is CancellingMunchDecisionState){
       _updateMunchWithDetailedData(state.data);
-
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false, result: widget.munch);
     }
   }
 
@@ -197,7 +205,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
           NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((munch){
             if(munch != null){
               setState(() {
-                widget.munch = munch;
+                _updateMunchWithDetailedData(munch);
               });
             }
           });
@@ -451,9 +459,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
             textColor: Palette.secondaryDark,
             padding: EdgeInsets.symmetric(vertical: 12.0),
             content: Text(App.translate("decision_screen.continue_exploring_button.text"), style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark)),
-            onPressedCallback: (){
-              NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false);
-            },
+            onPressedCallback: _navigateToSwipeScreen,
           )
         ),
         SizedBox(width:32.0),
