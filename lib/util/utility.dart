@@ -18,7 +18,7 @@ class Utility{
 
   static void showErrorFlushbar(String text, BuildContext context,
       {Duration duration = const Duration(seconds: 3),
-        Color color = Palette.error, Color textColor: Palette.background}){
+        Color color = const Color(0xFFF5F5FB), Color textColor: Palette.error}){
     WidgetsBinding.instance.addPostFrameCallback((_) => Flushbar(
       duration: duration,
       messageText: Text(text, style: TextStyle(color: textColor)),

@@ -180,14 +180,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 BottomNavigationBarItem(
                   icon: ImageIcon(AssetImage("assets/icons/munchIcon.png"),
                       size: 32.0),
-                  label: App.translate('home_screen.bottom_navigation.tab1.title'),
+                  label: App.translate('home_screen.bottom_navigation.munches_tab.title'),
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
                       padding: EdgeInsets.only(top: 8.0),
                       child: ImageIcon(AssetImage("assets/icons/profile.png"),
                           size: 24.0)),
-                  label: App.translate('home_screen.bottom_navigation.tab2.title'),
+                  label: App.translate('home_screen.bottom_navigation.profile_tab.title'),
                 ),
               ],
             ),

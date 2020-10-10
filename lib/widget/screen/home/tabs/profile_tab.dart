@@ -108,32 +108,32 @@ class _ProfileTabScreenState extends State<ProfileTab> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item1.text"),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.notifications.text"),
               onTap: _onNotificationsItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/notification.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item2.text"),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.invite_friends.text"),
               onTap: _onInviteFriendsItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/inviteFriends.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item3.text"),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.feedback.text"),
               onTap: _onFeedbackItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/giveUsFeedback.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item4.text"),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.privacy_policy.text"),
               onTap: _onPrivacyItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/privacy.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item5.text"),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.terms_of_use.text"),
               onTap: _onTermsItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/termsAndConditions.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item6.text"),
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.sign_out.text"),
               onTap: _onSignOutItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/logout.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
