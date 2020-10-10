@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/service/auth/authentication_bloc.dart';
 import 'package:munch/service/auth/authentication_event.dart';
 import 'package:munch/service/auth/authentication_state.dart';
@@ -16,6 +17,10 @@ import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
+  bool fromSplashScreen;
+
+  LoginScreen({this.fromSplashScreen});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -23,9 +28,22 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   AuthenticationBloc _authenticationBloc;
 
+  double _screenOpacity = 0;
+
   @override
   void initState() {
     _authenticationBloc = AuthenticationBloc();
+
+    if(widget.fromSplashScreen){
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setState(() {
+          _screenOpacity = 1;
+        });
+      });
+    } else{
+      _screenOpacity = 1;
+    }
+
     super.initState();
   }
 
@@ -72,27 +90,33 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _renderView(BuildContext context){
-    return Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(left: 48.0, right: 48.0, top: 64.0),
-              // can be double.infinity but this is more scalable for bigger screens
-              width: App.REF_DEVICE_WIDTH,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(child: _appBrandArea()),
-                  Expanded(child: _loginButtons())
-                 ]      
-                )
-             ),
-          ),
-          _footerText()
-        ]
+    // AnimatedOpacity will make animation if _splashOpacity is zero at first frame, and 1 at some of the next frames, just if we come from splash screen
+    return  AnimatedOpacity(
+        opacity: _screenOpacity,
+        curve: Curves.ease,
+        duration: Duration(milliseconds: 3000),
+        child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(left: 48.0, right: 48.0, top: 64.0),
+                  // can be double.infinity but this is more scalable for bigger screens
+                  width: App.REF_DEVICE_WIDTH,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(child: _appBrandArea()),
+                      Expanded(child: _loginButtons())
+                     ]
+                    )
+                 ),
+              ),
+              _footerText()
+            ]
+        )
     );
   }
 
@@ -104,9 +128,12 @@ class _LoginScreenState extends State<LoginScreen> {
           Text(App.translate("login_screen.title"), style: AppTextStyle.style(AppTextStylePattern.heading1SecondaryDark, fontSizeOffset: 32.0, fontWeight: FontWeight.w600)),
           SizedBox(height: 24.0),
           Expanded(
-              child: Image(
-                  image: AssetImage("assets/images/logo/logo_NoBG_Black_outline.png"),
-                  color: Palette.secondaryDark
+              child: Hero(
+                tag: WidgetKeys.SPLASH_LOGO_HERO_TAG,
+                child: Image(
+                    image: AssetImage("assets/images/logo/logo_NoBG_Black_outline.png"),
+                    color: Palette.secondaryDark
+                )
               )
           ),
         ]

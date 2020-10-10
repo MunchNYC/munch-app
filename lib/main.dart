@@ -1,18 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:munch/repository/user_repository.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
-import 'package:munch/util/app.dart';
-import 'package:munch/widget/screen/auth/login_screen.dart';
-import 'package:munch/widget/screen/home/home_screen.dart';
-import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/screen/splash/splash_screen.dart';
 import 'package:munch/widget/util/stateful_wrapper.dart';
 import 'config/app_config.dart';
 import 'config/firebase_listener.dart';
 import 'config/localizations.dart';
-import 'model/user.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 Future loadEnvironment() async{
@@ -72,29 +67,9 @@ class MunchApp extends StatelessWidget {
             localizationsDelegates: [const AppLocalizationsDelegate()],
             supportedLocales: [const Locale('en')],
             debugShowCheckedModeBanner: false,
-            home: _buildHomeWidget(),
+            home: SplashScreen(),
             onGenerateRoute: null,
         )
     );
   }
-
-  Widget _buildHomeWidget(){
-    return FutureBuilder(
-      future: UserRepo.getInstance().fetchCurrentUser(),
-      builder: (context, AsyncSnapshot<User> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AppCircularProgressIndicator();
-        }
-
-        App.initAppContext(context);
-
-        if (snapshot.hasData) {
-          return HomeScreen();
-        }
-
-        return LoginScreen();
-      }
-    );
-  }
-
 }
