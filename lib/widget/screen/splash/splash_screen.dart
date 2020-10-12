@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen>{
   void initState() {
     UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) {
       if(user == null){
-        NavigationHelper.navigateToLogin(context, fromSplashScreen: true)
+        NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
       } else{
         NavigationHelper.navigateToHome(context, popAllRoutes: true, fromSplashScreen: true);
       }

@@ -29,6 +29,10 @@ class AuthRepo {
     try {
       userCredential = await _auth.signInWithCredential(credentials);
 
+      String accessToken = await userCredential.user.getIdToken();
+
+      UserRepo.getInstance().setAccessToken(accessToken);
+
       return userCredential.user;
     } catch (error) {
       if (error.code.toUpperCase() == "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {

@@ -9,16 +9,16 @@ class UsersApi extends Api {
 
   // Will return user which already exists in DB, or newly created user
   Future<User> registerUser(User user) async {
-    final String postUrl = ''; // TODO
+    final String putUrl = ''; // TODO
 
     Map<String, dynamic> fields = UserJsonSerializer().toMap(user);
 
-    var data = await post(postUrl, fields);
+    var data = await put(putUrl, fields);
 
     return UserJsonSerializer().fromMap(data['user']);
   }
 
-  Future<User> getUserById(String uid) async {
+  Future<User> getAuthenticatedUser() async {
     String getUrl = ""; // TODO
 
     var data = await get(getUrl);

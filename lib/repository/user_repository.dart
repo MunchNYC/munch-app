@@ -37,10 +37,14 @@ class UserRepo {
         return null;
       }
 
-      // Refresh user data by fetching it from backend
-      User user = await _usersApi.getUserById(firebaseUser.uid);
+      String accessToken = await firebaseUser.getIdToken();
 
-      await setCurrentUser(user);
+      await setAccessToken(accessToken);
+
+      // Refresh user data by fetching it from backend
+      User user = await _usersApi.getAuthenticatedUser();
+
+      setCurrentUser(user);
 
       return _currentUser;
     }
@@ -49,6 +53,7 @@ class UserRepo {
   Future setCurrentUser(User user) async {
     // assign current accessToken
     user.accessToken = await getAccessToken();
+    user.fcmToken = await getFCMToken();
 
     _currentUser = user;
   }
