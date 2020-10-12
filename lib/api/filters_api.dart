@@ -1,10 +1,14 @@
-import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
 
 import 'api.dart';
 
 class FiltersApi extends Api {
+  static const String ENDPOINT_SET_PREFIX = 'munch';
+  static const int API_VERSION = 1;
+
+  FiltersApi(): super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
+
   Future<GetFiltersResponse> getFilters() async {
     String getUrl = "/categories";
 

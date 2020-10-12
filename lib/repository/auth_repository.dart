@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/Api.dart';
@@ -10,6 +9,7 @@ import 'package:apple_sign_in/apple_sign_in.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
+
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
 
   AuthRepo._internal();
@@ -23,15 +23,13 @@ class AuthRepo {
 
   final UserRepo _userRepo = UserRepo.getInstance();
 
-  Future<User> _signIn(firebase_auth.AuthCredential credentials) async {
+  Future<firebase_auth.User> _signIn(firebase_auth.AuthCredential credentials) async {
     firebase_auth.UserCredential userCredential;
 
     try {
       userCredential = await _auth.signInWithCredential(credentials);
 
-      await _userRepo.setCurrentUser(userCredential.user);
-
-      return _userRepo.currentUser;
+      return userCredential.user;
     } catch (error) {
       if (error.code.toUpperCase() == "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {
         throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
@@ -41,6 +39,14 @@ class AuthRepo {
     }
 
     throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
+  }
+
+  Future _onSignedInGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async{
+    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
+
+    user = await _userRepo.registerUser(user);
+
+    _userRepo.setCurrentUser(user);
   }
 
   Future<User> signInWithGoogle() async {
@@ -55,10 +61,22 @@ class AuthRepo {
           idToken: authentication.idToken,
           accessToken: authentication.accessToken);
 
-      return await _signIn(credentials);
+      firebase_auth.User firebaseUser = await _signIn(credentials);
+
+      await _onSignedInGoogleUser(account, firebaseUser);
+
+      return _userRepo.currentUser;
     } else{
       return null;
     }
+  }
+
+  Future _onSignedInFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
+    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
+
+    user = await _userRepo.registerUser(user);
+
+    _userRepo.setCurrentUser(user);
   }
 
   Future<User> signInWithFacebook() async {
@@ -69,7 +87,11 @@ class AuthRepo {
       case FacebookLoginStatus.loggedIn:
         final credentials = firebase_auth.FacebookAuthProvider.credential(facebookLoginResult.accessToken.token);
 
-        return await _signIn(credentials);
+        firebase_auth.User firebaseUser = await _signIn(credentials);
+
+        await _onSignedInFacebookUser(facebookLoginResult, firebaseUser);
+
+        return _userRepo.currentUser;
         break;
       case FacebookLoginStatus.cancelledByUser:
         break;
@@ -79,6 +101,20 @@ class AuthRepo {
     }
 
     return null;
+  }
+
+  Future _onSignedInAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
+    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
+
+    // Apple returns email and full name just on first successful login to app, after that it returns null for that fields if user logs in again
+    // Apple login doesn't auto-fill firebase user's name well
+    user.email = authorizationResult.credential.email;
+    user.displayName = authorizationResult.credential.fullName.givenName ?? "" +
+        " " + authorizationResult.credential.fullName.familyName ?? "";
+
+    user = await _userRepo.registerUser(user);
+
+    _userRepo.setCurrentUser(user);
   }
 
   Future<User> signInWithApple() async {
@@ -95,7 +131,11 @@ class AuthRepo {
             accessToken: String.fromCharCodes(authorizationResult.credential.authorizationCode)
         );
 
-        return await _signIn(credential);
+        firebase_auth.User firebaseUser = await _signIn(credential);
+
+        await _onSignedInAppleUser(authorizationResult, firebaseUser);
+
+        return _userRepo.currentUser;
         break;
       case AuthorizationStatus.cancelled:
         break;

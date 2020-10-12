@@ -7,6 +7,10 @@ class User{
   @Field.ignore()
   String accessToken;
 
+  @nonNullable
+  @Field.encode()
+  String fcmToken;
+
   @Alias('userId')
   String uid;
 
@@ -16,6 +20,7 @@ class User{
 
   String displayName;
 
+  @nonNullable
   String photoUrl;
 
   @override

@@ -2,12 +2,15 @@ import 'dart:async';
 // firebase recommends to prefix this import with namespace to avoid collisions
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepo {
   static UserRepo _instance;
   final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
+  final UsersApi _usersApi = UsersApi();
 
   User _currentUser;
 
@@ -22,23 +25,32 @@ class UserRepo {
 
   User get currentUser => _currentUser;
 
-  Future setCurrentUser(firebase_auth.User firebaseUser) async {
-    final idToken = await firebaseUser.getIdToken();
+  Future<User> getCurrentUser({bool forceRefresh = false}) async {
+    if (_currentUser != null && !forceRefresh) {
+      return _currentUser;
+    } else {
+      // to be sure user is not null, to avoid race condition, it's enough to fetch firebase user because we need only uid
+      firebase_auth.User firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
 
-    _currentUser = User.fromFirebaseUser(firebaseUser: firebaseUser, accessToken: idToken);
+      // User is not logged in
+      if(firebaseUser == null){
+        return null;
+      }
+
+      // Refresh user data by fetching it from backend
+      User user = await _usersApi.getUserById(firebaseUser.uid);
+
+      await setCurrentUser(user);
+
+      return _currentUser;
+    }
   }
 
-  Future<User> fetchCurrentUser() async {
-    firebase_auth.User firebaseUser = await firebase_auth.FirebaseAuth.instance.currentUser;
+  Future setCurrentUser(User user) async {
+    // assign current accessToken
+    user.accessToken = await getAccessToken();
 
-    // User is not logged in
-    if(firebaseUser == null){
-      return null;
-    }
-
-    await setCurrentUser(firebaseUser);
-
-    return _currentUser;
+    _currentUser = user;
   }
 
   Future clearCurrentUser() async {
@@ -86,5 +98,47 @@ class UserRepo {
     }
     FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
     await flutterSecureStorage.write(key: StorageKeys.ACCESS_TOKEN, value: token);
+  }
+
+  Future _clearFCMToken() async {
+    FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+    await flutterSecureStorage.delete(key: StorageKeys.FCM_TOKEN);
+
+    if(_currentUser != null) {
+      _currentUser.fcmToken = null;
+    }
+  }
+
+  Future<String> getFCMToken() async {
+    if (_currentUser != null && _currentUser.fcmToken != null) {
+      return _currentUser.fcmToken;
+    } else {
+      FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+      return flutterSecureStorage.read(key: StorageKeys.FCM_TOKEN);
+    }
+  }
+
+  void setFCMToken(String token) async {
+    print("Setting fcm token: " + token);
+
+    if (_currentUser != null) {
+      _currentUser.fcmToken = token;
+    }
+
+    FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+
+    await flutterSecureStorage.write(key: StorageKeys.FCM_TOKEN, value: token);
+  }
+
+  Future deleteFCMToken() async {
+    await _usersApi.deleteFCMToken();
+
+    _clearFCMToken();
+  }
+
+  Future<User> registerUser(User user) async{
+    User registeredUser = await _usersApi.registerUser(user);
+
+    return registeredUser;
   }
 }
