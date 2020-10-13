@@ -173,6 +173,8 @@ abstract class Api{
       case 403:
         throw UnauthorisedException(
             response.statusCode, {"message": App.translate("api.error.unauthorized")});
+      case 404:
+        throw NotFoundException(response.statusCode, responseJson['status']);
       case 422:
         throw ValidationException(
             response.statusCode, responseJson['status']);
@@ -202,6 +204,12 @@ class FetchDataException extends ApiException {
   FetchDataException.fromMessage(String message) : super.fromMessage(message);
 
   FetchDataException(int status, Map<String, dynamic> map) : super(status, map);
+}
+
+class NotFoundException extends ApiException {
+  NotFoundException.fromMessage(String message) : super.fromMessage(message);
+
+  NotFoundException(int status, Map<String, dynamic> map) : super(status, map);
 }
 
 class BadRequestException extends ApiException {

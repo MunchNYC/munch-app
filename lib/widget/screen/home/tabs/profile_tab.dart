@@ -88,7 +88,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: 36.0),
+        CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: 36.0),
         SizedBox(width: 16.0),
         Column(
           mainAxisSize: MainAxisSize.min,

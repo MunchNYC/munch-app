@@ -2,6 +2,7 @@ import 'dart:async';
 // firebase recommends to prefix this import with namespace to avoid collisions
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
@@ -43,18 +44,30 @@ class UserRepo {
       await setAccessToken(accessToken);
 
       // Refresh user data by fetching it from backend
-      User user = await _usersApi.getAuthenticatedUser();
+      try {
+        User user = await _usersApi.getAuthenticatedUser();
 
-      setCurrentUser(user);
+        await setCurrentUser(user);
 
-      return _currentUser;
+        return _currentUser;
+      } catch(exception){
+        if(exception is NotFoundException){
+          return null;
+        }
+
+        throw exception;
+      }
     }
   }
 
   Future setCurrentUser(User user) async {
     // assign current accessToken
     user.accessToken = await getAccessToken();
-    user.fcmToken = await getFCMToken();
+    String fcmToken = await getFCMToken();
+
+    if(fcmToken != null){
+      user.pushNotificationsInfo = PushNotificationsInfo(fcmToken: fcmToken, deviceId: App.deviceId);
+    }
 
     _currentUser = user;
   }
@@ -115,20 +128,20 @@ class UserRepo {
     await flutterSecureStorage.delete(key: StorageKeys.FCM_TOKEN);
 
     if(_currentUser != null) {
-      _currentUser.fcmToken = null;
+      _currentUser.pushNotificationsInfo = null;
     }
   }
 
   Future<String> getFCMToken() async {
-    if (_currentUser != null && _currentUser.fcmToken != null) {
-      return _currentUser.fcmToken;
+    if (_currentUser != null && _currentUser.pushNotificationsInfo != null) {
+      return _currentUser.pushNotificationsInfo.fcmToken;
     } else {
       FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
       return flutterSecureStorage.read(key: StorageKeys.FCM_TOKEN);
     }
   }
 
-  void setFCMToken(String token) async {
+  Future setFCMToken(String token) async {
     print("Setting fcm token: " + token);
 
     FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
@@ -136,9 +149,9 @@ class UserRepo {
     await flutterSecureStorage.write(key: StorageKeys.FCM_TOKEN, value: token);
 
     if (_currentUser != null) {
-      _currentUser.fcmToken = token;
+      _currentUser.pushNotificationsInfo = PushNotificationsInfo(fcmToken: token, deviceId: App.deviceId);
 
-      await _usersApi.updateFCMToken(App.deviceId, token);
+      await _usersApi.updatePushNotificationsInfo(_currentUser.pushNotificationsInfo);
     }
   }
 
@@ -147,8 +160,6 @@ class UserRepo {
   }
 
   Future<User> registerUser(User user) async{
-    user.fcmToken = await getFCMToken();
-
     User registeredUser = await _usersApi.registerUser(user);
 
     return registeredUser;

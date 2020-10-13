@@ -9,43 +9,42 @@ class UsersApi extends Api {
 
   // Will return user which already exists in DB, or newly created user
   Future<User> registerUser(User user) async {
-    final String postUrl = ''; // TODO
+    final String postUrl = '/data';
 
     Map<String, dynamic> fields = UserJsonSerializer().toMap(user);
 
     var data = await post(postUrl, fields);
 
-    return UserJsonSerializer().fromMap(data['user']);
+    return UserJsonSerializer().fromMap(data['muncher']);
   }
 
   Future<User> getAuthenticatedUser() async {
-    String getUrl = ""; // TODO
+    String getUrl = "/data";
 
     var data = await get(getUrl);
 
-    User user = UserJsonSerializer().fromMap(data['user']);
+    User user = UserJsonSerializer().fromMap(data['muncher']);
 
     return user;
   }
 
-  Future<User> updateFCMToken(String deviceId, String fcmToken) async {
-    final String patchUrl = ''; // TODO
+  Future<User> updatePushNotificationsInfo(PushNotificationsInfo pushNotificationsInfo) async {
+    final String patchUrl = '/data';
 
-    Map<String, String> fields = Map.of({
-      'deviceId': deviceId,
-      'fcmToken': fcmToken
+    Map<String, dynamic> fields = Map.of({
+      "pushInfo": PushNotificationsInfoJsonSerializer().toMap(pushNotificationsInfo),
     });
 
     var data = await patch(patchUrl, fields);
 
-    User user = UserJsonSerializer().fromMap(data['user']);
+    User user = UserJsonSerializer().fromMap(data['muncher']);
 
     return user;
   }
 
 
   Future signOut(String deviceId) async {
-    final String postUrl = ''; // TODO
+    final String postUrl = '/logout';
 
     Map<String, String> fields = Map.of({
       'deviceId': deviceId,

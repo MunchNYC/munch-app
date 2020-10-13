@@ -46,20 +46,13 @@ class AuthRepo {
     throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
   }
 
-  Future<User> _onSignInSuccessful() async {
-    await NotificationsHandler.getInstance().initializeNotifications();
-
-    return _userRepo.currentUser;
-  }
-
   Future _synchronizeCurrentUser({Function registerUserCallback}) async{
     User user = await _userRepo.getCurrentUser(forceRefresh: true);
 
     if(user == null){
       user = await registerUserCallback();
+      await _userRepo.setCurrentUser(user);
     }
-
-    _userRepo.setCurrentUser(user);
   }
 
   Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async{
@@ -166,6 +159,12 @@ class AuthRepo {
     }
 
     return null;
+  }
+
+  Future<User> _onSignInSuccessful() async {
+    await NotificationsHandler.getInstance().initializeNotifications();
+
+    return _userRepo.currentUser;
   }
 
   Future<bool> signOut() async {

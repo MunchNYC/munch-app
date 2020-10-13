@@ -707,7 +707,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
         _avatarList.add(Padding(
           padding: EdgeInsets.only(left: AVATAR_SPACING),
-          child: CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: AVATAR_RADIUS),
+          child: CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: AVATAR_RADIUS),
         ));
       }
     }

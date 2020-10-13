@@ -28,7 +28,8 @@ class NotificationsHandler{
     );
 
     if(permissionRequestResult == null || permissionRequestResult) {
-      _registerFCMTokenListener();
+      await _setCurrentFCMToken();
+      await _registerFCMTokenListener();
     }
   }
 
@@ -36,9 +37,21 @@ class NotificationsHandler{
     _disposeFCMTokenListener();
   }
 
-  void _registerFCMTokenListener(){
-    _fcmTokenListener = firebaseMessaging.onTokenRefresh.listen((token) {
-      UserRepo.getInstance().setFCMToken(token);
+  Future _saveFCMToken(String fcmToken) async{
+    await UserRepo.getInstance().setFCMToken(fcmToken);
+  }
+
+  Future _setCurrentFCMToken() async{
+    String fcmToken = await firebaseMessaging.getToken();
+
+    if(fcmToken != null){
+      await _saveFCMToken(fcmToken);
+    }
+  }
+
+  Future _registerFCMTokenListener() async {
+    _fcmTokenListener = firebaseMessaging.onTokenRefresh.listen((fcmToken) async {
+      await _saveFCMToken(fcmToken);
     });
   }
 
