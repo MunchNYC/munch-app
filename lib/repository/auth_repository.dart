@@ -172,6 +172,8 @@ class AuthRepo {
     // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
     await _userRepo.signOutUser();
 
+    NotificationsHandler.getInstance().stopNotifications();
+
     return _auth.signOut().catchError((error) {
       print("LoginRepo::logout() encountered an error:\n${error.error}");
       return false;
