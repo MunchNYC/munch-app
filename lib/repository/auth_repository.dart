@@ -6,6 +6,7 @@ import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:apple_sign_in/apple_sign_in.dart';
+import 'package:munch/util/notifications_handler.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
@@ -23,7 +24,7 @@ class AuthRepo {
 
   final UserRepo _userRepo = UserRepo.getInstance();
 
-  Future<firebase_auth.User> _signIn(firebase_auth.AuthCredential credentials) async {
+  Future<firebase_auth.User> _firebaseSignIn(firebase_auth.AuthCredential credentials) async {
     firebase_auth.UserCredential userCredential;
 
     try {
@@ -45,12 +46,28 @@ class AuthRepo {
     throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
   }
 
-  Future _onSignedInGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async{
+  Future<User> _onSignInSuccessful() async {
+    await NotificationsHandler.getInstance().initializeNotifications();
+
+    return _userRepo.currentUser;
+  }
+
+  Future _synchronizeCurrentUser({Function registerUserCallback}) async{
+    User user = await _userRepo.getCurrentUser(forceRefresh: true);
+
+    if(user == null){
+      user = await registerUserCallback();
+    }
+
+    _userRepo.setCurrentUser(user);
+  }
+
+  Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async{
     User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
 
     user = await _userRepo.registerUser(user);
 
-    _userRepo.setCurrentUser(user);
+    return user;
   }
 
   Future<User> signInWithGoogle() async {
@@ -65,22 +82,22 @@ class AuthRepo {
           idToken: authentication.idToken,
           accessToken: authentication.accessToken);
 
-      firebase_auth.User firebaseUser = await _signIn(credentials);
+      firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
-      await _onSignedInGoogleUser(account, firebaseUser);
+      await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
 
-      return _userRepo.currentUser;
+      return await _onSignInSuccessful();
     } else{
       return null;
     }
   }
 
-  Future _onSignedInFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
+  Future<User> _registerFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
     User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
 
     user = await _userRepo.registerUser(user);
 
-    _userRepo.setCurrentUser(user);
+    return user;
   }
 
   Future<User> signInWithFacebook() async {
@@ -91,11 +108,11 @@ class AuthRepo {
       case FacebookLoginStatus.loggedIn:
         final credentials = firebase_auth.FacebookAuthProvider.credential(facebookLoginResult.accessToken.token);
 
-        firebase_auth.User firebaseUser = await _signIn(credentials);
+        firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
-        await _onSignedInFacebookUser(facebookLoginResult, firebaseUser);
+        await _synchronizeCurrentUser(registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser));
 
-        return _userRepo.currentUser;
+        return await _onSignInSuccessful();
         break;
       case FacebookLoginStatus.cancelledByUser:
         break;
@@ -107,7 +124,7 @@ class AuthRepo {
     return null;
   }
 
-  Future _onSignedInAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
+  Future<User> _registerAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
     User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
 
     // Apple returns email and full name just on first successful login to app, after that it returns null for that fields if user logs in again
@@ -118,7 +135,7 @@ class AuthRepo {
 
     user = await _userRepo.registerUser(user);
 
-    _userRepo.setCurrentUser(user);
+    return user;
   }
 
   Future<User> signInWithApple() async {
@@ -135,11 +152,11 @@ class AuthRepo {
             accessToken: String.fromCharCodes(authorizationResult.credential.authorizationCode)
         );
 
-        firebase_auth.User firebaseUser = await _signIn(credential);
+        firebase_auth.User firebaseUser = await _firebaseSignIn(credential);
 
-        await _onSignedInAppleUser(authorizationResult, firebaseUser);
+        await _synchronizeCurrentUser(registerUserCallback: () => _registerAppleUser(authorizationResult, firebaseUser));
 
-        return _userRepo.currentUser;
+        return await _onSignInSuccessful();
         break;
       case AuthorizationStatus.cancelled:
         break;
@@ -153,7 +170,7 @@ class AuthRepo {
 
   Future<bool> signOut() async {
     // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
-    await _userRepo.clearCurrentUser();
+    await _userRepo.signOutUser();
 
     return _auth.signOut().catchError((error) {
       print("LoginRepo::logout() encountered an error:\n${error.error}");
@@ -162,4 +179,5 @@ class AuthRepo {
       return true;
     });
   }
+
 }

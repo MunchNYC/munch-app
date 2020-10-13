@@ -9,11 +9,11 @@ class UsersApi extends Api {
 
   // Will return user which already exists in DB, or newly created user
   Future<User> registerUser(User user) async {
-    final String putUrl = ''; // TODO
+    final String postUrl = ''; // TODO
 
     Map<String, dynamic> fields = UserJsonSerializer().toMap(user);
 
-    var data = await put(putUrl, fields);
+    var data = await post(postUrl, fields);
 
     return UserJsonSerializer().fromMap(data['user']);
   }
@@ -28,23 +28,29 @@ class UsersApi extends Api {
     return user;
   }
 
-  Future<User> updateFCMToken(String fcmToken) async {
-    final String postUrl = ''; // TODO
+  Future<User> updateFCMToken(String deviceId, String fcmToken) async {
+    final String patchUrl = ''; // TODO
 
     Map<String, String> fields = Map.of({
+      'deviceId': deviceId,
       'fcmToken': fcmToken
     });
 
-    var data = await post(postUrl, fields);
+    var data = await patch(patchUrl, fields);
 
-    User registeredUser = UserJsonSerializer().fromMap(data['user']);
+    User user = UserJsonSerializer().fromMap(data['user']);
 
-    return registeredUser;
+    return user;
   }
 
-  Future deleteFCMToken() async {
-    final String deleteUrl = ''; // TODO
 
-    await delete(deleteUrl);
+  Future signOut(String deviceId) async {
+    final String postUrl = ''; // TODO
+
+    Map<String, String> fields = Map.of({
+      'deviceId': deviceId,
+    });
+
+    await post(postUrl, fields);
   }
 }

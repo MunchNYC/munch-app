@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
+import 'package:munch/util/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepo {
@@ -58,8 +59,11 @@ class UserRepo {
     _currentUser = user;
   }
 
-  Future clearCurrentUser() async {
-    clearAccessToken();
+  Future signOutUser() async {
+    await _usersApi.signOut(App.deviceId);
+
+    await _clearAccessToken();
+    await _clearFCMToken();
 
     _currentUser = null;
   }
@@ -76,7 +80,7 @@ class UserRepo {
     return newAuthToken;
   }
 
-  Future clearAccessToken() async {
+  Future _clearAccessToken() async {
     FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
 
     await flutterSecureStorage.delete(key: StorageKeys.ACCESS_TOKEN);
@@ -98,11 +102,12 @@ class UserRepo {
   Future setAccessToken(String token) async {
     print("Setting access token: " + token);
 
+    FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
+    await flutterSecureStorage.write(key: StorageKeys.ACCESS_TOKEN, value: token);
+
     if (_currentUser != null) {
       _currentUser.accessToken = token;
     }
-    FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
-    await flutterSecureStorage.write(key: StorageKeys.ACCESS_TOKEN, value: token);
   }
 
   Future _clearFCMToken() async {
@@ -126,22 +131,24 @@ class UserRepo {
   void setFCMToken(String token) async {
     print("Setting fcm token: " + token);
 
-    if (_currentUser != null) {
-      _currentUser.fcmToken = token;
-    }
-
     FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
 
     await flutterSecureStorage.write(key: StorageKeys.FCM_TOKEN, value: token);
+
+    if (_currentUser != null) {
+      _currentUser.fcmToken = token;
+
+      await _usersApi.updateFCMToken(App.deviceId, token);
+    }
   }
 
   Future deleteFCMToken() async {
-    await _usersApi.deleteFCMToken();
-
     _clearFCMToken();
   }
 
   Future<User> registerUser(User user) async{
+    user.fcmToken = await getFCMToken();
+
     User registeredUser = await _usersApi.registerUser(user);
 
     return registeredUser;
