@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
@@ -39,6 +40,8 @@ class MunchesTabState extends State<MunchesTab> {
   List<Munch> _stillDecidingMunches;
   List<Munch> _decidedMunches;
   List<Munch> _archivedMunches;
+
+  MunchRepo _munchRepo = MunchRepo.getInstance();
 
   void _throwGetMunchesEvent(){
     munchBloc.add(GetMunchesEvent());
@@ -109,12 +112,9 @@ class MunchesTabState extends State<MunchesTab> {
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchesFetchingState){
-      Map<MunchStatus, List<Munch>> munchesStatusMap = state.data;
-
-      _stillDecidingMunches = munchesStatusMap[MunchStatus.UNDECIDED];
-      _decidedMunches = munchesStatusMap[MunchStatus.DECIDED];
-      _archivedMunches = munchesStatusMap[MunchStatus.ARCHIVED];
-
+      _stillDecidingMunches = _munchRepo.munchStatusLists[MunchStatus.UNDECIDED];
+      _decidedMunches =  _munchRepo.munchStatusLists[MunchStatus.DECIDED];
+      _archivedMunches =  _munchRepo.munchStatusLists[MunchStatus.ARCHIVED];
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
 
