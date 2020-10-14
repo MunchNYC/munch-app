@@ -1,9 +1,8 @@
 import 'package:munch/api/filters_api.dart';
-import 'package:munch/api/munch_api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
-import 'package:munch/model/restaurant.dart';
+import 'package:munch/repository/munch_repository.dart';
 
 class FiltersRepo {
   static FiltersRepo _instance;
@@ -18,6 +17,8 @@ class FiltersRepo {
   }
 
   FiltersApi _filtersApi = FiltersApi();
+
+  MunchRepo _munchRepo = MunchRepo.getInstance();
 
   /*
     Filters will be fetched just first time when user opens filters screen, will be cached here
@@ -46,6 +47,8 @@ class FiltersRepo {
         blacklistFiltersKeys: blacklistFiltersKeys,
         munchId: munchId
     );
+
+    _munchRepo.updateMunchCache(munch);
 
     return munch;
   }

@@ -36,7 +36,7 @@ class _TutorialRestaurantSwipeScreenState extends State<TutorialRestaurantSwipeS
 
     if(widget.tutorialState == TutorialState.FINISHED){
       // pop overlay dialog
-      NavigationHelper.popRoute(context, rootNavigator: true);
+      NavigationHelper.popRoute(context);
     }
   }
 

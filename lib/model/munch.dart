@@ -66,6 +66,9 @@ class Munch{
   MunchStatus munchStatus;
 
   @Field.ignore()
+  bool munchStatusChanged = false;
+
+  @Field.ignore()
   String get link => CODE_PREFIX + code;
 
   User getMunchMember(String userId){
@@ -76,21 +79,37 @@ class Munch{
     return user;
   }
 
-  // lastMunchData - last fetched munch data from back-end
-  // called with instance of detailed munch
-  void merge(Munch lastMunchData){
-    // if members array is empty take data from oldMunch if exists
-    if(members.length == 0){
-      // If last fetched munch data has null members or empty members array, put current user in that array it's better than to have 0 members on view
-      members = (lastMunchData.members != null || lastMunchData.members.length > 0) ? lastMunchData.members : [UserRepo.getInstance().currentUser];
+  // detailedMunch - new munch fetched
+  // called with instance of current munch
+  void merge(Munch detailedMunch){
+    this.name = detailedMunch.name;
+    this.code = detailedMunch.code;
+    this.hostUserId = detailedMunch.hostUserId;
+    this.creationTimestamp = detailedMunch.creationTimestamp;
+    this.coordinates = detailedMunch.coordinates;
+    this.munchMemberFilters = detailedMunch.munchMemberFilters;
+    this.munchFilters = detailedMunch.munchFilters;
+    this.matchedRestaurant = detailedMunch.matchedRestaurant;
+    this.receivePushNotifications = detailedMunch.receivePushNotifications;
+
+    // if members array is empty take data from current munch if exists
+    if((detailedMunch.members == null || detailedMunch.members.length == 0) && (this.members == null || this.members.length == 0)){
+      // If current munch data has null members or empty members array, put current user in that array it's better than to have 0 members on view
+      this.members = [UserRepo.getInstance().currentUser];
+      this.numberOfMembers = 1;
     }
 
-    numberOfMembers = members.length;
+    if(detailedMunch.matchedRestaurant != null){
+      this.matchedRestaurantName = detailedMunch.matchedRestaurant.name;
+    } else{
+      this.matchedRestaurantName = null;
+    }
 
-    radius = lastMunchData.radius;
+    if(this.munchStatus != detailedMunch.munchStatus){
+      this.munchStatusChanged = true;
+    }
 
-    // oldMunch.creationTimestamp can be null, if we hadn't fetched compact munch before
-    creationTimestamp = lastMunchData.creationTimestamp;
+    this.munchStatus = detailedMunch.munchStatus;
   }
 
   @override

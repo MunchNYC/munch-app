@@ -43,7 +43,7 @@ class NewRestaurantAlertDialog extends StatelessWidget{
                               content:  Text(App.translate("new_restaurant_alert_dialog.cancel_action.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontWeight: FontWeight.w600, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
                               onPressedCallback: (){
                                 // close dialog
-                                NavigationHelper.popRoute(context, rootNavigator: true);
+                                NavigationHelper.popRoute(context);
                               },
                             )
                         )
@@ -68,7 +68,7 @@ class NewRestaurantAlertDialog extends StatelessWidget{
                         onPressedCallback: (){
                           munchBloc.add(NewMunchRestaurantEvent(munchId: munchId));
                           // close dialog
-                          NavigationHelper.popRoute(context, rootNavigator: true);
+                          NavigationHelper.popRoute(context);
                         },
                       )
                     )

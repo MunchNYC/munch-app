@@ -107,10 +107,9 @@ class MunchCodeDialog extends StatelessWidget{
       content: Text(App.translate("munch_code_dialog.continue_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: (){
         // pop modal dialog
-        NavigationHelper.popRoute(context);
+        NavigationHelper.popRoute(context, rootNavigator: false);
 
-        // pop map screen, return result to munches tab to refresh the list
-        NavigationHelper.popRoute(context, result: munch);
+        NavigationHelper.popRoute(context, rootNavigator: false);
 
         NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: munch);
       },

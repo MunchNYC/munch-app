@@ -34,7 +34,7 @@ class KickMemberAlertDialog extends StatelessWidget{
                   content: Text(App.translate("kick_member_alert_dialog.confirm_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.error)),
                   onPressedCallback: (){
                     // close dialog
-                    NavigationHelper.popRoute(context, rootNavigator: true);
+                    NavigationHelper.popRoute(context);
 
                     munchBloc.add(KickMemberEvent(munchId: munchId, userId: user.uid));
                   }
@@ -49,7 +49,7 @@ class KickMemberAlertDialog extends StatelessWidget{
                 content: Text(App.translate("kick_member_alert_dialog.cancel_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.hyperlink)),
                 onPressedCallback: (){
                   // close dialog
-                  NavigationHelper.popRoute(context, rootNavigator: true);
+                  NavigationHelper.popRoute(context);
                 }
               )
             ],

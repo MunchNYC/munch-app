@@ -63,7 +63,7 @@ class FiltersInfoDialog extends StatelessWidget{
                 content: Text(App.translate("filters_screen.info_dialog.close_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w600, color: Palette.secondaryDark.withOpacity(0.8))),
                 onPressedCallback: (){
                   // close dialog
-                  NavigationHelper.popRoute(context, rootNavigator: true);
+                  NavigationHelper.popRoute(context);
                 },
               )
             ],

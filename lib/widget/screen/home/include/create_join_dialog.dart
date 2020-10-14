@@ -194,10 +194,6 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
     }
   }
 
-  void _throwGetStillDecidingMunchesEvent(BuildContext context){
-    widget.munchBloc.add(GetMunchesEvent());
-  }
-
   void _onCreateButtonClicked(BuildContext context){
     if (_createFormKey.currentState.validate()) {
       _createFormKey.currentState.save();
@@ -205,15 +201,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      NavigationHelper.navigateToMapScreen(context, munchName: _munchName).then((value){
-        if(value != null){
-          // pop dialog if munch is created, otherwise keep it
-          NavigationHelper.popRoute(context);
-
-          // refresh munches list
-          _throwGetStillDecidingMunchesEvent(context);
-        }
-      });
+      NavigationHelper.navigateToMapScreen(context, munchName: _munchName);
     } else {
       _createFormAutoValidate = true;
     }

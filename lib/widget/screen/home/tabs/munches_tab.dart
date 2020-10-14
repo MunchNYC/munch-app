@@ -121,12 +121,7 @@ class MunchesTabState extends State<MunchesTab> {
       // pop create join dialog
       NavigationHelper.popRoute(context);
 
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch).then((value){
-        if(value != null) {
-          // refresh list when user comes back to this screen
-          _throwGetMunchesEvent();
-        }
-      });
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
     }
   }
 
@@ -186,9 +181,7 @@ class MunchesTabState extends State<MunchesTab> {
 
                   return InkWell(
                       onTap: (){
-                        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true).then((value){
-                          _throwGetMunchesEvent();
-                        });
+                        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true);
                       },
                       child: MunchListWidget(munch: _stillDecidingMunches[index])
                   );
@@ -224,9 +217,7 @@ class MunchesTabState extends State<MunchesTab> {
                 // InkWell is making empty space clickable also
                 return InkWell(
                     onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true).then((value){
-                        _throwGetMunchesEvent();
-                      });
+                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true);
                     },
                     child: MunchListWidget(munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index])
                 );

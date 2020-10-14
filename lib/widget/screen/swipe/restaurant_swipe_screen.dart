@@ -63,7 +63,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       _munchBloc.add(GetDetailedMunchEvent(widget.munch.id));
     } else{
       // merge Munch with itself in order to update members array if it's empty to (1 member - current user)
-      _updateMunchWithDetailedData(widget.munch);
+      // edge case
+      widget.munch.merge(widget.munch);
 
       _throwGetSwipeRestaurantNextPageEvent();
     }
@@ -143,13 +144,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             SizedBox(width: 2.0),
             GestureDetector(
               onTap: (){
-                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((munch){
-                  if(munch != null){
-                    setState(() {
-                      _updateMunchWithDetailedData(munch);
-                    });
-                  }
-                });
+                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch);
               },
               child: Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
                   style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
@@ -186,16 +181,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             EdgeInsets.only(right: 24.0),
             child: GestureDetector(
               onTap: (){
-                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((munch) {
-                  if (munch != null) {
-                    setState(() {
-                      _updateMunchWithDetailedData(munch);
-                    });
+                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((result) {
+                  _currentRestaurants.clear();
 
-                    _currentRestaurants.clear();
-
-                    _throwGetSwipeRestaurantNextPageEvent();
-                  }
+                  _throwGetSwipeRestaurantNextPageEvent();
                 });
               },
               child: ImageIcon(
@@ -211,7 +200,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   Future<bool> _onWillPopScope(BuildContext context) async {
     // return result to previous route, in order to refresh things
-    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
+    NavigationHelper.popRoute(context);
 
     return false;
   }
@@ -234,22 +223,16 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   void _navigateToDecisionScreen(){
-    NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false, result: widget.munch);
+    NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
   }
 
-  void _updateMunchWithDetailedData(Munch detailedMunch){
-    /*
-      Take old data from munch which can be missing from detailedMunch response
-      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
-    */
-    detailedMunch.merge(widget.munch);
+  void _checkNavigationToDecisionScreen(){
+    if(widget.munch.munchStatusChanged){
+      widget.munch.munchStatusChanged = false;
 
-    Munch currentMunch = widget.munch;
-
-    widget.munch = detailedMunch;
-
-    if(currentMunch.munchStatus != detailedMunch.munchStatus && detailedMunch.munchStatus != MunchStatus.UNDECIDED){
-      _navigateToDecisionScreen();
+      if(widget.munch.munchStatus != MunchStatus.UNDECIDED){
+        _navigateToDecisionScreen();
+      }
     }
   }
 
@@ -286,14 +269,14 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
-      _updateMunchWithDetailedData(state.data);
+      _checkNavigationToDecisionScreen();
 
       // when we open this screen and received DetailedMunch data we can fetch restaurants
       _throwGetSwipeRestaurantNextPageEvent();
     } else if(state is RestaurantsPageFetchingState){
       _updateRestaurantsPage(state.data);
     } else if(state is RestaurantSwipeProcessingState){
-      _updateMunchWithDetailedData(state.data);
+      _checkNavigationToDecisionScreen();
     }
   }
 

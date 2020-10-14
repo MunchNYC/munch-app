@@ -31,7 +31,7 @@ class LeaveMunchAlertDialog extends StatelessWidget{
                   content: Text(App.translate("leave_munch_alert_dialog.confirm_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.error)),
                   onPressedCallback: (){
                     // close dialog
-                    NavigationHelper.popRoute(context, rootNavigator: true);
+                    NavigationHelper.popRoute(context);
 
                     munchBloc.add(LeaveMunchEvent(munchId: munchId));
                   },
@@ -46,7 +46,7 @@ class LeaveMunchAlertDialog extends StatelessWidget{
                 content: Text(App.translate("leave_munch_alert_dialog.cancel_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.hyperlink)),
                 onPressedCallback: (){
                   // close dialog
-                  NavigationHelper.popRoute(context, rootNavigator: true);
+                  NavigationHelper.popRoute(context);
                 },
               )
             ],

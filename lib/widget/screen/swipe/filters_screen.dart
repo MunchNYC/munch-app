@@ -230,7 +230,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       }
     }
 
-    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
+    NavigationHelper.popRoute(context);
 
     return false;
   }
@@ -247,25 +247,11 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
-  void _updateMunchWithDetailedData(Munch detailedMunch){
-    /*
-      Take old data from munch which can be missing from detailedMunch response
-      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
-    */
-    detailedMunch.merge(widget.munch);
-
-    widget.munch = detailedMunch;
-  }
-
   void _filtersUpdatingStateListener(FiltersState state){
     if(state.loading){
       _selectedFiltersContainerReadonly = true;
     } else{
       // ready
-      Munch detailedMunch = state.data;
-
-      _updateMunchWithDetailedData(detailedMunch);
-
       if(_popScopeCompleter != null){
         _popScopeCompleter.complete(true);
       } else{
@@ -703,6 +689,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
         break;
       } else {
+        // TODO: 206 error
         User user = widget.munch.getMunchMember(munchGroupFilter.userIds[0]);
 
         _avatarList.add(Padding(
@@ -787,14 +774,14 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   void _onSaveChangesDialogButtonClicked(){
     // close dialog
-    NavigationHelper.popRoute(context, rootNavigator: true);
+    NavigationHelper.popRoute(context);
 
     _onSaveButtonClicked();
   }
 
   void _onDiscardChangesDialogButtonClicked(){
     // close dialog
-    NavigationHelper.popRoute(context, rootNavigator: true);
+    NavigationHelper.popRoute(context);
 
     _popScopeCompleter.complete(true);
   }

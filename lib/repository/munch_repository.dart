@@ -1,6 +1,7 @@
 import 'package:munch/api/munch_api.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
+import 'package:munch/model/user.dart';
 
 class MunchRepo {
   static MunchRepo _instance;
@@ -43,31 +44,29 @@ class MunchRepo {
     munchMap[munch.id] = null;
   }
 
-  void _updateMunchCache(Munch newMunch){
+  void updateMunchCache(Munch newMunch){
     Munch currentMunch = munchMap[newMunch.id];
-    List<Munch> currentMunchList = munchStatusLists[currentMunch.munchStatus];
     List<Munch> newMunchList = munchStatusLists[newMunch.munchStatus];
 
     if(currentMunch != null) {
-      newMunch.merge(currentMunch);
+      List<Munch> currentMunchList = munchStatusLists[currentMunch.munchStatus];
 
       if(currentMunchList != newMunchList) {
         _deleteMunchFromCache(currentMunch);
 
-        newMunchList.insert(0, newMunch);
-      } else{
-        for(int i = 0; i < currentMunchList.length; i++){
-          if(currentMunchList[i].id == newMunch.id){
-            currentMunchList[i] = newMunch;
-            break;
-          }
-        }
+        newMunchList.insert(0, currentMunch);
+
+        // _delete is removing it from map
+        munchMap[newMunch.id] = currentMunch;
       }
+
+      currentMunch.merge(newMunch);
     } else{
       newMunchList.insert(0, newMunch);
+
+      munchMap[newMunch.id] = newMunch;
     }
 
-    munchMap[newMunch.id] = newMunch;
   }
 
   Future getMunches() async{
@@ -91,7 +90,7 @@ class MunchRepo {
 
     Munch munch = await _munchApi.joinMunch(munchId);
 
-    _updateMunchCache(munch);
+    updateMunchCache(munch);
 
     return munch;
   }
@@ -99,13 +98,15 @@ class MunchRepo {
   Future<Munch> createMunch(Munch munch) async{
     Munch createdMunch = await _munchApi.createMunch(munch);
 
+    updateMunchCache(createdMunch);
+
     return createdMunch;
   }
 
   Future<Munch> getDetailedMunch(String munchId) async{
     Munch munch = await _munchApi.getDetailedMunch(munchId);
 
-    _updateMunchCache(munch);
+    updateMunchCache(munch);
 
     return munch;
   }
@@ -123,7 +124,7 @@ class MunchRepo {
         liked: liked
     );
 
-    _updateMunchCache(munch);
+    updateMunchCache(munch);
 
     return munch;
   }
@@ -135,7 +136,7 @@ class MunchRepo {
       notificationsEnabled: notificationsEnabled,
     );
 
-    _updateMunchCache(munch);
+    updateMunchCache(munch);
 
     return munch;
   }
@@ -146,7 +147,18 @@ class MunchRepo {
         userId: userId
     );
 
-    _updateMunchCache(munch);
+    /*
+        This must be done, because otherwise after updateMunchCache user can exists in Munch even if kicked, if partial response received on Kick
+     */
+    // if response munch has empty members array (partial result 206)
+    if(munch.members.length == 0){
+      Munch currentMunch = munchMap[munchId];
+      // manually remove user from members list, after that we can merge munches
+      currentMunch.members.removeWhere((User user)=> user.uid == userId);
+      currentMunch.numberOfMembers--;
+    }
+
+    updateMunchCache(munch);
 
     return munch;
   }
@@ -162,7 +174,7 @@ class MunchRepo {
       munchId: munchId,
     );
 
-    _updateMunchCache(munch);
+    updateMunchCache(munch);
 
     return munch;
   }

@@ -59,7 +59,7 @@ class NavigationHelper {
   }
 
   static void popRoute(BuildContext context,
-      {bool rootNavigator: false, var result}) {
+      {bool rootNavigator: true, var result}) {
     return Navigator.of(context, rootNavigator: rootNavigator).pop(result);
   }
 
