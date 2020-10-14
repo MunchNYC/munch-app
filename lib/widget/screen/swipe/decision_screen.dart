@@ -73,7 +73,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
     NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: widget.munch, addToBackStack: false);
   }
 
-  void _checkNavigationToDecisionScreen(){
+  void _checkNavigationToSwipeScreen(){
     if(widget.munch.munchStatus != MunchStatus.UNDECIDED){
       widget.restaurant = widget.munch.matchedRestaurant;
     }
@@ -91,9 +91,9 @@ class _DecisionScreenState extends State<DecisionScreen>{
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
-      _checkNavigationToDecisionScreen();
+      _checkNavigationToSwipeScreen();
     } if(state is CancellingMunchDecisionState){
-      _checkNavigationToDecisionScreen();
+      _checkNavigationToSwipeScreen();
     }
   }
 
@@ -110,7 +110,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
   Widget _buildDecisionScreen(BuildContext context, MunchState state){
     if (state.hasError) {
       return ErrorPageWidget();
-    } else if((state.initial && widget.shouldFetchDetailedMunch) || (state.loading && state is DetailedMunchFetchingState)){
+    } else if((state.initial && widget.shouldFetchDetailedMunch) || (state.loading && state is DetailedMunchFetchingState) || (state.ready && widget.restaurant == null)){
+      // state.ready && widget.restaurant == null means we already started navigation to SwipeScreen, because matchedRestaurant is cleared
       return AppCircularProgressIndicator();
     }
 

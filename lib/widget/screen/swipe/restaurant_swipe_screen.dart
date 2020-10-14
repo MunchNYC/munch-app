@@ -55,6 +55,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   MunchBloc _munchBloc;
 
+  bool _shouldNavigateToDecisionScreen = false;
+
   @override
   void initState() {
     _munchBloc = MunchBloc();
@@ -130,7 +132,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(widget.munch.numberOfMembers.toString(),
+            Text(widget.munch.membersNum.toString(),
               style: AppTextStyle.style(AppTextStylePattern.body2)
             ),
             Icon(Icons.person_outline,
@@ -235,6 +237,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       widget.munch.munchStatusChanged = false;
 
       if(widget.munch.munchStatus != MunchStatus.UNDECIDED){
+        _shouldNavigateToDecisionScreen = true;
+
         _navigateToDecisionScreen();
       }
     }
@@ -310,6 +314,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         // if RestaurantsPageFetchingState or RestaurantSwipeProcessingState and one (or more) card is on top of the stack, don't render indicator
         showLoadingIndicator = false;
       }
+    }
+
+    if(_shouldNavigateToDecisionScreen){
+      showLoadingIndicator = true;
     }
 
     if(showLoadingIndicator){

@@ -69,6 +69,9 @@ class Munch{
   bool munchStatusChanged = false;
 
   @Field.ignore()
+  int get membersNum => numberOfMembers ?? members.length;
+
+  @Field.ignore()
   String get link => CODE_PREFIX + code;
 
   User getMunchMember(String userId){
@@ -93,6 +96,11 @@ class Munch{
     this.munchFilters = detailedMunch.munchFilters;
     this.matchedRestaurant = detailedMunch.matchedRestaurant;
     this.receivePushNotifications = detailedMunch.receivePushNotifications;
+
+    if(detailedMunch.members != null && detailedMunch.members.length > 0){
+      this.members = detailedMunch.members;
+      this.numberOfMembers = detailedMunch.members.length;
+    }
 
     // if members array is empty take data from current munch if exists
     if((detailedMunch.members == null || detailedMunch.members.length == 0) && (this.members == null || this.members.length == 0)){

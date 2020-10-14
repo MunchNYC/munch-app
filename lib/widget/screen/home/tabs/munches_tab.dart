@@ -128,7 +128,7 @@ class MunchesTabState extends State<MunchesTab> {
       Munch joinedMunch = state.data;
 
       // pop create join dialog
-      NavigationHelper.popRoute(context);
+      NavigationHelper.popRoute(context, rootNavigator: false);
 
       NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
     }

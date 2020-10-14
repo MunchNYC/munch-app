@@ -196,15 +196,15 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
 
   void _onCreateButtonClicked(BuildContext context){
     if (_createFormKey.currentState.validate()) {
+      // pop create join dialog
+      NavigationHelper.popRoute(context, rootNavigator: false);
+
       _createFormKey.currentState.save();
       
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
       NavigationHelper.navigateToMapScreen(context, munchName: _munchName);
-
-      // pop create join dialog
-      NavigationHelper.popRoute(context, rootNavigator: false);
     } else {
       _createFormAutoValidate = true;
     }
