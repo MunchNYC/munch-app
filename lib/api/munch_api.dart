@@ -4,6 +4,11 @@ import 'package:munch/model/restaurant.dart';
 import 'api.dart';
 
 class MunchApi extends Api {
+  static const String ENDPOINT_SET_PREFIX = 'munch';
+  static const int API_VERSION = 1;
+
+  MunchApi(): super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
+
   Future<List<Munch>> getMunches() async {
     String getUrl = "/munches";
 

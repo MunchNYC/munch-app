@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/splash/splash_screen.dart';
 import 'package:munch/widget/util/stateful_wrapper.dart';
 import 'config/app_config.dart';
@@ -13,6 +14,8 @@ import 'package:timezone/data/latest.dart' as tz;
 Future loadEnvironment() async{
   const ENV = String.fromEnvironment('ENV', defaultValue: 'dev');
   await AppConfig.forEnvironment(ENV);
+
+  await App.initializeDeviceData();
 
   await Firebase.initializeApp();
 }

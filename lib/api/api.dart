@@ -10,21 +10,22 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
 abstract class Api{
-  static String backendBaseUrl = AppConfig.getInstance().apiUrl + "/v" + AppConfig.getInstance().apiVersion;
 
-  String baseUrl;
-
-  Api(){
-    baseUrl = backendBaseUrl;
-  }
-
-  Api.thirdParty(this.baseUrl);
+  static String backendBaseUrl = AppConfig.getInstance().apiUrl;
 
   static const String POST = "POST";
   static const String PATCH = "PATCH";
   static const String GET = "GET";
   static const String PUT = "PUT";
   static const String DELETE = "DELETE";
+
+  String baseUrl;
+
+  Api({String endpointSetPrefix, int version}){
+    baseUrl = backendBaseUrl + "/" + endpointSetPrefix + "/v" + version.toString();
+  }
+
+  Api.thirdParty(this.baseUrl);
 
   Future<Map<String, String>> generateHeaders(
       {String contentType = "application/json",
@@ -52,7 +53,7 @@ abstract class Api{
       print("Headers: " + headers.toString());
       try {
         final response = await requestFunction(headers).
-            timeout(Duration(seconds: CommunicationSettings.maxWaitTimeSec),
+        timeout(Duration(seconds: CommunicationSettings.maxWaitTimeSec),
             onTimeout: () {
               throw FetchDataException.fromMessage(App.translate("api.error.request_timeout"));
             });
@@ -158,7 +159,7 @@ abstract class Api{
 
     if(response.statusCode >= 200 && response.statusCode < 300){
       if(responseJson['status']['successful'] == false){
-         throw FetchDataException.fromMessage(json.decode(response.body.toString()));
+        throw FetchDataException.fromMessage(json.decode(response.body.toString()));
       }
 
       return responseJson['data'];
@@ -172,6 +173,8 @@ abstract class Api{
       case 403:
         throw UnauthorisedException(
             response.statusCode, {"message": App.translate("api.error.unauthorized")});
+      case 404:
+        throw NotFoundException(response.statusCode, responseJson['status']);
       case 422:
         throw ValidationException(
             response.statusCode, responseJson['status']);
@@ -201,6 +204,12 @@ class FetchDataException extends ApiException {
   FetchDataException.fromMessage(String message) : super.fromMessage(message);
 
   FetchDataException(int status, Map<String, dynamic> map) : super(status, map);
+}
+
+class NotFoundException extends ApiException {
+  NotFoundException.fromMessage(String message) : super.fromMessage(message);
+
+  NotFoundException(int status, Map<String, dynamic> map) : super(status, map);
 }
 
 class BadRequestException extends ApiException {

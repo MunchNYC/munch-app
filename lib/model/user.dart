@@ -7,6 +7,9 @@ class User{
   @Field.ignore()
   String accessToken;
 
+  @Alias('pushInfo', isNullable: false) // Field.encode not generating good JSON serializer for some reason
+  PushNotificationsInfo pushNotificationsInfo;
+
   @Alias('userId')
   String uid;
 
@@ -16,18 +19,31 @@ class User{
 
   String displayName;
 
-  String photoUrl;
+  @nonNullable
+  String imageUrl;
 
   @override
   String toString() {
     return "uid: $uid; displayName: $displayName";
   }
 
-  User({this.uid, this.email, this.displayName, this.photoUrl, this.accessToken = ""});
+  User({this.uid, this.email, this.displayName, this.imageUrl, this.accessToken = ""});
 
   User.fromFirebaseUser({final firebase_auth.User firebaseUser, final String accessToken = ""})
-      :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, photoUrl: firebaseUser.photoURL, accessToken: accessToken);
+      :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, imageUrl: firebaseUser.photoURL, accessToken: accessToken);
 }
 
 @GenSerializer()
 class UserJsonSerializer extends Serializer<User> with _$UserJsonSerializer {}
+
+class PushNotificationsInfo{
+  String deviceId;
+
+  @Alias('pushToken')
+  String fcmToken;
+
+  PushNotificationsInfo({this.deviceId, this.fcmToken});
+}
+
+@GenSerializer()
+class PushNotificationsInfoJsonSerializer extends Serializer<PushNotificationsInfo> with _$PushNotificationsInfoJsonSerializer {}

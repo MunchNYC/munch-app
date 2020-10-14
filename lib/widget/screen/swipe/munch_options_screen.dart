@@ -418,7 +418,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             children: widget.munch.members.map((User user) =>
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(backgroundImage: NetworkImage(user.photoUrl), radius: 20.0),
+                  leading: CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: 20.0),
                   title: Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary), maxLines: 2, overflow: TextOverflow.ellipsis),
                   trailing: _membersListTrailing(user),
                 )
