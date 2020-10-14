@@ -202,6 +202,9 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
       FocusScope.of(context).unfocus();
 
       NavigationHelper.navigateToMapScreen(context, munchName: _munchName);
+
+      // pop create join dialog
+      NavigationHelper.popRoute(context, rootNavigator: false);
     } else {
       _createFormAutoValidate = true;
     }

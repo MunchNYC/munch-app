@@ -380,6 +380,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  focus_detector:
+    dependency: "direct main"
+    description:
+      name: focus_detector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   font_awesome_flutter:
     dependency: "direct main"
     description:
@@ -966,6 +973,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.3"
+  visibility_detector:
+    dependency: transitive
+    description:
+      name: visibility_detector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   watcher:
     dependency: transitive
     description:

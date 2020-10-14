@@ -200,7 +200,9 @@ class _DecisionScreenState extends State<DecisionScreen>{
         color: Palette.background,
         textColor: Palette.primary,
         onPressedCallback: (){
-          NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch);
+          NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
+                (value) => setState(() {})  //refresh the data on page
+          );
         },
       ),
     );

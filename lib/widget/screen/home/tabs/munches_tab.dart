@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:focus_detector/focus_detector.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
@@ -43,6 +44,8 @@ class MunchesTabState extends State<MunchesTab> {
 
   MunchRepo _munchRepo = MunchRepo.getInstance();
 
+  UniqueKey _focusDetectorKey = UniqueKey();
+
   void _throwGetMunchesEvent(){
     munchBloc.add(GetMunchesEvent());
   }
@@ -56,16 +59,22 @@ class MunchesTabState extends State<MunchesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return FocusDetector(
+      key: _focusDetectorKey,
+      onFocusGained: (){
+        setState(() {}); // refresh data on the screen if screen comes up from background or from Navigator.pop
+      },
+      child: Padding(
       // top and bottom already set in home screen
-      padding: AppDimensions.padding(AppPaddingType.screenOnly),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-           _headerBar(),
-           _tabHeaders(),
-           Expanded(child: _tabsContent())
-        ]
+        padding: AppDimensions.padding(AppPaddingType.screenOnly),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+             _headerBar(),
+             _tabHeaders(),
+             Expanded(child: _tabsContent())
+          ]
+        )
       )
     );
   }

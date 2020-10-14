@@ -144,7 +144,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             SizedBox(width: 2.0),
             GestureDetector(
               onTap: (){
-                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch);
+                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
+                      (value) => setState(() {}) //refresh the data on the page
+                );
               },
               child: Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
                   style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
@@ -182,9 +184,11 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             child: GestureDetector(
               onTap: (){
                 NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((result) {
-                  _currentRestaurants.clear();
+                  setState(() {
+                    _currentRestaurants.clear();
 
-                  _throwGetSwipeRestaurantNextPageEvent();
+                    _throwGetSwipeRestaurantNextPageEvent();
+                  });
                 });
               },
               child: ImageIcon(

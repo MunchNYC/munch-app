@@ -109,6 +109,7 @@ class MunchCodeDialog extends StatelessWidget{
         // pop modal dialog
         NavigationHelper.popRoute(context, rootNavigator: false);
 
+        // pop map screen, cannot replace route because this route is not in rootNavigator
         NavigationHelper.popRoute(context, rootNavigator: false);
 
         NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: munch);

@@ -74,6 +74,8 @@ class Munch{
   User getMunchMember(String userId){
     User user = members.firstWhere((User user){
       return user.uid == userId;
+    }, orElse: (){
+      return null;
     });
 
     return user;

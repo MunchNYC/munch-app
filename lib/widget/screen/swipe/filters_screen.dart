@@ -41,7 +41,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   // avatar size calculations
   static final double _totalAvatarWidth =  (AVATAR_RADIUS * 2 + AVATAR_SPACING);
-  static final double _maxAvatarContainerWidth = (App.screenWidth- AppDimensions.padding(AppPaddingType.screenWithAppBar).horizontal) * AVATAR_CONTAINER_PARENT_PERCENT;
+  static final double _maxAvatarContainerWidth = (App.screenWidth - AppDimensions.padding(AppPaddingType.screenWithAppBar).horizontal) * AVATAR_CONTAINER_PARENT_PERCENT;
   static final int _maxAvatarsPerRow = (_maxAvatarContainerWidth / _totalAvatarWidth).floor();
   
   Completer<bool> _popScopeCompleter;
@@ -668,34 +668,65 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
+  Widget _userAvatar(User user){
+    return Padding(
+      padding: EdgeInsets.only(left: AVATAR_SPACING),
+      child: CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: AVATAR_RADIUS),
+    );
+  }
+
+  Widget _circleAvatar(int number){
+    return Padding(
+      padding: EdgeInsets.only(left: AVATAR_SPACING),
+      child: CircleAvatar(backgroundColor: Palette.secondaryLight, child: Text(number.toString() + "+", style: AppTextStyle.style(AppTextStylePattern.body2Inverse)), radius: AVATAR_RADIUS),
+    );
+  }
+
   Widget _userAvatars(MunchGroupFilter munchGroupFilter){
     List<Widget> _avatarList = List<Widget>();
 
-    double avatarContainerWidth;
-
-    if(_maxAvatarsPerRow < munchGroupFilter.userIds.length){
-      avatarContainerWidth = _maxAvatarContainerWidth;
-    } else{
-      avatarContainerWidth = munchGroupFilter.userIds.length * _totalAvatarWidth;
-    }
+    // flag if members array has partial response - that means only auth user is in array
+    bool munchMembersNotAvailable = false;
 
     for(int i = 0; i < munchGroupFilter.userIds.length; i++){
       if(i + 1 == _maxAvatarsPerRow && _maxAvatarsPerRow < munchGroupFilter.userIds.length){
         int avatarsLeft = munchGroupFilter.userIds.length - i;
-        _avatarList.add(Padding(
-          padding: EdgeInsets.only(left: AVATAR_SPACING),
-          child: CircleAvatar(backgroundColor: Palette.secondaryLight, child: Text(avatarsLeft.toString() + "+", style: AppTextStyle.style(AppTextStylePattern.body2Inverse)), radius: AVATAR_RADIUS),
-        ));
+        _avatarList.add(_circleAvatar(avatarsLeft));
 
         break;
       } else {
-        // TODO: 206 error
-        User user = widget.munch.getMunchMember(munchGroupFilter.userIds[0]);
+        User user = widget.munch.getMunchMember(munchGroupFilter.userIds[i]);
 
-        _avatarList.add(Padding(
-          padding: EdgeInsets.only(left: AVATAR_SPACING),
-          child: CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: AVATAR_RADIUS),
-        ));
+        // if user is not in members array, response is partial
+        if(user == null){
+          munchMembersNotAvailable = true;
+          break;
+        }
+
+        _avatarList.add(_userAvatar(user));
+      }
+    }
+
+    double avatarContainerWidth;
+
+    // in case members array is partial (just auth user in array), maximum two circles should be returned (one for auth user and rest for other users)
+    if(munchMembersNotAvailable){
+      avatarContainerWidth = 2 * _totalAvatarWidth;
+
+      _avatarList.clear();
+
+      _avatarList.add(_userAvatar(widget.munch.members[0]));
+
+      int avatarsLeft = munchGroupFilter.userIds.length - 1;
+
+      if(avatarsLeft > 0) {
+        _avatarList.add(_circleAvatar(avatarsLeft));
+      }
+    } else{
+      if(_maxAvatarsPerRow < munchGroupFilter.userIds.length){
+        avatarContainerWidth = _maxAvatarContainerWidth;
+      } else{
+        avatarContainerWidth = munchGroupFilter.userIds.length * _totalAvatarWidth;
       }
     }
 
