@@ -9,7 +9,7 @@ class AppConfig {
   String appTitle;
   String apiUrl;
   String googleMapsApiKey;
-  String supportEmail;
+  String feedbackEmail;
   String privacyPolicyUrl;
   String termsOfServiceUrl;
 

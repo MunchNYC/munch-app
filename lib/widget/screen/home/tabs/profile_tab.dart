@@ -155,7 +155,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
   }
 
   void _onFeedbackItemClicked() async{
-    Utility.launchUrl(context, "mailto:" + AppConfig.getInstance().supportEmail);
+    Utility.launchUrl(context, "mailto:" + AppConfig.getInstance().feedbackEmail);
   }
 
   void _onPrivacyItemClicked() async{
