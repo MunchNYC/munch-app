@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:munch/config/localizations.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/processors/munch_status_processor.dart';
 import 'package:munch/model/processors/timestamp_processor.dart';
@@ -64,6 +65,9 @@ class Munch{
 
   // special processor, alias specified there
   MunchStatus munchStatus;
+
+  @nonNullable
+  bool archiveFlag = true; //TODO: set to false
 
   @Field.ignore()
   bool munchStatusChanged = false;

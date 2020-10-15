@@ -32,6 +32,7 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     setMapValue(ret, 'coordinates',
         _coordinatesJsonSerializer.toMap(model.coordinates));
     setMapValue(ret, 'radius', model.radius);
+    setMapValueIfNotNull(ret, 'archiveFlag', model.archiveFlag);
     return ret;
   }
 
@@ -76,6 +77,9 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
         getJserDefault('receivePushNotifications') ??
         obj.receivePushNotifications;
     obj.munchStatus = _munchStatusProcessor.deserialize(map['state'] as String);
+    obj.archiveFlag = map['archiveFlag'] as bool ??
+        getJserDefault('archiveFlag') ??
+        obj.archiveFlag;
     return obj;
   }
 }

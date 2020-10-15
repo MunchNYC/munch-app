@@ -21,8 +21,6 @@ class MunchListWidget extends StatelessWidget {
           _munchLeading(),
           SizedBox(width: 16.0),
           Expanded(child: _munchInfo()),
-          SizedBox(width: 12.0),
-          _munchTrailing()
         ],
       )
     );
@@ -37,36 +35,97 @@ class MunchListWidget extends StatelessWidget {
 
   Widget _munchInfo(){
     return Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(munch.name, style: AppTextStyle.style(AppTextStylePattern.body3),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis
-            ),
-            Text(munch.membersNum.toString() + " " + App.translate("munch_list_widget.members.text"), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
-            Text(munch.munchStatus == MunchStatus.UNDECIDED ? App.translate("munch_list_widget.munch_status.undecided.text") : munch.matchedRestaurantName, style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis
-            ),
-          ]
-      );
-  }
-
-  Widget _munchTrailing(){
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 4.0),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(DateFormat('MMM dd').format(munch.creationTimestamp), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
-              Icon(Icons.navigate_next, color: Palette.secondaryLight, size: 14.0)
-            ],
-          )
-        ]
+          _firstRow(),
+          _secondRow(),
+         if(munch.munchStatus == MunchStatus.UNDECIDED) _undecidedThirdRow(),
+         if(munch.munchStatus == MunchStatus.DECIDED) _decidedThirdRow(),
+         if(munch.munchStatus == MunchStatus.ARCHIVED) _archivedThirdRow(),
+      ]
     );
   }
+
+  Widget _firstRow(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          child:Text(munch.name,
+              style: AppTextStyle.style(AppTextStylePattern.body3),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis
+          )
+        ),
+        SizedBox(width: 8.0),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(DateFormat('MMM dd').format(munch.creationTimestamp), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+            Icon(Icons.navigate_next, color: Palette.secondaryLight.withOpacity(0.6), size: 16.0)
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _secondRow(){
+    return Text(munch.membersNum.toString() + " " + App.translate("munch_list_widget.members.text"),
+        style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)
+    );
+  }
+
+  Widget _undecidedThirdRow(){
+    return Text(App.translate("munch_list_widget.munch_status.undecided.text"),
+        style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis
+    );
+  }
+
+  Widget _decidedThirdRow(){
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          child: Text(munch.matchedRestaurantName,
+            style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis
+          )
+        ),
+        SizedBox(width: 8.0),
+        if(munch.archiveFlag)
+        Padding(
+            padding: EdgeInsets.only(right: 4.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.navigate_before, color: Palette.secondaryLight.withOpacity(0.6), size: 16.0),
+                Text("Swipe to Archive",
+                    style: AppTextStyle.style(AppTextStylePattern.body, color: Palette.secondaryLight),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis
+                ),
+                SizedBox(width: 4.0),
+                ImageIcon(AssetImage("assets/icons/archive.png"), color: Palette.secondaryDark, size: 16.0),
+              ],
+            )
+        ),
+      ],
+    );
+  }
+
+  Widget _archivedThirdRow(){
+    return  Text(munch.matchedRestaurantName,
+        style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis
+    );
+  }
+
 }

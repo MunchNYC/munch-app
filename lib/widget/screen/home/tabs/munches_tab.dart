@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/munch_repository.dart';
@@ -12,6 +13,7 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/home/include/archive_munch_dialog.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munch_list_widget.dart';
 import 'package:munch/widget/util/custom_button.dart';
@@ -31,6 +33,8 @@ class MunchesTab extends StatefulWidget {
 }
 
 class MunchesTabState extends State<MunchesTab> {
+  static const SKELETON_ITEMS_NUMBER = 15;
+
   MunchBloc munchBloc;
   
   // sent as an argument in order to be used in initState method, widget is null there
@@ -45,6 +49,11 @@ class MunchesTabState extends State<MunchesTab> {
   MunchRepo _munchRepo = MunchRepo.getInstance();
 
   UniqueKey _focusDetectorKey = UniqueKey();
+
+  // Just first time when user opens the app, check if there is upcoming notification in tab bar
+  bool _checkUpcomingNotification = true;
+
+  bool _showUpcomingNotification = false;
 
   void _throwGetMunchesEvent(){
     munchBloc.add(GetMunchesEvent());
@@ -94,11 +103,15 @@ class MunchesTabState extends State<MunchesTab> {
     return Align(
         alignment: Alignment.centerLeft,
         child:  DefaultTabController(
-            length: 2,
+            length: 3,
             child: TabBar(
               onTap: (int index){
                 setState(() {
                   _currentTab = index;
+
+                  if(_currentTab == 1){
+                    _showUpcomingNotification = false;
+                  }
                 });
               },
               isScrollable: true, // needs to be set to true in order to make Align widget workable
@@ -110,7 +123,20 @@ class MunchesTabState extends State<MunchesTab> {
               labelStyle: AppTextStyle.style(AppTextStylePattern.body3, fontWeight: FontWeight.w600),
               tabs: [
                 Tab(text: App.translate("munches_tab.deciding_tab.title")),
-                Tab(text: App.translate("munches_tab.decided_tab.title")),
+                Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(App.translate("munches_tab.decided_tab.title")),
+                        if(_showUpcomingNotification)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: AppDimensions.scaleSizeToScreen(16.0)),
+                          child: Icon(Icons.circle, color: Color(0xFFE60000), size: AppDimensions.scaleSizeToScreen(10.0)),
+                        )
+                      ],
+                    )
+                ),
+                Tab(text: App.translate("munches_tab.archived_tab.title")),
               ],
             )
         )
@@ -124,6 +150,17 @@ class MunchesTabState extends State<MunchesTab> {
       _stillDecidingMunches = _munchRepo.munchStatusLists[MunchStatus.UNDECIDED];
       _decidedMunches =  _munchRepo.munchStatusLists[MunchStatus.DECIDED];
       _archivedMunches =  _munchRepo.munchStatusLists[MunchStatus.ARCHIVED];
+
+      // just first time when user receives munches
+      if(_checkUpcomingNotification) {
+        _checkUpcomingNotification = false;
+        for (int i = 0; i < _decidedMunches.length; i++) {
+          if (_decidedMunches[i].archiveFlag) {
+            _showUpcomingNotification = true;
+            break;
+          }
+        }
+      }
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
 
@@ -160,13 +197,27 @@ class MunchesTabState extends State<MunchesTab> {
         index: _currentTab,
         children: <Widget>[
           _renderStillDecidingListView(errorOccurred: errorOccurred, loading: loading),
-          _renderDecidedArchivedListView(errorOccurred: errorOccurred, loading: loading)
+          _renderDecidedListView(errorOccurred: errorOccurred, loading: loading),
+          _renderArchivedListView(errorOccurred: errorOccurred, loading: loading)
         ]
     );
   }
 
   Future _refreshListView() async{
     _throwGetMunchesEvent();
+  }
+
+  Widget _renderSkeletonWidget(int index){
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if(index > 0) SizedBox(height: 20.0),
+        MunchListWidgetSkeleton(index: index),
+        SizedBox(height: 20.0),
+        if(index < SKELETON_ITEMS_NUMBER - 1)
+          Divider(height: 0.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5)),
+      ],
+    );
   }
 
   Widget _renderStillDecidingListView({bool errorOccurred = false, bool loading = false}){
@@ -181,10 +232,10 @@ class MunchesTabState extends State<MunchesTab> {
             child:
             errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
             loading || _stillDecidingMunches.length > 0 ?
-            ListView.separated(
+            ListView.builder(
                 primary: false,
                 shrinkWrap: true,
-                itemCount: loading ? 15 : _stillDecidingMunches.length,
+                itemCount: loading ? SKELETON_ITEMS_NUMBER : _stillDecidingMunches.length,
                 itemBuilder: (BuildContext context, int index){
                   if(loading) return MunchListWidgetSkeleton(index: index);
 
@@ -192,19 +243,37 @@ class MunchesTabState extends State<MunchesTab> {
                       onTap: (){
                         NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true);
                       },
-                      child: MunchListWidget(munch: _stillDecidingMunches[index])
+                      child: Slidable(
+                        actionPane: SlidableDrawerActionPane(),
+                        actionExtentRatio: 0.25,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if(index > 0) SizedBox(height: 20.0),
+                            MunchListWidget(munch: _stillDecidingMunches[index]),
+                            SizedBox(height: 20.0),
+                            if(index < _stillDecidingMunches.length - 1)
+                            Divider(height: 0.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5)),
+                          ],
+                        ),
+                        secondaryActions: <Widget>[
+                          IconSlideAction(
+                            color: Color(0xFFFBB25B),
+                            iconWidget: ImageIcon(AssetImage("assets/icons/archive.png"), color: Palette.background, size: 28.0),
+                            onTap: () {
+                                // TODO archive munch
+                            }
+                          ),
+                        ],
+                      )
                   );
-                },
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                separatorBuilder: (BuildContext context, int index) {
-                    return Divider(height: 40.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5));
                 },
             ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.still_deciding_list_view.empty.text"))
         )
     );
   }
 
-  Widget _renderDecidedArchivedListView({bool errorOccurred = false, bool loading = false}){
+  Widget _renderDecidedListView({bool errorOccurred = false, bool loading = false}){
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
         color: Palette.secondaryDark,
@@ -215,26 +284,83 @@ class MunchesTabState extends State<MunchesTab> {
             physics: AlwaysScrollableScrollPhysics(),
             child:
             errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
-            loading || _decidedMunches.length + _archivedMunches.length > 0 ?
-            ListView.separated(
+            loading || _decidedMunches.length > 0 ?
+            ListView.builder(
               primary: false,
               shrinkWrap: true,
-              itemCount: loading ? 15 : _decidedMunches.length + _archivedMunches.length,
+              itemCount: loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length,
               itemBuilder: (BuildContext context, int index){
-                if(loading) return MunchListWidgetSkeleton(index: index);
+                if(loading) return _renderSkeletonWidget(index);
 
                 // InkWell is making empty space clickable also
                 return InkWell(
                     onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true);
+                      NavigationHelper.navigateToDecisionScreen(context, munch: _decidedMunches[index], shouldFetchDetailedMunch: true);
                     },
-                    child: MunchListWidget(munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index])
+                    child: Slidable(
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if(index > 0) SizedBox(height: 20.0),
+                          MunchListWidget(munch: _decidedMunches[index]),
+                          SizedBox(height: 20.0),
+                          if(index < _decidedMunches.length - 1)
+                          Divider(height: 0.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5))
+                        ],
+                      ),
+                      secondaryActions: <Widget>[
+                        IconSlideAction(
+                            color: Color(0xFFFBB25B),
+                            iconWidget: ImageIcon(AssetImage("assets/icons/archive.png"), color: Palette.background, size: 28.0),
+                            onTap: () {
+                              DialogHelper(dialogContent: ArchiveMunchDialog(munchBloc: munchBloc, munch: _decidedMunches[index])).show(context);
+                            }
+                        ),
+                      ],
+                    )
+                );
+              },
+            ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.decided_list_view.empty.text"))
+        )
+    );
+  }
+
+  Widget _renderArchivedListView({bool errorOccurred = false, bool loading = false}){
+    // RefreshIndicator must be placed above scroll view
+    return RefreshIndicator(
+        color: Palette.secondaryDark,
+        onRefresh: _refreshListView,
+        // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
+        child: SingleChildScrollView(
+          // must be set because of RefreshIndicator
+            physics: AlwaysScrollableScrollPhysics(),
+            child:
+            errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
+            loading || _archivedMunches.length > 0 ?
+            ListView.builder(
+              primary: false,
+              shrinkWrap: true,
+              itemCount: loading ? SKELETON_ITEMS_NUMBER : _archivedMunches.length,
+              itemBuilder: (BuildContext context, int index){
+                if(loading) return _renderSkeletonWidget(index);
+
+                // InkWell is making empty space clickable also
+                return InkWell(
+                    onTap: (){
+                      NavigationHelper.navigateToDecisionScreen(context, munch: _archivedMunches[index], shouldFetchDetailedMunch: true);
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        MunchListWidget(munch: _archivedMunches[index]),
+                        Divider(height: 40.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5))
+                      ],
+                    )
                 );
               },
               padding: EdgeInsets.symmetric(vertical: 20.0),
-              separatorBuilder: (BuildContext context, int index) {
-                return Divider(height: 40.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.5));
-              },
             ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.decided_list_view.empty.text"))
         )
     );
