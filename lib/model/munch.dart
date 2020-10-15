@@ -67,7 +67,7 @@ class Munch{
   MunchStatus munchStatus;
 
   @nonNullable
-  bool archiveFlag = true; //TODO: set to false
+  bool archiveFlag = false;
 
   @Field.ignore()
   bool munchStatusChanged = false;
