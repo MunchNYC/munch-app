@@ -7,6 +7,7 @@ import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
 
 import 'app.dart';
 import 'navigation_helper.dart';
+import 'package:flutter/services.dart';
 
 class DeepLinkHandler{
   static const _methodChannel = const MethodChannel('https.munchapp.io/channel');
