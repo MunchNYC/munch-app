@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/widget/screen/splash/splash_screen.dart';
 import 'package:munch/widget/util/stateful_wrapper.dart';
 import 'config/app_config.dart';
