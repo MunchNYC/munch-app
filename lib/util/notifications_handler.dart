@@ -6,9 +6,16 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:munch/config/app_config.dart';
+import 'package:munch/model/munch.dart';
+import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
+import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/widget/screen/home/home_screen.dart';
+import 'package:munch/widget/screen/swipe/decision_screen.dart';
+import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
 
 class NotificationsHandler{
   static const ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME = "MUNCH-NOTIFICATION-CHANNEL";
@@ -45,14 +52,11 @@ class NotificationsHandler{
   }
 
   Future _initializeLocalNotifications() async {
-    var initializationSettingsAndroid = AndroidInitializationSettings(
-        'app_icon');
+    var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
 
-    await _flutterLocalNotificationsPlugin.initialize(
-        initializationSettings, onSelectNotification: _onNotificationTapped);
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onNotificationTapped);
   }
 
   void stopNotifications(){
@@ -82,7 +86,8 @@ class NotificationsHandler{
   }
 
   Future _onNotificationTapped(String payload) async {
-    print(payload);
+    DeepLinkHandler.getInstance().onDeepLinkReceived(payload);
+
   }
 
   void _configureNotificationsReceiveCallbacks(){
@@ -91,9 +96,8 @@ class NotificationsHandler{
         onMessage: (Map<String, dynamic> message) {
           print('onMessage: $message');
 
-          Platform.isAndroid
-              ? _showNotification(
-              message['notification']) // message structure is different for Android and iOS
+          Platform.isAndroid 
+              ? _showNotification(message['notification']) // message structure is different for Android and iOS
               : _showNotification(message['aps']['alert']);
 
           return;

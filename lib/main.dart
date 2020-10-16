@@ -59,6 +59,7 @@ class MunchApp extends StatelessWidget {
     return StatefulWrapper(
         onInit: initializeApp,
         child: MaterialApp(
+            navigatorKey: App.rootNavigatorKey,
             title: AppConfig.getInstance().appTitle,
             theme: ThemeData(
               primarySwatch: Palette.generateMaterialColor(Palette.primary),

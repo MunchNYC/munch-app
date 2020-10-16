@@ -35,17 +35,23 @@ class NavigationHelper {
   }
 
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
-      {bool addToBackStack: true, Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result}) {
-    if (addToBackStack) {
-      return navigatorState.push(
+      {bool addToBackStack: true, Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result, popAllRoutes: false}) {
+    if(popAllRoutes) {
+      return navigatorState.pushAndRemoveUntil(
           _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
+              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation),
+              (Route<dynamic> route) => false
       );
+    } else if (addToBackStack) {
+        return navigatorState.push(
+            _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+                slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
+        );
     } else {
-      return navigatorState.pushReplacement(
-          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
-      );
+        return navigatorState.pushReplacement(
+            _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+                slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
+        );
     }
   }
 

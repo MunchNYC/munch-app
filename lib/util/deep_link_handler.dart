@@ -16,20 +16,13 @@ class DeepLinkHandler{
   }
 
   void initializeDeepLinkListeners(){
-    print("INVOKE 1");
-
-    startUri().then(_onRedirected);
-
-    print("INVOKE 2");
+    startUri().then(onDeepLinkReceived);
 
     //Checking broadcast stream, if deep link was clicked in opened appication
-    _eventChannel.receiveBroadcastStream().listen((d) => _onRedirected(d));
-
-    print("INVOKE 3");
+    _eventChannel.receiveBroadcastStream().listen((d) => onDeepLinkReceived(d));
   }
 
   Future<String> startUri() async {
-    print("INVOKE 4");
     try {
       return _methodChannel.invokeMethod('initialLink');
     } on PlatformException catch (e) {
@@ -37,7 +30,20 @@ class DeepLinkHandler{
     }
   }
 
-  void _onRedirected(String uri) {
-    print("REDIRECTED");
+  void onDeepLinkReceived(String uri) {
+    print(uri);
+
+    // TODO: Navigation
+    /*await MunchRepo.getInstance().getDetailedMunch("4028818c7532787b0175327a36a80000").then((munch){
+      NavigationHelper.navigateToWithSpecificNavigator(App.rootNavigatorKey.currentState, screen: HomeScreen(), popAllRoutes: true, transitionDuration: Duration(seconds: 0));
+
+      if(munch.munchStatus == MunchStatus.UNDECIDED) {
+        NavigationHelper.navigateToWithSpecificNavigator(
+            App.rootNavigatorKey.currentState, screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: false), slideTransitionBuilder: NavigationAnimationHelper.bottomToTopAnimation);
+      } else{
+        NavigationHelper.navigateToWithSpecificNavigator(
+            App.rootNavigatorKey.currentState, screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: false), slideTransitionBuilder: NavigationAnimationHelper.bottomToTopAnimation);
+      }
+    });*/
   }
 }
