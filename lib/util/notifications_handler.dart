@@ -7,8 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/repository/user_repository.dart';
+import 'package:munch/theme/palette.dart';
+import 'package:munch/util/app.dart';
 
 class NotificationsHandler{
+  static const ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME = "MUNCH-NOTIFICATION-CHANNEL";
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -40,12 +44,15 @@ class NotificationsHandler{
     }
   }
 
-  Future _initializeLocalNotifications() async{
-    var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  Future _initializeLocalNotifications() async {
+    var initializationSettingsAndroid = AndroidInitializationSettings(
+        'app_icon');
     var initializationSettingsIOS = IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onNotificationTapped);
+    await _flutterLocalNotificationsPlugin.initialize(
+        initializationSettings, onSelectNotification: _onNotificationTapped);
   }
 
   void stopNotifications(){
@@ -85,8 +92,10 @@ class NotificationsHandler{
           print('onMessage: $message');
 
           Platform.isAndroid
-              ? _showNotification(message['notification']) // message structure is different for Android and iOS
+              ? _showNotification(
+              message['notification']) // message structure is different for Android and iOS
               : _showNotification(message['aps']['alert']);
+
           return;
         },
         onBackgroundMessage: null,
@@ -107,25 +116,31 @@ class NotificationsHandler{
     );
   }
 
-  void _showNotification(Map<String, String> message) async {
+  void _showNotification(Map message) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      AppConfig.getInstance().packageInfo.packageName,
-      AppConfig.getInstance().packageInfo.packageName,
-      AppConfig.getInstance().packageInfo.packageName,
+      ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME,
+      ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME,
+      ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME,
       playSound: true,
       enableVibration: true,
       importance: Importance.max,
       priority: Priority.high,
+      color: Palette.secondaryDark,
+      ledColor: Palette.secondaryDark,
+      ledOnMs: 1000,
+      ledOffMs: 1000,
+      enableLights: true,
+      styleInformation: BigTextStyleInformation(''),
     );
 
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
 
     await _flutterLocalNotificationsPlugin.show(0,
-        message['title'].toString(),
-        message['body'].toString(),
+        message['title'],
+        message['body'],
         platformChannelSpecifics,
-        payload: message['deeplink']
+        payload: message['deeplink'],
     );
   }
 }
