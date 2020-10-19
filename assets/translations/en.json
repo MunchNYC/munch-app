@@ -38,6 +38,11 @@
     "munch_code_dialog.share_button.popup.title": "Share Munch link",
     "munch_code_dialog.share_action.text": "Let's get Munch'n! Tap the link to join now.",
 
+    "archive_munch_dialog.liked_button.text": "Liked",
+    "archive_munch_dialog.neutral_button.text": "Neutral",
+    "archive_munch_dialog.disliked_button.text": "Disliked",
+    "archive_munch_dialog.did_not_go_label.text": "Did not go",
+
     "login_screen.google_button.text": "Sign in with Google",
     "login_screen.facebook_button.text": "Sign in with Facebook",
     "login_screen.apple_button.text": "Sign in with Apple",
@@ -107,6 +112,7 @@
     "options_screen.app_bar.action.text": "Save",
     "options_screen.munch_name_field.readonly_state.text": "Edit",
     "options_screen.munch_name_field.label.text": "Munch Name",
+    "options_screen.invite_friends.share_action.text": "Share",
     "options_screen.munch_link_field.label.text": "Invite Friends",
     "options_screen.push_notifications_field.label.text": "Push notifications",
     "options_screen.push_notifications_field.value.text": "Receive notifications for this munch",
@@ -171,6 +177,9 @@
     "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
     "filters_screen.info_dialog.close_button.text": "Close",
 
+    "decision_screen.munch_archived.full_description": "This munch has been archived by",
+    "decision_screen.munch_archived.partial_description": "This munch has been archived.",
+    "decision_screen.new_munch_button.description": "New Munch",
     "decision_screen.restaurant.hours.subtitle": "Hours",
     "decision_screen.call_button.label.text": "Call",
     "decision_screen.map_button.label.text": "View Map",

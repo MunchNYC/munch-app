@@ -1,7 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:jaguar_serializer/jaguar_serializer.dart';
-import 'package:munch/config/localizations.dart';
+import 'package:munch/config/app_config.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/processors/munch_status_processor.dart';
 import 'package:munch/model/processors/timestamp_processor.dart';
@@ -9,17 +7,13 @@ import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 
-import 'filter.dart';
-
 part 'munch.jser.dart';
 
 enum MunchStatus{
-  UNDECIDED, DECIDED, ARCHIVED
+  UNDECIDED, DECIDED, UNMODIFIABLE, ARCHIVED
 }
 
 class Munch{
-  static const String CODE_PREFIX = "Munch.app/";
-
   @Field.decode()
   String id;
 
@@ -69,6 +63,9 @@ class Munch{
   @nonNullable
   bool archiveFlag = false;
 
+  @Alias('archivedBy', isNullable: false)
+  String archivedByUserId;
+
   @Field.ignore()
   bool munchStatusChanged = false;
 
@@ -76,7 +73,10 @@ class Munch{
   int get membersNum => numberOfMembers ?? members.length;
 
   @Field.ignore()
-  String get link => CODE_PREFIX + code;
+  String get link => "Munch.app/" + code;
+
+  @Field.ignore()
+  bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;
 
   User getMunchMember(String userId){
     User user = members.firstWhere((User user){

@@ -22,7 +22,7 @@ class ArchiveMunchDialog extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -30,24 +30,17 @@ class ArchiveMunchDialog extends StatelessWidget{
           children: <Widget>[
             Text(munch.matchedRestaurantName,
                 style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
-            SizedBox(height: 24.0),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                    child: _dislikeButton()
-                ),
-                SizedBox(width: 20.0),
-                Expanded(
-                  child: _neutralButton()
-                ),
-                SizedBox(width: 20.0),
-                Expanded(
-                  child: _likeButton()
-                ),
-              ],
-            ),
-            SizedBox(height: 24.0),
+            SizedBox(height: 6.0),
+            Text(munch.name,
+                style: AppTextStyle.style(AppTextStylePattern.body3, fontWeight: FontWeight.w500)),
+            Divider(thickness: 2.0, height: 24.0, color: Palette.secondaryLight.withOpacity(0.6)),
+            SizedBox(height: 6.0),
+            _likeButton(),
+            SizedBox(height: 12.0),
+            _neutralButton(),
+            SizedBox(height: 12.0),
+            _dislikeButton(),
+            SizedBox(height: 20.0),
             _didNotGoLabel()
           ]
       ),
@@ -56,52 +49,37 @@ class ArchiveMunchDialog extends StatelessWidget{
 
   Widget _dislikeButton(){
     return CustomButton(
-        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
-        elevation: 8.0,
+        padding: EdgeInsets.symmetric(vertical: 12.0),
+        elevation: 6.0,
         borderRadius: 8.0,
         color: Palette.background,
         textColor: Palette.primary,
-        content: Column(
-          children: [
-            Text("Disliked",style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
-            SizedBox(height: 4.0),
-            Text("👎", style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
-          ],
-        )
+        minWidth: App.REF_DEVICE_WIDTH,
+        content: Text(App.translate("archive_munch_dialog.disliked_button.text"),style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
     );
   }
 
   Widget _neutralButton(){
     return CustomButton(
-        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
-        elevation: 8.0,
+        padding: EdgeInsets.symmetric(vertical: 12.0),
+        elevation: 6.0,
         borderRadius: 8.0,
         color: Palette.background,
         textColor: Palette.primary,
-        content: Column(
-          children: [
-            Text("Neutral", style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
-            SizedBox(height: 4.0),
-            Text("🤷", style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
-          ],
-        )
+        minWidth: App.REF_DEVICE_WIDTH,
+        content: Text(App.translate("archive_munch_dialog.neutral_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500))
     );
   }
 
   Widget _likeButton(){
     return CustomButton(
-        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
-        elevation: 8.0,
+        padding: EdgeInsets.symmetric(vertical: 12.0),
+        elevation: 6.0,
         borderRadius: 8.0,
         color: Palette.background,
         textColor: Palette.primary,
-        content: Column(
-          children: [
-            Text("Liked", style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
-            SizedBox(height: 4.0),
-            Text("👍", style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
-          ],
-        )
+        minWidth: App.REF_DEVICE_WIDTH,
+        content: Text(App.translate("archive_munch_dialog.liked_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500))
     );
   }
 
@@ -111,7 +89,7 @@ class ArchiveMunchDialog extends StatelessWidget{
       color: Colors.transparent,
       textColor: Palette.secondaryDark,
       flat: true,
-      content: Text("Did not go", style: AppTextStyle.style(AppTextStylePattern.heading5SecondaryDark, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+      content: Text(App.translate("archive_munch_dialog.did_not_go_label.text"), style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark, fontSizeOffset: 2.0), textAlign: TextAlign.center),
     );
   }
 }

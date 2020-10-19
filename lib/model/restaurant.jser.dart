@@ -73,7 +73,7 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     obj.phoneNumber = passProcessor.deserialize(map['phoneNumber']);
     obj.priceSymbol = passProcessor.deserialize(map['price']);
     obj.rating = map['rating'] as double;
-    obj.photoUrls = codeIterable<dynamic>(
+    obj.photoUrls = codeIterable<String>(
         map['photos'] as Iterable, (val) => passProcessor.deserialize(val));
     obj.reviewsNumber = map['reviewCount'] as int;
     obj.timezone = passProcessor.deserialize(map['timezone']);

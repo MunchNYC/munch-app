@@ -4,5 +4,6 @@
   "googleMapsApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE",
   "feedbackEmail": "feedback@munchapp.io",
   "privacyPolicyUrl": "https://sites.google.com/view/munchapp-privacy/home",
-  "termsOfServiceUrl": "https://sites.google.com/view/munchapp-tc/home"
+  "termsOfServiceUrl": "https://sites.google.com/view/munchapp-tc/home",
+  "websiteUrl": "https://munchapp.io"
 }

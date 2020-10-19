@@ -12,6 +12,7 @@ class AppConfig {
   String feedbackEmail;
   String privacyPolicyUrl;
   String termsOfServiceUrl;
+  String websiteUrl;
 
   @Field.ignore()
   PackageInfo packageInfo;

@@ -135,15 +135,23 @@ class _DecisionScreenState extends State<DecisionScreen>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _coverImageArea(),
-              SizedBox(height: 24.0),
+              SizedBox(height: 12.0),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    if(!widget.munch.isModifiable)
+                    _archivedInfoRow(),
+                    if(!widget.munch.isModifiable)
+                    Divider(thickness: 2.0, height: 32.0, color: Palette.secondaryLight.withOpacity(0.2)),
+
                     _restaurantDetails(),
+
+                    if(widget.munch.isModifiable)
                     SizedBox(height: 16.0),
+                    if(widget.munch.isModifiable)
                     _buttonControls()
                   ],
                 )
@@ -261,12 +269,51 @@ class _DecisionScreenState extends State<DecisionScreen>{
     );
   }
 
+  Widget _archivedInfoRow(){
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          ImageIcon(
+            AssetImage("assets/icons/warning.png"),
+            color: Palette.secondaryDark,
+            size: 28.0,
+          ),
+          SizedBox(width: 8.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(widget.munch.getMunchMember(widget.munch.archivedByUserId) != null
+                    ? App.translate("decision_screen.munch_archived.full_description") + " " + widget.munch.getMunchMember(widget.munch.archivedByUserId).displayName + "."
+                    : App.translate("decision_screen.munch_archived.partial_description"),
+                  style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark, fontSizeOffset: 1.0)),
+                SizedBox(height: 8.0),
+                CustomButton(
+                  padding: EdgeInsets.all(4.0),
+                  elevation: 4.0,
+                  borderRadius: 4.0,
+                  color: Palette.secondaryDark,
+                  textColor: Palette.background,
+                  content: Text(App.translate("decision_screen.new_munch_button.description"),
+                      style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
+                  onPressedCallback: (){
+
+                  },
+                )
+              ],
+            ),
+          )
+        ],
+    );
+  }
+
   Widget _restaurantDetails(){
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(widget.restaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
+          Text(widget.restaurant.name, style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500), maxLines: 2, overflow: TextOverflow.ellipsis),
           SizedBox(height: 8.0),
           _yelpStatsRow(),
           SizedBox(height: 8.0),

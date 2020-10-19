@@ -18,10 +18,10 @@ class ErrorPageWidget extends StatelessWidget{
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 40.0),
-            Icon(
-              Icons.error_outline,
-              color: Palette.secondaryDark,
-              size: 40.0,
+            ImageIcon(
+                AssetImage("assets/icons/warning.png"),
+                color: Palette.secondaryDark,
+                size: 40.0,
             ),
             SizedBox(height: 8.0),
             Text(

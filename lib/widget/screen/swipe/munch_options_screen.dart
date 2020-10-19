@@ -95,6 +95,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       leading: AppBarBackButton(),
       backgroundColor: Palette.background,
       actions: <Widget>[
+        if(widget.munch.isModifiable)
         Padding(padding:
           EdgeInsets.only(right: 24.0),
             child:  CustomButton<MunchState, MunchPreferencesSavingState>.bloc(
@@ -232,15 +233,18 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             _munchNameRow(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 16.0),
-            _inviteFriendRow(),
+            _inviteFriendsRow(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 16.0),
             _pushNotificationsRow(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 4.0),
             _membersList(),
+            if(widget.munch.isModifiable)
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
+            if(widget.munch.isModifiable)
             SizedBox(height: 4.0),
+            if(widget.munch.isModifiable)
             _leaveMunchRow(),
           ]
         )
@@ -273,7 +277,9 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
               errorHasBorders: false
             )
         ),
+        if(widget.munch.isModifiable)
         SizedBox(width: 12.0),
+        if(widget.munch.isModifiable)
         CustomButton(
           flat: true,
           // very important to set, otherwise title won't be aligned good
@@ -291,13 +297,13 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             } else{
               _munchNameTextController.clear();
             }
-          },
+          }
         )
       ],
     );
   }
 
-  Widget _inviteFriendRow(){
+  Widget _inviteFriendsRow(){
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -315,17 +321,25 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
               onTap: _onMunchLinkClicked,
             )
         ),
+        if(widget.munch.isModifiable)
         SizedBox(width: 12.0),
+        if(widget.munch.isModifiable)
         CustomButton(
           flat: true,
           // very important to set, otherwise title won't be aligned good
           padding: EdgeInsets.zero,
           color: Colors.transparent,
-          content: Text("Share", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
+          content: Text(App.translate("options_screen.invite_friends.share_action.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
           onPressedCallback: _onShareButtonClicked,
         )
       ],
     );
+  }
+
+  void _onPushNotificationsSwitchChanged(bool value){
+    setState(() {
+      _pushNotificationsEnabled = value;
+    });
   }
 
   Widget _pushNotificationsRow(){
@@ -349,12 +363,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
         SizedBox(width: 12.0),
         CupertinoSwitch(
           value: _pushNotificationsEnabled,
-          onChanged: (bool value) {
-            setState(()
-            {
-              _pushNotificationsEnabled = value;
-            });
-          },
+          onChanged: widget.munch.isModifiable ? _onPushNotificationsSwitchChanged : null
         ),
       ],
     );
@@ -363,7 +372,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   Widget _membersListTrailing(User user){
     if(user.uid == widget.munch.hostUserId){
       return Text(App.translate("options_screen.member_list.host.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary));
-    } else if(widget.munch.munchStatus != MunchStatus.ARCHIVED && widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid){
+    } else if(widget.munch.isModifiable && widget.munch.hostUserId == UserRepo.getInstance().currentUser.uid){
       return CustomButton<MunchState, KickingMemberState>.bloc(
           cubit: _munchBloc,
           flat: true,

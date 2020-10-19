@@ -42,7 +42,7 @@ class MunchListWidget extends StatelessWidget {
           _secondRow(),
          if(munch.munchStatus == MunchStatus.UNDECIDED) _undecidedThirdRow(),
          if(munch.munchStatus == MunchStatus.DECIDED) _decidedThirdRow(),
-         if(munch.munchStatus == MunchStatus.ARCHIVED) _archivedThirdRow(),
+         if(!munch.isModifiable) _unmodifiableThirdRow(),
       ]
     );
   }
@@ -120,8 +120,8 @@ class MunchListWidget extends StatelessWidget {
     );
   }
 
-  Widget _archivedThirdRow(){
-    return  Text(munch.matchedRestaurantName,
+  Widget _unmodifiableThirdRow(){
+    return Text(munch.matchedRestaurantName,
         style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
         maxLines: 1,
         overflow: TextOverflow.ellipsis
