@@ -85,42 +85,59 @@ class NotificationsHandler{
     _fcmTokenListener?.cancel();
   }
 
-  Future _onNotificationTapped(String payload) async {
+  Future _onNotificationTapped(var payload) async {
     DeepLinkHandler.getInstance().onDeepLinkReceived(payload);
-
   }
 
   void _configureNotificationsReceiveCallbacks(){
-    _firebaseMessaging.configure(
-        // App in Foreground
-        onMessage: (Map<String, dynamic> message) {
-          print('onMessage: $message');
+    try {
+      try {
+        _firebaseMessaging.configure(
+            // App in Foreground
+            onMessage: (Map<String, dynamic> message) {
+              print('onMessage: $message');
 
-          Platform.isAndroid 
-              ? _showNotification(message['notification']) // message structure is different for Android and iOS
-              : _showNotification(message['aps']['alert']);
+              Platform.isAndroid
+                  ? _showNotification(message['notification'], message['data']) // message structure is different for Android and iOS
+                  : _showNotification(message['aps']['alert'], message['data']);
 
-          return;
-        },
-        onBackgroundMessage: null,
-        // App in Background
-        onResume: (Map<String, dynamic> message) {
-          print('onResume: $message');
+              return;
+            },
+            onBackgroundMessage: null,
+            /*
+              App in Background, Notification will be shown without manual call of the method showNotifications
+              Kernel's function handles display of notification title and body.
+              Method is called when notification is tapped
+            */
+            onResume: (Map<String, dynamic> message) {
+              print('onResume: $message');
 
-          // TODO HANDLE NOTIFICATIONS
-          return;
-        },
-        // App Terminated
-        onLaunch: (Map<String, dynamic> message) {
-          print('onLaunch: $message');
+              _onNotificationTapped(message['data']['deeplink']);
 
-          // TODO HANDLE NOTIFICATIONS
-          return;
-        }
-    );
+              return;
+            },
+            /*
+              App Terminated, Notification will be shown without manual call of the method showNotifications
+              Kernel's function handles display of notification title and body.
+              Method is called when notification is tapped
+            */
+            onLaunch: (Map<String, dynamic> message) {
+              print('onLaunch: $message');
+
+              _onNotificationTapped(message['data']['deeplink']);
+
+              return;
+            }
+        );
+      } on Exception catch (e, s) {
+        print(s);
+      }
+    } on Exception catch (e, s) {
+      print(s);
+    }
   }
 
-  void _showNotification(Map message) async {
+  void _showNotification(Map notification, Map data) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
       ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME,
       ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME,
@@ -141,10 +158,10 @@ class NotificationsHandler{
     var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
 
     await _flutterLocalNotificationsPlugin.show(0,
-        message['title'],
-        message['body'],
+        notification['title'],
+        notification['body'],
         platformChannelSpecifics,
-        payload: message['deeplink'],
+        payload: data['deeplink'],
     );
   }
 }

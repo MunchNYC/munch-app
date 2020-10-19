@@ -61,11 +61,20 @@ class _DecisionScreenState extends State<DecisionScreen>{
     super.dispose();
   }
 
+  Future<bool> _onWillPopScope() async {
+    NavigationHelper.popRoute(context, checkLastRoute: true);
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: _onWillPopScope,
+      child: Scaffold(
         backgroundColor: Palette.background,
         body: _buildMunchBloc()
+      )
     );
   }
 
@@ -181,9 +190,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
         content: Icon(Icons.clear, size: 20.0),
         color: Palette.background,
         textColor: Palette.primary,
-        onPressedCallback: (){
-          NavigationHelper.popRoute(context);
-        },
+        onPressedCallback: _onWillPopScope
       ),
     );
   }

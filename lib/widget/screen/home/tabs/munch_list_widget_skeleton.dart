@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
+import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
@@ -27,7 +28,7 @@ class MunchListWidgetSkeleton extends StatelessWidget {
       baseColor: Palette.secondaryLight.withOpacity(0.7),
       highlightColor: Palette.secondaryLight.withOpacity(0.45),
       child: Container(
-          height: 72.0,
+          height: AppDimensions.scaleSizeToScreen(88.0),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
@@ -56,17 +57,17 @@ class MunchListWidgetSkeleton extends StatelessWidget {
         children: <Widget>[
           Container(
             width: App.screenWidth * _skeletonScreenWidthPercentages[index % 3][0],
-            height: 16.0,
+            height: AppDimensions.scaleSizeToScreen(20.0),
             color: Palette.secondaryLight.withOpacity(0.5),
           ),
           Container(
             width: App.screenWidth * _skeletonScreenWidthPercentages[index % 3][1],
-            height: 16.0,
+            height: AppDimensions.scaleSizeToScreen(16.0),
             color: Palette.secondaryLight.withOpacity(0.5),
           ),
           Container(
             width: App.screenWidth * _skeletonScreenWidthPercentages[index % 3][2],
-            height: 16.0,
+            height: AppDimensions.scaleSizeToScreen(16.0),
             color: Palette.secondaryLight.withOpacity(0.5),
           )
         ]

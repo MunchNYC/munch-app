@@ -60,7 +60,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                   android:scheme="munch"
+                   android:scheme="https"
                    android:host="munchapp.io" />
             </intent-filter>
         </activity>
