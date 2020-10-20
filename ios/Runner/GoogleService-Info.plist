@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>565789517036-obboapmoct76r15t2tqsqqr01s0prpdj.apps.googleusercontent.com</string>
+	<string>565789517036-16ere2i2sf4frueopijqdokfcp5rjha6.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.565789517036-obboapmoct76r15t2tqsqqr01s0prpdj</string>
+	<string>com.googleusercontent.apps.565789517036-16ere2i2sf4frueopijqdokfcp5rjha6</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>565789517036-89oai8uu5pehoh3rvrkhoiec3i9ds9et.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDWNkgJBEY1lE1DIgaVJVBEo9hdzvEUVpo</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.munch</string>
+	<string>org.munch</string>
 	<key>PROJECT_ID</key>
 	<string>munch-76f64</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:565789517036:ios:8b4b8cde3e1ded58bb71c9</string>
+	<string>1:565789517036:ios:e29d5444297939f6bb71c9</string>
 	<key>DATABASE_URL</key>
 	<string>https://munch-76f64.firebaseio.com</string>
 </dict>

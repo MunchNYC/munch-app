@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:565789517036:android:4552fdb4a3c0c43cbb71c9",
+        "mobilesdk_app_id": "1:565789517036:android:229ec5f687c81cfbbb71c9",
         "android_client_info": {
-          "package_name": "com.munch"
+          "package_name": "org.munch"
         }
       },
       "oauth_client": [
@@ -35,7 +35,7 @@
               "client_id": "565789517036-obboapmoct76r15t2tqsqqr01s0prpdj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.munch"
+                "bundle_id": "org.munch"
               }
             }
           ]

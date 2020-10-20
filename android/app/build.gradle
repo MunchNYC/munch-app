@@ -38,7 +38,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.munch"
+        applicationId "org.munch"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
