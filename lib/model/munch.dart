@@ -6,6 +6,7 @@ import 'package:munch/model/processors/timestamp_processor.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
+import 'package:munch/util/deep_link_handler.dart';
 
 part 'munch.jser.dart';
 
@@ -73,7 +74,7 @@ class Munch{
   int get membersNum => numberOfMembers ?? members.length;
 
   @Field.ignore()
-  String get joinLink => AppConfig.getInstance().websiteUrl + "/munches/join/" + code;
+  String get joinLink => DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
 
   @Field.ignore()
   bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;

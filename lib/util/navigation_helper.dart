@@ -22,44 +22,31 @@ class NavigationHelper {
   }
 
   static Future _navigateTo(BuildContext context, {bool addToBackStack: false, Widget screen, bool rootNavigator: false,
-        Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result}) {
+        Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result, NavigatorState navigatorState}) {
+    if(navigatorState == null){
+      navigatorState = Navigator.of(context, rootNavigator: rootNavigator);
+    }
+
     if (addToBackStack) {
-      return Navigator.of(context, rootNavigator: rootNavigator).push(
+      return navigatorState.push(
          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
       );
     } else {
-      return Navigator.of(context, rootNavigator: rootNavigator).pushReplacement(
+      return navigatorState.pushReplacement(
          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
       );
     }
   }
 
-  static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
-      {bool addToBackStack: true, Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result, popAllRoutes: false}) {
-    if(popAllRoutes) {
-      return navigatorState.pushAndRemoveUntil(
-          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation),
-              (Route<dynamic> route) => false
-      );
-    } else if (addToBackStack) {
-        return navigatorState.push(
-            _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-                slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
-        );
-    } else {
-        return navigatorState.pushReplacement(
-            _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-                slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
-        );
-    }
-  }
-
   static Future _popAllRoutesAndNavigateTo(BuildContext context,
-      {Widget screen, bool rootNavigator: false, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder}) {
-      return Navigator.of(context, rootNavigator: rootNavigator).pushAndRemoveUntil(
+      {Widget screen, bool rootNavigator: false, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, NavigatorState navigatorState}) {
+      if(navigatorState == null){
+        navigatorState = Navigator.of(context, rootNavigator: rootNavigator);
+      }
+
+      return navigatorState.pushAndRemoveUntil(
           _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
               slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation),
           (Route<dynamic> route) => false
@@ -67,7 +54,6 @@ class NavigationHelper {
   }
 
   static void popRoute(BuildContext context, {bool rootNavigator: true, var result, bool checkLastRoute: false}) {
-    print(checkLastRoute);
     if(!checkLastRoute) {
       Navigator.of(context, rootNavigator: rootNavigator).pop(result);
     } else {
@@ -80,6 +66,10 @@ class NavigationHelper {
         }
       });
     }
+  }
+
+  static void popUntilLastRoute(BuildContext context, {bool rootNavigator: true}) {
+    Navigator.of(context, rootNavigator: rootNavigator).popUntil((route) => route.isFirst);
   }
 
   static Future isLastRouteOnStack(BuildContext context, {bool rootNavigator: true}){
@@ -119,36 +109,54 @@ class NavigationHelper {
   }
 
   static Future navigateToHome(BuildContext context,
-      {bool popAllRoutes: false, bool addToBackStack: false, bool fromSplashScreen: false, Function slideTransitionBuilder}) {
+      {bool popAllRoutes: false, bool addToBackStack: false, bool fromSplashScreen: false, Function slideTransitionBuilder, NavigatorState navigatorState}) {
     if(fromSplashScreen && slideTransitionBuilder == null){
       slideTransitionBuilder = NavigationAnimationHelper.noAnimation;
     }
 
     if(popAllRoutes){
-      return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true, slideTransitionBuilder: slideTransitionBuilder);
+      return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true, slideTransitionBuilder: slideTransitionBuilder, navigatorState: navigatorState);
     } else{
       // addToBackStack is considered if popAllRoutes = false
       return _navigateTo(context, addToBackStack: addToBackStack, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true,
-          slideTransitionBuilder: slideTransitionBuilder);
+          slideTransitionBuilder: slideTransitionBuilder, navigatorState: navigatorState);
     }
   }
 
+  // When navigatorState is not null - context will be null
   static Future navigateToMapScreen(BuildContext context,
-      {String munchName, bool addToBackStack: true}) {
+      {String munchName, bool addToBackStack: true, NavigatorState navigatorState}) {
     return _navigateTo(context, addToBackStack: addToBackStack,
-        screen: MapScreen(munchName: munchName));
+        screen: MapScreen(munchName: munchName), navigatorState: navigatorState);
   }
 
+  // When navigatorState is not null - context will be null
   static Future navigateToRestaurantSwipeScreen(BuildContext context,
-      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true}) {
-    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
-        screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
+      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true, NavigatorState navigatorState, bool popAllRoutes = false, Function slideTransitionBuilder}) {
+    if(popAllRoutes){
+      return _popAllRoutesAndNavigateTo(context, rootNavigator: true,
+          screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch),
+          navigatorState: navigatorState, slideTransitionBuilder: slideTransitionBuilder);
+    } else {
+      return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+          screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch),
+          navigatorState: navigatorState, slideTransitionBuilder: slideTransitionBuilder
+      );
+    }
   }
 
+  // When navigatorState is not null - context will be null
   static Future navigateToDecisionScreen(BuildContext context,
-      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false}) {
-    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
-        screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
+      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false, NavigatorState navigatorState, bool popAllRoutes = false, Function slideTransitionBuilder}) {
+    if(popAllRoutes){
+      return _popAllRoutesAndNavigateTo(context, rootNavigator: true,
+          screen:  DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch),
+          navigatorState: navigatorState, slideTransitionBuilder: slideTransitionBuilder);
+    } else {
+      return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+          screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch),
+          slideTransitionBuilder: slideTransitionBuilder, navigatorState: navigatorState);
+    }
   }
 
   static Future navigateToMunchOptionsScreen(BuildContext context,

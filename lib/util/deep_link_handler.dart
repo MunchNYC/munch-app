@@ -49,28 +49,38 @@ class DeepLinkHandler{
 
     switch(_deepLinkRouter.getRoute(path)){
       case DeepLinkRoute.MUNCH_ROUTE:
-        _deepLinkRouter.executeMunchRoute(pathSegments[1]);
-        break;
+          _deepLinkRouter.executeMunchRoute(pathSegments[1]);
+          break;
+      case DeepLinkRoute.JOIN_ROUTE:
+          _deepLinkRouter.executeMunchRoute(pathSegments[2]);
+          break;
       default:
-        print("No route");
-        break;
+          print("No route");
+          break;
     }
   }
 }
 
 enum DeepLinkRoute{
-  MUNCH_ROUTE
+  MUNCH_ROUTE,
+  JOIN_ROUTE
 }
 
 class DeepLinkRouter{
-  static final RegExp munchRoute = RegExp(r'^/munches/[(^/)a-zA-Z0-9]+$');
+  static const String MUNCH_ROUTE_PATH = "/munches";
+  static const String JOIN_ROUTE_PATH = "/munches/join";
+
+  static final RegExp munchRouteRegex = RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[(^/)a-zA-Z0-9]+$');
+  static final RegExp joinRouteRegex = RegExp(r'^' + JOIN_ROUTE_PATH + r'/[(^/)a-zA-Z0-9]{6}$');
 
   final List<RegExp> _routeRegex = [
-    munchRoute
+    munchRouteRegex,
+    joinRouteRegex
   ];
 
   final Map<RegExp, DeepLinkRoute> _routeMap = Map.of({
-    munchRoute: DeepLinkRoute.MUNCH_ROUTE
+    munchRouteRegex: DeepLinkRoute.MUNCH_ROUTE,
+    joinRouteRegex: DeepLinkRoute.JOIN_ROUTE
   });
 
   DeepLinkRoute getRoute(String path){
@@ -83,23 +93,53 @@ class DeepLinkRouter{
     return null;
   }
 
+  void _navigateOnError(){
+    NavigationHelper.navigateToHome(
+      null,
+      fromSplashScreen: false,
+      popAllRoutes: true,
+      navigatorState: App.rootNavigatorKey.currentState,
+    );
+  }
+
   void executeMunchRoute(String munchId){
     MunchRepo.getInstance().getDetailedMunch(munchId).then((munch){
-      Widget screen;
-
       if(munch.munchStatus == MunchStatus.UNDECIDED) {
-        screen = RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: false);
-      } else{
-        screen = DecisionScreen(munch: munch, shouldFetchDetailedMunch: false);
-      }
-
-      NavigationHelper.navigateToWithSpecificNavigator(App.rootNavigatorKey.currentState,
-          screen: screen,
+        NavigationHelper.navigateToRestaurantSwipeScreen(
+          null,
+          munch: munch,
+          shouldFetchDetailedMunch: false,
           popAllRoutes: true,
           slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation,
+          navigatorState: App.rootNavigatorKey.currentState
+        );
+      } else{
+        NavigationHelper.navigateToDecisionScreen(
+            null,
+            munch: munch,
+            shouldFetchDetailedMunch: false,
+            popAllRoutes: true,
+            slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation,
+            navigatorState: App.rootNavigatorKey.currentState
+        );
+      }
+    }).catchError((error){
+      _navigateOnError();
+    });
+  }
+
+  void executeJoinRoute(String munchCode){
+    MunchRepo.getInstance().joinMunch(munchCode).then((munch){
+      NavigationHelper.navigateToRestaurantSwipeScreen(
+          null,
+          munch: munch,
+          shouldFetchDetailedMunch: false,
+          popAllRoutes: true,
+          slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation,
+          navigatorState: App.rootNavigatorKey.currentState
       );
     }).catchError((error){
-      print(error);
+      _navigateOnError();
     });
   }
 }

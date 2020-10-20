@@ -8,6 +8,8 @@ import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/widget/screen/home/home_screen.dart';
+import 'package:munch/widget/screen/map/map_screen.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 
@@ -196,15 +198,25 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
 
   void _onCreateButtonClicked(BuildContext context){
     if (_createFormKey.currentState.validate()) {
+
       // pop create join dialog
+      // If there is no nested navigator, because we are outside its context, it will pop dialog from root navigator automatically
       NavigationHelper.popRoute(context, rootNavigator: false);
 
-      _createFormKey.currentState.save();
-      
-      // close keyboard by giving focus to unnamed node
-      FocusScope.of(context).unfocus();
+        _createFormKey.currentState.save();
 
-      NavigationHelper.navigateToMapScreen(context, munchName: _munchName);
+        // close keyboard by giving focus to unnamed node
+        FocusScope.of(context).unfocus();
+
+        // in the case we're not on Home screen
+        NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
+
+        NavigationHelper.navigateToMapScreen(
+            null,
+            munchName: _munchName,
+            addToBackStack: true,
+            navigatorState: HomeScreen.munchesTabNavigator.currentState,
+        );
     } else {
       _createFormAutoValidate = true;
     }

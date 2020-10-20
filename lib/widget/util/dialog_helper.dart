@@ -9,13 +9,14 @@ import 'package:munch/util/navigation_helper.dart';
 class DialogHelper{
   Widget dialogContent;
   bool isModal;
+  bool rootNavigator;
 
-  DialogHelper({this.dialogContent, this.isModal = false});
+  DialogHelper({this.dialogContent, this.isModal = false, this.rootNavigator = false});
 
   void show(BuildContext context){
     showDialog(
         context: context,
-        useRootNavigator: false,
+        useRootNavigator: rootNavigator,
         barrierDismissible: !isModal,
         builder: (BuildContext ctx) {
           return WillPopScope(

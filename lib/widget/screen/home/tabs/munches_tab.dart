@@ -237,7 +237,7 @@ class MunchesTabState extends State<MunchesTab> {
                 shrinkWrap: true,
                 itemCount: loading ? SKELETON_ITEMS_NUMBER : _stillDecidingMunches.length,
                 itemBuilder: (BuildContext context, int index){
-                  if(loading) return MunchListWidgetSkeleton(index: index);
+                  if(loading) return _renderSkeletonWidget(index);
 
                   return InkWell(
                       onTap: (){

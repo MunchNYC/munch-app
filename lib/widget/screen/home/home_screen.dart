@@ -11,14 +11,14 @@ import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
 import 'package:munch/widget/screen/splash/include/splash_logo.dart';
 
 class HomeScreen extends StatefulWidget {
-  static GlobalKey<NavigatorState> munchesTab;
-  static GlobalKey<NavigatorState> accountTab;
+  static GlobalKey<NavigatorState> munchesTabNavigator;
+  static GlobalKey<NavigatorState> accountTabNavigator;
 
   bool fromSplashScreen;
 
   HomeScreen({this.fromSplashScreen = false}) {
-    munchesTab = GlobalKey<NavigatorState>();
-    accountTab = GlobalKey<NavigatorState>();
+    munchesTabNavigator = GlobalKey<NavigatorState>();
+    accountTabNavigator = GlobalKey<NavigatorState>();
   }
 
   @override
@@ -33,8 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<GlobalKey<NavigatorState>> _tabs = [
-    HomeScreen.munchesTab,
-    HomeScreen.accountTab
+    HomeScreen.munchesTabNavigator,
+    HomeScreen.accountTabNavigator
   ];
 
   List<Navigator> _navigators;
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _HomeScreenState() {
     _navigators = [
       Navigator(
-        key: HomeScreen.munchesTab,
+        key: HomeScreen.munchesTabNavigator,
         onGenerateRoute: (route) => MaterialPageRoute(
             settings: route,
             builder: (context) =>
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       Navigator(
-          key: HomeScreen.accountTab,
+          key: HomeScreen.accountTabNavigator,
           onGenerateRoute: (route) => MaterialPageRoute(
               settings: route, builder: (context) => ProfileTab()
           )

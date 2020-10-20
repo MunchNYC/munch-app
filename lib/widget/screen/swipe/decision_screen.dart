@@ -103,8 +103,17 @@ class _DecisionScreenState extends State<DecisionScreen>{
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
       _checkNavigationToSwipeScreen();
-    } if(state is CancellingMunchDecisionState){
+    } else if(state is CancellingMunchDecisionState){
       _checkNavigationToSwipeScreen();
+    } else if(state is MunchJoiningState){
+      Munch joinedMunch = state.data;
+
+      // pop create join dialog
+      NavigationHelper.popRoute(context, rootNavigator: false);
+
+      NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
+
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
     }
   }
 
@@ -300,7 +309,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
                   content: Text(App.translate("decision_screen.new_munch_button.description"),
                       style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
                   onPressedCallback: (){
-
+                    // We'll not have here nested navigators, because we are outside its context, so specifying root navigator to true/false will be same
+                   DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), rootNavigator: true).show(context);
                   },
                 )
               ],
