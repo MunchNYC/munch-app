@@ -17,6 +17,7 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     setMapValue(ret, 'feedbackEmail', model.feedbackEmail);
     setMapValue(ret, 'privacyPolicyUrl', model.privacyPolicyUrl);
     setMapValue(ret, 'termsOfServiceUrl', model.termsOfServiceUrl);
+    setMapValue(ret, 'websiteUrl', model.websiteUrl);
     return ret;
   }
 
@@ -30,6 +31,7 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     obj.feedbackEmail = map['feedbackEmail'] as String;
     obj.privacyPolicyUrl = map['privacyPolicyUrl'] as String;
     obj.termsOfServiceUrl = map['termsOfServiceUrl'] as String;
+    obj.websiteUrl = map['websiteUrl'] as String;
     return obj;
   }
 }

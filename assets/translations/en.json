@@ -77,6 +77,7 @@
 
     "munch_list_widget.members.text": "Members",
     "munch_list_widget.munch_status.undecided.text": "Undecided",
+    "munch_list_widget.swipe_to_archive.text": "Swipe to Archive",
 
     "map_screen.app_bar.leading.text": "Cancel",
     "map_screen.app_bar.title": "Choose a location",
@@ -187,7 +188,7 @@
     "decision_screen.share_button.label.text": "Share",
     "decision_screen.restaurant_card.yelp.reviews.text": "Reviews",
     "decision_screen.share_button.popup.title": "Share decided restaurant",
-    "decision_screen.share_action.text": "Munch decided to go to this restaurant",
+    "decision_screen.share_action.text": "Munch decided to go to this restaurant:",
     "decision_screen.continue_exploring_button.text": "Continue Exploring",
     "decision_screen.new_restaurant_button.text": "New Restaurant",
     "decision_screen.yelp.reviews.text": "Reviews",

@@ -12,8 +12,10 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
+import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
@@ -462,7 +464,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
               onPressedCallback: () async{
                 await WcFlutterShare.share(
                     sharePopupTitle: App.translate("decision_screen.share_button.popup.title"),
-                    text: App.translate("decision_screen.share_action.text") + ":\n" + widget.restaurant.url,
+                    text: App.translate("decision_screen.share_action.text") + "\n" + widget.restaurant.url,
                     mimeType: "text/plain"
                 );
               },

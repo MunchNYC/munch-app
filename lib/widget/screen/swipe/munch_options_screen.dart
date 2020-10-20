@@ -316,7 +316,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
               contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
               borderRadius: 0.0,
               borderColor: Palette.background,
-              initialValue: widget.munch.link,
+              initialValue: widget.munch.code,
               readOnly: true,
               onTap: _onMunchLinkClicked,
             )
@@ -466,7 +466,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onMunchLinkClicked(){
-    Clipboard.setData(ClipboardData(text: widget.munch.link));
+    Clipboard.setData(ClipboardData(text: widget.munch.joinLink));
 
     Utility.showFlushbar(App.translate("options_screen.copy_action.successful"), context, duration: Duration(seconds: 1));
   }
@@ -474,7 +474,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   void _onShareButtonClicked() async{
     await WcFlutterShare.share(
         sharePopupTitle: App.translate("options_screen.share_button.popup.title"),
-        text: App.translate("options_screen.share_action.text") + ":\n" + widget.munch.link,
+        text: App.translate("options_screen.share_action.text") + "\n" + widget.munch.joinLink,
         mimeType: "text/plain"
     );
   }

@@ -33,6 +33,7 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
         _coordinatesJsonSerializer.toMap(model.coordinates));
     setMapValue(ret, 'radius', model.radius);
     setMapValueIfNotNull(ret, 'archiveFlag', model.archiveFlag);
+    setMapValueIfNotNull(ret, 'archivedBy', model.archivedByUserId);
     return ret;
   }
 
@@ -80,6 +81,9 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     obj.archiveFlag = map['archiveFlag'] as bool ??
         getJserDefault('archiveFlag') ??
         obj.archiveFlag;
+    obj.archivedByUserId = map['archivedBy'] as String ??
+        getJserDefault('archivedByUserId') ??
+        obj.archivedByUserId;
     return obj;
   }
 }

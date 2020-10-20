@@ -73,7 +73,7 @@ class Munch{
   int get membersNum => numberOfMembers ?? members.length;
 
   @Field.ignore()
-  String get link => "Munch.app/" + code;
+  String get joinLink => AppConfig.getInstance().websiteUrl + "/munches/join/" + code;
 
   @Field.ignore()
   bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;

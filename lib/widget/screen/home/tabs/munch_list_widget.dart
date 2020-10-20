@@ -106,7 +106,7 @@ class MunchListWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.navigate_before, color: Palette.secondaryLight.withOpacity(0.6), size: 16.0),
-                Text("Swipe to Archive",
+                Text("munch_list_widget.swipe_to_archive.text",
                     style: AppTextStyle.style(AppTextStylePattern.body, color: Palette.secondaryLight),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis
@@ -127,5 +127,4 @@ class MunchListWidget extends StatelessWidget {
         overflow: TextOverflow.ellipsis
     );
   }
-
 }

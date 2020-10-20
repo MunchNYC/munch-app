@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:munch/config/app_config.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
@@ -17,7 +18,7 @@ class MunchCodeDialog extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 360.0,
+      width: 240.0,
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
           children: <Widget>[
@@ -44,7 +45,7 @@ class MunchCodeDialog extends StatelessWidget{
       flat: true,
       content: Icon(Icons.content_copy, color: Palette.primary, size: 20.0),
       onPressedCallback: (){
-        Clipboard.setData(ClipboardData(text: munch.link));
+        Clipboard.setData(ClipboardData(text: munch.joinLink));
 
         Utility.showFlushbar(App.translate("munch_code_dialog.copy_action.successful"), context, duration: Duration(seconds: 1));
       },
@@ -64,7 +65,7 @@ class MunchCodeDialog extends StatelessWidget{
       onPressedCallback: () async{
         await WcFlutterShare.share(
           sharePopupTitle: App.translate("munch_code_dialog.share_button.popup.title"),
-          text: App.translate("munch_code_dialog.share_action.text") + ":\n" + munch.link,
+          text: App.translate("munch_code_dialog.share_action.text") + "\n" + munch.joinLink,
           mimeType: "text/plain"
         );
       },
@@ -88,8 +89,8 @@ class MunchCodeDialog extends StatelessWidget{
         children: <Widget>[
           _copyButton(context),
           SizedBox(width: 8.0),
-          Text(munch.link,
-              style: AppTextStyle.style(AppTextStylePattern.body3),
+          Text(munch.code,
+              style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center),
           SizedBox(width: 8.0),
           _shareButton()
