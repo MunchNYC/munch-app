@@ -9,8 +9,8 @@ import 'app.dart';
 import 'navigation_helper.dart';
 
 class DeepLinkHandler{
-  static const _methodChannel = const MethodChannel('munch.munchapp.io/channel');
-  static const _eventChannel = const EventChannel('munch.munchapp.io/events');
+  static const _methodChannel = const MethodChannel('https.munchapp.io/channel');
+  static const _eventChannel = const EventChannel('https.munchapp.io/events');
 
   DeepLinkRouter _deepLinkRouter = DeepLinkRouter();
 
