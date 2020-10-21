@@ -142,9 +142,9 @@
     "filters_screen.blacklist_container.readonly_state.text": "Edit",
     "filters_screen.blacklist_container.edit_state.text": "Done",
     "filters_screen.filters_control.subtitle": "Cuisines",
-    "filters_screen.filter_controls.filter_status.whitelisted.text": "Only This",
-    "filters_screen.filter_controls.filter_status.neutral.text": "Okay With This",
-    "filters_screen.filter_controls.filter_status.blacklisted.text": "Definitely No",
+    "filters_screen.filter_controls.filter_status.whitelisted.text": "Show",
+    "filters_screen.filter_controls.filter_status.neutral.text": "Neutral",
+    "filters_screen.filter_controls.filter_status.blacklisted.text": "Don't show",
     "filters_screen.filter_controls.top_cuisines_mode.link.text": "show all cuisines",
     "filters_screen.filter_controls.all_cuisines_mode.link.text": "close all cuisines",
 

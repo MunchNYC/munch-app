@@ -142,7 +142,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       }
     }
 
-    NavigationHelper.popRoute(context, rootNavigator: true, result: widget.munch);
+    NavigationHelper.popRoute(context);
 
     return false;
   }
@@ -159,19 +159,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
-  void _updateMunchWithDetailedData(Munch detailedMunch){
-    /*
-      Take old data from munch which can be missing from detailedMunch response
-      (part of data can be from compactMunch and part of data can be missing because of 206 partial content)
-    */
-    detailedMunch.merge(widget.munch);
-
-    widget.munch = detailedMunch;
-  }
-
   void _preferencesListener(MunchPreferencesSavingState state){
-    _updateMunchWithDetailedData(state.data);
-
     if(_popScopeCompleter != null){
       _popScopeCompleter.complete(true);
     } else{
@@ -180,19 +168,6 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _kickMemberListener(KickingMemberState state){
-    Munch detailedMunch = state.data['detailedMunch'];
-
-    // if response munch has empty members array (partial result 206)
-    if(detailedMunch.members.length == 0){
-      String kickedUserId = state.data['kickedUserId'];
-
-      // manually remove user from members list, after that we can merge munches
-      widget.munch.members.removeWhere((User user)=> user.uid == kickedUserId);
-      widget.munch.numberOfMembers--;
-    }
-
-    _updateMunchWithDetailedData(detailedMunch);
-
     Utility.showFlushbar(App.translate("options_screen.kick_member.successful"), context);
   }
 
@@ -505,7 +480,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   void _onSaveChangesDialogButtonClicked(){
     // close dialog
-    NavigationHelper.popRoute(context, rootNavigator: true);
+    NavigationHelper.popRoute(context);
 
     bool validationSuccess = _onSaveButtonClicked();
 
@@ -516,7 +491,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   void _onDiscardChangesDialogButtonClicked(){
     // close dialog
-    NavigationHelper.popRoute(context, rootNavigator: true);
+    NavigationHelper.popRoute(context);
 
     _popScopeCompleter.complete(true);
   }

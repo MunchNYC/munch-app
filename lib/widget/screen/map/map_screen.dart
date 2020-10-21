@@ -91,7 +91,7 @@ class MapScreenState extends State<MapScreen> {
               color: Colors.transparent,
               content: Text(App.translate("map_screen.app_bar.leading.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, fontSizeOffset: 1.0, color: Palette.hyperlink)),
               onPressedCallback: (){
-                NavigationHelper.popRoute(context);
+                NavigationHelper.popRoute(context, rootNavigator: false);
               },
             ),
             Center(child: Text(App.translate("map_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))),

@@ -46,7 +46,7 @@ class MunchListWidget extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis
             ),
-            Text(munch.numberOfMembers.toString() + " " + App.translate("munch_list_widget.members.text"), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
+            Text(munch.membersNum.toString() + " " + App.translate("munch_list_widget.members.text"), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)),
             Text(munch.munchStatus == MunchStatus.UNDECIDED ? App.translate("munch_list_widget.munch_status.undecided.text") : munch.matchedRestaurantName, style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis

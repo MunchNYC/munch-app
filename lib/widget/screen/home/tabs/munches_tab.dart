@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:focus_detector/focus_detector.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
@@ -40,6 +42,10 @@ class MunchesTabState extends State<MunchesTab> {
   List<Munch> _decidedMunches;
   List<Munch> _archivedMunches;
 
+  MunchRepo _munchRepo = MunchRepo.getInstance();
+
+  UniqueKey _focusDetectorKey = UniqueKey();
+
   void _throwGetMunchesEvent(){
     munchBloc.add(GetMunchesEvent());
   }
@@ -53,16 +59,22 @@ class MunchesTabState extends State<MunchesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return FocusDetector(
+      key: _focusDetectorKey,
+      onFocusGained: (){
+        setState(() {}); // refresh data on the screen if screen comes up from background or from Navigator.pop
+      },
+      child: Padding(
       // top and bottom already set in home screen
-      padding: AppDimensions.padding(AppPaddingType.screenOnly),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-           _headerBar(),
-           _tabHeaders(),
-           Expanded(child: _tabsContent())
-        ]
+        padding: AppDimensions.padding(AppPaddingType.screenOnly),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+             _headerBar(),
+             _tabHeaders(),
+             Expanded(child: _tabsContent())
+          ]
+        )
       )
     );
   }
@@ -109,24 +121,16 @@ class MunchesTabState extends State<MunchesTab> {
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchesFetchingState){
-      Map<MunchStatus, List<Munch>> munchesStatusMap = state.data;
-
-      _stillDecidingMunches = munchesStatusMap[MunchStatus.UNDECIDED];
-      _decidedMunches = munchesStatusMap[MunchStatus.DECIDED];
-      _archivedMunches = munchesStatusMap[MunchStatus.ARCHIVED];
-
+      _stillDecidingMunches = _munchRepo.munchStatusLists[MunchStatus.UNDECIDED];
+      _decidedMunches =  _munchRepo.munchStatusLists[MunchStatus.DECIDED];
+      _archivedMunches =  _munchRepo.munchStatusLists[MunchStatus.ARCHIVED];
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
 
       // pop create join dialog
-      NavigationHelper.popRoute(context);
+      NavigationHelper.popRoute(context, rootNavigator: false);
 
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch).then((value){
-        if(value != null) {
-          // refresh list when user comes back to this screen
-          _throwGetMunchesEvent();
-        }
-      });
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
     }
   }
 
@@ -186,9 +190,7 @@ class MunchesTabState extends State<MunchesTab> {
 
                   return InkWell(
                       onTap: (){
-                        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true).then((value){
-                          _throwGetMunchesEvent();
-                        });
+                        NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true);
                       },
                       child: MunchListWidget(munch: _stillDecidingMunches[index])
                   );
@@ -224,9 +226,7 @@ class MunchesTabState extends State<MunchesTab> {
                 // InkWell is making empty space clickable also
                 return InkWell(
                     onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true).then((value){
-                        _throwGetMunchesEvent();
-                      });
+                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index], shouldFetchDetailedMunch: true);
                     },
                     child: MunchListWidget(munch: index < _decidedMunches.length ? _decidedMunches[index] : _archivedMunches[index])
                 );

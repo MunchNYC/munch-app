@@ -47,9 +47,9 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield MunchesFetchingState.loading();
 
     try {
-      Map<MunchStatus, List<Munch>> munches = await _munchRepo.getMunches();
+      await _munchRepo.getMunches();
 
-      yield MunchesFetchingState.ready(data: munches);
+      yield MunchesFetchingState.ready();
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
       yield MunchesFetchingState.failed(message: error.toString());
@@ -147,16 +147,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
           userId: kickMemberEvent.userId,
       );
 
-      /*
-         We're returning kickedUserId in case of partial response (without members) is retrieved from server
-         to be able to remove that user from previous munch data stored in view
-      */
-      Map<String, dynamic> data = {
-        'detailedMunch': munch,
-        'kickedUserId': kickMemberEvent.userId
-      };
-
-      yield KickingMemberState.ready(data: data);
+      yield KickingMemberState.ready(data: munch);
     } catch (error) {
       print("Member kicking failed: " + error.toString());
       yield KickingMemberState.failed(message: error.toString());
