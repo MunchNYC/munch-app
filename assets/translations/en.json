@@ -75,6 +75,9 @@
     "account_tab.invite_friends.item.share_popup.title": "Invite Friends",
     "account_tab.invite_friends.item.share_popup.text": "Munch helps users explore restaurants and make decisions! Tap the link to join me and start Munch'n!",
 
+    "munch_list_widget.creation_timestamp.today.text": "Today",
+    "munch_list_widget.creation_timestamp.yesterday.text": "Yesterday",
+    "munch_list_widget.creation_timestamp.tomorrow.text": "Tomorrow",
     "munch_list_widget.members.text": "Members",
     "munch_list_widget.munch_status.undecided.text": "Undecided",
     "munch_list_widget.swipe_to_archive.text": "Swipe to Archive",

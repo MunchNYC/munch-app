@@ -1,5 +1,6 @@
 import 'package:munch/api/munch_api.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 
@@ -14,9 +15,10 @@ class MunchRepo {
   MunchRepo._internal(){
     munchStatusLists = Map<MunchStatus, List<Munch>>();
 
-    for(int i = 0; i < MunchStatus.values.length; i++){
-      munchStatusLists[MunchStatus.values[i]] = List<Munch>();
-    }
+    munchStatusLists[MunchStatus.UNDECIDED] = List<Munch>();
+    munchStatusLists[MunchStatus.DECIDED] = List<Munch>();
+    munchStatusLists[MunchStatus.UNMODIFIABLE] = List<Munch>();
+    munchStatusLists[MunchStatus.ARCHIVED] = List<Munch>();
 
     munchMap = Map<String, Munch>();
   }
@@ -44,6 +46,24 @@ class MunchRepo {
     munchMap[munch.id] = null;
   }
 
+  /*
+    Insert munch to munchList sorted by creation timestamp
+   */
+  void _insertSortedToMunchList(List<Munch> munchList, Munch munch){
+    int indexToInsert = munchList.length;
+
+    for(int i = 0; i < munchList.length; i++){
+      Munch currentMunch = munchList[i];
+
+      if(currentMunch.creationTimestamp.isBefore(munch.creationTimestamp)){
+        indexToInsert = i;
+        break;
+      }
+    }
+
+    munchList.insert(indexToInsert, munch);
+  }
+
   void updateMunchCache(Munch newMunch){
     Munch currentMunch = munchMap[newMunch.id];
     List<Munch> newMunchList = munchStatusLists[newMunch.munchStatus];
@@ -54,7 +74,7 @@ class MunchRepo {
       if(currentMunchList != newMunchList) {
         _deleteMunchFromCache(currentMunch);
 
-        newMunchList.insert(0, currentMunch);
+        _insertSortedToMunchList(newMunchList, currentMunch);
 
         // _delete is removing it from map
         munchMap[newMunch.id] = currentMunch;
@@ -62,27 +82,36 @@ class MunchRepo {
 
       currentMunch.merge(newMunch);
     } else{
-      newMunchList.insert(0, newMunch);
+      _insertSortedToMunchList(newMunchList, newMunch);
 
       munchMap[newMunch.id] = newMunch;
     }
+  }
 
+  void _addMunchToCache(Munch munch){
+    munchStatusLists[munch.munchStatus].add(munch);
+
+    munchMap[munch.id] = munch;
   }
 
   Future getMunches() async{
-    List<Munch> munches = await _munchApi.getMunches();
+    GetMunchesResponse getMunchesResponse = await _munchApi.getMunches();
 
     _clearMunchCache();
 
-    munchMap.clear();
-
-    for(int i = 0; i < munches.length; i++){
-      Munch munch = munches[i];
-
-      munchStatusLists[munch.munchStatus].add(munch);
-
-      munchMap[munch.id] = munch;
+    for(int i = 0; i < getMunchesResponse.undecidedMunches.length; i++){
+      _addMunchToCache(getMunchesResponse.undecidedMunches[i]);
     }
+
+    for(int i = 0; i < getMunchesResponse.decidedMunches.length; i++){
+      _addMunchToCache(getMunchesResponse.decidedMunches[i]);
+    }
+
+    for(int i = 0; i < getMunchesResponse.archivedMunches.length; i++){
+      _addMunchToCache(getMunchesResponse.archivedMunches[i]);
+    }
+
+    return getMunchesResponse;
   }
 
   Future<Munch> joinMunch(String munchCode) async{

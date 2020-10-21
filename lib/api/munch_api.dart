@@ -1,4 +1,5 @@
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
 
 import 'api.dart';
@@ -9,16 +10,14 @@ class MunchApi extends Api {
 
   MunchApi(): super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
 
-  Future<List<Munch>> getMunches() async {
+  Future<GetMunchesResponse> getMunches() async {
     String getUrl = "/munches";
 
     var data = await get(getUrl);
 
-    List<Munch> munchesList = List<Munch>.from(data['compactMunches'].map((munchData){
-      return MunchJsonSerializer().fromMap(munchData);
-    }));
+    GetMunchesResponse getMunchesResponse = GetMunchesResponseJsonSerializer().fromMap(data);
 
-    return munchesList;
+    return getMunchesResponse;
   }
 
   Future<String> getMunchIdForCode(String munchCode) async {

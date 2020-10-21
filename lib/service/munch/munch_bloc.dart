@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/service/munch/munch_state.dart';
@@ -47,9 +48,9 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield MunchesFetchingState.loading();
 
     try {
-      await _munchRepo.getMunches();
+      GetMunchesResponse getMunchesResponse = await _munchRepo.getMunches();
 
-      yield MunchesFetchingState.ready();
+      yield MunchesFetchingState.ready(data: getMunchesResponse);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
       yield MunchesFetchingState.failed(message: error.toString());

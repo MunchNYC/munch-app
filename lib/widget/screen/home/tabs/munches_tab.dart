@@ -44,6 +44,7 @@ class MunchesTabState extends State<MunchesTab> {
 
   List<Munch> _stillDecidingMunches;
   List<Munch> _decidedMunches;
+  List<Munch> _unmodifiableMunches;
   List<Munch> _archivedMunches;
 
   MunchRepo _munchRepo = MunchRepo.getInstance();
@@ -149,6 +150,7 @@ class MunchesTabState extends State<MunchesTab> {
     } else if(state is MunchesFetchingState){
       _stillDecidingMunches = _munchRepo.munchStatusLists[MunchStatus.UNDECIDED];
       _decidedMunches =  _munchRepo.munchStatusLists[MunchStatus.DECIDED];
+      _unmodifiableMunches = _munchRepo.munchStatusLists[MunchStatus.UNMODIFIABLE];
       _archivedMunches =  _munchRepo.munchStatusLists[MunchStatus.ARCHIVED];
 
       // just first time when user receives munches
@@ -273,6 +275,9 @@ class MunchesTabState extends State<MunchesTab> {
     );
   }
 
+  /*
+    Decided munches are sorted, then unmodifiable munches are rendered sorted
+   */
   Widget _renderDecidedListView({bool errorOccurred = false, bool loading = false}){
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
@@ -284,18 +289,18 @@ class MunchesTabState extends State<MunchesTab> {
             physics: AlwaysScrollableScrollPhysics(),
             child:
             errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
-            loading || _decidedMunches.length > 0 ?
+            loading || _decidedMunches.length + _unmodifiableMunches.length > 0 ?
             ListView.builder(
               primary: false,
               shrinkWrap: true,
-              itemCount: loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length,
+              itemCount: loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length + _unmodifiableMunches.length,
               itemBuilder: (BuildContext context, int index){
                 if(loading) return _renderSkeletonWidget(index);
 
                 // InkWell is making empty space clickable also
                 return InkWell(
                     onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: _decidedMunches[index], shouldFetchDetailedMunch: true);
+                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _unmodifiableMunches[index - _decidedMunches.length], shouldFetchDetailedMunch: true);
                     },
                     child: Slidable(
                       actionPane: SlidableDrawerActionPane(),

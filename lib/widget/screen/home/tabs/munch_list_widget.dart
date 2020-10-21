@@ -1,3 +1,4 @@
+import 'package:calendar_time/calendar_time.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -47,6 +48,24 @@ class MunchListWidget extends StatelessWidget {
     );
   }
 
+  String _formatCreationTimestamp(DateTime creationTimestamp){
+    CalendarTime calendarTime = CalendarTime(creationTimestamp);
+
+    String formattedTimestamp;
+
+    if(calendarTime.isToday){
+      formattedTimestamp = App.translate("munch_list_widget.creation_timestamp.today.text");
+    } else if(calendarTime.isYesterday){
+      formattedTimestamp = App.translate("munch_list_widget.creation_timestamp.yesterday.text");
+    } else if(calendarTime.isTomorrow){
+      formattedTimestamp = App.translate("munch_list_widget.creation_timestamp.tomorrow.text");
+    } else{
+      formattedTimestamp = calendarTime.format('MMM dd');
+    }
+
+    return formattedTimestamp;
+  }
+
   Widget _firstRow(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +83,7 @@ class MunchListWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(DateFormat('MMM dd').format(munch.creationTimestamp), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
+            Text(_formatCreationTimestamp(munch.creationTimestamp), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
             Icon(Icons.navigate_next, color: Palette.secondaryLight.withOpacity(0.6), size: 16.0)
           ],
         ),
