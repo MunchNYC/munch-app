@@ -155,12 +155,10 @@ class MunchesTabState extends State<MunchesTab> {
 
       // just first time when user receives munches
       if(_checkUpcomingNotification) {
-        _checkUpcomingNotification = false;
-        for (int i = 0; i < _decidedMunches.length; i++) {
-          if (_decidedMunches[i].archiveFlag) {
-            _showUpcomingNotification = true;
-            break;
-          }
+        if(_unmodifiableMunches.length > 0){
+          _showUpcomingNotification = true;
+        } else{
+          _checkUpcomingNotification = false;
         }
       }
     } else if(state is MunchJoiningState){

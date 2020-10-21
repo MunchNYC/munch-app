@@ -10,7 +10,6 @@ import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
 abstract class Api{
-
   static String backendBaseUrl = AppConfig.getInstance().apiUrl;
 
   static const String POST = "POST";

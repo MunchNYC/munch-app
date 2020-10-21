@@ -61,9 +61,6 @@ class Munch{
   // special processor, alias specified there
   MunchStatus munchStatus;
 
-  @nonNullable
-  bool archiveFlag = false;
-
   @Alias('archivedBy', isNullable: false)
   String archivedByUserId;
 
@@ -71,13 +68,14 @@ class Munch{
   bool munchStatusChanged = false;
 
   @Field.ignore()
-  int get membersNum => numberOfMembers ?? members.length;
-
-  @Field.ignore()
   String get joinLink => DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
 
   @Field.ignore()
   bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;
+
+  int getNumberOfMembers(){
+    return numberOfMembers ?? members.length;
+  }
 
   User getMunchMember(String userId){
     User user = members.firstWhere((User user){
@@ -101,6 +99,7 @@ class Munch{
     this.munchFilters = detailedMunch.munchFilters;
     this.matchedRestaurant = detailedMunch.matchedRestaurant;
     this.receivePushNotifications = detailedMunch.receivePushNotifications;
+    this.archivedByUserId = detailedMunch.archivedByUserId;
 
     if(detailedMunch.members != null && detailedMunch.members.length > 0){
       this.members = detailedMunch.members;
@@ -111,7 +110,7 @@ class Munch{
     if((detailedMunch.members == null || detailedMunch.members.length == 0) && (this.members == null || this.members.length == 0)){
       // If current munch data has null members or empty members array, put current user in that array it's better than to have 0 members on view
       this.members = [UserRepo.getInstance().currentUser];
-      this.numberOfMembers = 1;
+      this.numberOfMembers = this.numberOfMembers ?? 1;
     }
 
     if(detailedMunch.matchedRestaurant != null){
@@ -148,6 +147,8 @@ class MunchMemberFilters{
 
   @Alias('blacklist')
   List<String> blacklistFiltersKeys;
+
+  MunchMemberFilters({this.whitelistFiltersKeys, this.blacklistFiltersKeys});
 }
 
 @GenSerializer()
@@ -157,6 +158,8 @@ class MunchFilters{
   List<MunchGroupFilter> blacklist;
 
   List<MunchGroupFilter> whitelist;
+
+  MunchFilters({this.blacklist, this.whitelist});
 }
 
 @GenSerializer()
@@ -166,6 +169,8 @@ class MunchGroupFilter{
   String key;
 
   List<String> userIds;
+
+  MunchGroupFilter({this.key, this.userIds});
 }
 
 @GenSerializer()

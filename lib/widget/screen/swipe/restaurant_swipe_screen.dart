@@ -134,7 +134,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(widget.munch.membersNum.toString(),
+            Text(widget.munch.getNumberOfMembers().toString(),
               style: AppTextStyle.style(AppTextStylePattern.body2)
             ),
             Icon(Icons.person_outline,

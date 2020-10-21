@@ -42,8 +42,7 @@ class MunchListWidget extends StatelessWidget {
           _firstRow(),
           _secondRow(),
          if(munch.munchStatus == MunchStatus.UNDECIDED) _undecidedThirdRow(),
-         if(munch.munchStatus == MunchStatus.DECIDED) _decidedThirdRow(),
-         if(!munch.isModifiable) _unmodifiableThirdRow(),
+         if(munch.munchStatus != MunchStatus.UNDECIDED) _decidedUnmodifiableArchivedThirdRow(),
       ]
     );
   }
@@ -92,7 +91,7 @@ class MunchListWidget extends StatelessWidget {
   }
 
   Widget _secondRow(){
-    return Text(munch.membersNum.toString() + " " + App.translate("munch_list_widget.members.text"),
+    return Text(munch.getNumberOfMembers().toString() + " " + App.translate("munch_list_widget.members.text"),
         style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0)
     );
   }
@@ -105,7 +104,7 @@ class MunchListWidget extends StatelessWidget {
     );
   }
 
-  Widget _decidedThirdRow(){
+  Widget _decidedUnmodifiableArchivedThirdRow(){
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.max,
@@ -117,8 +116,9 @@ class MunchListWidget extends StatelessWidget {
             overflow: TextOverflow.ellipsis
           )
         ),
+        if(munch.munchStatus == MunchStatus.UNMODIFIABLE)
         SizedBox(width: 8.0),
-        if(munch.archiveFlag)
+        if(munch.munchStatus == MunchStatus.UNMODIFIABLE)
         Padding(
             padding: EdgeInsets.only(right: 4.0),
             child: Row(
@@ -136,14 +136,6 @@ class MunchListWidget extends StatelessWidget {
             )
         ),
       ],
-    );
-  }
-
-  Widget _unmodifiableThirdRow(){
-    return Text(munch.matchedRestaurantName,
-        style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis
     );
   }
 }

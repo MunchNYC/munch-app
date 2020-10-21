@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:munch/config/localizations.dart';
 import 'package:munch/util/app.dart';
@@ -30,5 +31,13 @@ class TestUtil{
     await tester.idle();
     // The async delegator load will require build on the next frame. Thus, pump
     await tester.pump();
+  }
+
+  static void mockPluginMethodChannel(String channelName, var returnValue){
+    MethodChannel channel = MethodChannel(channelName);
+
+    channel.setMockMethodCallHandler((MethodCall call) async {
+      return returnValue;
+    });
   }
 }

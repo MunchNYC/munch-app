@@ -7,11 +7,9 @@ import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/util/app.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepo {
   static UserRepo _instance;
-  final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
   final UsersApi _usersApi = UsersApi();
 
   User _currentUser;
@@ -84,7 +82,7 @@ class UserRepo {
   Future<String> refreshAccessToken() async {
     print("Refreshing access token");
 
-    firebase_auth.User currentFirebaseUser = _firebaseAuth.currentUser;
+    firebase_auth.User currentFirebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
     // getIdToken force refresh
     String newAuthToken = (await currentFirebaseUser.getIdToken(true));
 
