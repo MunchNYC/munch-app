@@ -14,6 +14,8 @@ class ErrorListWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Center(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 48.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -31,6 +33,8 @@ class ErrorListWidget extends StatelessWidget{
                   onPressedCallback: actionCallback
               )
           ],
-        ));
+        )
+      )
+    );
   }
 }

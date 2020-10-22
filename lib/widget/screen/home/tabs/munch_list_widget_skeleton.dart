@@ -28,6 +28,7 @@ class MunchListWidgetSkeleton extends StatelessWidget {
       baseColor: Palette.secondaryLight.withOpacity(0.7),
       highlightColor: Palette.secondaryLight.withOpacity(0.45),
       child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
           height: AppDimensions.scaleSizeToScreen(88.0),
           child: Row(
             mainAxisSize: MainAxisSize.max,

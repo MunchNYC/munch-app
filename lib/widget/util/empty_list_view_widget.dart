@@ -11,6 +11,8 @@ class EmptyListViewWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Center(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 48.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -32,6 +34,8 @@ class EmptyListViewWidget extends StatelessWidget{
               style: AppTextStyle.style(AppTextStylePattern.heading5, color: Palette.secondaryLight, fontWeight: FontWeight.normal),
             ),
           ],
-    ));
+        )
+      )
+    );
   }
 }
