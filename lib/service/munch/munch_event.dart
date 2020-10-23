@@ -72,3 +72,10 @@ class NewMunchRestaurantEvent extends MunchEvent {
 
   NewMunchRestaurantEvent({this.munchId});
 }
+
+class ReviewMunchEvent extends MunchEvent {
+  MunchReviewValue munchReviewValue;
+  String munchId;
+
+  ReviewMunchEvent({this.munchReviewValue, this.munchId});
+}

@@ -43,4 +43,8 @@ class Utility{
 
     return null;
   }
+
+  static String convertEnumValueToString(var enumState){
+    return enumState.toString().substring(enumState.toString().indexOf('.') + 1);
+  }
 }

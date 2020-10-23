@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
@@ -49,17 +50,32 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
 
   @override
   Widget build(BuildContext context) {
-      return Container(
-          child: Column(
+    return BlocBuilder<MunchBloc, MunchState>(
+        cubit: widget.munchBloc,
+        buildWhen: (MunchState previous, MunchState current) => current is MunchJoiningState,
+        builder: (BuildContext context, MunchState state) {
+          return WillPopScope(
+            onWillPop: () async {
+            // Prevent closing of Dialog when request is sending, because we're closing popup outside of the dialog
+            if(state is MunchJoiningState && state.loading){
+              return false;
+            } else{
+              return true;
+            }
+          },
+          child: Container(
+            child: Column(
               children: <Widget>[
-                _joinMunchForm(context),
+                _joinMunchForm(context, state),
                 SizedBox(height: 12.0),
                 _dividerRow(),
                 SizedBox(height: 12.0),
-                _createMunchForm(context)
+                _createMunchForm(context, state)
               ]
-          ),
+            ),
+          )
       );
+    });
   }
 
   String _validateJoinForm(String value) {
@@ -88,7 +104,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
     }
   }
 
-  Widget _joinMunchForm(BuildContext context){
+  Widget _joinMunchForm(BuildContext context, MunchState state){
       return Form(
         key: _joinFormKey,
         autovalidate: _joinFormAutoValidate,
@@ -144,7 +160,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
     );
   }
 
-  Widget _createMunchForm(BuildContext context){
+  Widget _createMunchForm(BuildContext context, MunchState state){
     return Form(
       key: _createFormKey,
       autovalidate: _createFormAutoValidate,
@@ -173,6 +189,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
           CustomButton(
             minWidth: 72.0,
             borderRadius: 4.0,
+            disabled: state is MunchJoiningState && state.loading,
             content: Text(App.translate("create_join_dialog.create_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
             onPressedCallback: (){
               _onCreateButtonClicked(context);
@@ -203,20 +220,20 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
       // If there is no nested navigator, because we are outside its context, it will pop dialog from root navigator automatically
       NavigationHelper.popRoute(context, rootNavigator: false);
 
-        _createFormKey.currentState.save();
+      _createFormKey.currentState.save();
 
-        // close keyboard by giving focus to unnamed node
-        FocusScope.of(context).unfocus();
+      // close keyboard by giving focus to unnamed node
+      FocusScope.of(context).unfocus();
 
-        // in the case we're not on Home screen
-        NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
+      // in the case we're not on Home screen
+      NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
 
-        NavigationHelper.navigateToMapScreen(
-            null,
-            munchName: _munchName,
-            addToBackStack: true,
-            navigatorState: HomeScreen.munchesTabNavigator.currentState,
-        );
+      NavigationHelper.navigateToMapScreen(
+          null,
+          munchName: _munchName,
+          addToBackStack: true,
+          navigatorState: HomeScreen.munchesTabNavigator.currentState,
+      );
     } else {
       _createFormAutoValidate = true;
     }

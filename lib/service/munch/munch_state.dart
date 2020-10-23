@@ -1,3 +1,4 @@
+import 'package:munch/model/munch.dart';
 import 'package:munch/service/util/super_state.dart';
 
 class MunchState extends SuperState {
@@ -66,4 +67,12 @@ class CancellingMunchDecisionState extends MunchState {
   CancellingMunchDecisionState.ready({data}) :super.ready(data: data);
   CancellingMunchDecisionState.loading({message = ""}) :super.loading(message: message);
   CancellingMunchDecisionState.failed({message = ""}) :super.failed(message: message);
+}
+
+class ReviewMunchState extends MunchState {
+  MunchReviewValue munchReviewValue;
+
+  ReviewMunchState.ready({data}) :super.ready(data: data);
+  ReviewMunchState.loading({this.munchReviewValue, message = ""}) :super.loading(message: message);
+  ReviewMunchState.failed({message = ""}) :super.failed(message: message);
 }

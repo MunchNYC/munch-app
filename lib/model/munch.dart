@@ -14,6 +14,10 @@ enum MunchStatus{
   UNDECIDED, DECIDED, UNMODIFIABLE, ARCHIVED
 }
 
+enum MunchReviewValue{
+  LIKED, DISLIKED, NEUTRAL, NOSHOW
+}
+
 class Munch{
   @Field.decode()
   String id;

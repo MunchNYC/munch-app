@@ -22,6 +22,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
   double borderWidth = 0.0;
   Color borderColor;
   double elevation;
+  bool Function(SuperState superState) additionalLoadingConditionCallback;
 
   CustomButton.disabled(this.content) {
     this.disabled = true;
@@ -40,7 +41,8 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
     this.borderRadius = 0,
     this.borderWidth = 0.0,
     this.borderColor,
-    this.elevation = 8.0
+    this.elevation = 8.0,
+    this.disabled = false
   });
 
   CustomButton.bloc({this.cubit,
@@ -57,7 +59,14 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
     this.borderRadius = 0,
     this.borderWidth = 0.0,
     this.borderColor,
-    this.elevation = 8.0});
+    this.elevation = 8.0,
+    this.additionalLoadingConditionCallback,
+    this.disabled = false,
+  }){
+    if(this.additionalLoadingConditionCallback == null){
+      this.additionalLoadingConditionCallback = (SuperState superState){ return true; };
+    }
+  }
 
   @override
   State<CustomButton> createState() => _CustomButtonState<T, V>();
@@ -82,8 +91,7 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
   // store initialHeight and width of the button to keep button same size when it's content is loading animation
   void _calculateInitialSizes() {
     if (initialWidth == null) {
-      initialWidth =
-          _buttonKey.currentContext.size.width - widget.padding.horizontal * 2;
+      initialWidth = _buttonKey.currentContext.size.width - widget.padding.horizontal * 2;
       // for some strange reason paddingVertical shouldn't be multiplied by 2
       initialHeight = _buttonKey.currentContext.size.height - widget.padding.vertical;
     }
@@ -122,7 +130,7 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
             borderRadius: BorderRadius.circular(widget.borderRadius),
             side: BorderSide(width: widget.borderWidth, color: widget.borderColor ?? widget.color)
         ),
-        disabledColor: !isLoading ? Palette.secondaryLight : widget.color,
+        disabledColor: widget.disabled ? Palette.disabledColor : widget.color,
         //wraps child's height
         child: (widget.flat)
             ? FlatButton(
@@ -141,14 +149,10 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
   Widget _renderBlocButton(BuildContext context) {
     return BlocConsumer<Bloc<dynamic, T>, T>(
       cubit: widget.cubit,
-      listenWhen: (T previous, T current) => current.ready && current is V,
+      listenWhen: (T previous, T current) => current is V && current.ready,
       listener: (BuildContext context, T state) {
         if (widget.onActionDoneCallback != null) {
-          if (state.data != null) {
-            widget.onActionDoneCallback(state.data);
-          } else {
-            widget.onActionDoneCallback();
-          }
+          widget.onActionDoneCallback(state);
         }
       },
       buildWhen: (T previous, T current) => current is V,
@@ -162,7 +166,7 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
     bool isLoading = false;
 
     // Important condition, first time when BlocBuilder is called, condition isn't checked, so state can be different than Initial state
-    if (state.loading && state is V) {
+    if (state.loading && state is V && widget.additionalLoadingConditionCallback(state)) {
       isLoading = true;
     }
 

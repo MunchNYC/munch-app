@@ -126,7 +126,6 @@ class MunchApi extends Api {
     return munch;
   }
 
-
   Future deleteSelfFromMunch({String munchId}) async {
     String deleteUrl = "/munch/user?munchId=$munchId";
 
@@ -137,6 +136,20 @@ class MunchApi extends Api {
     String deleteUrl = "/match?munchId=$munchId";
 
     var data = await delete(deleteUrl);
+
+    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+
+    return munch;
+  }
+
+  Future<Munch> reviewMunch({String reviewValue, String munchId}) async {
+    String postUrl = "/review?munchId=$munchId";
+
+    Map<String, dynamic> fields = {
+      "review": reviewValue,
+    };
+
+    var data = await post(postUrl, fields);
 
     Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
 

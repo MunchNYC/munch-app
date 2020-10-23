@@ -41,6 +41,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* leaveMunch(event.munchId);
     } else if(event is NewMunchRestaurantEvent){
       yield* cancelMunchDecision(event.munchId);
+    } else if(event is ReviewMunchEvent){
+      yield* reviewMunch(event);
     }
   }
 
@@ -180,6 +182,24 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     } catch (error) {
       print("Munch decision cancellation failed: " + error.toString());
       yield CancellingMunchDecisionState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> reviewMunch(ReviewMunchEvent reviewMunchEvent) async* {
+    ReviewMunchState reviewMunchStateLoading = ReviewMunchState.loading(munchReviewValue: reviewMunchEvent.munchReviewValue);
+
+    yield reviewMunchStateLoading;
+
+    try {
+      Munch munch = await _munchRepo.reviewMunch(
+        munchReviewValue: reviewMunchEvent.munchReviewValue,
+        munchId: reviewMunchEvent.munchId,
+      );
+
+      yield ReviewMunchState.ready(data: munch);
+    } catch (error) {
+      print("Munch decision cancellation failed: " + error.toString());
+      yield ReviewMunchState.failed(message: error.toString());
     }
   }
 }

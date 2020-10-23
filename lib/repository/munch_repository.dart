@@ -3,6 +3,7 @@ import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
+import 'package:munch/util/utility.dart';
 
 class MunchRepo {
   static MunchRepo _instance;
@@ -207,4 +208,16 @@ class MunchRepo {
 
     return munch;
   }
+
+  Future<Munch> reviewMunch({MunchReviewValue munchReviewValue, String munchId}) async {
+    Munch munch = await _munchApi.reviewMunch(
+      reviewValue: Utility.convertEnumValueToString(munchReviewValue),
+      munchId: munchId,
+    );
+
+    updateMunchCache(munch);
+
+    return munch;
+  }
+
 }
