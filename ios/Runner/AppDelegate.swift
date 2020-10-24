@@ -19,8 +19,8 @@ import GoogleMaps
     }
 
     let controller = window.rootViewController as! FlutterViewController
-    methodChannel = FlutterMethodChannel(name: "https.munchapp.io/channel", binaryMessenger: controller.binaryMessenger)
-    eventChannel = FlutterEventChannel(name: "https.munchapp.io/events", binaryMessenger: controller.binaryMessenger)
+    methodChannel = FlutterMethodChannel(name: "http.munch-app.com/channel", binaryMessenger: controller.binaryMessenger)
+    eventChannel = FlutterEventChannel(name: "http.munch-app.com/events", binaryMessenger: controller.binaryMessenger)
 
     methodChannel?.setMethodCallHandler({ (call: FlutterMethodCall, result: FlutterResult) in
       guard call.method == "initialLink" else {

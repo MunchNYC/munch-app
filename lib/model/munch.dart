@@ -65,14 +65,11 @@ class Munch{
   // special processor, alias specified there
   MunchStatus munchStatus;
 
-  @Alias('archivedBy', isNullable: false)
-  String archivedByUserId;
-
   @Field.ignore()
   bool munchStatusChanged = false;
 
   @Field.ignore()
-  String get joinLink => DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
+  String get joinLink => AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
 
   @Field.ignore()
   bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;
@@ -103,7 +100,6 @@ class Munch{
     this.munchFilters = detailedMunch.munchFilters;
     this.matchedRestaurant = detailedMunch.matchedRestaurant;
     this.receivePushNotifications = detailedMunch.receivePushNotifications;
-    this.archivedByUserId = detailedMunch.archivedByUserId;
 
     if(detailedMunch.members != null && detailedMunch.members.length > 0){
       this.members = detailedMunch.members;

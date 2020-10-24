@@ -1,17 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/munch_repository.dart';
-import 'package:munch/widget/screen/swipe/decision_screen.dart';
-import 'package:munch/widget/screen/swipe/restaurant_swipe_screen.dart';
 
 import 'app.dart';
 import 'navigation_helper.dart';
-import 'package:flutter/services.dart';
 
 class DeepLinkHandler{
-  static const _methodChannel = const MethodChannel('https.munchapp.io/channel');
-  static const _eventChannel = const EventChannel('https.munchapp.io/events');
+  static const _methodChannel = const MethodChannel('http.munch-app.com/channel');
+  static const _eventChannel = const EventChannel('http.munch-app.com/events');
 
   DeepLinkRouter _deepLinkRouter = DeepLinkRouter();
 
@@ -26,16 +22,14 @@ class DeepLinkHandler{
     return _instance;
   }
 
-  void initializeDeepLinkListeners(){
-    startUri().then(onDeepLinkReceived);
-
-    //Checking broadcast stream, if deep link was clicked in opened appication
+  void initializeDeepLinkListener(){
+    //Checking broadcast stream, if deep link was clicked in opened application
     _eventChannel.receiveBroadcastStream().listen((d) => onDeepLinkReceived(d));
   }
 
-  Future<String> startUri() async {
+  Future<String> getAppStartDeepLink() async {
     try {
-      return _methodChannel.invokeMethod('initialLink');
+      return await _methodChannel.invokeMethod('initialLink');
     } on PlatformException catch (e) {
       return "Failed to Invoke: '${e.message}'.";
     }
@@ -52,7 +46,7 @@ class DeepLinkHandler{
           _deepLinkRouter.executeMunchRoute(pathSegments[1]);
           break;
       case DeepLinkRoute.JOIN_ROUTE:
-          _deepLinkRouter.executeMunchRoute(pathSegments[2]);
+          _deepLinkRouter.executeJoinRoute(pathSegments[2]);
           break;
       default:
           print("No route");
@@ -70,8 +64,8 @@ class DeepLinkRouter{
   static const String MUNCH_ROUTE_PATH = "/munches";
   static const String JOIN_ROUTE_PATH = "/munches/join";
 
-  static final RegExp munchRouteRegex = RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[(^/)a-zA-Z0-9]+$');
-  static final RegExp joinRouteRegex = RegExp(r'^' + JOIN_ROUTE_PATH + r'/[(^/)a-zA-Z0-9]{6}$');
+  static final RegExp munchRouteRegex = RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[a-zA-Z0-9]+$');
+  static final RegExp joinRouteRegex = RegExp(r'^' + JOIN_ROUTE_PATH + r'/[a-zA-Z0-9]{6}$');
 
   final List<RegExp> _routeRegex = [
     munchRouteRegex,

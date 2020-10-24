@@ -13,6 +13,7 @@ class AppConfig {
   String privacyPolicyUrl;
   String termsOfServiceUrl;
   String websiteUrl;
+  String deepLinkUrl;
 
   @Field.ignore()
   PackageInfo packageInfo;

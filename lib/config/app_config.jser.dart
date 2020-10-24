@@ -18,6 +18,7 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     setMapValue(ret, 'privacyPolicyUrl', model.privacyPolicyUrl);
     setMapValue(ret, 'termsOfServiceUrl', model.termsOfServiceUrl);
     setMapValue(ret, 'websiteUrl', model.websiteUrl);
+    setMapValue(ret, 'deepLinkUrl', model.deepLinkUrl);
     return ret;
   }
 
@@ -32,6 +33,7 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     obj.privacyPolicyUrl = map['privacyPolicyUrl'] as String;
     obj.termsOfServiceUrl = map['termsOfServiceUrl'] as String;
     obj.websiteUrl = map['websiteUrl'] as String;
+    obj.deepLinkUrl = map['deepLinkUrl'] as String;
     return obj;
   }
 }

@@ -38,10 +38,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>munchapp.io</string>
+			<string>munch-app.com</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>https</string>
+				<string>http</string>
 			</array>
 		</dict>
 	</array>

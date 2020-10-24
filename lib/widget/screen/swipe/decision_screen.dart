@@ -295,9 +295,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(widget.munch.getMunchMember(widget.munch.archivedByUserId) != null
-                    ? App.translate("decision_screen.munch_archived.full_description") + " " + widget.munch.getMunchMember(widget.munch.archivedByUserId).displayName + "."
-                    : App.translate("decision_screen.munch_archived.partial_description"),
+                Text(App.translate("decision_screen.munch_archived.partial_description"),
                   style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark, fontSizeOffset: 1.0)),
                 SizedBox(height: 8.0),
                 CustomButton(

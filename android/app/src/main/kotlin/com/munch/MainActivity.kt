@@ -13,8 +13,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "https.munchapp.io/channel"
-    private val EVENTS = "https.munchapp.io/events"
+    private val CHANNEL = "http.munch-app.com/channel"
+    private val EVENTS = "http.munch-app.com/events"
     private var startString: String? = null
     private var linksReceiver: BroadcastReceiver? = null
 
@@ -23,9 +23,7 @@ class MainActivity: FlutterActivity() {
 
         MethodChannel(flutterEngine.dartExecutor, CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "initialLink") {
-                if (startString != null) {
-                    result.success(startString)
-                }
+                result.success(startString)
             }
         }
 

@@ -181,7 +181,6 @@
     "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
     "filters_screen.info_dialog.close_button.text": "Close",
 
-    "decision_screen.munch_archived.full_description": "This munch has been archived by",
     "decision_screen.munch_archived.partial_description": "This munch has been archived.",
     "decision_screen.new_munch_button.description": "New Munch",
     "decision_screen.restaurant.hours.subtitle": "Hours",

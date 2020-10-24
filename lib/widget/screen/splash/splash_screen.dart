@@ -15,28 +15,32 @@ class SplashScreen extends StatefulWidget{
 }
 
 class _SplashScreenState extends State<SplashScreen>{
+  void _splashScreenNavigationLogic(){
+      UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
+        App.initAppContext(context);
 
-  @override
-  void initState() {
-    UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
-      if(user == null){
-        NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
-      } else{
-        await NotificationsHandler.getInstance().initializeNotifications();
+        String deepLink = await DeepLinkHandler.getInstance().getAppStartDeepLink();
+        DeepLinkHandler.getInstance().initializeDeepLinkListener();
 
-        NavigationHelper.navigateToHome(context, popAllRoutes: true, fromSplashScreen: true);
-      }
+        if (user == null) {
+          NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
+        } else {
+          await NotificationsHandler.getInstance().initializeNotifications();
+
+          if(deepLink == null) {
+            NavigationHelper.navigateToHome(context, popAllRoutes: true, fromSplashScreen: true);
+          } else{
+            DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink);
+          }
+        }
     });
-
-    super.initState();
   }
 
   @override
-  void didChangeDependencies() {
-    App.initAppContext(context);
-    DeepLinkHandler.getInstance().initializeDeepLinkListeners();
+  void initState() {
+    _splashScreenNavigationLogic();
 
-    super.didChangeDependencies();
+    super.initState();
   }
 
   @override
