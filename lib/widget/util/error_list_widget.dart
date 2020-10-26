@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
@@ -15,7 +17,8 @@ class ErrorListWidget extends StatelessWidget{
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.only(bottom: 48.0),
+        // on iOS refresh indicator is moving content below it, so we have to overcome overflowing by extending padding on iOS
+        padding: EdgeInsets.only(bottom: Platform.isIOS ? App.screenHeight * 0.5 : 0.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

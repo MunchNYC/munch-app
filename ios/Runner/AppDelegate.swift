@@ -19,14 +19,16 @@ import GoogleMaps
     }
 
     let controller = window.rootViewController as! FlutterViewController
-    methodChannel = FlutterMethodChannel(name: "http.munch-app.com/channel", binaryMessenger: controller.binaryMessenger)
-    eventChannel = FlutterEventChannel(name: "http.munch-app.com/events", binaryMessenger: controller.binaryMessenger)
+    methodChannel = FlutterMethodChannel(name: "https.munch-app.com/channel", binaryMessenger: controller.binaryMessenger)
+    eventChannel = FlutterEventChannel(name: "https.munch-app.com/events", binaryMessenger: controller.binaryMessenger)
 
     methodChannel?.setMethodCallHandler({ (call: FlutterMethodCall, result: FlutterResult) in
       guard call.method == "initialLink" else {
         result(FlutterMethodNotImplemented)
         return
       }
+    
+      result(nil)
     })
 
     eventChannel?.setStreamHandler(linkStreamHandler)
@@ -34,7 +36,7 @@ import GoogleMaps
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     eventChannel?.setStreamHandler(linkStreamHandler)
     return linkStreamHandler.handleLink(url.absoluteString)
   }

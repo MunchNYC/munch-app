@@ -13,8 +13,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "http.munch-app.com/channel"
-    private val EVENTS = "http.munch-app.com/events"
+    private val CHANNEL = "https.munch-app.com/channel"
+    private val EVENTS = "https.munch-app.com/events"
     private var startString: String? = null
     private var linksReceiver: BroadcastReceiver? = null
 

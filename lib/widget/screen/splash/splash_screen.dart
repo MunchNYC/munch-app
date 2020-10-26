@@ -6,6 +6,7 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/notifications_handler.dart';
+import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/splash/include/splash_logo.dart';
 
 
@@ -17,8 +18,6 @@ class SplashScreen extends StatefulWidget{
 class _SplashScreenState extends State<SplashScreen>{
   void _splashScreenNavigationLogic(){
       UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
-        App.initAppContext(context);
-
         String deepLink = await DeepLinkHandler.getInstance().getAppStartDeepLink();
         DeepLinkHandler.getInstance().initializeDeepLinkListener();
 
@@ -33,14 +32,20 @@ class _SplashScreenState extends State<SplashScreen>{
             DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink);
           }
         }
+    }).catchError((error){
+      Utility.showErrorFlushbar(error.toString(), context);
+
+      NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
     });
   }
 
   @override
-  void initState() {
+  void didChangeDependencies() {
+    App.initAppContext(context);
+
     _splashScreenNavigationLogic();
 
-    super.initState();
+    super.didChangeDependencies();
   }
 
   @override
