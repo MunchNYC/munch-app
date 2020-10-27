@@ -14,6 +14,7 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -64,7 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+        extendBodyBehindAppBar: true,
+        appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
+        body: Container(
         color: Palette.background,
         child: BlocConsumer<AuthenticationBloc, AuthenticationState>(
           cubit: _authenticationBloc,

@@ -8,6 +8,7 @@ import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/splash/include/splash_logo.dart';
+import 'package:munch/widget/util/app_status_bar.dart';
 
 
 class SplashScreen extends StatefulWidget{
@@ -51,7 +52,9 @@ class _SplashScreenState extends State<SplashScreen>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor:  Palette.background,
+        backgroundColor: Palette.background,
+        extendBodyBehindAppBar: true,
+        appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.light),
         body: SplashLogo()
     );
   }

@@ -38,7 +38,12 @@ class MunchApp extends StatelessWidget {
   }
 
   void _setSystemSettings(){
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    // Just default values, which are overriden when AppBar widget is present
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent, // navigation bar color
+      statusBarColor: Colors.transparent, // status bar color
+      statusBarIconBrightness: Brightness.dark
+    )); // status bar colorSystemUiOverlayStyle.light);
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -67,7 +72,12 @@ class MunchApp extends StatelessWidget {
               textSelectionHandleColor: Palette.secondaryDark.withOpacity(0.7),
               textSelectionColor: Palette.secondaryDark.withOpacity(0.7),
               highlightColor: Colors.transparent,
-              splashColor: Colors.transparent
+              splashColor: Colors.transparent,
+              appBarTheme: AppBarTheme(
+                brightness: Brightness.light, // this means by default status bar icons will be dark above app bar, inverse logic
+                color: Palette.background,
+                shadowColor: Colors.transparent,
+              )
             ),
             locale: Locale("en"), // switch between en and ru to see effect
             localizationsDelegates: [const AppLocalizationsDelegate()],

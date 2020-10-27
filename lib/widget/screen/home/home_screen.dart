@@ -9,6 +9,7 @@ import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
 import 'package:munch/widget/screen/splash/include/splash_logo.dart';
+import 'package:munch/widget/util/app_status_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
@@ -144,6 +145,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _renderScreen(){
     return Scaffold(
           backgroundColor: Palette.background,
+          extendBodyBehindAppBar: true,
+          appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
           body: IndexedStack(
               index: _currentIndex, children: _navigators), // new
           bottomNavigationBar: Container(

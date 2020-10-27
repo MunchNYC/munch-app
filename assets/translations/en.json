@@ -97,7 +97,7 @@
     "restaurant_swipe_screen.munch_status.decided.action_message.text": "Decision Made!",
     "restaurant_swipe_screen.munch_status.undecided.status.text": "Deciding...",
     "restaurant_swipe_screen.app_bar.second_line.info_label.text": "Tap here for more options",
-    "restaurant_swipe_screen.empty_card_stack.title": "Looks like you're all done!",
+    "restaurant_swipe_screen.empty_card_stack.title": "You're all set!!",
     "restaurant_swipe_screen.empty_card_stack.undecided.description": "We'll let you know when your friends are done deciding.",
     "restaurant_swipe_screen.empty_card_stack.decided.description.first_sentence": "Looks like everyone likes",
     "restaurant_swipe_screen.empty_card_stack.decided.description.second_sentence": "Tap the bottom button to check it out!",
@@ -181,8 +181,10 @@
     "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
     "filters_screen.info_dialog.close_button.text": "Close",
 
-    "decision_screen.munch_archived.partial_description": "This munch has been archived.",
-    "decision_screen.new_munch_button.description": "New Munch",
+    "decision_screen.munch_unmodifiable.description": "Tell us how you liked",
+    "decision_screen.munch_archived.description": "This munch has been archived.",
+    "decision_screen.munch_unmodifiable.feedback_button.text": "Give Feedback",
+    "decision_screen.munch_archived.new_munch_button.text": "New Munch",
     "decision_screen.restaurant.hours.subtitle": "Hours",
     "decision_screen.call_button.label.text": "Call",
     "decision_screen.map_button.label.text": "View Map",
@@ -194,6 +196,7 @@
     "decision_screen.continue_exploring_button.text": "Continue Exploring",
     "decision_screen.new_restaurant_button.text": "New Restaurant",
     "decision_screen.yelp.reviews.text": "Reviews",
+    "decision_screen.review_munch.successful.text": "Munch successfully reviewed and archived.",
 
     "new_restaurant_alert_dialog.cancel_action.text": "cancel",
     "new_restaurant_alert_dialog.title": "Are you sure?",
@@ -202,7 +205,7 @@
 
     "restaurant.working_hours.closed.text": "Closed",
 
-    "error_page_widget.text": "Error has occurred",
+    "error_page_widget.text": "Oops! Something went wrong.",
     "error_list_widget.action_button.text": "Refresh",
 
     "firebase_auth.google_login.cancelled.error": "Google login cancelled.",
@@ -216,8 +219,8 @@
     "alert_dialog.negative_button.text.default": "Cancel",
     "alert_dialog.title.default": "Warning",
 
-    "api.error.request_timeout": "Request has timed out.",
-    "api.error.internet_connection": "Internet connection problem.",
+    "api.error.request_timeout": "Failed to connect to the server.",
+    "api.error.internet_connection": "No Network Connection.",
     "api.error.unauthorized": "You are not authorized for this action.",
 
     "url_launcher.error.message": "Url cannot be opened"

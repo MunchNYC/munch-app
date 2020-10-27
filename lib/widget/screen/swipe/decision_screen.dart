@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:munch/model/munch.dart';
@@ -12,8 +13,10 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/home/include/archive_munch_dialog.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
@@ -71,11 +74,13 @@ class _DecisionScreenState extends State<DecisionScreen>{
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return  WillPopScope(
       onWillPop: _onWillPopScope,
       child: Scaffold(
-        backgroundColor: Palette.background,
-        body: _buildMunchBloc()
+          backgroundColor: Palette.background,
+          extendBodyBehindAppBar: true,
+          appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.light),
+          body: _buildMunchBloc()
       )
     );
   }
@@ -114,6 +119,11 @@ class _DecisionScreenState extends State<DecisionScreen>{
       NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
 
       NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
+    } else if(state is ReviewMunchState){
+      // close Archive Munch dialog
+      NavigationHelper.popRoute(context);
+
+      Utility.showFlushbar(App.translate("decision_screen.review_munch.successful.text"), context);
     }
   }
 
@@ -153,7 +163,9 @@ class _DecisionScreenState extends State<DecisionScreen>{
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    if(!widget.munch.isModifiable)
+                    if(widget.munch.munchStatus == MunchStatus.UNMODIFIABLE)
+                    _unmodifiableInfoRow(),
+                    if(widget.munch.munchStatus == MunchStatus.ARCHIVED)
                     _archivedInfoRow(),
                     if(!widget.munch.isModifiable)
                     Divider(thickness: 2.0, height: 32.0, color: Palette.secondaryLight.withOpacity(0.2)),
@@ -239,22 +251,38 @@ class _DecisionScreenState extends State<DecisionScreen>{
     return Container(
         width: double.infinity,
         child: Stack(
-            children: [CarouselSlider(
-                items: widget.restaurant.photoUrls.map((photoUrl) =>
-                    SizedBox(
-                      width: double.infinity,
-                      child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
-                    )
-                ).toList(),
-                options: CarouselOptions(
-                    height: double.infinity,
-                    autoPlay: false,
-                    enlargeCenterPage: false,
-                    viewportFraction: 1.0,
-                    scrollPhysics: NeverScrollableScrollPhysics(),
-                    enableInfiniteScroll: false
-                ),
-                carouselController: _carouselController,
+            children: [
+            ShaderMask(
+               shaderCallback: (rect) {
+                  return LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomRight,
+                    stops: [
+                      0.05, 0.2, 0.92, 0.95, 1.0
+                    ],
+                    colors: [Palette.primary.withOpacity(0.4), Palette.primary.withOpacity(0.15), Colors.transparent, Palette.primary.withOpacity(0.1), Palette.primary.withOpacity(0.25)],
+                  ).createShader(
+                      Rect.fromLTRB(0, 0, 0, rect.height),
+                  );
+               },
+               blendMode: BlendMode.darken,
+               child:  CarouselSlider(
+                    items: widget.restaurant.photoUrls.map((photoUrl) =>
+                        SizedBox(
+                          width: double.infinity,
+                          child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
+                        )
+                    ).toList(),
+                    options: CarouselOptions(
+                        height: double.infinity,
+                        autoPlay: false,
+                        enlargeCenterPage: false,
+                        viewportFraction: 1.0,
+                        scrollPhysics: NeverScrollableScrollPhysics(),
+                        enableInfiniteScroll: false
+                    ),
+                    carouselController: _carouselController,
+                  )
               ),
               _carouselControlsRow()
           ]
@@ -280,6 +308,44 @@ class _DecisionScreenState extends State<DecisionScreen>{
     );
   }
 
+  Widget _unmodifiableInfoRow(){
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        ImageIcon(
+          AssetImage("assets/icons/starFilled.png"),
+          color: Color(0xFFFBB25B),
+          size: 24.0,
+        ),
+        SizedBox(width: 8.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(App.translate("decision_screen.munch_unmodifiable.description") + " " + widget.munch.matchedRestaurant.name + "!",
+                  style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0)),
+              SizedBox(height: 8.0),
+              CustomButton(
+                padding: EdgeInsets.all(8.0),
+                elevation: 4.0,
+                borderRadius: 4.0,
+                color: Palette.secondaryDark,
+                textColor: Palette.background,
+                content: Text(App.translate("decision_screen.munch_unmodifiable.feedback_button.text"),
+                    style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
+                onPressedCallback: (){
+                  // We'll not have here nested navigators, because we are outside its context, so specifying root navigator to true/false will be same
+                  DialogHelper(dialogContent: ArchiveMunchDialog(munchBloc: _munchBloc, munch: widget.munch), rootNavigator: true).show(context);
+                },
+              )
+            ],
+          ),
+        )
+      ]
+    );
+  }
+
   Widget _archivedInfoRow(){
     return Row(
         mainAxisSize: MainAxisSize.max,
@@ -287,7 +353,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
           ImageIcon(
             AssetImage("assets/icons/warning.png"),
             color: Palette.secondaryDark,
-            size: 28.0,
+            size: 24.0,
           ),
           SizedBox(width: 8.0),
           Expanded(
@@ -295,16 +361,16 @@ class _DecisionScreenState extends State<DecisionScreen>{
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(App.translate("decision_screen.munch_archived.partial_description"),
-                  style: AppTextStyle.style(AppTextStylePattern.body2SecondaryDark, fontSizeOffset: 1.0)),
+                Text(App.translate("decision_screen.munch_archived.description"),
+                  style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0)),
                 SizedBox(height: 8.0),
                 CustomButton(
-                  padding: EdgeInsets.all(4.0),
+                  padding: EdgeInsets.all(8.0),
                   elevation: 4.0,
                   borderRadius: 4.0,
                   color: Palette.secondaryDark,
                   textColor: Palette.background,
-                  content: Text(App.translate("decision_screen.new_munch_button.description"),
+                  content: Text(App.translate("decision_screen.munch_archived.new_munch_button.text"),
                       style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
                   onPressedCallback: (){
                     // We'll not have here nested navigators, because we are outside its context, so specifying root navigator to true/false will be same
