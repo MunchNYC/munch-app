@@ -1,4 +1,10 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
+import 'package:munch/api/api.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/theme/palette.dart';
@@ -10,20 +16,56 @@ import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/splash/include/splash_logo.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
 
-
 class SplashScreen extends StatefulWidget{
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>{
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin{
+  AnimatorKey<double> animatorKey = AnimatorKey<double>();
+  Timer _delayedAnimationTimer;
+  Timer _reconnectTimer;
+
+  @override
+  void dispose() {
+    _delayedAnimationTimer?.cancel();
+    _reconnectTimer?.cancel();
+
+    super.dispose();
+  }
+  @override
+  void didChangeDependencies() {
+    App.initAppContext(context);
+
+    _delayedAnimation(milliseconds: 2000);
+
+    _splashScreenNavigationLogic();
+
+    super.didChangeDependencies();
+  }
+
+  void _delayedAnimation({int milliseconds}){
+    _delayedAnimationTimer = Timer(Duration(milliseconds: milliseconds), () {
+      animatorKey.triggerAnimation();
+    });
+  }
+
+  void _reconnectAttempt({int seconds}){
+    _delayedAnimationTimer = Timer(Duration(seconds: seconds), () {
+      _splashScreenNavigationLogic();
+    });
+  }
+
   void _splashScreenNavigationLogic(){
       UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
         String deepLink = await DeepLinkHandler.getInstance().getAppStartDeepLink();
         DeepLinkHandler.getInstance().initializeDeepLinkListener();
 
         if (user == null) {
-          NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
+          // navigate with delay because if user is not stored in local storage, it will happen very fast, we want to animate splash logo smooth
+          Future.delayed(Duration(seconds: 1)).then((value){
+            NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
+          });
         } else {
           await NotificationsHandler.getInstance().initializeNotifications();
 
@@ -33,20 +75,18 @@ class _SplashScreenState extends State<SplashScreen>{
             DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink);
           }
         }
-    }).catchError((error){
-      Utility.showErrorFlushbar(error.toString(), context);
-
-      NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
-    });
+    }).catchError(_onAuthUserFetchingException);
   }
 
-  @override
-  void didChangeDependencies() {
-    App.initAppContext(context);
+  void _onAuthUserFetchingException(error){
+    Utility.showErrorFlushbar(error.toString() + "\n" + App.translate("api.error.fetch_data_exception.retry.text"), context);
 
-    _splashScreenNavigationLogic();
-
-    super.didChangeDependencies();
+    if(error is ServerConnectionException){
+      // we already waited for CommunicationSettings.maxServerWaitTimeSec so we can execute request again
+      _splashScreenNavigationLogic();
+    } else{
+      _reconnectAttempt(seconds: CommunicationSettings.connectionRetryTimeSec);
+    }
   }
 
   @override
@@ -55,7 +95,25 @@ class _SplashScreenState extends State<SplashScreen>{
         backgroundColor: Palette.background,
         extendBodyBehindAppBar: true,
         appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.light),
-        body: SplashLogo()
+        body:  Animator(
+          animatorKey: animatorKey,
+          //triggerOnInit: true,
+          tween: Tween<double>(
+            begin: -pi, end: pi
+          ),
+          repeats: 2,
+          duration: Duration(milliseconds: 1800),
+          curve: Curves.linear,
+          builder: (context, anim, child){
+            return FractionalTranslation(
+              translation: Offset(0.0, sin(anim.value) * 0.04),
+              child: SplashLogo()
+            );
+          },
+          endAnimationListener: (value){
+            _delayedAnimation(milliseconds: 1500);
+          },
+        )
     );
   }
 }

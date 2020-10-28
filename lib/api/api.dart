@@ -52,9 +52,9 @@ abstract class Api{
       print("Headers: " + headers.toString());
       try {
         final response = await requestFunction(headers).
-        timeout(Duration(seconds: CommunicationSettings.maxWaitTimeSec),
+        timeout(Duration(seconds: CommunicationSettings.maxServerWaitTimeSec),
             onTimeout: () {
-              throw FetchDataException.fromMessage(App.translate("api.error.request_timeout"));
+              throw ServerConnectionException.fromMessage(App.translate("api.error.request_timeout"));
             });
 
         return _returnResponse(response);
@@ -67,7 +67,7 @@ abstract class Api{
 
         await refreshAuthToken(headers);
       } on SocketException {
-        throw FetchDataException.fromMessage(App.translate("api.error.internet_connection"));
+        throw InternetConnectionException();
       }
     }
   }
@@ -178,8 +178,9 @@ abstract class Api{
         throw ValidationException(
             response.statusCode, responseJson['status']);
       case 500:
+        throw InternalServerErrorException(response.statusCode, responseJson['status']);
       default:
-        throw FetchDataException(response.statusCode, responseJson['status']);
+        throw FetchDataException.fromMessage(json.decode(response.body.toString()));
     }
   }
 }
@@ -203,6 +204,22 @@ class FetchDataException extends ApiException {
   FetchDataException.fromMessage(String message) : super.fromMessage(message);
 
   FetchDataException(int status, Map<String, dynamic> map) : super(status, map);
+}
+
+class ServerConnectionException extends FetchDataException {
+  ServerConnectionException.fromMessage(String message) : super.fromMessage(message);
+
+  ServerConnectionException(int status, Map<String, dynamic> map) : super(status, map);
+}
+
+class InternetConnectionException extends FetchDataException {
+  InternetConnectionException() : super.fromMessage(App.translate("api.error.internet_connection"));
+}
+
+class InternalServerErrorException extends FetchDataException {
+  InternalServerErrorException.fromMessage(String message) : super.fromMessage(message);
+
+  InternalServerErrorException(int status, Map<String, dynamic> map) : super(status, map);
 }
 
 class NotFoundException extends ApiException {

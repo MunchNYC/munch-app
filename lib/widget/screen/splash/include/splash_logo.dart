@@ -3,7 +3,7 @@ import 'package:munch/config/constants.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
 
-class SplashLogo extends StatelessWidget{
+class SplashLogo extends StatelessWidget {
   bool isHero;
 
   SplashLogo({this.isHero = true});
@@ -18,12 +18,11 @@ class SplashLogo extends StatelessWidget{
         width: App.REF_DEVICE_WIDTH,
         child: Center(
             child: Hero(
-              tag: isHero ? WidgetKeys.SPLASH_LOGO_HERO_TAG : "",
-              child: Image(
-                  image: AssetImage("assets/images/logo/logo_NoBG_Black_outline.png"),
-                  color: Palette.secondaryDark
+                tag: isHero ? WidgetKeys.SPLASH_LOGO_HERO_TAG : "",
+                child: Image(
+                    image: AssetImage("assets/images/logo/logo_NoBG_Black_outline.png"),
+                    color: Palette.secondaryDark),
               ),
-            )
         )
     );
   }

@@ -6,7 +6,8 @@ class StorageKeys {
 
 class CommunicationSettings {
   static const String tokenHeader = "Authorization";
-  static const int maxWaitTimeSec = 10;
+  static const int maxServerWaitTimeSec = 15;
+  static const int connectionRetryTimeSec = 15;
   static const int numOfRetries = 1;
 }
 

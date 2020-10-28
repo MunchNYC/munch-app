@@ -483,8 +483,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           curve: Curves.bounceInOut,
           duration: Duration(milliseconds: 1500),
           values: [
-            Offset(0, 100),
-            Offset(0, -40),// hidden
+            Offset(0, 100),// hidden
+            Offset(0, -40),
             Offset(0, 0),
           ],
           child: _decidedStatusContainerWidget

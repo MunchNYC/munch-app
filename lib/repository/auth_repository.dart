@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:munch/api/Api.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
@@ -36,6 +37,7 @@ class AuthRepo {
 
       return userCredential.user;
     } catch (error) {
+      print(error);
       if (error.code.toUpperCase() == "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {
         throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
       }
@@ -67,21 +69,34 @@ class AuthRepo {
     // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
     GoogleSignIn googleSignInRepo = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
 
-    GoogleSignInAccount account = await googleSignInRepo.signIn();
+    try {
+      GoogleSignInAccount account = await googleSignInRepo.signIn();
 
-    if(account != null) {
-      final authentication = await account.authentication;
-      final credentials = firebase_auth.GoogleAuthProvider.credential(
-          idToken: authentication.idToken,
-          accessToken: authentication.accessToken);
+      if(account != null) {
+        final authentication = await account.authentication;
+        final credentials = firebase_auth.GoogleAuthProvider.credential(
+            idToken: authentication.idToken,
+            accessToken: authentication.accessToken);
 
-      firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
+        firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
-      await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
+        await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
 
-      return await _onSignInSuccessful();
-    } else{
-      return null;
+        return await _onSignInSuccessful();
+      } else{
+        return null;
+      }
+    } catch(error){
+      if(error is PlatformException){
+        if(error.code == "network_error"){
+          throw InternetConnectionException();
+        } else {
+          throw FetchDataException.fromMessage(App.translate("google_login.platform_exception.text"));
+        }
+      } else{
+        // just forward the error if it's not PlatformException
+        throw error;
+      }
     }
   }
 
@@ -110,7 +125,11 @@ class AuthRepo {
       case FacebookLoginStatus.cancelledByUser:
         break;
       case FacebookLoginStatus.error:
-        throw Exception(facebookLoginResult.errorMessage);
+        if(facebookLoginResult.errorMessage == "net::ERR_INTERNET_DISCONNECTED"){
+          throw InternetConnectionException();
+        } else {
+          throw FetchDataException.fromMessage(App.translate("facebook_login.platform_exception.text"));
+        }
         break;
     }
 

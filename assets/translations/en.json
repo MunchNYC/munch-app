@@ -222,6 +222,11 @@
     "api.error.request_timeout": "Failed to connect to the server.",
     "api.error.internet_connection": "No Network Connection.",
     "api.error.unauthorized": "You are not authorized for this action.",
+    "api.error.fetch_data_exception.retry.text": "Trying to connect...",
+
+    "google_login.platform_exception.text": "Failed to connect to Google servers.",
+    "facebook_login.platform_exception.text": "Failed to connect to Facebook servers.",
+    "apple_login.platform_exception.text": "Failed to connect to Apple servers.",
 
     "url_launcher.error.message": "Url cannot be opened"
 }
