@@ -173,7 +173,8 @@ class AuthRepo {
       case AuthorizationStatus.cancelled:
         break;
       case AuthorizationStatus.error:
-        throw Exception(authorizationResult.error.localizedDescription);
+        print("Error signing in with Apple: " + authorizationResult.error.localizedDescription);
+        throw FetchDataException.fromMessage(App.translate("apple_login.platform_exception.text"));
         break;
     }
 

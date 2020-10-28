@@ -10,7 +10,7 @@
 	</array>
     <key>com.apple.developer.associated-domains</key>
     <array>
-    <string>applinks:munchapp.com</string>
+    <string>applinks:munch-app.com</string>
     </array>
 </dict>
 </plist>

@@ -8,6 +8,8 @@ import GoogleMaps
     
   private let linkStreamHandler = LinkStreamHandler()
 
+  private var absoluteStartUrl: String? = nil;
+    
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -28,7 +30,7 @@ import GoogleMaps
         return
       }
     
-      result(nil)
+      result(self.absoluteStartUrl)
     })
 
     eventChannel?.setStreamHandler(linkStreamHandler)
@@ -38,6 +40,7 @@ import GoogleMaps
 
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     eventChannel?.setStreamHandler(linkStreamHandler)
+    absoluteStartUrl = url.absoluteString
     return linkStreamHandler.handleLink(url.absoluteString)
   }
 }
