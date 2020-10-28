@@ -351,8 +351,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
         mainAxisSize: MainAxisSize.max,
         children: [
           ImageIcon(
-            AssetImage("assets/icons/warning.png"),
-            color: Palette.secondaryDark,
+            AssetImage("assets/icons/archive.png"),
+            color: Palette.primary,
             size: 24.0,
           ),
           SizedBox(width: 8.0),

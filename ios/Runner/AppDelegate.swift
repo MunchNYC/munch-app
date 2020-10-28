@@ -38,11 +38,26 @@ import GoogleMaps
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
+  /*
+    Called when app is terminated and deep link is opening it
+  */
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-    eventChannel?.setStreamHandler(linkStreamHandler)
     absoluteStartUrl = url.absoluteString
-    return linkStreamHandler.handleLink(url.absoluteString)
+    return true
   }
+
+  /*
+     Called when app is in background and deep link is tapped
+  */
+  override func application(_ application: UIApplication, continue userActivity:
+  NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if let absoluteString = userActivity.webpageURL?.absoluteString,
+            userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            return linkStreamHandler.handleLink(absoluteString)
+        }
+    
+        return false
+    }
 }
 
 class LinkStreamHandler:NSObject, FlutterStreamHandler {

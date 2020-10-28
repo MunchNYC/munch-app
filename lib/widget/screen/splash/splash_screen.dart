@@ -95,23 +95,22 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         backgroundColor: Palette.background,
         extendBodyBehindAppBar: true,
         appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.light),
-        body:  Animator(
+        body: Animator(
           animatorKey: animatorKey,
-          //triggerOnInit: true,
           tween: Tween<double>(
-            begin: -pi, end: pi
+            begin: 1.0, end: 0.95
           ),
-          repeats: 2,
-          duration: Duration(milliseconds: 1800),
-          curve: Curves.linear,
+          cycles: 2,
+          duration: Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
           builder: (context, anim, child){
-            return FractionalTranslation(
-              translation: Offset(0.0, sin(anim.value) * 0.04),
+            return Transform.scale(
+              scale: anim.value,
               child: SplashLogo()
             );
           },
           endAnimationListener: (value){
-            _delayedAnimation(milliseconds: 1500);
+            _delayedAnimation(milliseconds: 2000);
           },
         )
     );

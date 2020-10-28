@@ -98,52 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () => _onBackButtonPressed(context),
-        child: _munchBlocBuilder()
-    );
-  }
-
-  Widget _munchBlocBuilder(){
-    return BlocBuilder<MunchBloc, MunchState>(
-        cubit: _munchBloc,
-        buildWhen: (MunchState previous, MunchState current) => widget.fromSplashScreen && (current is MunchesFetchingState),
-        builder: (BuildContext context, MunchState state) => _buildHomeView(context, state)
-    );
-  }
-
-  Widget _buildHomeView(BuildContext context, MunchState state){
-    bool showSplashLogo = false;
-
-    if(widget.fromSplashScreen && (state.initial || state.loading)){
-      showSplashLogo = true;
-    } else{
-      // show splash just first time
-      widget.fromSplashScreen = false;
-      _screenOpacity = 1;
-    }
-
-    return Stack(
-      children: [
-        AnimatedOpacity(
-          opacity: 1.0 - _screenOpacity,
-          duration: Duration(milliseconds: 3000),
-          curve: Curves.easeInOut,
-          child: SplashLogo(isHero: false),
-        ),
-        AnimatedOpacity(
-          opacity: _screenOpacity,
-          curve: Curves.linear,
-          duration: Duration(milliseconds: 1500),
-          child:Container(
-            color: Palette.background,
-            child: _renderScreen()
-          )
-        )
-      ],
-    );
-  }
-
-  Widget _renderScreen(){
-    return Scaffold(
+        child: Scaffold(
           backgroundColor: Palette.background,
           extendBodyBehindAppBar: true,
           appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
@@ -195,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           )
+        )
     );
   }
 
