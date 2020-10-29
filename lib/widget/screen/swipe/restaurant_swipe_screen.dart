@@ -1,5 +1,6 @@
 import 'package:animated_widgets/widgets/opacity_animated.dart';
 import 'package:animated_widgets/widgets/translation_animated.dart';
+import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/config/constants.dart';
@@ -20,6 +21,7 @@ import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 
 import 'include/restaurant_card.dart';
 
@@ -45,6 +47,9 @@ enum TutorialState{
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_SCREEN_RATIO_THRESHOLD = 0.2;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 3;
+
+  AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
+  bool _cardPerspectiveAnimationLeft = false;
 
   Map<String, RestaurantCard> _currentCardMap = Map<String, RestaurantCard>();
   List<Restaurant> _currentRestaurants = List<Restaurant>();
@@ -264,7 +269,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       if (_currentCardMap.containsKey(restaurant.id)) {
         _newCardMap[restaurant.id] = _currentCardMap[restaurant.id];
       } else {
-        _newCardMap[restaurant.id] = RestaurantCard(restaurant);
+        _newCardMap[restaurant.id] = RestaurantCard(restaurant, munchBloc: _munchBloc);
       }
     });
     _currentCardMap.clear();
@@ -274,6 +279,24 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     if(restaurantList.length > 0 && !widget.tutorialStateInitialized){
       _initializeTutorialState(restaurantList[0]);
     }
+  }
+
+  void _noMoreCarouselImageListener(MunchState state){
+    _cardPerspectiveAnimationLeft = state.data;
+
+    _cardPerspectiveAnimatorKey.triggerAnimation();
+
+    Vibration.hasVibrator().then((value) async {
+      if (value) {
+        bool hasAmplitudeControl = await Vibration.hasAmplitudeControl();
+
+        if (hasAmplitudeControl) {
+          Vibration.vibrate(duration: 150, amplitude: 10);
+        } else {
+          Vibration.vibrate(duration: 150);
+        }
+      }
+    });
   }
 
   void _swipeScreenListener(BuildContext context, MunchState state){
@@ -288,6 +311,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       _updateRestaurantsPage(state.data);
     } else if(state is RestaurantSwipeProcessingState){
       _checkMunchStatusChanged();
+    } else if(state is NoMoreCarouselImageState){
+      _noMoreCarouselImageListener(state);
     }
   }
 
@@ -332,7 +357,27 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       children: [
         Expanded(
           child: Container(
-            child: _currentRestaurants.length > 0 ? _draggableCard() : _emptyCardStack(),
+            child: _currentRestaurants.length > 0 ?
+            Animator(
+              animatorKey: _cardPerspectiveAnimatorKey,
+              triggerOnInit: false,
+              tween: Tween<double>(
+                  begin: 0.0, end: 0.1
+              ),
+              cycles: 2,
+              duration: Duration(milliseconds: 200),
+              curve: Curves.linear,
+              builder: (context, anim, child){
+                  return Transform(
+                      // More info about perspective: https://medium.com/flutterdevs/perspective-in-flutter-904c6cade292
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, anim.value * 0.01)
+                        ..rotateY(_cardPerspectiveAnimationLeft ? anim.value : -anim.value),
+                        alignment: FractionalOffset.center,
+                        child: _draggableCard(),
+                  );
+                })
+              : _emptyCardStack(),
             padding: EdgeInsets.symmetric(horizontal: 8.0)
           )
         ),

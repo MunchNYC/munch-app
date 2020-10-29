@@ -609,22 +609,34 @@ class _DecisionScreenState extends State<DecisionScreen>{
   }
 
   void _onCarouselLeftSideTapped(){
-    _carouselController.previousPage();
-
     if(_currentCarouselPage - 1 >= 0){
       setState(() {
         _currentCarouselPage--;
       });
+
+      _carouselController.previousPage();
+    } else{
+      setState(() {
+        _currentCarouselPage = widget.restaurant.photoUrls.length - 1;
+      });
+
+      _carouselController.animateToPage(_currentCarouselPage, duration: Duration(milliseconds: 500));
     }
   }
 
   void _onCarouselRightHalfTapped(){
-    _carouselController.nextPage();
-
     if(_currentCarouselPage + 1 < widget.restaurant.photoUrls.length){
       setState(() {
         _currentCarouselPage++;
       });
+
+      _carouselController.nextPage();
+    } else{
+      setState(() {
+        _currentCarouselPage = 0;
+      });
+
+      _carouselController.animateToPage(_currentCarouselPage, duration: Duration(milliseconds: 500));
     }
   }
 

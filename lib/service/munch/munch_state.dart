@@ -45,6 +45,12 @@ class RestaurantSwipeProcessingState extends MunchState{
   RestaurantSwipeProcessingState.failed({message = ""}):super.failed(message: message);
 }
 
+class NoMoreCarouselImageState extends MunchState{
+  NoMoreCarouselImageState.ready({data}):super.ready(data: data);
+  NoMoreCarouselImageState.loading({message = ""}):super.loading(message: message);
+  NoMoreCarouselImageState.failed({message = ""}):super.failed(message: message);
+}
+
 class MunchPreferencesSavingState extends MunchState{
   MunchPreferencesSavingState.ready({data}):super.ready(data: data);
   MunchPreferencesSavingState.loading({message = ""}):super.loading(message: message);

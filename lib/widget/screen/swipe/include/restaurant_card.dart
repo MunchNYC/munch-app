@@ -1,6 +1,9 @@
+import 'package:animator/animator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:munch/model/restaurant.dart';
+import 'package:munch/service/munch/munch_bloc.dart';
+import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
@@ -8,8 +11,9 @@ import 'package:munch/util/utility.dart';
 
 class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
+  MunchBloc munchBloc;
 
-  RestaurantCard(this.restaurant): super(key: Key(restaurant.id));
+  RestaurantCard(this.restaurant, {this.munchBloc}): super(key: Key(restaurant.id));
 
   // must be saved here, because of Dragging purposes. Otherwise we cannot keep same image as it was when drag started
   int currentCarouselPage = 0;
@@ -134,18 +138,20 @@ class _RestaurantCardState extends State<RestaurantCard>{
   }
 
   void _onCarouselLeftSideTapped(){
-    _carouselController.previousPage();
-
     if(widget.currentCarouselPage - 1 >= 0){
       widget.currentCarouselPage--;
+      _carouselController.previousPage();
+    } else{
+      widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: true));
     }
   }
 
   void _onCarouselRightHalfTapped(){
-    _carouselController.nextPage();
-
     if(widget.currentCarouselPage + 1 < widget.restaurant.photoUrls.length){
       widget.currentCarouselPage++;
+      _carouselController.nextPage();
+    } else{
+      widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: false));
     }
   }
 

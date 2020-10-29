@@ -45,6 +45,12 @@ class RestaurantSwipeRightEvent extends RestaurantSwipeEvent {
   RestaurantSwipeRightEvent({munchId, restaurantId}): super(munchId: munchId, restaurantId: restaurantId, liked: true);
 }
 
+class NoMoreImagesCarouselEvent extends MunchEvent {
+  bool isLeftSideTapped;
+
+  NoMoreImagesCarouselEvent({this.isLeftSideTapped});
+}
+
 class SaveMunchPreferencesEvent extends MunchEvent {
   String munchId;
   String munchName;
@@ -52,7 +58,6 @@ class SaveMunchPreferencesEvent extends MunchEvent {
 
   SaveMunchPreferencesEvent({this.munchId, this.munchName, this.notificationsEnabled});
 }
-
 
 class KickMemberEvent extends MunchEvent {
   String munchId;

@@ -33,6 +33,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* getRestaurantsPage(event.munchId);
     } else if(event is RestaurantSwipeEvent){
       yield* processRestaurantSwipe(event);
+    } else if(event is NoMoreImagesCarouselEvent) {
+      yield NoMoreCarouselImageState.ready(data: event.isLeftSideTapped);
     } else if(event is SaveMunchPreferencesEvent){
       yield* saveMunchPreferences(event);
     }  else if(event is KickMemberEvent){
