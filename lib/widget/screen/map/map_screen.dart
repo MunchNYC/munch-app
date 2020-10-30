@@ -66,11 +66,19 @@ class MapScreenState extends State<MapScreen> {
     _munchBloc = MunchBloc();
     _locationBloc = LocationBloc();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _locationBloc.add(GetCurrentLocationEvent());
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies(){
+    // After transition is finished, iOS has bug if animation transition is not finished
+    ModalRoute.of(context).animation.addStatusListener((status) {
+      if(status == AnimationStatus.completed){
+        _locationBloc.add(GetCurrentLocationEvent());
+      }
     });
 
-    super.initState();
+    super.didChangeDependencies();
   }
 
   @override
