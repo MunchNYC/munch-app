@@ -1,5 +1,4 @@
 import 'package:animated_widgets/widgets/opacity_animated.dart';
-import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/translation_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -207,9 +206,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
-  Future<bool> _onWillPopScope(BuildContext context) async {
-    // return result to previous route, in order to refresh things
-    NavigationHelper.popRoute(context);
+  Future<bool> _onWillPopScope() async {
+    NavigationHelper.popRoute(context, checkLastRoute: true);
 
     return false;
   }
@@ -217,7 +215,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () => _onWillPopScope(context),
+        onWillPop: _onWillPopScope,
         child: Scaffold(
           appBar: _appBar(context),
           backgroundColor: Palette.background,

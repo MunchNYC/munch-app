@@ -221,7 +221,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   Widget _renderScreen(BuildContext context){
     return SingleChildScrollView(
-      padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 36.0), // must be 36.0 because label is floating below
+      padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 36.0, bottom: 24.0), // must be 36.0 because label is floating below
       child: Form(
         key: _munchOptionsFormKey,
         autovalidate: _munchOptionsFormAutoValidate,

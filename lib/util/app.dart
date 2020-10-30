@@ -19,6 +19,8 @@ class App {
 
   static String deviceId;
 
+  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
   static void _initAppLocalizations(BuildContext context){
     appLocalizations = AppLocalizations.of(context);
   }

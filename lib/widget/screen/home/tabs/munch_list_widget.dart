@@ -2,12 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:munch/model/munch.dart';
-import 'package:munch/service/munch/munch_bloc.dart';
-import 'package:munch/service/munch/munch_event.dart';
+import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
-import 'package:munch/util/navigation_helper.dart';
 
 class MunchListWidget extends StatelessWidget {
   Munch munch;
@@ -16,7 +14,7 @@ class MunchListWidget extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Container(
-      height: 72.0,
+      height: AppDimensions.scaleSizeToScreen(88.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[

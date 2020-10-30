@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 
   bool fromSplashScreen;
 
-  HomeScreen({this.fromSplashScreen}) {
+  HomeScreen({this.fromSplashScreen = false}) {
     munchesTab = GlobalKey<NavigatorState>();
     accountTab = GlobalKey<NavigatorState>();
   }

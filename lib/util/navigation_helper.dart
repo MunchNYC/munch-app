@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
@@ -35,17 +37,23 @@ class NavigationHelper {
   }
 
   static Future navigateToWithSpecificNavigator(NavigatorState navigatorState,
-      {bool addToBackStack: true, Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result}) {
-    if (addToBackStack) {
-      return navigatorState.push(
+      {bool addToBackStack: true, Widget screen, Duration transitionDuration: const Duration(milliseconds: 300), Function slideTransitionBuilder, var result, popAllRoutes: false}) {
+    if(popAllRoutes) {
+      return navigatorState.pushAndRemoveUntil(
           _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
+              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation),
+              (Route<dynamic> route) => false
       );
+    } else if (addToBackStack) {
+        return navigatorState.push(
+            _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+                slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.rightToLeftAnimation)
+        );
     } else {
-      return navigatorState.pushReplacement(
-          _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
-              slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
-      );
+        return navigatorState.pushReplacement(
+            _buildPageScreen(screen: screen, transitionDuration: transitionDuration,
+                slideTransitionBuilder: slideTransitionBuilder ?? NavigationAnimationHelper.bottomToTopAnimation), result: result
+        );
     }
   }
 
@@ -58,9 +66,31 @@ class NavigationHelper {
       );
   }
 
-  static void popRoute(BuildContext context,
-      {bool rootNavigator: true, var result}) {
-    return Navigator.of(context, rootNavigator: rootNavigator).pop(result);
+  static void popRoute(BuildContext context, {bool rootNavigator: true, var result, bool checkLastRoute: false}) {
+    print(checkLastRoute);
+    if(!checkLastRoute) {
+      Navigator.of(context, rootNavigator: rootNavigator).pop(result);
+    } else {
+      isLastRouteOnStack(context, rootNavigator: rootNavigator).then((value) {
+        Navigator.of(context, rootNavigator: rootNavigator).pop(result);
+
+        if (value == true) {
+          // addToBackStack must be true, because there will be no routes behind it, so nothing to replace
+          NavigationHelper.navigateToHome(context, addToBackStack: true, slideTransitionBuilder: NavigationAnimationHelper.noAnimation);
+        }
+      });
+    }
+  }
+
+  static Future isLastRouteOnStack(BuildContext context, {bool rootNavigator: true}){
+    var completer = new Completer<bool>();
+
+    Navigator.of(context, rootNavigator: rootNavigator).popUntil((route) {
+      completer.complete(route.isFirst);
+      return true;
+    });
+
+    return completer.future;
   }
 
   static Future navigateToLogin(BuildContext context,
@@ -89,10 +119,8 @@ class NavigationHelper {
   }
 
   static Future navigateToHome(BuildContext context,
-      {bool popAllRoutes: false, bool addToBackStack: false, bool fromSplashScreen: false}) {
-    Function slideTransitionBuilder;
-
-    if(fromSplashScreen){
+      {bool popAllRoutes: false, bool addToBackStack: false, bool fromSplashScreen: false, Function slideTransitionBuilder}) {
+    if(fromSplashScreen && slideTransitionBuilder == null){
       slideTransitionBuilder = NavigationAnimationHelper.noAnimation;
     }
 
@@ -112,9 +140,15 @@ class NavigationHelper {
   }
 
   static Future navigateToRestaurantSwipeScreen(BuildContext context,
-      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true, var result}) {
-    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true, result: result,
+      {Munch munch, bool shouldFetchDetailedMunch: false, bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: RestaurantSwipeScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
+  }
+
+  static Future navigateToDecisionScreen(BuildContext context,
+      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
 
   static Future navigateToMunchOptionsScreen(BuildContext context,
@@ -127,12 +161,6 @@ class NavigationHelper {
       {Munch munch, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: FiltersScreen(munch: munch));
-  }
-
-  static Future navigateToDecisionScreen(BuildContext context,
-      {Munch munch, bool addToBackStack: true, bool shouldFetchDetailedMunch: false, var result}) {
-    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true, result: result,
-        screen: DecisionScreen(munch: munch, shouldFetchDetailedMunch: shouldFetchDetailedMunch));
   }
 
   static Future navigateToPrivacyPolicyScreen(BuildContext context,
