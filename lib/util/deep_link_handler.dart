@@ -90,7 +90,6 @@ class DeepLinkRouter{
   void _navigateOnError(){
     NavigationHelper.navigateToHome(
       null,
-      fromSplashScreen: false,
       popAllRoutes: true,
       navigatorState: App.rootNavigatorKey.currentState,
     );

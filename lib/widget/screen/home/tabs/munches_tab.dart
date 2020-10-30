@@ -210,12 +210,12 @@ class MunchesTabState extends State<MunchesTab> {
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
       // pop create join dialog
-      NavigationHelper.popRoute(context, rootNavigator: false);
+      NavigationHelper.popRoute(context);
 
       NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
     } else if(state is ReviewMunchState){
       // pop archive munch dialog
-      NavigationHelper.popRoute(context, rootNavigator: true);
+      NavigationHelper.popRoute(context);
 
       Utility.showFlushbar("Munch successfully archived", context);
     }
@@ -419,13 +419,13 @@ class MunchesTabState extends State<MunchesTab> {
                     )
                 );
               },
-            ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.decided_list_view.empty.text"))
+            ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.archived_list_view.empty.text"))
         )
     );
   }
 
   void _onPlusButtonClicked(BuildContext context){
-    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc)).show(context);
+    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
   }
 
   Widget _plusButton(){

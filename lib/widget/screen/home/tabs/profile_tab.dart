@@ -51,26 +51,33 @@ class _ProfileTabScreenState extends State<ProfileTab> {
                 minHeight: constraints.maxHeight - kToolbarHeight, // kToolbarHeight gives approx. height of appBar/bottomNavigationBar
                 maxHeight: double.infinity,
               ),
-              child: IntrinsicHeight(
-                child: Column(
+              child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _avatarRow(),
                     SizedBox(height: 4.0),
-                    _menuListItemDivider(),
-                    _menuItems(),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Text(App.translate("account_tab.version.text") + " " + AppConfig.getInstance().packageInfo.version,
-                          style: AppTextStyle.style(AppTextStylePattern.body)
-                        )
-                      ),
-                    ),
+                    IntrinsicHeight(
+                      child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _menuListItemDivider(),
+                              _menuItems(),
+                              Expanded(
+                                child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Text(App.translate("account_tab.version.text") + " " + AppConfig.getInstance().packageInfo.version,
+                                        style: AppTextStyle.style(AppTextStylePattern.body)
+                                    )
+                                ),
+                              ),
+                            ],
+                          )
+                    )
                   ],
-                ),
               ),
             ),
           );
@@ -90,14 +97,17 @@ class _ProfileTabScreenState extends State<ProfileTab> {
       children: [
         CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: 36.0),
         SizedBox(width: 16.0),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade),
-            SizedBox(height: 4.0),
-            Text(user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade)
-          ],
+        // Flexible needs to be put here to support TextOverflow of Text widgets in a Column below, otherwise they will not work
+        Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.displayName+ " Nikola Vasovic Lolo", style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
+                SizedBox(height: 4.0),
+                Text(user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade)
+              ],
+            )
         )
       ]
     );

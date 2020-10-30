@@ -451,14 +451,20 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
-  Widget _filterRemoveIcon(Filter filter){
-    return GestureDetector(
-      onTap: (){
-        setState(() {
-          _setFilterStatus(filter, FilterStatus.NEUTRAL);
-        });
-      },
-      child: Icon(Icons.close, color: Palette.error, size: 12.0),
+  Widget _fractionallyClickableAreaFiltersContainer(Filter filter){
+    return FractionallySizedBox(
+      widthFactor: 0.45,
+      alignment: Alignment.centerLeft,
+      child: InkWell(
+        onTap: (){
+          if(!_selectedFiltersContainerReadonly) {
+            setState(() {
+              _setFilterStatus(filter, FilterStatus.NEUTRAL);
+            });
+          }
+        },
+        child: Container(color: Colors.transparent),
+      ),
     );
   }
 
@@ -472,30 +478,37 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
           duration: Duration(milliseconds: 750),
           shakeAngle: Rotation.deg(z: 1),
           curve: Curves.linear,
-          child: Container(
-                padding: EdgeInsets.only(left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    border: Border.all(
-                        width: 1.0,
-                        color: color
-                    )
+          child: Stack(
+              children:[
+                Container(
+                    padding: EdgeInsets.only(left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(
+                            width: 1.0,
+                            color: color
+                        )
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if(!_selectedFiltersContainerReadonly)
+                          Icon(Icons.close, color: Palette.error, size: 12.0),
+                        SizedBox(width: 4.0),
+                        Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
+                        )
+                      ],
+                    ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if(!_selectedFiltersContainerReadonly)
-                      _filterRemoveIcon(filter),
-                    SizedBox(width: 4.0),
-                    Flexible(
-                        fit: FlexFit.loose,
-                        child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
-                    )
-                  ],
-                ),
-              ))
+                // fill will be same size with container below, and we'll take 0.33 from its fractional width to make area clickable
+                // must be define below widget Container widget to be clickable
+                Positioned.fill(child: _fractionallyClickableAreaFiltersContainer(filter)),
+              ]
+          ))
         ).toList()
     );
   }
@@ -551,7 +564,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   Widget _previousFilterStatusButton(Filter filter){
-    return GestureDetector(
+    // InkWell used to force white space to be clickable
+    return InkWell(
       onTap: (){
         int filterStatusIndex = filter.filterStatus.index - 1;
 
@@ -563,12 +577,19 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
           _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
         });
       },
-      child: Icon(Icons.arrow_back_ios, color: Palette.secondaryLight, size: 16.0),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: Align(
+            alignment: Alignment.centerLeft,
+            child: Icon(Icons.arrow_back_ios, color: Palette.secondaryLight, size: 16.0)
+        )
+      )
     );
   }
 
   Widget _nextFilterStatusButton(Filter filter){
-    return GestureDetector(
+    // InkWell used to force white space to be clickable
+    return InkWell(
       onTap: (){
         int filterStatusIndex = filter.filterStatus.index + 1;
 
@@ -580,10 +601,19 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
           _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
         });
       },
-      child: Icon(Icons.arrow_forward_ios, color: Palette.secondaryLight, size: 16.0),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: Align(
+              alignment: Alignment.centerRight,
+              child: Icon(Icons.arrow_forward_ios, color: Palette.secondaryLight, size: 16.0)
+          )
+        )
     );
   }
-  
+
+  /*
+    Padding are added to all components in the row just to be able to increase clickable area of the arrows
+   */
   Widget _filterControlRow(Filter filter){
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -591,7 +621,10 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       children: [
         Flexible(
             fit: FlexFit.loose,
-            child:Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
+            child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
+            )
         ),
         SizedBox(width: 4.0),
         Container(
@@ -600,13 +633,17 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _previousFilterStatusButton(filter),
-                _filtersStatusTexts[_filtersMap[filter.key].filterStatus.index],
-                _nextFilterStatusButton(filter),
+                // wrapped into expanded to increase tapable area
+                Expanded(child: _previousFilterStatusButton(filter)),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child:  _filtersStatusTexts[_filtersMap[filter.key].filterStatus.index],
+                ),
+                // wrapped into expanded to increase tapable area
+                Expanded(child: _nextFilterStatusButton(filter)),
               ],
             )
         )
-
       ],
     );
   }
@@ -653,7 +690,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                  _filterControlRow(filter),
-                 Divider(height: 24.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
+                 Divider(thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
               ]
              )
           ],

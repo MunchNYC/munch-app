@@ -128,47 +128,48 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   Widget _appBarTitle(){
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Text(widget.munch.name,
-          style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500),
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        Row(
+    // InkWell to make white space around tapable also
+    return InkWell(
+      onTap: () {
+        NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
+           (value) => setState(() {}) //refresh the data on the page
+        );
+      },
+      child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(widget.munch.getNumberOfMembers().toString(),
-              style: AppTextStyle.style(AppTextStylePattern.body2)
+            Text(widget.munch.name,
+              style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
-            Icon(Icons.person_outline,
-              size: 12.0,
-              color: Palette.primary
-            ),
-            SizedBox(width: 4.0),
-            Text("·",
-              style: AppTextStyle.style(AppTextStylePattern.body2)
-            ),
-            SizedBox(width: 2.0),
-            GestureDetector(
-              onTap: (){
-                NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
-                      (value) => setState(() {}) //refresh the data on the page
-                );
-              },
-              child: Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
-                  style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text(widget.munch.getNumberOfMembers().toString(),
+                  style: AppTextStyle.style(AppTextStylePattern.body2)
+                ),
+                Icon(Icons.person_outline,
+                  size: 12.0,
+                  color: Palette.primary
+                ),
+                SizedBox(width: 4.0),
+                Text("·",
+                  style: AppTextStyle.style(AppTextStylePattern.body2)
+                ),
+                SizedBox(width: 2.0),
+                Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
+                    style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)
+                )
+              ],
             )
           ],
-        )
-      ],
+      )
     );
   }
 

@@ -6,8 +6,8 @@
     "create_join_dialog.join_button.text": "Join",
     "create_join_dialog.divider.text": "Or",
     "create_join_dialog.create_button.text": "Create",
-    "create_join_dialog.join_form.code_field.regex.validation": "Enter a valid 6-characters code.",
-    "create_join_dialog.create_form.name_field.required.validation": "Enter munch name.",
+    "create_join_dialog.join_form.code_field.regex.validation": "Please enter a valid 6-characters code.",
+    "create_join_dialog.create_form.name_field.required.validation": "Please enter munch name.",
     "create_join_dialog.create_form.name_field.regex.validation": "Only alphanumerical characters and emojis are allowed.",
 
     "create_join_dialog_create_form.name_field.placeholder1.value": "Spicy Spiffies 🌶",
@@ -61,6 +61,7 @@
     "munches_tab.archived_tab.title": "Archived",
     "munches_tab.still_deciding_list_view.empty.text": "No munches yet",
     "munches_tab.decided_list_view.empty.text": "No munches yet",
+    "munches_tab.archived_list_view.empty.text": "No archived Munches yet",
     "munches_tab.join_munch.successful.message": "Munch successfully joined.",
 
     "account_tab.menu_item.notifications.text": "Notifications",

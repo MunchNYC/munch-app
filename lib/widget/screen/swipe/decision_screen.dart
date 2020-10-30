@@ -112,13 +112,10 @@ class _DecisionScreenState extends State<DecisionScreen>{
       _checkNavigationToSwipeScreen();
     } else if(state is MunchJoiningState){
       Munch joinedMunch = state.data;
-
       // pop create join dialog
-      NavigationHelper.popRoute(context, rootNavigator: false);
+      NavigationHelper.popRoute(context);
 
-      NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
-
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
+      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch, addToBackStack: false);
     } else if(state is ReviewMunchState){
       // close Archive Munch dialog
       NavigationHelper.popRoute(context);
@@ -214,36 +211,52 @@ class _DecisionScreenState extends State<DecisionScreen>{
   }
 
   Widget _closeIcon(){
-    return ClipOval(
-      child:CustomButton(
-        elevation: 8.0,
+    return InkWell(
+      onTap: _onWillPopScope,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Palette.background,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Palette.primary.withOpacity(0.5),
+              spreadRadius: 3,
+              blurRadius: 5
+            ),
+          ],
+        ),
         padding: EdgeInsets.all(4.0),
-        content: Icon(Icons.clear, size: 20.0),
-        color: Palette.background,
-        textColor: Palette.primary,
-        onPressedCallback: _onWillPopScope
-      ),
+        child: Icon(Icons.clear, size: 20.0)
+      )
     );
   }
 
   Widget _moreIcon(){
-    return  ClipOval(
-      child:CustomButton(
-        elevation: 8.0,
-        padding: EdgeInsets.all(4.0),
-        content: ImageIcon(
-          AssetImage("assets/icons/more.png"),
-          color: Palette.primary,
-          size: 20.0,
-        ),
-        color: Palette.background,
-        textColor: Palette.primary,
-        onPressedCallback: (){
+    return InkWell(
+        onTap: (){
           NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
-                (value) => setState(() {})  //refresh the data on page
+                  (value) => setState(() {})  //refresh the data on page
           );
         },
-      ),
+        child: Container(
+            decoration: BoxDecoration(
+              color: Palette.background,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    color: Palette.primary.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5
+                ),
+              ],
+            ),
+            padding: EdgeInsets.all(4.0),
+            child: ImageIcon(
+              AssetImage("assets/icons/more.png"),
+              color: Palette.primary,
+              size: 20.0,
+            )
+        )
     );
   }
 
@@ -374,7 +387,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
                       style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
                   onPressedCallback: (){
                     // We'll not have here nested navigators, because we are outside its context, so specifying root navigator to true/false will be same
-                   DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), rootNavigator: true).show(context);
+                   DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc, addCurrentScreenToBackStackOnCreate: false), rootNavigator: true).show(context);
                   },
                 )
               ],

@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
-import 'package:munch/service/munch/munch_event.dart';
-import 'package:munch/service/munch/munch_state.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
-import 'package:munch/widget/screen/splash/include/splash_logo.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
   static GlobalKey<NavigatorState> accountTabNavigator;
 
-  bool fromSplashScreen;
-
-  HomeScreen({this.fromSplashScreen = false}) {
+  HomeScreen() {
     munchesTabNavigator = GlobalKey<NavigatorState>();
     accountTabNavigator = GlobalKey<NavigatorState>();
   }
@@ -29,8 +23,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   MunchBloc _munchBloc;
 
-  double _screenOpacity = 1;
-
   int _currentIndex = 0;
 
   final List<GlobalKey<NavigatorState>> _tabs = [
@@ -40,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Navigator> _navigators;
 
-  // must be set as an argument because we cannot use widget.fromSplashScreen in field initializer
   _HomeScreenState() {
     _navigators = [
       Navigator(
@@ -63,10 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     _munchBloc = MunchBloc();
-
-    if(widget.fromSplashScreen){
-      _screenOpacity = 0;
-    }
 
     super.initState();
   }

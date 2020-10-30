@@ -109,16 +109,12 @@ class NavigationHelper {
   }
 
   static Future navigateToHome(BuildContext context,
-      {bool popAllRoutes: false, bool addToBackStack: false, bool fromSplashScreen: false, Function slideTransitionBuilder, NavigatorState navigatorState}) {
-    if(fromSplashScreen && slideTransitionBuilder == null){
-      slideTransitionBuilder = NavigationAnimationHelper.noAnimation;
-    }
-
+      {bool popAllRoutes: false, bool addToBackStack: false, Function slideTransitionBuilder, NavigatorState navigatorState}) {
     if(popAllRoutes){
-      return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true, slideTransitionBuilder: slideTransitionBuilder, navigatorState: navigatorState);
+      return _popAllRoutesAndNavigateTo(context, screen: HomeScreen(), rootNavigator: true, slideTransitionBuilder: slideTransitionBuilder, navigatorState: navigatorState);
     } else{
       // addToBackStack is considered if popAllRoutes = false
-      return _navigateTo(context, addToBackStack: addToBackStack, screen: HomeScreen(fromSplashScreen: fromSplashScreen), rootNavigator: true,
+      return _navigateTo(context, addToBackStack: addToBackStack, screen: HomeScreen(), rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder, navigatorState: navigatorState);
     }
   }
@@ -127,7 +123,7 @@ class NavigationHelper {
   static Future navigateToMapScreen(BuildContext context,
       {String munchName, bool addToBackStack: true, NavigatorState navigatorState}) {
     return _navigateTo(context, addToBackStack: addToBackStack,
-        screen: MapScreen(munchName: munchName), navigatorState: navigatorState);
+        screen: MapScreen(munchName: munchName), rootNavigator: true, navigatorState: navigatorState);
   }
 
   // When navigatorState is not null - context will be null

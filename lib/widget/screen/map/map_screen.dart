@@ -66,7 +66,9 @@ class MapScreenState extends State<MapScreen> {
     _munchBloc = MunchBloc();
     _locationBloc = LocationBloc();
 
-    _locationBloc.add(GetCurrentLocationEvent());
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _locationBloc.add(GetCurrentLocationEvent());
+    });
 
     super.initState();
   }

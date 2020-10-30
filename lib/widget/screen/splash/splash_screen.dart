@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           await NotificationsHandler.getInstance().initializeNotifications();
 
           if(deepLink == null) {
-            NavigationHelper.navigateToHome(context, popAllRoutes: true, fromSplashScreen: true);
+            NavigationHelper.navigateToHome(context, popAllRoutes: true);
           } else{
             DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink);
           }

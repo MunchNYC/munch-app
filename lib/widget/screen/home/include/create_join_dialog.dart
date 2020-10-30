@@ -16,8 +16,10 @@ import 'package:munch/widget/util/custom_form_field.dart';
 
 class CreateJoinDialog extends StatefulWidget{
   MunchBloc munchBloc;
+  // if create button is tapped should we keep the screen behind dialog on the backStack
+  bool addCurrentScreenToBackStackOnCreate;
 
-  CreateJoinDialog({this.munchBloc});
+  CreateJoinDialog({this.munchBloc, this.addCurrentScreenToBackStackOnCreate = true});
 
   @override
   State<StatefulWidget> createState() => CreateJoinDialogState();
@@ -215,24 +217,18 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
 
   void _onCreateButtonClicked(BuildContext context){
     if (_createFormKey.currentState.validate()) {
-
       // pop create join dialog
-      // If there is no nested navigator, because we are outside its context, it will pop dialog from root navigator automatically
-      NavigationHelper.popRoute(context, rootNavigator: false);
+      NavigationHelper.popRoute(context);
 
       _createFormKey.currentState.save();
 
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      // in the case we're not on Home screen
-      NavigationHelper.popUntilLastRoute(context, rootNavigator: true);
-
       NavigationHelper.navigateToMapScreen(
-          null,
+          context,
           munchName: _munchName,
-          addToBackStack: true,
-          navigatorState: HomeScreen.munchesTabNavigator.currentState,
+          addToBackStack: widget.addCurrentScreenToBackStackOnCreate
       );
     } else {
       _createFormAutoValidate = true;
