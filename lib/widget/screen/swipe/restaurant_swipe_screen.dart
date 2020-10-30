@@ -46,7 +46,7 @@ enum TutorialState{
 
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_SCREEN_RATIO_THRESHOLD = 0.2;
-  static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 3;
+  static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;
@@ -63,6 +63,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   MunchBloc _munchBloc;
 
   bool _animateMatchedRestaurant = false;
+
+  bool _restaurantsApiCallInProgress = false;
 
   @override
   void initState() {
@@ -119,7 +121,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   void _throwGetSwipeRestaurantNextPageEvent(){
-    _munchBloc.add(GetRestaurantsPageEvent(widget.munch.id));
+    if(!_restaurantsApiCallInProgress) {
+      _restaurantsApiCallInProgress = true;
+      _munchBloc.add(GetRestaurantsPageEvent(widget.munch.id));
+    }
   }
 
   Widget _appBarTitle(){
@@ -252,15 +257,15 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     }
   }
 
-  void _updateRestaurantsPage(List<Restaurant> restaurantList){
-    _currentRestaurants = restaurantList;
-
-    for(int i = 0; i < _currentRestaurants.length; i++){
-      if(_lastSwipedRestaurantsMap.containsKey(_currentRestaurants[i].id)){
-        _currentRestaurants.removeAt(i);
+  void _updateRestaurantsPage(List<Restaurant> restaurantList) {
+    for (int i = 0; i < restaurantList.length; i++) {
+      if (_lastSwipedRestaurantsMap.containsKey(restaurantList[i].id) || _currentCardMap.containsKey(restaurantList[i].id)) {
+        restaurantList.removeAt(i);
         i--;
       }
     }
+
+    _currentRestaurants.addAll(restaurantList);
 
     Map<String, RestaurantCard> _newCardMap = Map<String, RestaurantCard>();
 
@@ -272,17 +277,18 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         _newCardMap[restaurant.id] = RestaurantCard(restaurant, munchBloc: _munchBloc);
       }
     });
+
     _currentCardMap.clear();
 
     _currentCardMap = _newCardMap;
-
-    if(restaurantList.length > 0 && !widget.tutorialStateInitialized){
-      _initializeTutorialState(restaurantList[0]);
-    }
   }
 
   void _noMoreCarouselImageListener(MunchState state){
     _cardPerspectiveAnimationLeft = state.data;
+
+    if(_currentRestaurants.length > 0 && !widget.tutorialStateInitialized){
+      _initializeTutorialState(_currentRestaurants[0]);
+    }
 
     _cardPerspectiveAnimatorKey.triggerAnimation();
 
@@ -313,6 +319,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       _checkMunchStatusChanged();
     } else if(state is NoMoreCarouselImageState){
       _noMoreCarouselImageListener(state);
+    }
+
+    if(state is RestaurantsPageFetchingState){
+      _restaurantsApiCallInProgress = false;
     }
   }
 
