@@ -103,7 +103,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.displayName+ " Nikola Vasovic Lolo", style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
+                Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
                 SizedBox(height: 4.0),
                 Text(user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade)
               ],
