@@ -198,11 +198,14 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             EdgeInsets.only(right: 24.0),
             child: GestureDetector(
               onTap: (){
-                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((result) {
+                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((filtersSaved) {
                   setState(() {
-                    _currentRestaurants.clear();
+                    // Don't refresh anything if filters are not saved
+                    if(filtersSaved) {
+                      _currentRestaurants.clear();
 
-                    _throwGetSwipeRestaurantNextPageEvent();
+                      _throwGetSwipeRestaurantNextPageEvent();
+                    }
                   });
                 });
               },

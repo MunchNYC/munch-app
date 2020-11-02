@@ -159,6 +159,7 @@
     "filters_screen.filter_controls.filter_status.blacklisted.text": "Don't show",
     "filters_screen.filter_controls.top_cuisines_mode.link.text": "show all cuisines",
     "filters_screen.filter_controls.all_cuisines_mode.link.text": "close all cuisines",
+    "filters_screen.save.successful.message": "Filters successfully updated.",
 
     "filters_screen.group_tab.whitelist_container.subtitle": "Only These Cuisines",
     "filters_screen.group_tab.blacklist_container.subtitle": "Anything Except These",

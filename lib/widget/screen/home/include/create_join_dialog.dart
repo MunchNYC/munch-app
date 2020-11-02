@@ -137,6 +137,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
               cubit: widget.munchBloc,
               minWidth: 72.0,
               borderRadius: 4.0,
+              elevation: 4.0,
               color: Palette.secondaryDark,
               textColor: Palette.background,
               content: Text(App.translate("create_join_dialog.join_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
@@ -191,6 +192,7 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
           CustomButton(
             minWidth: 72.0,
             borderRadius: 4.0,
+            elevation: 4.0,
             disabled: state is MunchJoiningState && state.loading,
             content: Text(App.translate("create_join_dialog.create_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
             onPressedCallback: (){

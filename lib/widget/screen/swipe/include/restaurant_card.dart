@@ -70,6 +70,9 @@ class _RestaurantCardState extends State<RestaurantCard>{
   }
 
   Widget _titleSection(){
+    // Just check does this restaurant has info for current day, otherwise we'll not show them below
+    bool hasCurrentWorkingHours = widget.restaurant.getCurrentDayWorkingHours() != null;
+
     return Container(
       padding: EdgeInsets.only(top: 24.0, bottom: 16.0, left: 16.0, right: 16.0),
       decoration: BoxDecoration(
@@ -88,7 +91,9 @@ class _RestaurantCardState extends State<RestaurantCard>{
           _yelpStatsRow(),
           SizedBox(height: 8.0),
           Text((widget.restaurant.priceSymbol != null ? widget.restaurant.priceSymbol + ' • ' : "") + widget.restaurant.categoryTitles, style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary.withOpacity(0.7))),
+          if(hasCurrentWorkingHours)
           SizedBox(height: 8.0),
+          if(hasCurrentWorkingHours)
           Text(widget.restaurant.getWorkingHoursCurrentStatus(), style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight)),
         ],
       )

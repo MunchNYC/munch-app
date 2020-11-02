@@ -71,7 +71,6 @@ class ArchiveMunchDialog extends StatelessWidget{
   }
 
   Widget _likeButton(MunchState state){
-    print("LIKE STATE " + state.toString());
     return CustomButton<MunchState, ReviewMunchState>.bloc(
         cubit: munchBloc,
         padding: EdgeInsets.symmetric(vertical: 12.0),

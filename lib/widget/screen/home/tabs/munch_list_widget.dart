@@ -30,7 +30,7 @@ class MunchListWidget extends StatelessWidget {
   Widget _munchLeading(){
     return AspectRatio(
       aspectRatio: 1,
-      child: CircleAvatar(backgroundImage: AssetImage('assets/images/logo/logo_BG_Red.png')),
+      child: CircleAvatar(backgroundImage: NetworkImage(munch.imageUrl)),
     );
   }
 

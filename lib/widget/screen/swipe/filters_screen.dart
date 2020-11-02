@@ -54,6 +54,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   Map<String, Filter> _filtersMap;
 
+  // Don't refresh anything on swipe screen if filters are not saved once, return value for a route
+  bool _filtersSaved = false;
+
   final List<Widget> _filtersStatusTexts = [
     Text(App.translate("filters_screen.filter_controls.filter_status.blacklisted.text"), style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.error)),
     Text(App.translate("filters_screen.filter_controls.filter_status.neutral.text"), style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight)),
@@ -230,7 +233,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       }
     }
 
-    NavigationHelper.popRoute(context);
+    NavigationHelper.popRoute(context, result: _filtersSaved);
 
     return false;
   }
@@ -251,11 +254,13 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     if(state.loading){
       _selectedFiltersContainerReadonly = true;
     } else{
+      _filtersSaved = true;
+
       // ready
       if(_popScopeCompleter != null){
         _popScopeCompleter.complete(true);
       } else{
-        _onWillPopScope(context);
+        Utility.showFlushbar(App.translate("filters_screen.save.successful.message"), context);
       }
     }
   }

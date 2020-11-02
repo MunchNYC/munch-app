@@ -31,7 +31,7 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     setMapValue(ret, 'name', model.name);
     setMapValue(ret, 'coordinates',
         _coordinatesJsonSerializer.toMap(model.coordinates));
-    setMapValue(ret, 'radius', model.radius);
+    setMapValueIfNotNull(ret, 'radius', model.radius);
     return ret;
   }
 
@@ -53,6 +53,9 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
             obj.creationTimestamp;
     obj.coordinates =
         _coordinatesJsonSerializer.fromMap(map['coordinates'] as Map);
+    obj.radius = map['radius'] as int ?? getJserDefault('radius') ?? obj.radius;
+    obj.imageUrl =
+        map['imageUrl'] as String ?? getJserDefault('imageUrl') ?? obj.imageUrl;
     obj.members = codeNonNullIterable<User>(map['members'] as Iterable,
             (val) => _userJsonSerializer.fromMap(val as Map), <User>[]) ??
         getJserDefault('members') ??

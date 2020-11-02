@@ -49,42 +49,53 @@ class Restaurant{
   @Field.ignore()
   String get categoryTitles => categories.map((RestaurantCategory restaurantCategory) => restaurantCategory.title).join(", ");
 
-  String getWorkingHoursCurrentStatus(){
+  WorkingHours getCurrentDayWorkingHours(){
     tz.Location location = tz.getLocation(timezone);
 
     tz.TZDateTime nowWithTimezone = tz.TZDateTime.parse(location, DateTime.now().toString());
 
     String currentDayOfWeek =  DateFormat('EEEE').format(nowWithTimezone);
 
-    WorkingHours dayWorkingHours = workingHours.where((WorkingHours workingHours) => workingHours.dayOfWeek.toLowerCase() == currentDayOfWeek.toLowerCase()).first;
+    WorkingHours dayWorkingHours = workingHours.firstWhere((WorkingHours workingHours) => workingHours.dayOfWeek.toLowerCase() == currentDayOfWeek.toLowerCase(), orElse: () => null);
 
-    TimeOfDay currentTimeOfDay = TimeOfDay.now();
+    return dayWorkingHours;
+  }
 
-    int currentTimeOfDayValue = currentTimeOfDay.hour * 60 + currentTimeOfDay.minute;
+  String getWorkingHoursCurrentStatus(){
+    WorkingHours dayWorkingHours = getCurrentDayWorkingHours();
 
-    String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
+    String currentStatus = "";
 
-    for(int i = 0; i < dayWorkingHours.workingTimes.length; i++){
-      WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
+    if(dayWorkingHours != null) {
+      TimeOfDay currentTimeOfDay = TimeOfDay.now();
 
-      // date must be hardcoded otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed
-      TimeOfDay openTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.open));
-      TimeOfDay closeTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.closed));
+      int currentTimeOfDayValue = currentTimeOfDay.hour * 60 + currentTimeOfDay.minute;
 
-      int openTimeValue = openTime.hour * 60 + openTime.minute;
-      int closeTimeValue = closeTime.hour * 60 + closeTime.minute;
+      currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
 
-      if(currentTimeOfDayValue < openTimeValue){
-        if(i == 0){
-          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + workingTimes.open;
-        } else{
-          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") + " " + workingTimes.open;
+      for (int i = 0; i < dayWorkingHours.workingTimes.length; i++) {
+        WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
+
+        // date must be hardcoded otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed
+        TimeOfDay openTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.open));
+        TimeOfDay closeTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.closed));
+
+        int openTimeValue = openTime.hour * 60 + openTime.minute;
+        int closeTimeValue = closeTime.hour * 60 + closeTime.minute;
+
+        if (currentTimeOfDayValue < openTimeValue) {
+          if (i == 0) {
+            currentStatus = App.translate(
+                "restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + workingTimes.open;
+          } else {
+            currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") + " " + workingTimes.open;
+          }
+
+          break;
+        } else if (currentTimeOfDayValue >= openTimeValue && currentTimeOfDayValue <= closeTimeValue) {
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") + " " + workingTimes.closed;
+          break;
         }
-
-        break;
-      } else if(currentTimeOfDayValue >= openTimeValue && currentTimeOfDayValue <= closeTimeValue){
-        currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") + " " + workingTimes.closed;
-        break;
       }
     }
 
@@ -147,12 +158,8 @@ class WorkingHours{
   String getWorkingTimesFormatted(){
       List<String> workingTimesStringList = List<String>();
 
-      if(workingTimes.length == 0){
-        workingTimesStringList.add(App.translate("restaurant.working_hours.closed.text"));
-      } else {
-        for (WorkingTimes wt in workingTimes) {
-          workingTimesStringList.add(wt.open + " - " + wt.closed);
-        }
+      for (WorkingTimes wt in workingTimes) {
+        workingTimesStringList.add(wt.open + " - " + wt.closed);
       }
 
       return workingTimesStringList.join(", ");

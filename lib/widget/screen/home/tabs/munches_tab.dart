@@ -349,10 +349,12 @@ class MunchesTabState extends State<MunchesTab> {
               itemBuilder: (BuildContext context, int index){
                 if(loading) return _renderSkeletonWidget(index);
 
+                Munch munch = index < _decidedMunches.length ? _decidedMunches[index] : _unmodifiableMunches[index - _decidedMunches.length];
+
                 // InkWell is making empty space clickable also
                 return InkWell(
                     onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: index < _decidedMunches.length ? _decidedMunches[index] : _unmodifiableMunches[index - _decidedMunches.length], shouldFetchDetailedMunch: true);
+                      NavigationHelper.navigateToDecisionScreen(context, munch: munch, shouldFetchDetailedMunch: true);
                     },
                     child: Slidable(
                       controller: _slidableControllers[index],
@@ -360,7 +362,7 @@ class MunchesTabState extends State<MunchesTab> {
                       actionExtentRatio: 0.25,
                       child: Padding(
                           padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 24.0, right: 24.0),
-                          child: MunchListWidget(munch:  index < _decidedMunches.length ? _decidedMunches[index] : _unmodifiableMunches[index - _decidedMunches.length]),
+                          child: MunchListWidget(munch:  munch),
                       ),
                       secondaryActions: <Widget>[
                         IconSlideAction(
@@ -373,7 +375,7 @@ class MunchesTabState extends State<MunchesTab> {
                             ),
                             onTap: () {
                               // rootNavigator true to overlay bottom navigation bar
-                              DialogHelper(dialogContent: ArchiveMunchDialog(munchBloc: munchBloc, munch: _decidedMunches[index]), rootNavigator: true).show(context);
+                              DialogHelper(dialogContent: ArchiveMunchDialog(munchBloc: munchBloc, munch: munch), rootNavigator: true).show(context);
                             }
                         ),
                     ],

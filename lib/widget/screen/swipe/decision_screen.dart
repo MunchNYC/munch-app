@@ -51,6 +51,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
       _munchBloc.add(GetDetailedMunchEvent(widget.munch.id));
     } else{
       widget.restaurant = widget.munch.matchedRestaurant;
+
       // merge Munch with itself in order to update members array if it's empty to (1 member - current user)
       // edge case
       widget.munch.merge(widget.munch);
@@ -220,8 +221,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
           boxShadow: [
             BoxShadow(
               color: Palette.primary.withOpacity(0.5),
-              spreadRadius: 3,
-              blurRadius: 5
+              spreadRadius: 2,
+              blurRadius: 3
             ),
           ],
         ),
@@ -245,8 +246,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
               boxShadow: [
                 BoxShadow(
                     color: Palette.primary.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 5
+                    spreadRadius: 2,
+                    blurRadius: 3
                 ),
               ],
             ),

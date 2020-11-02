@@ -144,6 +144,11 @@ class MunchRepo {
   Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async{
     List<Restaurant> restaurantList = await _munchApi.getSwipeRestaurantsPage(munchId);
 
+    for(int i = 0; i < restaurantList.length; i++){
+      // remove days with no data for working times
+      restaurantList[i].workingHours.removeWhere((element) => element.workingTimes.length == 0);
+    }
+
     return restaurantList;
   }
 

@@ -39,8 +39,11 @@ class Munch{
 
   Coordinates coordinates;
 
-  @Field.encode()
+  @nonNullable
   int radius;
+
+  @Field.decode(isNullable: false)
+  String imageUrl;
 
   @Field.decode(isNullable: false)
   List<User> members;
@@ -100,6 +103,8 @@ class Munch{
     this.munchFilters = detailedMunch.munchFilters;
     this.matchedRestaurant = detailedMunch.matchedRestaurant;
     this.receivePushNotifications = detailedMunch.receivePushNotifications;
+    this.radius = detailedMunch.radius;
+    this.imageUrl = detailedMunch.imageUrl;
 
     if(detailedMunch.members != null && detailedMunch.members.length > 0){
       this.members = detailedMunch.members;
@@ -115,6 +120,9 @@ class Munch{
 
     if(detailedMunch.matchedRestaurant != null){
       this.matchedRestaurantName = detailedMunch.matchedRestaurant.name;
+
+      // remove days with no data for working times
+      detailedMunch.matchedRestaurant.workingHours.removeWhere((element) => element.workingTimes.length == 0);
     } else{
       this.matchedRestaurantName = null;
     }
