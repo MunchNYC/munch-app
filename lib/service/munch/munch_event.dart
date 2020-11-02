@@ -1,6 +1,5 @@
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
-import 'package:munch/service/munch/munch_state.dart';
 
 abstract class MunchEvent {}
 

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:munch/repository/user_repository.dart';
+import 'package:munch/service/notification/notifications_bloc.dart';
+import 'package:munch/service/notification/notifications_event.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/deep_link_handler.dart';
 
@@ -13,12 +15,21 @@ class NotificationsHandler{
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  Map<NotificationEventType, Function> notificationsEventTypeMap ;
+  NotificationsBloc notificationsBloc;
+
   StreamSubscription<String> _fcmTokenListener;
 
   static NotificationsHandler _instance;
 
   NotificationsHandler._internal(){
     _configureNotificationsReceiveCallbacks();
+
+    notificationsEventTypeMap = Map.of({
+      NotificationEventType.DECISION_MADE: _generateDecisionMadeNotificationEvent,
+      NotificationEventType.NEW_RESTAURANT: _generateNewRestaurantNotificationEvent,
+      NotificationEventType.NEW_MUNCHER: _generateNewMuncherNotificationEvent
+    });
   }
 
   factory NotificationsHandler.getInstance() {
@@ -45,6 +56,8 @@ class NotificationsHandler{
     var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = IOSInitializationSettings();
     var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+
+    notificationsBloc = NotificationsBloc();
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onNotificationTapped);
   }
@@ -79,6 +92,23 @@ class NotificationsHandler{
     DeepLinkHandler.getInstance().onDeepLinkReceived(payload);
   }
 
+  NotificationsEvent _generateDecisionMadeNotificationEvent(Map<String, dynamic> messageData){
+    return DecisionMadeNotificationEvent(munchId: messageData['munchId']);
+  }
+
+  NotificationsEvent _generateNewRestaurantNotificationEvent(Map<String, dynamic> messageData){
+    return NewRestaurantNotificationEvent(munchId: messageData['munchId']);
+  }
+
+  NotificationsEvent _generateNewMuncherNotificationEvent(Map<String, dynamic> messageData){
+    return NewMuncherNotificationEvent(munchId: messageData['munchId']);
+  }
+
+  NotificationsEvent _mapNotificationEventType(Map<String, dynamic> messageData){
+    NotificationEventType notificationEventType =  NotificationEventType.values.firstWhere((type) => type.toString().split(".").last == messageData['eventType']);
+    return notificationsEventTypeMap[notificationEventType]();
+  }
+
   void _configureNotificationsReceiveCallbacks(){
     try {
       try {
@@ -86,6 +116,12 @@ class NotificationsHandler{
           // App in Foreground
             onMessage: (Map<String, dynamic> message) {
               print('onMessage: $message');
+
+              NotificationsEvent notificationsEvent =  Platform.isAndroid
+                  ? _mapNotificationEventType(message['data']) // message structure is different for Android and iOS
+                  : _mapNotificationEventType(message);
+
+              notificationsBloc.add(notificationsEvent);
 
               Platform.isAndroid
                   ? _showNotification(message['notification'], message['data']) // message structure is different for Android and iOS
@@ -158,4 +194,10 @@ class NotificationsHandler{
       payload: data['deeplink'],
     );
   }
+}
+
+enum NotificationEventType{
+  DECISION_MADE,
+  NEW_RESTAURANT,
+  NEW_MUNCHER
 }

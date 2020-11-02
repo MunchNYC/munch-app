@@ -9,11 +9,14 @@ import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
+import 'package:munch/service/notification/notifications_bloc.dart';
+import 'package:munch/service/notification/notifications_state.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/tutorial_restaurant_swipe_screen.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
@@ -237,9 +240,25 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               width: double.infinity,
               height: double.infinity,
               padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 8.0, left: 0.0, right: 0.0),
-              child: _buildMunchBloc()
+              child: _buildNotificationsBloc()
           )
       )
+    );
+  }
+
+  void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
+    if(state is DetailedMunchNotificationState){
+      _checkMunchStatusChanged();
+    }
+  }
+
+  Widget _buildNotificationsBloc(){
+    return BlocConsumer<NotificationsBloc, NotificationsState>(
+        cubit: NotificationsHandler.getInstance().notificationsBloc,
+        listenWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready,
+        listener: (BuildContext context, NotificationsState state) => _munchStatusNotificationListener(context, state),
+        buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready, // in every other condition enter builder
+        builder: (BuildContext context, NotificationsState state) => _buildMunchBloc()
     );
   }
 
