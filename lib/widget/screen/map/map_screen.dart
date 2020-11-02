@@ -110,10 +110,8 @@ class MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _floatingActionButton(BuildContext context){
-    return Padding(
-        padding: EdgeInsets.only(bottom: 8.0),
-        child: FloatingActionButton(
+  Widget _floatingActionButton(){
+    return FloatingActionButton(
           backgroundColor: Palette.background,
           child: ImageIcon(AssetImage("assets/icons/locateMe.png"), size: 20.0, color: Palette.hyperlink),
           onPressed: (){
@@ -121,7 +119,6 @@ class MapScreenState extends State<MapScreen> {
               _animateMapToLocation(LatLng(_currentLocation.latitude, _currentLocation.longitude));
             }
           }
-        )
     );
   }
 
@@ -174,7 +171,6 @@ class MapScreenState extends State<MapScreen> {
         buildWhen: (LocationState previous, LocationState current) => current is CurrentLocationFetchingState,
         builder: (BuildContext context, LocationState state) => _buildMapScreen(context, state)
       ),
-      floatingActionButton: _floatingActionButton(context),
     );
   }
 
@@ -217,7 +213,16 @@ class MapScreenState extends State<MapScreen> {
                 _buildRadiusSelectionStack()
               ],
             ),
-            _buildLetsEatButtonListener()
+            Container(
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  Center(child: _buildLetsEatButtonListener()),
+                  Align(alignment: Alignment.centerRight, child: _floatingActionButton())
+                ],
+              )
+            )
+
         ]
       )
     );
