@@ -27,8 +27,9 @@ class NotificationsHandler{
 
     notificationsEventTypeMap = Map.of({
       NotificationEventType.DECISION_MADE: _generateDecisionMadeNotificationEvent,
-      NotificationEventType.NEW_RESTAURANT: _generateNewRestaurantNotificationEvent,
-      NotificationEventType.NEW_MUNCHER: _generateNewMuncherNotificationEvent
+      NotificationEventType.MATCH_CLEARED: _generateNewRestaurantNotificationEvent,
+      NotificationEventType.NEW_MUNCHER: _generateNewMuncherNotificationEvent,
+      NotificationEventType.INFORMATION: () => null
     });
   }
 
@@ -121,7 +122,10 @@ class NotificationsHandler{
                   ? _mapNotificationEventType(message['data']) // message structure is different for Android and iOS
                   : _mapNotificationEventType(message);
 
-              notificationsBloc.add(notificationsEvent);
+              // INFORMATION is returning NULL event
+              if(notificationsEvent != null) {
+                notificationsBloc.add(notificationsEvent);
+              }
 
               Platform.isAndroid
                   ? _showNotification(message['notification'], message['data']) // message structure is different for Android and iOS
@@ -197,7 +201,8 @@ class NotificationsHandler{
 }
 
 enum NotificationEventType{
+  MATCH_CLEARED,
   DECISION_MADE,
-  NEW_RESTAURANT,
-  NEW_MUNCHER
+  NEW_MUNCHER,
+  INFORMATION
 }
