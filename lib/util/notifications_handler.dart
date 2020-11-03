@@ -83,7 +83,7 @@ class NotificationsHandler{
     try {
       try {
         _firebaseMessaging.configure(
-            // App in Foreground
+          // App in Foreground
             onMessage: (Map<String, dynamic> message) {
               print('onMessage: $message');
 
@@ -152,10 +152,10 @@ class NotificationsHandler{
     var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
 
     await _flutterLocalNotificationsPlugin.show(0,
-        notification['title'],
-        notification['body'],
-        platformChannelSpecifics,
-        payload: data['deeplink'],
+      notification['title'],
+      notification['body'],
+      platformChannelSpecifics,
+      payload: data['deeplink'],
     );
   }
 }

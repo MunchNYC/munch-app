@@ -1,4 +1,5 @@
 import 'package:munch/api/munch_api.dart';
+import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
@@ -169,6 +170,18 @@ class MunchRepo {
       munchId: munchId,
       munchName: munchName,
       notificationsEnabled: notificationsEnabled,
+    );
+
+    updateMunchCache(munch);
+
+    return munch;
+  }
+
+  Future<Munch> updateMunchLocation({String munchId, Coordinates coordinates, int radius}) async {
+    Munch munch = await _munchApi.saveMunchPreferences(
+      munchId: munchId,
+      coordinates: coordinates,
+      radius: radius,
     );
 
     updateMunchCache(munch);

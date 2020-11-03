@@ -1,3 +1,4 @@
+import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/service/munch/munch_state.dart';
 
@@ -83,4 +84,12 @@ class ReviewMunchEvent extends MunchEvent {
   String munchId;
 
   ReviewMunchEvent({this.munchReviewValue, this.munchId});
+}
+
+class UpdateMunchLocationEvent extends MunchEvent{
+  String munchId;
+  Coordinates coordinates;
+  int radius;
+
+  UpdateMunchLocationEvent({this.munchId, this.coordinates, this.radius});
 }

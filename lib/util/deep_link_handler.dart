@@ -57,24 +57,29 @@ class DeepLinkHandler{
 
 enum DeepLinkRoute{
   MUNCH_ROUTE,
-  JOIN_ROUTE
+  JOIN_ROUTE,
+  HOME_ROUTE
 }
 
 class DeepLinkRouter{
   static const String MUNCH_ROUTE_PATH = "/munches";
   static const String JOIN_ROUTE_PATH = "/munches/join";
+  static const String HOME_ROUTE_PATH = "/munch/home";
 
   static final RegExp munchRouteRegex = RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[a-zA-Z0-9]+$');
   static final RegExp joinRouteRegex = RegExp(r'^' + JOIN_ROUTE_PATH + r'/[a-zA-Z0-9]{6}$');
+  static final RegExp homeRouteRegex = RegExp(r'^' + HOME_ROUTE_PATH + r'$');
 
   final List<RegExp> _routeRegex = [
     munchRouteRegex,
-    joinRouteRegex
+    joinRouteRegex,
+    homeRouteRegex
   ];
 
   final Map<RegExp, DeepLinkRoute> _routeMap = Map.of({
     munchRouteRegex: DeepLinkRoute.MUNCH_ROUTE,
-    joinRouteRegex: DeepLinkRoute.JOIN_ROUTE
+    joinRouteRegex: DeepLinkRoute.JOIN_ROUTE,
+    homeRouteRegex: DeepLinkRoute.HOME_ROUTE
   });
 
   DeepLinkRoute getRoute(String path){
@@ -134,5 +139,13 @@ class DeepLinkRouter{
     }).catchError((error){
       _navigateOnError();
     });
+  }
+
+  void executeHomeRoute(){
+    NavigationHelper.navigateToHome(
+      null,
+      popAllRoutes: true,
+      navigatorState: App.rootNavigatorKey.currentState,
+    );
   }
 }

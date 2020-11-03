@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:munch/config/app_config.dart';
@@ -30,7 +29,11 @@ import 'package:flutter_google_places/flutter_google_places.dart';
 class MapScreen extends StatefulWidget {
   String munchName;
 
-  MapScreen({this.munchName});
+  bool editLocation;
+  // will be sent if editLocation = true
+  Munch munch;
+
+  MapScreen({this.munchName, this.editLocation = false, this.munch});
 
   @override
   State<MapScreen> createState() =>MapScreenState();
@@ -46,6 +49,7 @@ class MapScreenState extends State<MapScreen> {
 
   static const double MILES_TO_METERS_RATIO = 1609.344;
   static const List<double> RADIUS_VALUES_MILES = [0.5, 1, 2];
+  static const List<double> RADIUS_VALUES_ZOOMS = [DEFAULT_MAP_ZOOM, DEFAULT_MAP_ZOOM - 1.0, DEFAULT_MAP_ZOOM - 2.0];
 
   static List<int> _radiusValuesMetres = RADIUS_VALUES_MILES.map((value) => (value * MILES_TO_METERS_RATIO).floor()).toList();
 
@@ -55,6 +59,7 @@ class MapScreenState extends State<MapScreen> {
   Position _currentLocation;
 
   LatLng _initialCameraPosition;
+  double _initialMapZoom;
 
   TextEditingController _searchTextController = TextEditingController();
 
@@ -104,7 +109,7 @@ class MapScreenState extends State<MapScreen> {
                 NavigationHelper.popRoute(context, rootNavigator: false);
               },
             ),
-            Center(child: Text(App.translate("map_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))),
+            Center(child: Text(!widget.editLocation ? App.translate("map_screen.app_bar.choose.title") : App.translate("map_screen.app_bar.edit.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))),
           ],
         )
     );
@@ -133,11 +138,46 @@ class MapScreenState extends State<MapScreen> {
     );
   }
 
+  double _getZoomBasedOnRadiusValue(){
+    double zoom = DEFAULT_MAP_ZOOM;
+
+    for(int i = 0; i < _radiusValuesMetres.length; i++){
+      if(_radiusValuesMetres[i] == _circleRadius){
+        // scale default zoom
+        zoom = RADIUS_VALUES_ZOOMS[i];
+        break;
+      }
+    }
+
+    return zoom;
+  }
+
+  void _initCurrentMunchLocation(){
+    _initialCameraPosition = LatLng(widget.munch.coordinates.latitude, widget.munch.coordinates.longitude);
+    _circleRadius = widget.munch.radius;
+
+    _initialMapZoom = _getZoomBasedOnRadiusValue();
+  }
+
+  void _initLocationDefaultValues(){
+    _initialCameraPosition = DEFAULT_CAMERA_POSITION;
+    _initialMapZoom = DEFAULT_MAP_ZOOM;
+  }
+
+  void _initCurrentMapLocation(){
+    _initialCameraPosition = LatLng(_currentLocation.latitude, _currentLocation.longitude);
+    _initialMapZoom = DEFAULT_MAP_ZOOM;
+  }
+
   void _locationListener(BuildContext context, LocationState state) {
     if (state.hasError) {
       // don't show flushbar if we don't get user's location
       if(state is CurrentLocationFetchingState){
-        _initialCameraPosition = DEFAULT_CAMERA_POSITION;
+        if(widget.editLocation){
+          _initCurrentMunchLocation();
+        } else{
+          _initLocationDefaultValues();
+        }
 
         _initCentralCircle();
       } else {
@@ -145,14 +185,16 @@ class MapScreenState extends State<MapScreen> {
       }
     } else {
       if(state is CurrentLocationFetchingState){
-
-        if(state.hasData) {
-
-          _currentLocation = state.data;
-
-          _initialCameraPosition = LatLng(_currentLocation.latitude, _currentLocation.longitude);
+        if(widget.editLocation) {
+          _initCurrentMunchLocation();
         } else{
-          _initialCameraPosition = DEFAULT_CAMERA_POSITION;
+          if (state.hasData) {
+            _currentLocation = state.data;
+
+            _initCurrentMapLocation();
+          } else {
+            _initLocationDefaultValues();
+          }
         }
 
         _initCentralCircle();
@@ -217,7 +259,7 @@ class MapScreenState extends State<MapScreen> {
               width: double.infinity,
               child: Stack(
                 children: [
-                  Center(child: _buildLetsEatButtonListener()),
+                  Center(child: _buildSubmitButtonListener()),
                   Align(alignment: Alignment.centerRight, child: _floatingActionButton())
                 ],
               )
@@ -234,7 +276,7 @@ class MapScreenState extends State<MapScreen> {
     controller.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
           target: location ,
-          zoom: DEFAULT_MAP_ZOOM
+          zoom: _getZoomBasedOnRadiusValue()
       ),
     ));
   }
@@ -246,7 +288,7 @@ class MapScreenState extends State<MapScreen> {
         myLocationButtonEnabled: false,
         myLocationEnabled: true,
         mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(target: _initialCameraPosition, zoom: DEFAULT_MAP_ZOOM),
+        initialCameraPosition: CameraPosition(target: _initialCameraPosition, zoom: _initialMapZoom),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
@@ -333,7 +375,7 @@ class MapScreenState extends State<MapScreen> {
     );
   }
 
-  void _letsEatButtonListener(BuildContext context, MunchState state){
+  void _submitButtonListener(BuildContext context, MunchState state){
     if(state.hasError){
       Utility.showErrorFlushbar(state.message, context);
     } else{
@@ -341,16 +383,20 @@ class MapScreenState extends State<MapScreen> {
         Munch createdMunch = state.data;
 
         DialogHelper(dialogContent: MunchCodeDialog(createdMunch), isModal: true).show(context);
+      } else if(state is MunchLocationUpdatingState){
+        NavigationHelper.popRoute(context);
+
+        Utility.showFlushbar(App.translate("map_screen.location_update.successful.message"), context);
       }
     }
   }
 
-  Widget _buildLetsEatButtonListener(){
+  Widget _buildSubmitButtonListener(){
     return BlocListener<MunchBloc, MunchState>(
         cubit: _munchBloc,
         listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
-        listener: (BuildContext context, MunchState state) => _letsEatButtonListener(context, state),
-        child: _letsEatButton(),
+        listener: (BuildContext context, MunchState state) => _submitButtonListener(context, state),
+        child: !widget.editLocation ? _letsEatButton() : _saveLocationButton(),
     );
   }
 
@@ -362,7 +408,7 @@ class MapScreenState extends State<MapScreen> {
       padding: EdgeInsets.symmetric(vertical: 16.0),
       color: Palette.secondaryDark,
       textColor: Palette.background,
-      content: Text(App.translate("map_screen.submit_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
+      content: Text(App.translate("map_screen.lets_eat_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: (){
         _onLetsEatButtonClicked();
       },
@@ -374,6 +420,30 @@ class MapScreenState extends State<MapScreen> {
 
     _munchBloc.add(CreateMunchEvent(munch));
   }
+
+  Widget _saveLocationButton() {
+    return CustomButton<MunchState, MunchLocationUpdatingState>.bloc(
+      cubit: _munchBloc,
+      minWidth: 200.0,
+      borderRadius: 12.0,
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      color: Palette.secondaryDark,
+      textColor: Palette.background,
+      content: Text(App.translate("map_screen.save_location_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
+      onPressedCallback: (){
+        _onSaveLocationButtonClicked();
+      },
+    );
+  }
+
+  void _onSaveLocationButtonClicked(){
+    _munchBloc.add(UpdateMunchLocationEvent(
+        munchId: widget.munch.id,
+        coordinates: Coordinates(latitude: _centralCircle.center.latitude, longitude: _centralCircle.center.longitude),
+        radius: _circleRadius)
+    );
+  }
+
 
   Future _onSearchBarClicked() async {
     Prediction prediction = await PlacesAutocomplete.show(
