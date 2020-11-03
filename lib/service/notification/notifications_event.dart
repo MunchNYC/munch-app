@@ -17,3 +17,9 @@ class NewRestaurantNotificationEvent extends MunchDataChangedNotificationsEvent 
 class NewMuncherNotificationEvent extends MunchDataChangedNotificationsEvent {
   NewMuncherNotificationEvent({String munchId}): super(munchId: munchId);
 }
+
+class KickMemberNotificationEvent extends NotificationsEvent {
+  String munchId;
+
+  KickMemberNotificationEvent({this.munchId});
+}

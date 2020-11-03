@@ -29,6 +29,7 @@ class NotificationsHandler{
       NotificationEventType.DECISION_MADE: _generateDecisionMadeNotificationEvent,
       NotificationEventType.MATCH_CLEARED: _generateNewRestaurantNotificationEvent,
       NotificationEventType.NEW_MUNCHER: _generateNewMuncherNotificationEvent,
+      NotificationEventType.USER_REMOVED: _generateKickMemberNotificationEvent,
       NotificationEventType.INFORMATION: () => null
     });
   }
@@ -65,6 +66,8 @@ class NotificationsHandler{
 
   void stopNotifications(){
     _disposeFCMTokenListener();
+
+    notificationsBloc?.close();
   }
 
   Future _saveFCMToken(String fcmToken) async{
@@ -103,6 +106,10 @@ class NotificationsHandler{
 
   NotificationsEvent _generateNewMuncherNotificationEvent(Map<String, dynamic> messageData){
     return NewMuncherNotificationEvent(munchId: messageData['munchId']);
+  }
+
+  NotificationsEvent _generateKickMemberNotificationEvent(Map<String, dynamic> messageData){
+    return KickMemberNotificationEvent(munchId: messageData['munchId']);
   }
 
   NotificationsEvent _mapNotificationEventType(Map<String, dynamic> messageData){
@@ -204,5 +211,6 @@ enum NotificationEventType{
   MATCH_CLEARED,
   DECISION_MADE,
   NEW_MUNCHER,
+  USER_REMOVED,
   INFORMATION
 }

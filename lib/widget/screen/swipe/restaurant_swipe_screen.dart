@@ -248,14 +248,24 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
     if(state is DetailedMunchNotificationState){
-      _checkMunchStatusChanged();
+      Munch munch = state.data;
+
+      if(munch.id == widget.munch.id) {
+        _checkMunchStatusChanged();
+      }
+    } else if(state is CurrentUserKickedNotificationState){
+      String munchId = state.data;
+
+      if(widget.munch.id == munchId){
+        NavigationHelper.popRoute(context);
+      }
     }
   }
 
   Widget _buildNotificationsBloc(){
     return BlocConsumer<NotificationsBloc, NotificationsState>(
         cubit: NotificationsHandler.getInstance().notificationsBloc,
-        listenWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready,
+        listenWhen: (NotificationsState previous, NotificationsState current) => (current is DetailedMunchNotificationState || current is CurrentUserKickedNotificationState) && current.ready,
         listener: (BuildContext context, NotificationsState state) => _munchStatusNotificationListener(context, state),
         buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready, // in every other condition enter builder
         builder: (BuildContext context, NotificationsState state) => _buildMunchBloc()

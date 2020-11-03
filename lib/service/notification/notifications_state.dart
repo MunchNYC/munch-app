@@ -15,3 +15,11 @@ class DetailedMunchNotificationState extends NotificationsState {
   DetailedMunchNotificationState.loading({message = ""}):super.loading(message: message);
   DetailedMunchNotificationState.failed({message = ""}):super.failed(message: message);
 }
+
+class CurrentUserKickedNotificationState extends NotificationsState {
+  CurrentUserKickedNotificationState({initial = true, loading = false, hasError = false, message = ""}):super(initial: initial, loading: loading, hasError: hasError, message: message);
+
+  CurrentUserKickedNotificationState.ready({data}):super.ready(data: data);
+  CurrentUserKickedNotificationState.loading({message = ""}):super.loading(message: message);
+  CurrentUserKickedNotificationState.failed({message = ""}):super.failed(message: message);
+}

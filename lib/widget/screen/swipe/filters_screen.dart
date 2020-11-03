@@ -11,11 +11,14 @@ import 'package:munch/repository/filters_repository.dart';
 import 'package:munch/service/munch/filter/filters_bloc.dart';
 import 'package:munch/service/munch/filter/filters_event.dart';
 import 'package:munch/service/munch/filter/filters_state.dart';
+import 'package:munch/service/notification/notifications_bloc.dart';
+import 'package:munch/service/notification/notifications_state.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/include/filters_info_dialog.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
@@ -245,8 +248,28 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         child: Scaffold(
             appBar: _appBar(context),
             backgroundColor: Palette.background,
-            body: _buildFiltersBloc()
+            body: _buildNotificationsBloc()
         )
+    );
+  }
+
+  void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
+    if(state is CurrentUserKickedNotificationState){
+      String munchId = state.data;
+
+      if(widget.munch.id == munchId){
+        NavigationHelper.navigateToHome(context, popAllRoutes: true);
+      }
+    }
+  }
+
+  Widget _buildNotificationsBloc(){
+    return BlocConsumer<NotificationsBloc, NotificationsState>(
+        cubit: NotificationsHandler.getInstance().notificationsBloc,
+        listenWhen: (NotificationsState previous, NotificationsState current) => (current is CurrentUserKickedNotificationState) && current.ready,
+        listener: (BuildContext context, NotificationsState state) => _munchStatusNotificationListener(context, state),
+        buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready, // in every other condition enter builder
+        builder: (BuildContext context, NotificationsState state) => _buildFiltersBloc()
     );
   }
 
