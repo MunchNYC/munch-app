@@ -48,6 +48,9 @@ class DeepLinkHandler{
       case DeepLinkRoute.JOIN_ROUTE:
           _deepLinkRouter.executeJoinRoute(pathSegments[2]);
           break;
+      case DeepLinkRoute.HOME_ROUTE:
+          _deepLinkRouter.executeHomeRoute();
+          break;
       default:
           print("No route");
           break;
