@@ -332,7 +332,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
               SizedBox(height: 8.0),
               CustomButton(
                 padding: EdgeInsets.all(8.0),
-                elevation: 4.0,
+                elevation: 2.0,
                 borderRadius: 4.0,
                 color: Palette.secondaryDark,
                 textColor: Palette.background,
