@@ -240,12 +240,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 4.0),
             _membersList(),
-            if(widget.munch.isModifiable)
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
-            if(widget.munch.isModifiable)
             SizedBox(height: 4.0),
             if(widget.munch.isModifiable)
-            _leaveMunchRow(),
+            _modifiableMunchLabelActions()
           ]
         )
       )
@@ -412,22 +410,45 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
-  Widget _leaveMunchRow(){
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Text(App.translate("options_screen.leave_munch.label.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary)),
-        CustomButton<MunchState, MunchLeavingState>.bloc(
+
+  Widget _modifiableMunchLabelActions(){
+    bool hasUpdateLocationButton = UserRepo.getInstance().currentUser.uid == widget.munch.hostUserId;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if(hasUpdateLocationButton)
+        _updateLocationButton(),
+        if(hasUpdateLocationButton)
+        SizedBox(height: 20.0),
+        _leaveMunchButton(),
+      ],
+    );
+  }
+
+  Widget _updateLocationButton(){
+    return CustomButton(
+        flat: true,
+        // very important to set, otherwise title won't be aligned good
+        padding: EdgeInsets.zero,
+        color: Colors.transparent,
+        textColor: Palette.primary,
+        content: Text(App.translate("options_screen.update_location_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary)),
+        onPressedCallback: _onUpdateLocationButtonClicked
+    );
+  }
+
+  Widget _leaveMunchButton(){
+    return CustomButton<MunchState, MunchLeavingState>.bloc(
           cubit: _munchBloc,
           flat: true,
           // very important to set, otherwise title won't be aligned good
           padding: EdgeInsets.zero,
           color: Colors.transparent,
+          textColor: Palette.error,
           content: Text(App.translate("options_screen.leave_munch_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.error)),
           onPressedCallback: _onLeaveButtonClicked
-        )
-      ],
     );
   }
 
@@ -481,6 +502,10 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   void _onKickButtonClicked(User user){
     OverlayDialogHelper(widget: KickMemberAlertDialog(user: user, munchId: widget.munch.id, munchBloc: _munchBloc)).show(context);
+  }
+
+  void _onUpdateLocationButtonClicked(){
+    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch);
   }
 
   void _onLeaveButtonClicked(){

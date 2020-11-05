@@ -37,7 +37,9 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield NoMoreCarouselImageState.ready(data: event.isLeftSideTapped);
     } else if(event is SaveMunchPreferencesEvent){
       yield* saveMunchPreferences(event);
-    }  else if(event is KickMemberEvent){
+    } else if(event is UpdateMunchLocationEvent){
+      yield* updateMunchLocation(event);
+    } else if(event is KickMemberEvent){
       yield* kickMember(event);
     } else if(event is LeaveMunchEvent){
       yield* leaveMunch(event.munchId);
@@ -140,6 +142,23 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     } catch (error) {
       print("Munch preferences saving failed: " + error.toString());
       yield MunchPreferencesSavingState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> updateMunchLocation(UpdateMunchLocationEvent updateMunchLocationEvent) async* {
+    yield MunchLocationUpdatingState.loading();
+
+    try {
+      Munch munch = await _munchRepo.updateMunchLocation(
+          munchId: updateMunchLocationEvent.munchId,
+          coordinates: updateMunchLocationEvent.coordinates,
+          radius: updateMunchLocationEvent.radius
+      );
+
+      yield MunchLocationUpdatingState.ready(data: munch);
+    } catch (error) {
+      print("Munch preferences saving failed: " + error.toString());
+      yield MunchLocationUpdatingState.failed(message: error.toString());
     }
   }
 

@@ -126,9 +126,9 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
                   textCapitalization: TextCapitalization.characters,
                   controller: _joinTextEditingController,
                   onChanged: (value) {
-                    _joinTextEditingController.value = TextEditingValue(
-                        text: value.toUpperCase(),
-                        selection: _joinTextEditingController.selection);
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      _joinTextEditingController.value = _joinTextEditingController.value.copyWith(text:value.toUpperCase());
+                    });
                   },
                 )
             ),

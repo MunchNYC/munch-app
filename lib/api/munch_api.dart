@@ -1,3 +1,4 @@
+import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
@@ -97,13 +98,26 @@ class MunchApi extends Api {
     return munch;
   }
 
-  Future<Munch> saveMunchPreferences({String munchId, String munchName, bool notificationsEnabled}) async {
+  Future<Munch> saveMunchPreferences({String munchId, String munchName, bool notificationsEnabled, Coordinates coordinates, int radius}) async {
     String putUrl = "/preferences?munchId=$munchId";
 
-    Map<String, dynamic> fields = {
-      "name": munchName,
-      "receivePushNotifications": notificationsEnabled
-    };
+    Map<String, dynamic> fields = {};
+
+    if(munchName != null){
+      fields['name'] = munchName;
+    }
+
+    if(notificationsEnabled != null){
+      fields['receivePushNotifications'] = munchName;
+    }
+
+    if(coordinates != null){
+      fields['coordinates'] = CoordinatesJsonSerializer().toMap(coordinates);
+    }
+
+    if(radius != null){
+      fields['radius'] = radius;
+    }
 
     var data = await put(putUrl, fields);
 

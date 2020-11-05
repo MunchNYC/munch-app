@@ -121,9 +121,9 @@ class NavigationHelper {
 
   // When navigatorState is not null - context will be null
   static Future navigateToMapScreen(BuildContext context,
-      {String munchName, bool addToBackStack: true, NavigatorState navigatorState}) {
+      {bool addToBackStack: true, String munchName, Munch munch, bool editLocation: false, NavigatorState navigatorState}) {
     return _navigateTo(context, addToBackStack: addToBackStack,
-        screen: MapScreen(munchName: munchName), rootNavigator: true, navigatorState: navigatorState);
+        screen: MapScreen(munchName: munchName, editLocation: editLocation, munch: munch), rootNavigator: true, navigatorState: navigatorState);
   }
 
   // When navigatorState is not null - context will be null
