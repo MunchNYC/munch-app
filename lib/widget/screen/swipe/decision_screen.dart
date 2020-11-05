@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
@@ -98,7 +99,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
       String munchId = state.data;
 
       if(widget.munch.id == munchId){
-        NavigationHelper.popRoute(context);
+        _forceNavigationToHomeScreen();
       }
     }
   }
@@ -131,8 +132,16 @@ class _DecisionScreenState extends State<DecisionScreen>{
     }
   }
 
+  void _forceNavigationToHomeScreen(){
+    NavigationHelper.navigateToHome(context, popAllRoutes: true);
+  }
+
   void _decisionScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
+      if(state.exception is AccessDeniedException){
+        _forceNavigationToHomeScreen();
+      }
+
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
       _checkNavigationToSwipeScreen();

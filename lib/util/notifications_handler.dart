@@ -96,25 +96,25 @@ class NotificationsHandler{
     DeepLinkHandler.getInstance().onDeepLinkReceived(payload);
   }
 
-  NotificationsEvent _generateDecisionMadeNotificationEvent(Map<String, dynamic> messageData){
+  NotificationsEvent _generateDecisionMadeNotificationEvent(Map messageData){
     return DecisionMadeNotificationEvent(munchId: messageData['munchId']);
   }
 
-  NotificationsEvent _generateNewRestaurantNotificationEvent(Map<String, dynamic> messageData){
+  NotificationsEvent _generateNewRestaurantNotificationEvent(Map messageData){
     return NewRestaurantNotificationEvent(munchId: messageData['munchId']);
   }
 
-  NotificationsEvent _generateNewMuncherNotificationEvent(Map<String, dynamic> messageData){
+  NotificationsEvent _generateNewMuncherNotificationEvent(Map messageData){
     return NewMuncherNotificationEvent(munchId: messageData['munchId']);
   }
 
-  NotificationsEvent _generateKickMemberNotificationEvent(Map<String, dynamic> messageData){
+  NotificationsEvent _generateKickMemberNotificationEvent(Map messageData){
     return KickMemberNotificationEvent(munchId: messageData['munchId']);
   }
 
-  NotificationsEvent _mapNotificationEventType(Map<String, dynamic> messageData){
+  NotificationsEvent _mapNotificationEventType(Map messageData){
     NotificationEventType notificationEventType =  NotificationEventType.values.firstWhere((type) => type.toString().split(".").last == messageData['eventType']);
-    return notificationsEventTypeMap[notificationEventType]();
+    return notificationsEventTypeMap[notificationEventType](messageData);
   }
 
   void _configureNotificationsReceiveCallbacks(){

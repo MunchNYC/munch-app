@@ -169,14 +169,14 @@ abstract class Api{
         throw BadRequestException(
             response.statusCode, responseJson['status']);
       case 401:
-      case 403:
         throw UnauthorisedException(
             response.statusCode, {"message": App.translate("api.error.unauthorized")});
+      case 403:
+        throw AccessDeniedException(response.statusCode, responseJson['status']);
       case 404:
         throw NotFoundException(response.statusCode, responseJson['status']);
       case 422:
-        throw ValidationException(
-            response.statusCode, responseJson['status']);
+        throw ValidationException(response.statusCode, responseJson['status']);
       case 500:
         throw InternalServerErrorException(response.statusCode, responseJson['status']);
       default:
@@ -230,6 +230,11 @@ class NotFoundException extends ApiException {
 
 class BadRequestException extends ApiException {
   BadRequestException(int status, Map<String, dynamic> map)
+      : super(status, map);
+}
+
+class AccessDeniedException extends ApiException {
+  AccessDeniedException(int status, Map<String, dynamic> map)
       : super(status, map);
 }
 

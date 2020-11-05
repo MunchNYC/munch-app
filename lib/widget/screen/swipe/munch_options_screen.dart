@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
@@ -195,13 +196,21 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     Utility.showFlushbar(App.translate("options_screen.kick_member.successful"), context);
   }
 
+  void _forceNavigationToHomeScreen(){
+    NavigationHelper.navigateToHome(context, popAllRoutes: true);
+  }
+
   void _optionsScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
-      Utility.showErrorFlushbar(state.message, context);
-
-      if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
-        _popScopeCompleter.complete(false);
+      if(state.exception is AccessDeniedException){
+        _forceNavigationToHomeScreen();
+      } else {
+        if (_popScopeCompleter != null && !_popScopeCompleter.isCompleted) {
+          _popScopeCompleter.complete(false);
+        }
       }
+
+      Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchPreferencesSavingState){
       _preferencesListener(state);
     } else if(state is KickingMemberState){

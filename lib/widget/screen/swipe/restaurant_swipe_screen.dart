@@ -3,6 +3,7 @@ import 'package:animated_widgets/widgets/translation_animated.dart';
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
@@ -257,7 +258,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       String munchId = state.data;
 
       if(widget.munch.id == munchId){
-        NavigationHelper.popRoute(context);
+        _forceNavigationToHomeScreen();
       }
     }
   }
@@ -338,8 +339,16 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     });
   }
 
+  void _forceNavigationToHomeScreen(){
+    NavigationHelper.navigateToHome(context, popAllRoutes: true);
+  }
+
   void _swipeScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
+      if(state.exception is AccessDeniedException){
+        _forceNavigationToHomeScreen();
+      }
+
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
       _checkMunchStatusChanged(navigateToDecisionScreenIfChanged: true);

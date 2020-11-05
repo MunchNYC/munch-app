@@ -38,7 +38,7 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
       yield FiltersFetchingState.ready(data: getFiltersResponse);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
-      yield FiltersFetchingState.failed(message: error.toString());
+      yield FiltersFetchingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -55,7 +55,7 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
       yield FiltersUpdatingState.ready(data: munch);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
-      yield FiltersUpdatingState.failed(message: error.toString());
+      yield FiltersUpdatingState.failed(exception: error, message: error.toString());
     }
   }
 }

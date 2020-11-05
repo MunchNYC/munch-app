@@ -34,11 +34,13 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       yield DetailedMunchNotificationState.ready(data: munch);
     } catch (error) {
       print("Munch fetching failed from foreground notification: " + error.toString());
-      yield DetailedMunchNotificationState.failed(message: error.toString());
+      yield DetailedMunchNotificationState.failed(exception: error, message: error.toString());
     }
   }
 
   Stream<NotificationsState> _currentUserKickedFromMunch(String munchId) async* {
+    _munchRepo.deleteMunchFromCache(munchId);
+
     yield CurrentUserKickedNotificationState.ready(data: munchId);
   }
 }

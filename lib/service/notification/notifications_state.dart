@@ -5,7 +5,7 @@ class NotificationsState extends SuperState {
 
   NotificationsState.ready({data}):super.ready(data: data);
   NotificationsState.loading({message = ""}):super.loading(message: message);
-  NotificationsState.failed({message = ""}):super.failed(message: message);
+  NotificationsState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
 }
 
 class DetailedMunchNotificationState extends NotificationsState {
@@ -13,7 +13,7 @@ class DetailedMunchNotificationState extends NotificationsState {
 
   DetailedMunchNotificationState.ready({data}):super.ready(data: data);
   DetailedMunchNotificationState.loading({message = ""}):super.loading(message: message);
-  DetailedMunchNotificationState.failed({message = ""}):super.failed(message: message);
+  DetailedMunchNotificationState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
 }
 
 class CurrentUserKickedNotificationState extends NotificationsState {
@@ -21,5 +21,5 @@ class CurrentUserKickedNotificationState extends NotificationsState {
 
   CurrentUserKickedNotificationState.ready({data}):super.ready(data: data);
   CurrentUserKickedNotificationState.loading({message = ""}):super.loading(message: message);
-  CurrentUserKickedNotificationState.failed({message = ""}):super.failed(message: message);
+  CurrentUserKickedNotificationState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
 }

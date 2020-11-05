@@ -4,6 +4,7 @@ import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/user.dart';
@@ -288,13 +289,21 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     }
   }
 
+  void _forceNavigationToHomeScreen(){
+    NavigationHelper.navigateToHome(context, popAllRoutes: true);
+  }
+
   void _filtersScreenListener(BuildContext context, FiltersState state){
     if (state.hasError) {
-      Utility.showErrorFlushbar(state.message, context);
-
-      if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
-        _popScopeCompleter.complete(false);
+      if(state.exception is AccessDeniedException){
+        _forceNavigationToHomeScreen();
+      } else{
+        if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
+          _popScopeCompleter.complete(false);
+        }
       }
+
+      Utility.showErrorFlushbar(state.message, context);
     } else if(state is FiltersFetchingState){
       _initializeFilters();
     } else if(state is FiltersUpdatingState){

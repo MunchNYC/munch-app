@@ -5,17 +5,17 @@ class FiltersState extends SuperState {
 
   FiltersState.ready({data}):super.ready(data: data);
   FiltersState.loading({message = ""}):super.loading(message: message);
-  FiltersState.failed({message = ""}):super.failed(message: message);
+  FiltersState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
 }
 
 class FiltersFetchingState extends FiltersState {
   FiltersFetchingState.ready({data}):super.ready(data: data);
   FiltersFetchingState.loading({message = ""}):super.loading(message: message);
-  FiltersFetchingState.failed({message = ""}):super.failed(message: message);
+  FiltersFetchingState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
 }
 
 class FiltersUpdatingState extends FiltersState {
   FiltersUpdatingState.ready({data}):super.ready(data: data);
   FiltersUpdatingState.loading({message = ""}):super.loading(message: message);
-  FiltersUpdatingState.failed({message = ""}):super.failed(message: message);
+  FiltersUpdatingState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
 }
