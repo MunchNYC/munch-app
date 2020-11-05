@@ -136,7 +136,7 @@ class NotificationsHandler{
 
               Platform.isAndroid
                   ? _showNotification(message['notification'], message['data']) // message structure is different for Android and iOS
-                  : _showNotification(message['notification'], message);
+                  : _showNotification(message['notification'] ?? message['aps']['alert'], message);
 
               return;
             },
