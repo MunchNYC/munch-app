@@ -11,11 +11,11 @@ import 'package:munch/util/deep_link_handler.dart';
 part 'munch.jser.dart';
 
 enum MunchStatus{
-  UNDECIDED, DECIDED, UNMODIFIABLE, ARCHIVED
+  UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL
 }
 
 enum MunchReviewValue{
-  LIKED, DISLIKED, NEUTRAL, NOSHOW
+  LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED
 }
 
 class Munch{
@@ -75,7 +75,7 @@ class Munch{
   String get joinLink => AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
 
   @Field.ignore()
-  bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;
+  bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.HISTORICAL;
 
   int getNumberOfMembers(){
     return numberOfMembers ?? members.length;

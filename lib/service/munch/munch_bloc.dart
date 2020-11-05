@@ -23,6 +23,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
   Stream<MunchState> mapEventToState(MunchEvent event) async* {
     if (event is GetMunchesEvent) {
       yield* getMunches();
+    } else if (event is GetHistoricalMunchesPageEvent) {
+      yield* getHistoricalMunches(event);
     } else if (event is JoinMunchEvent){
       yield* joinMunch(event.munchCode);
     } else if(event is CreateMunchEvent){
@@ -60,6 +62,22 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
       yield MunchesFetchingState.failed(message: error.toString());
+    }
+  }
+
+  Stream<MunchState> getHistoricalMunches(GetHistoricalMunchesPageEvent getHistoricalMunchesEvent) async* {
+    yield HistoricalMunchesPageFetchingState.loading();
+
+    try {
+      List<Munch> munchesList = await _munchRepo.getHistoricalMunches(
+        page: getHistoricalMunchesEvent.page,
+        timestamp: getHistoricalMunchesEvent.timestamp
+      );
+
+      yield HistoricalMunchesPageFetchingState.ready(data: munchesList);
+    } catch (error) {
+      print("Munches fetching failed: " + error.toString());
+      yield HistoricalMunchesPageFetchingState.failed(message: error.toString());
     }
   }
 

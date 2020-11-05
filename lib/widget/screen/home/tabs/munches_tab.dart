@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/munch_repository.dart';
@@ -13,13 +14,15 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
-import 'package:munch/widget/screen/home/include/archive_munch_dialog.dart';
+import 'package:munch/widget/screen/home/include/review_munch_dialog.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munch_list_widget.dart';
+import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/empty_list_view_widget.dart';
 import 'package:munch/widget/util/error_list_widget.dart';
+import 'package:munch/widget/util/overlay_dialog_helper.dart';
 
 import 'munch_list_widget_skeleton.dart';
 
@@ -45,7 +48,7 @@ class MunchesTabState extends State<MunchesTab> {
   List<Munch> _stillDecidingMunches;
   List<Munch> _decidedMunches;
   List<Munch> _unmodifiableMunches;
-  List<Munch> _archivedMunches;
+  List<Munch> _historicalMunches;
 
   List<bool> _decidedListViewItemsSwipeOpen;
   List<SlidableController> _slidableControllers;
@@ -59,9 +62,28 @@ class MunchesTabState extends State<MunchesTab> {
 
   bool _showUpcomingNotification = false;
 
+  int _historicalPageNumber = -1;
+  DateTime _historicalPaginationUTCDate;
+  bool _historicalPagesFinished = false;
+  bool _getHistoricalPageRequestInProgress = false;
 
   void _throwGetMunchesEvent(){
     munchBloc.add(GetMunchesEvent());
+  }
+
+  void _throwGetNextHistoricalPageEvent(){
+    if(_historicalPaginationUTCDate == null){
+      _historicalPaginationUTCDate = DateTime.now().toUtc();
+    }
+
+    _historicalPageNumber++;
+
+    _getHistoricalPageRequestInProgress = true;
+
+    munchBloc.add(GetHistoricalMunchesPageEvent(
+        page: _historicalPageNumber,
+        timestamp: _historicalPaginationUTCDate.millisecondsSinceEpoch)
+    );
   }
 
   @override
@@ -106,7 +128,7 @@ class MunchesTabState extends State<MunchesTab> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(App.translate("munches_tab.title"), style: AppTextStyle.style(AppTextStylePattern.heading2)),
+          Text(App.translate("munches_tab.title"), style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500)),
           _plusButton()
         ],
       );
@@ -116,7 +138,7 @@ class MunchesTabState extends State<MunchesTab> {
     return Align(
         alignment: Alignment.centerLeft,
         child:  DefaultTabController(
-            length: 3,
+            length: 2,
             child: TabBar(
               onTap: (int index){
                 setState(() {
@@ -149,7 +171,6 @@ class MunchesTabState extends State<MunchesTab> {
                       ],
                     )
                 ),
-                Tab(text: App.translate("munches_tab.archived_tab.title")),
               ],
             )
         )
@@ -168,7 +189,7 @@ class MunchesTabState extends State<MunchesTab> {
       _decidedListViewItemsSwipeOpen = List<bool>();
       _slidableControllers = List<SlidableController>();
 
-      for (int i = 0; i < _decidedMunches.length + _unmodifiableMunches.length; i++) {
+      for (int i = 0; i < _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length; i++) {
         _decidedListViewItemsSwipeOpen.add(false);
 
         _slidableControllers.add(SlidableController(
@@ -188,36 +209,66 @@ class MunchesTabState extends State<MunchesTab> {
     }
   }
 
+  void _initHistoricalPaginationData(){
+    _historicalPageNumber = -1;
+    _historicalPagesFinished = false;
+    _historicalPaginationUTCDate = null;
+  }
+
+  void _getMunchesListener(){
+    _stillDecidingMunches = _munchRepo.munchStatusLists[MunchStatus.UNDECIDED];
+    _decidedMunches =  _munchRepo.munchStatusLists[MunchStatus.DECIDED];
+    _unmodifiableMunches = _munchRepo.munchStatusLists[MunchStatus.UNMODIFIABLE];
+    _historicalMunches = _munchRepo.munchStatusLists[MunchStatus.HISTORICAL];
+
+    _initSwipeControllers();
+    _initHistoricalPaginationData();
+
+    // just first time when user receives munches
+    if(_checkUpcomingNotification) {
+      if(_unmodifiableMunches.length > 0){
+        _showUpcomingNotification = true;
+      }
+
+      _checkUpcomingNotification = false;
+    }
+  }
+
+  void _historicalMunchesPageListener(List<Munch> historicalMunchesPageList){
+    _initSwipeControllers();
+
+    if(historicalMunchesPageList.isEmpty){
+      _historicalPagesFinished = true;
+    }
+
+    _getHistoricalPageRequestInProgress = false;
+  }
+
+  void _joinMunchListener(Munch joinedMunch){
+    // pop create join dialog
+    NavigationHelper.popRoute(context);
+
+    NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
+  }
+
+  void _reviewMunchListener(){
+    // pop archive munch dialog
+    NavigationHelper.popRoute(context);
+
+    Utility.showFlushbar(App.translate("decision_screen.review_munch.successful.text"), context);
+  }
+
   void _listViewsListener(BuildContext context, MunchState state){
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchesFetchingState){
-      _stillDecidingMunches = _munchRepo.munchStatusLists[MunchStatus.UNDECIDED];
-      _decidedMunches =  _munchRepo.munchStatusLists[MunchStatus.DECIDED];
-      _unmodifiableMunches = _munchRepo.munchStatusLists[MunchStatus.UNMODIFIABLE];
-      _archivedMunches =  _munchRepo.munchStatusLists[MunchStatus.ARCHIVED];
-
-      _initSwipeControllers();
-
-      // just first time when user receives munches
-      if(_checkUpcomingNotification) {
-        if(_unmodifiableMunches.length > 0){
-          _showUpcomingNotification = true;
-        } else{
-          _checkUpcomingNotification = false;
-        }
-      }
+      _getMunchesListener();
+    } else if(state is HistoricalMunchesPageFetchingState){
+      _historicalMunchesPageListener(state.data);
     } else if(state is MunchJoiningState){
-      Munch joinedMunch = state.data;
-      // pop create join dialog
-      NavigationHelper.popRoute(context);
-
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch);
+      _joinMunchListener(state.data);
     } else if(state is ReviewMunchState){
-      // pop archive munch dialog
-      NavigationHelper.popRoute(context);
-
-      Utility.showFlushbar("Munch successfully archived", context);
+      _reviewMunchListener();
     }
   }
 
@@ -226,7 +277,7 @@ class MunchesTabState extends State<MunchesTab> {
         cubit: munchBloc,
         listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
         listener: (BuildContext context, MunchState state) => _listViewsListener(context, state),
-        buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || ((current is MunchJoiningState || current is ReviewMunchState) && current.ready),
+        buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState || current is HistoricalMunchesPageFetchingState || ( current is MunchJoiningState || current is ReviewMunchState && current.ready),
         builder: (BuildContext context, MunchState state) => _buildListViews(context, state)
     );
   }
@@ -234,7 +285,7 @@ class MunchesTabState extends State<MunchesTab> {
   Widget _buildListViews(BuildContext context, MunchState state){
     if (state.hasError) {
       return _renderListViews(errorOccurred: true);
-    } else if(state.initial || state.loading){
+    } else if( (state.initial || state.loading) && !(state is HistoricalMunchesPageFetchingState)){
       return _renderListViews(loading: true);
     } else{
       return _renderListViews();
@@ -248,7 +299,6 @@ class MunchesTabState extends State<MunchesTab> {
         children: <Widget>[
           _renderStillDecidingListView(errorOccurred: errorOccurred, loading: loading),
           _renderDecidedListView(errorOccurred: errorOccurred, loading: loading),
-          _renderArchivedListView(errorOccurred: errorOccurred, loading: loading)
         ]
     );
   }
@@ -323,6 +373,50 @@ class MunchesTabState extends State<MunchesTab> {
     );
   }
 
+  Widget _decidedMunchListItem(Munch munch, int index){
+    return InkWell(
+        onTap: (){
+          NavigationHelper.navigateToDecisionScreen(context, munch: munch, shouldFetchDetailedMunch: true);
+        },
+        child: Slidable(
+          controller: _slidableControllers[index],
+          actionPane: SlidableDrawerActionPane(),
+          actionExtentRatio: 0.25,
+          child: Padding(
+            padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 24.0, right: 24.0),
+            child: MunchListWidget(munch:  munch),
+          ),
+          secondaryActions: <Widget>[
+            IconSlideAction(
+                color: Color(0xFFFBB25B),
+                iconWidget: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(child: ImageIcon(AssetImage("assets/icons/leaveReview.png"), color: Palette.primary, size: 28.0)),
+                  ],
+                ),
+                onTap: () {
+                  // rootNavigator true to overlay bottom navigation bar
+                  OverlayDialogHelper(widget: ReviewMunchDialog(munchBloc: munchBloc, munch: munch)).show(context);
+                }
+            ),
+          ],
+        )
+    );
+  }
+
+  bool _decidedListViewScrollNotificationHandler(ScrollNotification scrollNotification){
+    if(!_historicalPagesFinished && !_getHistoricalPageRequestInProgress) {
+      if (scrollNotification is ScrollEndNotification) {
+        if (scrollNotification.metrics.pixels == scrollNotification.metrics.maxScrollExtent) {
+          _throwGetNextHistoricalPageEvent();
+        }
+      }
+    }
+
+    return false;
+  }
+
   /*
     Decided munches are sorted, then unmodifiable munches are rendered sorted
    */
@@ -332,97 +426,50 @@ class MunchesTabState extends State<MunchesTab> {
         color: Palette.secondaryDark,
         onRefresh: _refreshListView,
         // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
-        child: SingleChildScrollView(
-          // must be set because of RefreshIndicator
+        child: NotificationListener<ScrollNotification>(
+            onNotification: _decidedListViewScrollNotificationHandler,
+            child: SingleChildScrollView(
+            // must be set because of RefreshIndicator
             physics: AlwaysScrollableScrollPhysics(),
             child:
             errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
-            loading || _decidedMunches.length + _unmodifiableMunches.length > 0 ?
-            ListView.separated(
-              primary: false,
-              shrinkWrap: true,
-              itemCount: loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length + _unmodifiableMunches.length,
-              padding: EdgeInsets.zero,
-              separatorBuilder: (BuildContext context, int index){
-                return _listViewSeparator(index, loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length + _unmodifiableMunches.length, hasSwipe: loading ? false : true);
-              },
-              itemBuilder: (BuildContext context, int index){
-                if(loading) return _renderSkeletonWidget(index);
+            loading || !_historicalPagesFinished || _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length > 0 ?
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                    ListView.separated(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length,
+                      padding: EdgeInsets.zero,
+                      separatorBuilder: (BuildContext context, int index){
+                        return _listViewSeparator(index, loading ? SKELETON_ITEMS_NUMBER : _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length, hasSwipe: loading ? false : true);
+                      },
+                      itemBuilder: (BuildContext context, int index){
+                        if(loading) return _renderSkeletonWidget(index);
 
-                Munch munch = index < _decidedMunches.length ? _decidedMunches[index] : _unmodifiableMunches[index - _decidedMunches.length];
+                        Munch munch;
 
-                // InkWell is making empty space clickable also
-                return InkWell(
-                    onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: munch, shouldFetchDetailedMunch: true);
-                    },
-                    child: Slidable(
-                      controller: _slidableControllers[index],
-                      actionPane: SlidableDrawerActionPane(),
-                      actionExtentRatio: 0.25,
-                      child: Padding(
-                          padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 24.0, right: 24.0),
-                          child: MunchListWidget(munch:  munch),
-                      ),
-                      secondaryActions: <Widget>[
-                        IconSlideAction(
-                            color: Color(0xFFFBB25B),
-                            iconWidget: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Expanded(child: ImageIcon(AssetImage("assets/icons/archive.png"), color: Palette.background, size: 28.0)),
-                              ],
-                            ),
-                            onTap: () {
-                              // rootNavigator true to overlay bottom navigation bar
-                              DialogHelper(dialogContent: ArchiveMunchDialog(munchBloc: munchBloc, munch: munch), rootNavigator: true).show(context);
-                            }
-                        ),
-                    ],
+                        if(index < _decidedMunches.length){
+                          munch = _decidedMunches[index];
+                        } else if(index < _decidedMunches.length + _unmodifiableMunches.length){
+                          munch = _unmodifiableMunches[index - _decidedMunches.length];
+                        } else{
+                          munch = _historicalMunches[index - _decidedMunches.length - _unmodifiableMunches.length];
+                        }
+
+                        return _decidedMunchListItem(munch, index);
+                      },
+                  ),
+                  if(_getHistoricalPageRequestInProgress)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 24.0),
+                    child: AppCircularProgressIndicator()
                   )
-                );
-              },
-            ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.decided_list_view.empty.text"))
+              ])
+            : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.decided_list_view.empty.text"))
         )
-    );
-  }
-
-  Widget _renderArchivedListView({bool errorOccurred = false, bool loading = false}){
-    // RefreshIndicator must be placed above scroll view
-    return RefreshIndicator(
-        color: Palette.secondaryDark,
-        onRefresh: _refreshListView,
-        // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
-        child: SingleChildScrollView(
-          // must be set because of RefreshIndicator
-            physics: AlwaysScrollableScrollPhysics(),
-            child:
-            errorOccurred ? ErrorListWidget(actionCallback: _refreshListView) :
-            loading || _archivedMunches.length > 0 ?
-            ListView.separated(
-              primary: false,
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: loading ? SKELETON_ITEMS_NUMBER : _archivedMunches.length,
-              separatorBuilder: (BuildContext context, int index){
-                return _listViewSeparator(index, loading ? SKELETON_ITEMS_NUMBER : _archivedMunches.length);
-              },
-              itemBuilder: (BuildContext context, int index){
-                if(loading) return _renderSkeletonWidget(index);
-
-                // InkWell is making empty space clickable also
-                return InkWell(
-                    onTap: (){
-                      NavigationHelper.navigateToDecisionScreen(context, munch: _archivedMunches[index], shouldFetchDetailedMunch: true);
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-                      child: MunchListWidget(munch: _archivedMunches[index])
-                    )
-                );
-              },
-            ) : EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.archived_list_view.empty.text"))
-        )
+      )
     );
   }
 

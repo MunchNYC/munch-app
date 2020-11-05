@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/service/util/super_state.dart';
+import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 
 class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
@@ -108,7 +109,8 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
       height: initialHeight,
       child: SpinKitThreeBounce(
         color: widget.textColor,
-        size: 20.0,
+        // condition in case button is very small
+        size: initialWidth < 30.0 ? initialWidth * 0.5 : 20.0,
       )
     );
   }

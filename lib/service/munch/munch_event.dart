@@ -6,6 +6,13 @@ abstract class MunchEvent {}
 
 class GetMunchesEvent extends MunchEvent {}
 
+class GetHistoricalMunchesPageEvent extends MunchEvent {
+  int page;
+  int timestamp;
+
+  GetHistoricalMunchesPageEvent({this.page, this.timestamp});
+}
+
 class JoinMunchEvent extends MunchEvent {
   String munchCode;
 

@@ -13,12 +13,10 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
-import 'package:munch/widget/screen/home/include/archive_munch_dialog.dart';
-import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
+import 'package:munch/widget/screen/home/include/review_munch_dialog.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/custom_button.dart';
-import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
@@ -111,12 +109,6 @@ class _DecisionScreenState extends State<DecisionScreen>{
       _checkNavigationToSwipeScreen();
     } else if(state is CancellingMunchDecisionState){
       _checkNavigationToSwipeScreen();
-    } else if(state is MunchJoiningState){
-      Munch joinedMunch = state.data;
-      // pop create join dialog
-      NavigationHelper.popRoute(context);
-
-      NavigationHelper.navigateToRestaurantSwipeScreen(context, munch: joinedMunch, addToBackStack: false);
     } else if(state is ReviewMunchState){
       // close Archive Munch dialog
       NavigationHelper.popRoute(context);
@@ -161,10 +153,8 @@ class _DecisionScreenState extends State<DecisionScreen>{
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    if(widget.munch.munchStatus == MunchStatus.UNMODIFIABLE)
+                    if(!widget.munch.isModifiable)
                     _unmodifiableInfoRow(),
-                    if(widget.munch.munchStatus == MunchStatus.ARCHIVED)
-                    _archivedInfoRow(),
                     if(!widget.munch.isModifiable)
                     Divider(thickness: 2.0, height: 32.0, color: Palette.secondaryLight.withOpacity(0.2)),
 
@@ -350,51 +340,13 @@ class _DecisionScreenState extends State<DecisionScreen>{
                     style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
                 onPressedCallback: (){
                   // We'll not have here nested navigators, because we are outside its context, so specifying root navigator to true/false will be same
-                  DialogHelper(dialogContent: ArchiveMunchDialog(munchBloc: _munchBloc, munch: widget.munch), rootNavigator: true).show(context);
+                  OverlayDialogHelper(widget: ReviewMunchDialog(munchBloc: _munchBloc, munch: widget.munch)).show(context);
                 },
               )
             ],
           ),
         )
       ]
-    );
-  }
-
-  Widget _archivedInfoRow(){
-    return Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          ImageIcon(
-            AssetImage("assets/icons/archive.png"),
-            color: Palette.primary,
-            size: 24.0,
-          ),
-          SizedBox(width: 8.0),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(App.translate("decision_screen.munch_archived.description"),
-                  style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 1.0)),
-                SizedBox(height: 8.0),
-                CustomButton(
-                  padding: EdgeInsets.all(8.0),
-                  elevation: 4.0,
-                  borderRadius: 4.0,
-                  color: Palette.secondaryDark,
-                  textColor: Palette.background,
-                  content: Text(App.translate("decision_screen.munch_archived.new_munch_button.text"),
-                      style: AppTextStyle.style(AppTextStylePattern.body2Inverse, fontSizeOffset: 1.0)),
-                  onPressedCallback: (){
-                    // We'll not have here nested navigators, because we are outside its context, so specifying root navigator to true/false will be same
-                   DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc, addCurrentScreenToBackStackOnCreate: false), rootNavigator: true).show(context);
-                  },
-                )
-              ],
-            ),
-          )
-        ],
     );
   }
 

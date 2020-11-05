@@ -25,11 +25,6 @@ abstract class _$GetMunchesResponseJsonSerializer
         'decidedMunches',
         codeIterable(model.decidedMunches,
             (val) => _munchJsonSerializer.toMap(val as Munch)));
-    setMapValue(
-        ret,
-        'archivedMunches',
-        codeIterable(model.archivedMunches,
-            (val) => _munchJsonSerializer.toMap(val as Munch)));
     return ret;
   }
 
@@ -41,9 +36,6 @@ abstract class _$GetMunchesResponseJsonSerializer
         map['undecidedMunches'] as Iterable,
         (val) => _munchJsonSerializer.fromMap(val as Map));
     obj.decidedMunches = codeIterable<Munch>(map['decidedMunches'] as Iterable,
-        (val) => _munchJsonSerializer.fromMap(val as Map));
-    obj.archivedMunches = codeIterable<Munch>(
-        map['archivedMunches'] as Iterable,
         (val) => _munchJsonSerializer.fromMap(val as Map));
     return obj;
   }

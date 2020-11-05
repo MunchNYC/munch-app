@@ -42,7 +42,7 @@ class MunchListWidget extends StatelessWidget {
           _firstRow(),
           _secondRow(),
          if(munch.munchStatus == MunchStatus.UNDECIDED) _undecidedThirdRow(),
-         if(munch.munchStatus != MunchStatus.UNDECIDED) _decidedUnmodifiableArchivedThirdRow(),
+         if(munch.munchStatus != MunchStatus.UNDECIDED) _decidedUnmodifiableHistoricalThirdRow(),
       ]
     );
   }
@@ -104,7 +104,7 @@ class MunchListWidget extends StatelessWidget {
     );
   }
 
-  Widget _decidedUnmodifiableArchivedThirdRow(){
+  Widget _decidedUnmodifiableHistoricalThirdRow(){
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.max,
@@ -116,22 +116,22 @@ class MunchListWidget extends StatelessWidget {
             overflow: TextOverflow.ellipsis
           )
         ),
-        if(munch.munchStatus == MunchStatus.UNMODIFIABLE)
+        if(munch.munchStatus == MunchStatus.DECIDED)
         SizedBox(width: 8.0),
-        if(munch.munchStatus == MunchStatus.UNMODIFIABLE)
+        if(munch.munchStatus == MunchStatus.DECIDED)
         Padding(
             padding: EdgeInsets.only(right: 4.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.navigate_before, color: Palette.secondaryLight.withOpacity(0.6), size: 16.0),
-                Text(App.translate("munch_list_widget.swipe_to_archive.text"),
+                Text(App.translate("munch_list_widget.swipe_to_review.text"),
                     style: AppTextStyle.style(AppTextStylePattern.body, color: Palette.secondaryLight),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis
                 ),
                 SizedBox(width: 4.0),
-                ImageIcon(AssetImage("assets/icons/archive.png"), color: Palette.secondaryDark, size: 16.0),
+                ImageIcon(AssetImage("assets/icons/leaveReview.png"), color: Palette.primary, size: 16.0),
               ],
             )
         ),

@@ -21,6 +21,18 @@ class MunchApi extends Api {
     return getMunchesResponse;
   }
 
+  Future<List<Munch>> getHistoricalMunches({int page, int timestamp}) async {
+    String getUrl = "/munches/history?pageNumber=$page&timestamp=$timestamp";
+
+    var data = await get(getUrl);
+
+    List<Munch> munchesList = List<Munch>.from(data['munchCompacts'].map((munchData){
+      return MunchJsonSerializer().fromMap(munchData);
+    }));
+
+    return munchesList;
+  }
+
   Future<String> getMunchIdForCode(String munchCode) async {
     String postUrl = "/code";
 

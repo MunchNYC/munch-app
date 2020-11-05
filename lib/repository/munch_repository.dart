@@ -20,7 +20,7 @@ class MunchRepo {
     munchStatusLists[MunchStatus.UNDECIDED] = List<Munch>();
     munchStatusLists[MunchStatus.DECIDED] = List<Munch>();
     munchStatusLists[MunchStatus.UNMODIFIABLE] = List<Munch>();
-    munchStatusLists[MunchStatus.ARCHIVED] = List<Munch>();
+    munchStatusLists[MunchStatus.HISTORICAL] = List<Munch>();
 
     munchMap = Map<String, Munch>();
   }
@@ -96,7 +96,7 @@ class MunchRepo {
     munchMap[munch.id] = munch;
   }
 
-  Future getMunches() async{
+  Future<GetMunchesResponse> getMunches() async{
     GetMunchesResponse getMunchesResponse = await _munchApi.getMunches();
 
     _clearMunchCache();
@@ -109,11 +109,17 @@ class MunchRepo {
       _addMunchToCache(getMunchesResponse.decidedMunches[i]);
     }
 
-    for(int i = 0; i < getMunchesResponse.archivedMunches.length; i++){
-      _addMunchToCache(getMunchesResponse.archivedMunches[i]);
+    return getMunchesResponse;
+  }
+
+  Future<List<Munch>> getHistoricalMunches({int page, int timestamp}) async{
+    List<Munch> historicalMunchesList = await _munchApi.getHistoricalMunches(page: page, timestamp: timestamp);
+
+    for(int i = 0; i < historicalMunchesList.length; i++){
+      updateMunchCache(historicalMunchesList[i]);
     }
 
-    return getMunchesResponse;
+    return historicalMunchesList;
   }
 
   Future<Munch> joinMunch(String munchCode) async{

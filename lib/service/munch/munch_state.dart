@@ -15,6 +15,12 @@ class MunchesFetchingState extends MunchState {
   MunchesFetchingState.failed({message = ""}):super.failed(message: message);
 }
 
+class HistoricalMunchesPageFetchingState extends MunchState {
+  HistoricalMunchesPageFetchingState.ready({data}):super.ready(data: data);
+  HistoricalMunchesPageFetchingState.loading({message = ""}):super.loading(message: message);
+  HistoricalMunchesPageFetchingState.failed({message = ""}):super.failed(message: message);
+}
+
 class MunchJoiningState extends MunchState {
   MunchJoiningState.ready({data}):super.ready(data: data);
   MunchJoiningState.loading({message = ""}):super.loading(message: message);
