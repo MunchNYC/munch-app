@@ -99,19 +99,19 @@ class NotificationsHandler{
   }
 
   NotificationsEvent _generateDecisionMadeNotificationEvent(Map messageData){
-    return DecisionMadeNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
+    return DecisionMadeNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
   }
 
   NotificationsEvent _generateNewRestaurantNotificationEvent(Map messageData){
-    return NewRestaurantNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
+    return NewRestaurantNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
   }
 
   NotificationsEvent _generateNewMuncherNotificationEvent(Map messageData){
-    return NewMuncherNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
+    return NewMuncherNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
   }
 
   NotificationsEvent _generateKickMemberNotificationEvent(Map messageData){
-    return KickMemberNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
+    return KickMemberNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
   }
 
   NotificationsEvent _mapNotificationEventType(Map messageData){

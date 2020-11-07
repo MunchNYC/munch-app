@@ -33,7 +33,7 @@ class DialogHelper{
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
                                 child: dialogContent
                             )
                           ]
