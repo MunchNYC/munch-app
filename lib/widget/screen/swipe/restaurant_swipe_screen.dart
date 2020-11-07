@@ -189,10 +189,16 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _swipeScreenListener is always called first even if it's deeper in widget tree
   */
   Widget _appBarTitleBuilder(){
-    return BlocBuilder<MunchBloc, MunchState>(
-      cubit: _munchBloc,
-      buildWhen: (MunchState previous, MunchState current) => (current is DetailedMunchFetchingState) && current.ready,
-      builder: (BuildContext context, MunchState state) => _appBarTitle(),
+    return BlocBuilder<NotificationsBloc, NotificationsState>(
+      cubit: NotificationsHandler.getInstance().notificationsBloc,
+      buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready,
+      builder: (BuildContext context, NotificationsState state){
+        return BlocBuilder<MunchBloc, MunchState>(
+          cubit: _munchBloc,
+          buildWhen: (MunchState previous, MunchState current) => (current is DetailedMunchFetchingState) && current.ready,
+          builder: (BuildContext context, MunchState state) => _appBarTitle(),
+        );
+      }
     );
   }
 

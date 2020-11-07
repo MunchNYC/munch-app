@@ -402,7 +402,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
           SizedBox(height: 8.0),
           _linkIconsRow(),
           SizedBox(height: 8.0),
-          if(widget.restaurant.workingHours != null)
+          if(widget.restaurant.workingHours != null && widget.restaurant.workingHours.length > 0)
           _workingHours(),
         ],
     );
