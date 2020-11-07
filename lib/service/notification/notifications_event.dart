@@ -1,25 +1,31 @@
 abstract class NotificationsEvent {}
 
-class MunchDataChangedNotificationsEvent extends NotificationsEvent{
+class TimestampedNotificationsEvent extends NotificationsEvent{
+  DateTime timestampUTC;
+
+  TimestampedNotificationsEvent(this.timestampUTC);
+}
+
+class MunchDataChangedNotificationsEvent extends TimestampedNotificationsEvent{
   String munchId;
 
-  MunchDataChangedNotificationsEvent({this.munchId});
+  MunchDataChangedNotificationsEvent({this.munchId, DateTime timestampUTC}): super(timestampUTC);
 }
 
 class DecisionMadeNotificationEvent extends MunchDataChangedNotificationsEvent {
-  DecisionMadeNotificationEvent({String munchId}): super(munchId: munchId);
+  DecisionMadeNotificationEvent({String munchId, DateTime timestampUTC}): super(munchId: munchId, timestampUTC: timestampUTC);
 }
 
 class NewRestaurantNotificationEvent extends MunchDataChangedNotificationsEvent {
-  NewRestaurantNotificationEvent({String munchId}): super(munchId: munchId);
+  NewRestaurantNotificationEvent({String munchId, DateTime timestampUTC}): super(munchId: munchId, timestampUTC: timestampUTC);
 }
 
 class NewMuncherNotificationEvent extends MunchDataChangedNotificationsEvent {
-  NewMuncherNotificationEvent({String munchId}): super(munchId: munchId);
+  NewMuncherNotificationEvent({String munchId, DateTime timestampUTC}): super(munchId: munchId, timestampUTC: timestampUTC);
 }
 
-class KickMemberNotificationEvent extends NotificationsEvent {
+class KickMemberNotificationEvent extends TimestampedNotificationsEvent {
   String munchId;
 
-  KickMemberNotificationEvent({this.munchId});
+  KickMemberNotificationEvent({this.munchId, DateTime timestampUTC}): super(timestampUTC);
 }

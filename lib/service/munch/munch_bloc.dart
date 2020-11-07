@@ -235,7 +235,12 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
         munchId: reviewMunchEvent.munchId,
       );
 
-      yield ReviewMunchState.ready(data: munch);
+      yield ReviewMunchState.ready(
+        data: Map.of({
+           "munch": munch,
+           "forcedReview": reviewMunchEvent.forcedReview
+        })
+      );
     } catch (error) {
       print("Munch decision cancellation failed: " + error.toString());
       yield ReviewMunchState.failed(exception: error, message: error.toString());

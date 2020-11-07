@@ -93,12 +93,16 @@ class MunchRepo {
 
       munchMap[newMunch.id] = newMunch;
     }
+
+    newMunch.lastUpdatedUTC = DateTime.now().toUtc();
   }
 
   void _addMunchToCache(Munch munch){
     munchStatusLists[munch.munchStatus].add(munch);
 
     munchMap[munch.id] = munch;
+
+    munch.lastUpdatedUTC = DateTime.now().toUtc();
   }
 
   Future<GetMunchesResponse> getMunches() async{
@@ -161,14 +165,7 @@ class MunchRepo {
 
   Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async{
     try {
-      List<Restaurant> restaurantList = await _munchApi.getSwipeRestaurantsPage(
-          munchId);
-
-      for (int i = 0; i < restaurantList.length; i++) {
-        // remove days with no data for working times
-        restaurantList[i].workingHours.removeWhere((element) =>
-        element.workingTimes.length == 0);
-      }
+      List<Restaurant> restaurantList = await _munchApi.getSwipeRestaurantsPage(munchId);
 
       return restaurantList;
     } on AccessDeniedException catch (error) {

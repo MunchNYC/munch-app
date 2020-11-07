@@ -168,3 +168,24 @@ abstract class _$MunchGroupFilterJsonSerializer
     return obj;
   }
 }
+
+abstract class _$RequestedReviewJsonSerializer
+    implements Serializer<RequestedReview> {
+  @override
+  Map<String, dynamic> toMap(RequestedReview model) {
+    if (model == null) return null;
+    Map<String, dynamic> ret = <String, dynamic>{};
+    setMapValue(ret, 'munchId', model.munchId);
+    setMapValue(ret, 'imageUrl', model.imageUrl);
+    return ret;
+  }
+
+  @override
+  RequestedReview fromMap(Map map) {
+    if (map == null) return null;
+    final obj = RequestedReview();
+    obj.munchId = map['munchId'] as String;
+    obj.imageUrl = map['imageUrl'] as String;
+    return obj;
+  }
+}

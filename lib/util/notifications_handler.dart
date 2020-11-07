@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:munch/model/processors/timestamp_processor.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/notification/notifications_bloc.dart';
 import 'package:munch/service/notification/notifications_event.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/deep_link_handler.dart';
+import 'package:munch/util/utility.dart';
 
 class NotificationsHandler{
   static const ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME = "MUNCH-NOTIFICATION-CHANNEL";
@@ -97,19 +99,19 @@ class NotificationsHandler{
   }
 
   NotificationsEvent _generateDecisionMadeNotificationEvent(Map messageData){
-    return DecisionMadeNotificationEvent(munchId: messageData['munchId']);
+    return DecisionMadeNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
   }
 
   NotificationsEvent _generateNewRestaurantNotificationEvent(Map messageData){
-    return NewRestaurantNotificationEvent(munchId: messageData['munchId']);
+    return NewRestaurantNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
   }
 
   NotificationsEvent _generateNewMuncherNotificationEvent(Map messageData){
-    return NewMuncherNotificationEvent(munchId: messageData['munchId']);
+    return NewMuncherNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
   }
 
   NotificationsEvent _generateKickMemberNotificationEvent(Map messageData){
-    return KickMemberNotificationEvent(munchId: messageData['munchId']);
+    return KickMemberNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(messageData['timestamp']));
   }
 
   NotificationsEvent _mapNotificationEventType(Map messageData){

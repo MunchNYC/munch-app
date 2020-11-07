@@ -136,8 +136,15 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return InkWell(
       onTap: () {
         NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
-           (value) => setState(() {}) //refresh the data on the page
-        );
+           (shouldReloadRestaurants){
+             setState(() {
+               if(shouldReloadRestaurants) {
+                 _currentRestaurants.clear();
+
+                 _throwGetSwipeRestaurantNextPageEvent();
+               }
+             });
+         }); //refresh the data on the page
       },
       child: Column(
           mainAxisSize: MainAxisSize.max,

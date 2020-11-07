@@ -143,14 +143,14 @@ class _DecisionScreenState extends State<DecisionScreen>{
       }
 
       Utility.showErrorFlushbar(state.message, context);
+    } else if(state.loading && state is ReviewMunchState){
+      // close review dialog immediately on button click
+      NavigationHelper.popRoute(context);
     } else if(state is DetailedMunchFetchingState){
       _checkNavigationToSwipeScreen();
     } else if(state is CancellingMunchDecisionState){
       _checkNavigationToSwipeScreen();
     } else if(state is ReviewMunchState){
-      // close Archive Munch dialog
-      NavigationHelper.popRoute(context);
-
       Utility.showFlushbar(App.translate("decision_screen.review_munch.successful.text"), context);
     }
   }
@@ -159,7 +159,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
   Widget _buildMunchBloc(){
     return BlocConsumer<MunchBloc, MunchState>(
         cubit: _munchBloc,
-        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
+        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready || (current.loading && current is ReviewMunchState),
         listener: (BuildContext context, MunchState state) => _decisionScreenListener(context, state),
         buildWhen: (MunchState previous, MunchState current) => current.loading || current.ready,
         builder: (BuildContext context, MunchState state) => _buildDecisionScreen(context, state)
@@ -402,7 +402,7 @@ class _DecisionScreenState extends State<DecisionScreen>{
           SizedBox(height: 8.0),
           _linkIconsRow(),
           SizedBox(height: 8.0),
-          if(widget.restaurant.workingHours != null && widget.restaurant.workingHours.length > 0)
+          if(widget.restaurant.workingHours != null)
           _workingHours(),
         ],
     );

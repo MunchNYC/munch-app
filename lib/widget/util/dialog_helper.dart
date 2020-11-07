@@ -26,14 +26,14 @@ class DialogHelper{
               child:  Dialog(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                   child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(vertical: 20.0),
+                      padding: EdgeInsets.symmetric(vertical: 24.0),
                       child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                padding: EdgeInsets.symmetric(horizontal: 24.0),
                                 child: dialogContent
                             )
                           ]

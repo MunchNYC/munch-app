@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,8 +15,10 @@ import 'package:munch/widget/util/custom_form_field.dart';
 class ReviewMunchDialog extends StatelessWidget{
   MunchBloc munchBloc;
   Munch munch;
+  String imageUrl;
+  bool forcedReview;
 
-  ReviewMunchDialog({this.munchBloc, this.munch});
+  ReviewMunchDialog({this.munchBloc, this.munch, this.imageUrl, this.forcedReview = false});
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class ReviewMunchDialog extends StatelessWidget{
   }
 
   Widget _likeButton(MunchState state){
-    return CustomButton<MunchState, ReviewMunchState>.bloc(
+    return CustomButton(
         cubit: munchBloc,
         padding: EdgeInsets.symmetric(vertical: 12.0),
         elevation: 6.0,
@@ -119,20 +119,15 @@ class ReviewMunchDialog extends StatelessWidget{
         color: Palette.background,
         textColor: Palette.primary,
         minWidth: App.REF_DEVICE_WIDTH,
-        disabled: state is ReviewMunchState && state.loading && state.munchReviewValue != MunchReviewValue.LIKED,
         content: Text(App.translate("review_munch_dialog.liked_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
         onPressedCallback: (){
-          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.LIKED, munchId: munch.id));
-        },
-        additionalLoadingConditionCallback: (state){
-          ReviewMunchState reviewMunchState = state as ReviewMunchState;
-          return reviewMunchState.munchReviewValue == MunchReviewValue.LIKED;
+          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.LIKED, munchId: munch.id, forcedReview: forcedReview));
         },
     );
   }
 
   Widget _neutralButton(MunchState state){
-    return CustomButton<MunchState, ReviewMunchState>.bloc(
+    return CustomButton(
         cubit: munchBloc,
         padding: EdgeInsets.symmetric(vertical: 12.0),
         elevation: 6.0,
@@ -140,22 +135,16 @@ class ReviewMunchDialog extends StatelessWidget{
         color: Palette.background,
         textColor: Palette.primary,
         minWidth: App.REF_DEVICE_WIDTH,
-        disabled: state is ReviewMunchState && state.loading && state.munchReviewValue != MunchReviewValue.NEUTRAL,
         content: Text(App.translate("review_munch_dialog.neutral_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
         onPressedCallback: (){
-          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.NEUTRAL, munchId: munch.id));
-        },
-        additionalLoadingConditionCallback: (state){
-          ReviewMunchState reviewMunchState = state as ReviewMunchState;
-
-          return reviewMunchState.munchReviewValue == MunchReviewValue.NEUTRAL;
+          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.NEUTRAL, munchId: munch.id, forcedReview: forcedReview));
         },
     );
   }
 
 
   Widget _dislikeButton(MunchState state){
-    return CustomButton<MunchState, ReviewMunchState>.bloc(
+    return CustomButton(
         cubit: munchBloc,
         padding: EdgeInsets.symmetric(vertical: 12.0),
         elevation: 6.0,
@@ -163,56 +152,38 @@ class ReviewMunchDialog extends StatelessWidget{
         color: Palette.background,
         textColor: Palette.primary,
         minWidth: App.REF_DEVICE_WIDTH,
-        disabled: state is ReviewMunchState && state.loading && state.munchReviewValue != MunchReviewValue.DISLIKED,
         content: Text(App.translate("review_munch_dialog.disliked_button.text"),style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500)),
         onPressedCallback: (){
-          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.DISLIKED, munchId: munch.id));
-        },
-        additionalLoadingConditionCallback: (state){
-          ReviewMunchState reviewMunchState = state as ReviewMunchState;
-
-          return reviewMunchState.munchReviewValue == MunchReviewValue.DISLIKED;
+          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.DISLIKED, munchId: munch.id, forcedReview: forcedReview));
         },
     );
   }
 
 
   Widget _didNotGoLabel(MunchState state){
-    return CustomButton<MunchState, ReviewMunchState>.bloc(
+    return CustomButton(
       cubit: munchBloc,
       padding: EdgeInsets.zero,
       color: Colors.transparent,
       textColor: Palette.secondaryDark,
       flat: true,
-      disabled: state is ReviewMunchState && state.loading && state.munchReviewValue != MunchReviewValue.NOSHOW,
       content: Text(App.translate("review_munch_dialog.did_not_go_label.text"), style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
       onPressedCallback: (){
-        munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.NOSHOW, munchId: munch.id));
-      },
-      additionalLoadingConditionCallback: (state){
-        ReviewMunchState reviewMunchState = state as ReviewMunchState;
-
-        return reviewMunchState.munchReviewValue == MunchReviewValue.NOSHOW;
+        munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.NOSHOW, munchId: munch.id, forcedReview: forcedReview));
       },
     );
   }
 
   Widget _skipLabel(MunchState state){
-    return CustomButton<MunchState, ReviewMunchState>.bloc(
+    return CustomButton(
       cubit: munchBloc,
       padding: EdgeInsets.zero,
       color: Colors.transparent,
       textColor: Palette.secondaryLight,
       flat: true,
-      disabled: state is ReviewMunchState && state.loading && state.munchReviewValue != MunchReviewValue.SKIPPED,
       content: Text(App.translate("review_munch_dialog.skip_label.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight), textAlign: TextAlign.center),
       onPressedCallback: (){
-         munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.SKIPPED, munchId: munch.id));
-      },
-      additionalLoadingConditionCallback: (state){
-        ReviewMunchState reviewMunchState = state as ReviewMunchState;
-
-        return reviewMunchState.munchReviewValue == MunchReviewValue.SKIPPED;
+        munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.SKIPPED, munchId: munch.id, forcedReview: forcedReview));
       },
     );
   }

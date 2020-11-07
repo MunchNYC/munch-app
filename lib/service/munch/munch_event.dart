@@ -86,10 +86,12 @@ class NewMunchRestaurantEvent extends MunchEvent {
 }
 
 class ReviewMunchEvent extends MunchEvent {
+  // if review is requested on app opened
+  bool forcedReview;
   MunchReviewValue munchReviewValue;
   String munchId;
 
-  ReviewMunchEvent({this.munchReviewValue, this.munchId});
+  ReviewMunchEvent({this.munchReviewValue, this.munchId, this.forcedReview = false});
 }
 
 class UpdateMunchLocationEvent extends MunchEvent{

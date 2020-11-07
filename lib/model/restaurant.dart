@@ -64,38 +64,34 @@ class Restaurant{
   String getWorkingHoursCurrentStatus(){
     WorkingHours dayWorkingHours = getCurrentDayWorkingHours();
 
-    String currentStatus = "";
+    TimeOfDay currentTimeOfDay = TimeOfDay.now();
 
-    if(dayWorkingHours != null) {
-      TimeOfDay currentTimeOfDay = TimeOfDay.now();
+    int currentTimeOfDayValue = currentTimeOfDay.hour * 60 + currentTimeOfDay.minute;
 
-      int currentTimeOfDayValue = currentTimeOfDay.hour * 60 + currentTimeOfDay.minute;
+    String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
 
-      currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
+    for (int i = 0; i < dayWorkingHours.workingTimes.length; i++) {
+      WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
 
-      for (int i = 0; i < dayWorkingHours.workingTimes.length; i++) {
-        WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
+      // date must be hardcoded otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed
+      TimeOfDay openTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.open));
+      TimeOfDay closeTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.closed));
 
-        // date must be hardcoded otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed
-        TimeOfDay openTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.open));
-        TimeOfDay closeTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse("2020-01-01 " + workingTimes.closed));
+      int openTimeValue = openTime.hour * 60 + openTime.minute;
+      int closeTimeValue = closeTime.hour * 60 + closeTime.minute;
 
-        int openTimeValue = openTime.hour * 60 + openTime.minute;
-        int closeTimeValue = closeTime.hour * 60 + closeTime.minute;
-
-        if (currentTimeOfDayValue < openTimeValue) {
-          if (i == 0) {
-            currentStatus = App.translate(
-                "restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + workingTimes.open;
-          } else {
-            currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") + " " + workingTimes.open;
-          }
-
-          break;
-        } else if (currentTimeOfDayValue >= openTimeValue && currentTimeOfDayValue <= closeTimeValue) {
-          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") + " " + workingTimes.closed;
-          break;
+      if (currentTimeOfDayValue < openTimeValue) {
+        if (i == 0) {
+          currentStatus = App.translate(
+              "restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + workingTimes.open;
+        } else {
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") + " " + workingTimes.open;
         }
+
+        break;
+      } else if (currentTimeOfDayValue >= openTimeValue && currentTimeOfDayValue <= closeTimeValue) {
+        currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") + " " + workingTimes.closed;
+        break;
       }
     }
 
@@ -156,13 +152,17 @@ class WorkingHours{
   List<WorkingTimes> workingTimes;
 
   String getWorkingTimesFormatted(){
-      List<String> workingTimesStringList = List<String>();
+    if(workingTimes.isEmpty){
+      return App.translate("restaurant.working_hours.closed.text");
+    }
 
-      for (WorkingTimes wt in workingTimes) {
-        workingTimesStringList.add(wt.open + " - " + wt.closed);
-      }
+    List<String> workingTimesStringList = List<String>();
 
-      return workingTimesStringList.join(", ");
+    for (WorkingTimes wt in workingTimes) {
+      workingTimesStringList.add(wt.open + " - " + wt.closed);
+    }
+
+    return workingTimesStringList.join(", ");
   }
 
   WorkingHours({this.dayOfWeek, this.workingTimes});

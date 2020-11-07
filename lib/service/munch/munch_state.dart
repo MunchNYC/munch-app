@@ -82,6 +82,8 @@ class CancellingMunchDecisionState extends MunchState {
 }
 
 class ReviewMunchState extends MunchState {
+  // if review is requested on app opened
+  bool forcedReview;
   MunchReviewValue munchReviewValue;
 
   ReviewMunchState.ready({data}) :super.ready(data: data);

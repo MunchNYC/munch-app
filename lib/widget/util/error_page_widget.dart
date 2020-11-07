@@ -13,9 +13,8 @@ class ErrorPageWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 40.0),
             ImageIcon(
@@ -35,6 +34,6 @@ class ErrorPageWidget extends StatelessWidget{
               style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontWeight: FontWeight.bold),
             )
           ],
-        ));
+    );
   }
 }

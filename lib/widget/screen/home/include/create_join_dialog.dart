@@ -67,10 +67,15 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
           },
           child: Container(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Text(App.translate("create_join_dialog.join_form.title"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary)),
+                SizedBox(height: 12.0),
                 _joinMunchForm(context, state),
                 SizedBox(height: 12.0),
                 _dividerRow(),
+                SizedBox(height: 12.0),
+                Text(App.translate("create_join_dialog.create_form.title"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary)),
                 SizedBox(height: 12.0),
                 _createMunchForm(context, state)
               ]
@@ -115,10 +120,10 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
           children: <Widget>[
             Expanded(
                 child: CustomFormField(
-                  textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary),
+                  textStyle: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0,color: Palette.primary),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
                   hintText: App.translate("create_join_dialog.join_form.code_field.hint"),
-                  hintStyle: AppTextStyle.style(AppTextStylePattern.body2,
+                  hintStyle: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0,
                       color: Palette.secondaryLight,
                   ),
                   validator: (String value) => _validateJoinForm(value),
@@ -172,10 +177,10 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
         children: <Widget>[
           Expanded(
               child: CustomFormField(
-                textStyle: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary),
+                textStyle: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
                 hintText: _munchNamePlaceholder,
-                hintStyle: AppTextStyle.style(AppTextStylePattern.body2,
+                hintStyle: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0,
                     color: Palette.secondaryLight,
                 ),
                 validator: (String value) => _validateCreateForm(value),
@@ -194,6 +199,8 @@ class CreateJoinDialogState extends State<CreateJoinDialog>{
             borderRadius: 4.0,
             elevation: 4.0,
             disabled: state is MunchJoiningState && state.loading,
+            color: Palette.secondaryDark,
+            textColor: Palette.background,
             content: Text(App.translate("create_join_dialog.create_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse)),
             onPressedCallback: (){
               _onCreateButtonClicked(context);

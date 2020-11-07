@@ -19,13 +19,23 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   @override
   Stream<NotificationsState> mapEventToState(NotificationsEvent event) async* {
     if(event is MunchDataChangedNotificationsEvent){
-      yield* _getDetailedMunch(event.munchId);
+      yield* _getDetailedMunch(event);
     } else if(event is KickMemberNotificationEvent){
-      yield* _currentUserKickedFromMunch(event.munchId);
+      yield* _currentUserKickedFromMunch(event);
     }
   }
 
-  Stream<NotificationsState> _getDetailedMunch(String munchId) async* {
+  bool _isNotificationIsLate(String munchId, DateTime timestampUTC){
+    return _munchRepo.munchMap.containsKey(munchId) && _munchRepo.munchMap[munchId].lastUpdatedUTC.isAfter(timestampUTC);
+  }
+
+  Stream<NotificationsState> _getDetailedMunch(MunchDataChangedNotificationsEvent event) async* {
+    String munchId = event.munchId;
+
+    if(_isNotificationIsLate(munchId, event.timestampUTC)){
+      return;
+    }
+
     yield DetailedMunchNotificationState.loading();
 
     try {
@@ -38,7 +48,13 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     }
   }
 
-  Stream<NotificationsState> _currentUserKickedFromMunch(String munchId) async* {
+  Stream<NotificationsState> _currentUserKickedFromMunch(KickMemberNotificationEvent event) async* {
+    String munchId = event.munchId;
+
+    if(_isNotificationIsLate(munchId, event.timestampUTC)){
+      return;
+    }
+
     _munchRepo.deleteMunchFromCache(munchId);
 
     yield CurrentUserKickedNotificationState.ready(data: munchId);
