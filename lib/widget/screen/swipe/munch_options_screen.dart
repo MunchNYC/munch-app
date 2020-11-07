@@ -5,17 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
+import 'package:munch/service/notification/notifications_bloc.dart';
+import 'package:munch/service/notification/notifications_state.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/include/kick_member_alert_dialog.dart';
 import 'package:munch/widget/screen/swipe/include/leave_munch_alert_dialog.dart';
@@ -51,6 +55,8 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   bool _pushNotificationsEnabled = true;
 
   Completer<bool> _popScopeCompleter;
+
+  bool _locationChanged = false;
 
   MunchBloc _munchBloc;
 
@@ -143,7 +149,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       }
     }
 
-    NavigationHelper.popRoute(context);
+    NavigationHelper.popRoute(context, result: _locationChanged);
 
     return false;
   }
@@ -155,8 +161,28 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
         child: Scaffold(
             appBar: _appBar(context),
             backgroundColor: Palette.background,
-            body: _buildMunchBloc()
+            body: _buildNotificationsBloc()
         )
+    );
+  }
+
+  void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
+    if(state is CurrentUserKickedNotificationState){
+      String munchId = state.data;
+
+      if(widget.munch.id == munchId){
+        NavigationHelper.navigateToHome(context, popAllRoutes: true);
+      }
+    }
+  }
+
+  Widget _buildNotificationsBloc(){
+    return BlocConsumer<NotificationsBloc, NotificationsState>(
+        cubit: NotificationsHandler.getInstance().notificationsBloc,
+        listenWhen: (NotificationsState previous, NotificationsState current) => (current is CurrentUserKickedNotificationState) && current.ready,
+        listener: (BuildContext context, NotificationsState state) => _munchStatusNotificationListener(context, state),
+        buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready, // in every other condition enter builder
+        builder: (BuildContext context, NotificationsState state) => _buildMunchBloc()
     );
   }
 
@@ -172,13 +198,21 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     Utility.showFlushbar(App.translate("options_screen.kick_member.successful"), context);
   }
 
+  void _forceNavigationToHomeScreen(){
+    NavigationHelper.navigateToHome(context, popAllRoutes: true);
+  }
+
   void _optionsScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
-      Utility.showErrorFlushbar(state.message, context);
-
-      if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
-        _popScopeCompleter.complete(false);
+      if(state.exception is AccessDeniedException){
+        _forceNavigationToHomeScreen();
+      } else {
+        if (_popScopeCompleter != null && !_popScopeCompleter.isCompleted) {
+          _popScopeCompleter.complete(false);
+        }
       }
+
+      Utility.showErrorFlushbar(state.message, context);
     } else if(state is MunchPreferencesSavingState){
       _preferencesListener(state);
     } else if(state is KickingMemberState){
@@ -237,13 +271,15 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 16.0),
             _pushNotificationsRow(),
+            if(UserRepo.getInstance().currentUser.uid == widget.munch.hostUserId)
+            _changeLocationRow(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 4.0),
             _membersList(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 4.0),
             if(widget.munch.isModifiable)
-            _modifiableMunchLabelActions()
+            _leaveMunchButton()
           ]
         )
       )
@@ -367,6 +403,44 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
+  Widget _changeLocationRow(){
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
+          SizedBox(height: 16.0),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                  child: CustomFormField(
+                    labelText: App.translate("options_screen.change_location_field.label.text"),
+                    labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+                    textStyle: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
+                    fillColor: Palette.background,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+                    borderRadius: 0.0,
+                    borderColor: Palette.background,
+                    initialValue: App.translate("options_screen.change_location_field.value.text"),
+                    readOnly: true,
+                    maxLines: 1,
+                  )
+              ),
+              SizedBox(width: 12.0),
+              CustomButton(
+                flat: true,
+                // very important to set, otherwise title won't be aligned good
+                padding: EdgeInsets.zero,
+                color: Colors.transparent,
+                content: Text(App.translate("options_screen.change_location_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
+                onPressedCallback: _onUpdateLocationButtonClicked,
+              )
+            ],
+          ),
+        ]
+    );
+  }
+
   Widget _membersListTrailing(User user){
     if(user.uid == widget.munch.hostUserId){
       return Text(App.translate("options_screen.member_list.host.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary));
@@ -407,23 +481,6 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
             ).toList()
         )
       ]
-    );
-  }
-
-
-  Widget _modifiableMunchLabelActions(){
-    bool hasUpdateLocationButton = UserRepo.getInstance().currentUser.uid == widget.munch.hostUserId;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if(hasUpdateLocationButton)
-        _updateLocationButton(),
-        if(hasUpdateLocationButton)
-        SizedBox(height: 20.0),
-        _leaveMunchButton(),
-      ],
     );
   }
 
@@ -505,7 +562,11 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onUpdateLocationButtonClicked(){
-    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch);
+    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch).then((value){
+        if(value){
+          _locationChanged = true;
+        }
+    });
   }
 
   void _onLeaveButtonClicked(){

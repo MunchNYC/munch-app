@@ -1,3 +1,4 @@
+import 'package:munch/api/api.dart';
 import 'package:munch/api/filters_api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
@@ -39,17 +40,23 @@ class FiltersRepo {
   }
 
   Future<Munch> updateFilters({List<Filter> whitelistFilters, List<Filter> blacklistFilters, String munchId}) async{
-    List<String> whitelistFiltersKeys = whitelistFilters.map((Filter filter) => filter.key).toList();
-    List<String> blacklistFiltersKeys = blacklistFilters.map((Filter filter) => filter.key).toList();
+    try {
+      List<String> whitelistFiltersKeys = whitelistFilters.map((Filter filter) => filter.key).toList();
+      List<String> blacklistFiltersKeys = blacklistFilters.map((Filter filter) => filter.key).toList();
 
-    Munch munch = await _filtersApi.updateFilters(
-        whitelistFiltersKeys: whitelistFiltersKeys,
-        blacklistFiltersKeys: blacklistFiltersKeys,
-        munchId: munchId
-    );
+      Munch munch = await _filtersApi.updateFilters(
+          whitelistFiltersKeys: whitelistFiltersKeys,
+          blacklistFiltersKeys: blacklistFiltersKeys,
+          munchId: munchId
+      );
 
-    _munchRepo.updateMunchCache(munch);
+      _munchRepo.updateMunchCache(munch);
 
-    return munch;
+      return munch;
+    } on AccessDeniedException catch (error) {
+      _munchRepo.deleteMunchFromCache(munchId);
+
+      throw error;
+    }
   }
 }

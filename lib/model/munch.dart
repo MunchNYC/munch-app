@@ -11,11 +11,11 @@ import 'package:munch/util/deep_link_handler.dart';
 part 'munch.jser.dart';
 
 enum MunchStatus{
-  UNDECIDED, DECIDED, UNMODIFIABLE, ARCHIVED
+  UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL
 }
 
 enum MunchReviewValue{
-  LIKED, DISLIKED, NEUTRAL, NOSHOW
+  LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED
 }
 
 class Munch{
@@ -68,6 +68,10 @@ class Munch{
   // special processor, alias specified there
   MunchStatus munchStatus;
 
+  // used for cache, in the future we can move it to cache custom implementation, but for now is here
+  @Field.ignore()
+  DateTime lastUpdatedUTC;
+
   @Field.ignore()
   bool munchStatusChanged = false;
 
@@ -75,7 +79,7 @@ class Munch{
   String get joinLink => AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
 
   @Field.ignore()
-  bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.ARCHIVED;
+  bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.HISTORICAL;
 
   int getNumberOfMembers(){
     return numberOfMembers ?? members.length;
@@ -120,9 +124,6 @@ class Munch{
 
     if(detailedMunch.matchedRestaurant != null){
       this.matchedRestaurantName = detailedMunch.matchedRestaurant.name;
-
-      // remove days with no data for working times
-      detailedMunch.matchedRestaurant.workingHours.removeWhere((element) => element.workingTimes.length == 0);
     } else{
       this.matchedRestaurantName = null;
     }
@@ -183,5 +184,17 @@ class MunchGroupFilter{
 
 @GenSerializer()
 class MunchGroupFilterJsonSerializer extends Serializer<MunchGroupFilter> with _$MunchGroupFilterJsonSerializer {}
+
+class RequestedReview{
+  String munchId;
+  String imageUrl;
+}
+
+@GenSerializer()
+class RequestedReviewJsonSerializer extends Serializer<RequestedReview> with _$RequestedReviewJsonSerializer {}
+
+
+
+
 
 

@@ -3,17 +3,21 @@ import 'package:animated_widgets/widgets/translation_animated.dart';
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/service/munch/munch_event.dart';
 import 'package:munch/service/munch/munch_state.dart';
+import 'package:munch/service/notification/notifications_bloc.dart';
+import 'package:munch/service/notification/notifications_state.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/tutorial_restaurant_swipe_screen.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
@@ -132,8 +136,15 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return InkWell(
       onTap: () {
         NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
-           (value) => setState(() {}) //refresh the data on the page
-        );
+           (shouldReloadRestaurants){
+             setState(() {
+               if(shouldReloadRestaurants) {
+                 _currentRestaurants.clear();
+
+                 _throwGetSwipeRestaurantNextPageEvent();
+               }
+             });
+         }); //refresh the data on the page
       },
       child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -178,10 +189,16 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _swipeScreenListener is always called first even if it's deeper in widget tree
   */
   Widget _appBarTitleBuilder(){
-    return BlocBuilder<MunchBloc, MunchState>(
-      cubit: _munchBloc,
-      buildWhen: (MunchState previous, MunchState current) => (current is DetailedMunchFetchingState) && current.ready,
-      builder: (BuildContext context, MunchState state) => _appBarTitle(),
+    return BlocBuilder<NotificationsBloc, NotificationsState>(
+      cubit: NotificationsHandler.getInstance().notificationsBloc,
+      buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready,
+      builder: (BuildContext context, NotificationsState state){
+        return BlocBuilder<MunchBloc, MunchState>(
+          cubit: _munchBloc,
+          buildWhen: (MunchState previous, MunchState current) => (current is DetailedMunchFetchingState) && current.ready,
+          builder: (BuildContext context, MunchState state) => _appBarTitle(),
+        );
+      }
     );
   }
 
@@ -237,9 +254,35 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               width: double.infinity,
               height: double.infinity,
               padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 8.0, left: 0.0, right: 0.0),
-              child: _buildMunchBloc()
+              child: _buildNotificationsBloc()
           )
       )
+    );
+  }
+
+  void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
+    if(state is DetailedMunchNotificationState){
+      Munch munch = state.data;
+
+      if(munch.id == widget.munch.id) {
+        _checkMunchStatusChanged();
+      }
+    } else if(state is CurrentUserKickedNotificationState){
+      String munchId = state.data;
+
+      if(widget.munch.id == munchId){
+        _forceNavigationToHomeScreen();
+      }
+    }
+  }
+
+  Widget _buildNotificationsBloc(){
+    return BlocConsumer<NotificationsBloc, NotificationsState>(
+        cubit: NotificationsHandler.getInstance().notificationsBloc,
+        listenWhen: (NotificationsState previous, NotificationsState current) => (current is DetailedMunchNotificationState || current is CurrentUserKickedNotificationState) && current.ready,
+        listener: (BuildContext context, NotificationsState state) => _munchStatusNotificationListener(context, state),
+        buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready, // in every other condition enter builder
+        builder: (BuildContext context, NotificationsState state) => _buildMunchBloc()
     );
   }
 
@@ -309,8 +352,16 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     });
   }
 
+  void _forceNavigationToHomeScreen(){
+    NavigationHelper.navigateToHome(context, popAllRoutes: true);
+  }
+
   void _swipeScreenListener(BuildContext context, MunchState state){
     if (state.hasError) {
+      if(state.exception is AccessDeniedException){
+        _forceNavigationToHomeScreen();
+      }
+
       Utility.showErrorFlushbar(state.message, context);
     } else if(state is DetailedMunchFetchingState){
       _checkMunchStatusChanged(navigateToDecisionScreenIfChanged: true);

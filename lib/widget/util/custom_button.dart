@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/service/util/super_state.dart';
+import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 
 class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
@@ -13,6 +14,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
   Function onActionDoneCallback;
   bool disabled = false;
   Bloc<dynamic, T> cubit;
+  bool listenToBloc;
   State widgetState;
   bool flat = false;
   double minWidth = 0.0;
@@ -26,9 +28,12 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
 
   CustomButton.disabled(this.content) {
     this.disabled = true;
+    this.listenToBloc = false;
   }
 
   CustomButton({this.content,
+    this.cubit,
+    this.listenToBloc = false,
     this.color = Palette.secondaryDark,
     this.textColor = Palette.background,
     this.splashColor = Colors.transparent,
@@ -47,6 +52,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
 
   CustomButton.bloc({this.cubit,
     this.content,
+    this.listenToBloc = true,
     this.color = Palette.secondaryDark,
     this.textColor = Palette.background,
     this.splashColor = Colors.transparent,
@@ -108,7 +114,8 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
       height: initialHeight,
       child: SpinKitThreeBounce(
         color: widget.textColor,
-        size: 20.0,
+        // condition in case button is very small
+        size: initialWidth < 30.0 ? initialWidth * 0.5 : 20.0,
       )
     );
   }
@@ -128,7 +135,7 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
         // shape with border color
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            side: BorderSide(width: widget.borderWidth, color: widget.borderColor ?? widget.color)
+            side: BorderSide(width: widget.borderWidth, color: widget.disabled ? Palette.disabledColor : widget.borderColor ?? widget.color)
         ),
         disabledColor: widget.disabled ? Palette.disabledColor : widget.color,
         //wraps child's height
@@ -175,7 +182,7 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
 
   @override
   Widget build(BuildContext context) {
-    if (widget.cubit != null && !widget.disabled) {
+    if (widget.listenToBloc) {
       return _renderBlocButton(context);
     } else {
       return _renderButton(context);

@@ -71,7 +71,7 @@ class _RestaurantCardState extends State<RestaurantCard>{
 
   Widget _titleSection(){
     // Just check does this restaurant has info for current day, otherwise we'll not show them below
-    bool hasCurrentWorkingHours = widget.restaurant.getCurrentDayWorkingHours() != null;
+    bool hasCurrentWorkingHours = widget.restaurant.workingHours != null && widget.restaurant.workingHours.length > 0;
 
     return Container(
       padding: EdgeInsets.only(top: 24.0, bottom: 16.0, left: 16.0, right: 16.0),

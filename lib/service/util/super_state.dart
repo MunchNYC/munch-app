@@ -3,6 +3,7 @@ abstract class SuperState {
   bool loading;
   bool hasError;
   String message;
+  Exception exception;
   dynamic data;
   bool get hasData => (data != null);
 
@@ -21,7 +22,7 @@ abstract class SuperState {
     hasError = false;
   }
 
-  SuperState.failed({this.message = ""}){
+  SuperState.failed({this.message = "", this.exception}){
     initial = false;
     loading = false;
     hasError = true;

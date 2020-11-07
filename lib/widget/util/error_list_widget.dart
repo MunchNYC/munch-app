@@ -15,29 +15,24 @@ class ErrorListWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        // on iOS refresh indicator is moving content below it, so we have to overcome overflowing by extending padding on iOS
-        padding: EdgeInsets.only(bottom: Platform.isIOS ? App.screenHeight * 0.5 : 0.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-              ErrorPageWidget(),
-              SizedBox(height: 16.0),
-              CustomButton(
-                  flat: true,
-                  color: Colors.transparent,
-                  borderRadius: 16.0,
-                  borderWidth: 1.0,
-                  borderColor: Palette.secondaryDark,
-                  textColor: Palette.secondaryDark,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 12.0),
-                  content: Text(App.translate("error_list_widget.action_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500)),
-                  onPressedCallback: actionCallback
-              )
-          ],
-        )
-      )
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+          ErrorPageWidget(),
+          SizedBox(height: 16.0),
+          CustomButton(
+              flat: true,
+              color: Colors.transparent,
+              borderRadius: 16.0,
+              borderWidth: 1.0,
+              borderColor: Palette.secondaryDark,
+              textColor: Palette.secondaryDark,
+              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 12.0),
+              content: Text(App.translate("error_list_widget.action_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500)),
+              onPressedCallback: actionCallback
+          )
+      ],
     );
   }
 }

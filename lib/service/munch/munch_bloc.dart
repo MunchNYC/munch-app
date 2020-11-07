@@ -23,6 +23,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
   Stream<MunchState> mapEventToState(MunchEvent event) async* {
     if (event is GetMunchesEvent) {
       yield* getMunches();
+    } else if (event is GetHistoricalMunchesPageEvent) {
+      yield* getHistoricalMunches(event);
     } else if (event is JoinMunchEvent){
       yield* joinMunch(event.munchCode);
     } else if(event is CreateMunchEvent){
@@ -59,7 +61,23 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchesFetchingState.ready(data: getMunchesResponse);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
-      yield MunchesFetchingState.failed(message: error.toString());
+      yield MunchesFetchingState.failed(exception: error, message: error.toString());
+    }
+  }
+
+  Stream<MunchState> getHistoricalMunches(GetHistoricalMunchesPageEvent getHistoricalMunchesEvent) async* {
+    yield HistoricalMunchesPageFetchingState.loading();
+
+    try {
+      List<Munch> munchesList = await _munchRepo.getHistoricalMunches(
+        page: getHistoricalMunchesEvent.page,
+        timestamp: getHistoricalMunchesEvent.timestamp
+      );
+
+      yield HistoricalMunchesPageFetchingState.ready(data: munchesList);
+    } catch (error) {
+      print("Munches fetching failed: " + error.toString());
+      yield HistoricalMunchesPageFetchingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -71,7 +89,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchJoiningState.ready(data: munch);
     } catch (error) {
       print("Joining munch failed: " + error.toString());
-      yield MunchJoiningState.failed(message: error.toString());
+      yield MunchJoiningState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -83,7 +101,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchCreatingState.ready(data: createdMunch);
     } catch (error) {
       print("Munch creation failed: " + error.toString());
-      yield MunchCreatingState.failed(message: error.toString());
+      yield MunchCreatingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -95,7 +113,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield DetailedMunchFetchingState.ready(data: detailedMunch);
     } catch (error) {
       print("Get detailed munch failed: " + error.toString());
-      yield DetailedMunchFetchingState.failed(message: error.toString());
+      yield DetailedMunchFetchingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -107,7 +125,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield RestaurantsPageFetchingState.ready(data: restaurantList);
     } catch (error) {
       print("Get restaurants page failed: " + error.toString());
-      yield RestaurantsPageFetchingState.failed(message: error.toString());
+      yield RestaurantsPageFetchingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -124,7 +142,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield RestaurantSwipeProcessingState.ready(data: munch);
     } catch (error) {
       print("Munch swiping failed: " + error.toString());
-      yield RestaurantSwipeProcessingState.failed(message: error.toString());
+      yield RestaurantSwipeProcessingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -141,7 +159,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchPreferencesSavingState.ready(data: munch);
     } catch (error) {
       print("Munch preferences saving failed: " + error.toString());
-      yield MunchPreferencesSavingState.failed(message: error.toString());
+      yield MunchPreferencesSavingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -158,7 +176,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchLocationUpdatingState.ready(data: munch);
     } catch (error) {
       print("Munch preferences saving failed: " + error.toString());
-      yield MunchLocationUpdatingState.failed(message: error.toString());
+      yield MunchLocationUpdatingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -174,7 +192,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield KickingMemberState.ready(data: munch);
     } catch (error) {
       print("Member kicking failed: " + error.toString());
-      yield KickingMemberState.failed(message: error.toString());
+      yield KickingMemberState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -187,7 +205,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield MunchLeavingState.ready();
     } catch (error) {
       print("Leaving munch failed: " + error.toString());
-      yield MunchLeavingState.failed(message: error.toString());
+      yield MunchLeavingState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -202,7 +220,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield CancellingMunchDecisionState.ready(data: munch);
     } catch (error) {
       print("Munch decision cancellation failed: " + error.toString());
-      yield CancellingMunchDecisionState.failed(message: error.toString());
+      yield CancellingMunchDecisionState.failed(exception: error, message: error.toString());
     }
   }
 
@@ -217,10 +235,15 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
         munchId: reviewMunchEvent.munchId,
       );
 
-      yield ReviewMunchState.ready(data: munch);
+      yield ReviewMunchState.ready(
+        data: Map.of({
+           "munch": munch,
+           "forcedReview": reviewMunchEvent.forcedReview
+        })
+      );
     } catch (error) {
       print("Munch decision cancellation failed: " + error.toString());
-      yield ReviewMunchState.failed(message: error.toString());
+      yield ReviewMunchState.failed(exception: error, message: error.toString());
     }
   }
 }

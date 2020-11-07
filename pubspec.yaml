@@ -100,7 +100,6 @@ flutter:
     - assets/config/
     - assets/icons/
     - assets/images/
-    - assets/images/prototype/
     - assets/images/logo/
     - assets/images/yelp/
     - assets/images/yelp/stars/

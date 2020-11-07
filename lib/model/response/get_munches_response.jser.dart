@@ -11,6 +11,9 @@ abstract class _$GetMunchesResponseJsonSerializer
   Serializer<Munch> __munchJsonSerializer;
   Serializer<Munch> get _munchJsonSerializer =>
       __munchJsonSerializer ??= MunchJsonSerializer();
+  Serializer<RequestedReview> __requestedReviewJsonSerializer;
+  Serializer<RequestedReview> get _requestedReviewJsonSerializer =>
+      __requestedReviewJsonSerializer ??= RequestedReviewJsonSerializer();
   @override
   Map<String, dynamic> toMap(GetMunchesResponse model) {
     if (model == null) return null;
@@ -27,9 +30,11 @@ abstract class _$GetMunchesResponseJsonSerializer
             (val) => _munchJsonSerializer.toMap(val as Munch)));
     setMapValue(
         ret,
-        'archivedMunches',
-        codeIterable(model.archivedMunches,
-            (val) => _munchJsonSerializer.toMap(val as Munch)));
+        'requestedReviews',
+        codeIterable(
+            model.requestedReviews,
+            (val) =>
+                _requestedReviewJsonSerializer.toMap(val as RequestedReview)));
     return ret;
   }
 
@@ -42,9 +47,9 @@ abstract class _$GetMunchesResponseJsonSerializer
         (val) => _munchJsonSerializer.fromMap(val as Map));
     obj.decidedMunches = codeIterable<Munch>(map['decidedMunches'] as Iterable,
         (val) => _munchJsonSerializer.fromMap(val as Map));
-    obj.archivedMunches = codeIterable<Munch>(
-        map['archivedMunches'] as Iterable,
-        (val) => _munchJsonSerializer.fromMap(val as Map));
+    obj.requestedReviews = codeIterable<RequestedReview>(
+        map['requestedReviews'] as Iterable,
+        (val) => _requestedReviewJsonSerializer.fromMap(val as Map));
     return obj;
   }
 }

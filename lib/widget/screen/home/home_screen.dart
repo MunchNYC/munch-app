@@ -11,11 +11,6 @@ class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
   static GlobalKey<NavigatorState> accountTabNavigator;
 
-  HomeScreen() {
-    munchesTabNavigator = GlobalKey<NavigatorState>();
-    accountTabNavigator = GlobalKey<NavigatorState>();
-  }
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -53,6 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    // otherwise when we pop until home screen we'll get duplicate exception
+    HomeScreen.munchesTabNavigator = GlobalKey<NavigatorState>();
+    HomeScreen.accountTabNavigator = GlobalKey<NavigatorState>();
+
     _munchBloc = MunchBloc();
 
     super.initState();

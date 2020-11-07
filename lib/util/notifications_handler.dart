@@ -3,9 +3,13 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:munch/model/processors/timestamp_processor.dart';
 import 'package:munch/repository/user_repository.dart';
+import 'package:munch/service/notification/notifications_bloc.dart';
+import 'package:munch/service/notification/notifications_event.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/deep_link_handler.dart';
+import 'package:munch/util/utility.dart';
 
 class NotificationsHandler{
   static const ANDROID_NOTIFICATION_CHANNEL_DEFAULT_NAME = "MUNCH-NOTIFICATION-CHANNEL";
@@ -13,12 +17,23 @@ class NotificationsHandler{
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  Map<NotificationEventType, Function> notificationsEventTypeMap ;
+  NotificationsBloc notificationsBloc;
+
   StreamSubscription<String> _fcmTokenListener;
 
   static NotificationsHandler _instance;
 
   NotificationsHandler._internal(){
     _configureNotificationsReceiveCallbacks();
+
+    notificationsEventTypeMap = Map.of({
+      NotificationEventType.DECISION_MADE: _generateDecisionMadeNotificationEvent,
+      NotificationEventType.MATCH_CLEARED: _generateNewRestaurantNotificationEvent,
+      NotificationEventType.NEW_MUNCHER: _generateNewMuncherNotificationEvent,
+      NotificationEventType.USER_REMOVED: _generateKickMemberNotificationEvent,
+      NotificationEventType.INFORMATION: () => null
+    });
   }
 
   factory NotificationsHandler.getInstance() {
@@ -46,11 +61,15 @@ class NotificationsHandler{
     var initializationSettingsIOS = IOSInitializationSettings();
     var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
 
+    notificationsBloc = NotificationsBloc();
+
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onNotificationTapped);
   }
 
   void stopNotifications(){
     _disposeFCMTokenListener();
+
+    notificationsBloc?.close();
   }
 
   Future _saveFCMToken(String fcmToken) async{
@@ -79,6 +98,27 @@ class NotificationsHandler{
     DeepLinkHandler.getInstance().onDeepLinkReceived(payload);
   }
 
+  NotificationsEvent _generateDecisionMadeNotificationEvent(Map messageData){
+    return DecisionMadeNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
+  }
+
+  NotificationsEvent _generateNewRestaurantNotificationEvent(Map messageData){
+    return NewRestaurantNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
+  }
+
+  NotificationsEvent _generateNewMuncherNotificationEvent(Map messageData){
+    return NewMuncherNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
+  }
+
+  NotificationsEvent _generateKickMemberNotificationEvent(Map messageData){
+    return KickMemberNotificationEvent(munchId: messageData['munchId'], timestampUTC: Utility.convertUnixTimestampToUTC(int.parse(messageData['timestamp'])));
+  }
+
+  NotificationsEvent _mapNotificationEventType(Map messageData){
+    NotificationEventType notificationEventType =  NotificationEventType.values.firstWhere((type) => type.toString().split(".").last == messageData['eventType']);
+    return notificationsEventTypeMap[notificationEventType](messageData);
+  }
+
   void _configureNotificationsReceiveCallbacks(){
     try {
       try {
@@ -87,9 +127,18 @@ class NotificationsHandler{
             onMessage: (Map<String, dynamic> message) {
               print('onMessage: $message');
 
+              NotificationsEvent notificationsEvent =  Platform.isAndroid
+                  ? _mapNotificationEventType(message['data']) // message structure is different for Android and iOS
+                  : _mapNotificationEventType(message);
+
+              // INFORMATION is returning NULL event
+              if(notificationsEvent != null) {
+                notificationsBloc.add(notificationsEvent);
+              }
+
               Platform.isAndroid
                   ? _showNotification(message['notification'], message['data']) // message structure is different for Android and iOS
-                  : _showNotification(message['notification'], message);
+                  : _showNotification(message['notification'] ?? message['aps']['alert'], message);
 
               return;
             },
@@ -158,4 +207,12 @@ class NotificationsHandler{
       payload: data['deeplink'],
     );
   }
+}
+
+enum NotificationEventType{
+  MATCH_CLEARED,
+  DECISION_MADE,
+  NEW_MUNCHER,
+  USER_REMOVED,
+  INFORMATION
 }

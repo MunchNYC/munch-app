@@ -1,10 +1,16 @@
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
-import 'package:munch/service/munch/munch_state.dart';
 
 abstract class MunchEvent {}
 
 class GetMunchesEvent extends MunchEvent {}
+
+class GetHistoricalMunchesPageEvent extends MunchEvent {
+  int page;
+  int timestamp;
+
+  GetHistoricalMunchesPageEvent({this.page, this.timestamp});
+}
 
 class JoinMunchEvent extends MunchEvent {
   String munchCode;
@@ -80,10 +86,12 @@ class NewMunchRestaurantEvent extends MunchEvent {
 }
 
 class ReviewMunchEvent extends MunchEvent {
+  // if review is requested on app opened
+  bool forcedReview;
   MunchReviewValue munchReviewValue;
   String munchId;
 
-  ReviewMunchEvent({this.munchReviewValue, this.munchId});
+  ReviewMunchEvent({this.munchReviewValue, this.munchId, this.forcedReview = false});
 }
 
 class UpdateMunchLocationEvent extends MunchEvent{

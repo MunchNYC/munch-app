@@ -24,11 +24,7 @@ class OverlayDialogHelper{
               onWillPop: () async{
                 return !isModal;
               },
-              child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: widget,
-              )
+              child: widget
           );
         }
     );

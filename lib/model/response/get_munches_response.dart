@@ -6,9 +6,9 @@ part 'get_munches_response.jser.dart';
 class GetMunchesResponse{
   List<Munch> undecidedMunches;
   List<Munch> decidedMunches;
-  List<Munch> archivedMunches;
+  List<RequestedReview> requestedReviews;
 
-  GetMunchesResponse({this.undecidedMunches, this.decidedMunches, this.archivedMunches});
+  GetMunchesResponse({this.undecidedMunches, this.decidedMunches, this.requestedReviews});
 }
 
 @GenSerializer()

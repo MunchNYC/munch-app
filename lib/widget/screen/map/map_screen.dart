@@ -384,7 +384,7 @@ class MapScreenState extends State<MapScreen> {
 
         DialogHelper(dialogContent: MunchCodeDialog(createdMunch), isModal: true).show(context);
       } else if(state is MunchLocationUpdatingState){
-        NavigationHelper.popRoute(context);
+        NavigationHelper.popRoute(context, result: true);
 
         Utility.showFlushbar(App.translate("map_screen.location_update.successful.message"), context);
       }
