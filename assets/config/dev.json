@@ -1,6 +1,6 @@
 {
   "appTitle": "Munch",
-  "apiUrl": "http://52.54.51.151:8080",
+  "apiUrl": "http://35.208.26.73:8080",
   "googleMapsApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE",
   "feedbackEmail": "feedback@munchapp.io",
   "privacyPolicyUrl": "https://sites.google.com/view/munchapp-privacy/home",
