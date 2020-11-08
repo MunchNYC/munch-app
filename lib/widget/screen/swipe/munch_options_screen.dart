@@ -282,12 +282,15 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
           children: [
             _munchNameRow(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
+            if(widget.munch.isModifiable)
             SizedBox(height: 16.0),
+            if(widget.munch.isModifiable)
             _inviteFriendsRow(),
+            if(widget.munch.isModifiable)
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 16.0),
             _pushNotificationsRow(),
-            if(UserRepo.getInstance().currentUser.uid == widget.munch.hostUserId)
+            if(widget.munch.isModifiable && UserRepo.getInstance().currentUser.uid == widget.munch.hostUserId)
             _changeLocationRow(),
             Divider(height: 36.0, thickness: 1.0, color: Palette.secondaryLight.withOpacity(0.5)),
             SizedBox(height: 4.0),

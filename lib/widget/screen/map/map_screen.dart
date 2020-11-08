@@ -78,7 +78,6 @@ class MapScreenState extends State<MapScreen> {
   void didChangeDependencies(){
     // After transition is finished, iOS has bug if animation transition is not finished
     ModalRoute.of(context).animation.addStatusListener((status) {
-      print(status);
       if(status == AnimationStatus.completed){
         _locationBloc.add(GetCurrentLocationEvent());
       }
@@ -186,7 +185,9 @@ class MapScreenState extends State<MapScreen> {
       }
     } else {
       if(state is CurrentLocationFetchingState){
-        _currentLocation = state.data;
+        if (state.hasData) {
+          _currentLocation = state.data;
+        }
 
         if(widget.editLocation) {
           _initCurrentMunchLocation();
