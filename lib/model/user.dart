@@ -3,6 +3,10 @@ import 'package:jaguar_serializer/jaguar_serializer.dart';
 
 part 'user.jser.dart';
 
+enum SocialProvider{
+  GOOGLE, FACEBOOK, APPLE
+}
+
 class User{
   @Field.ignore()
   String accessToken;
@@ -21,6 +25,9 @@ class User{
 
   @nonNullable
   String imageUrl;
+
+  @Field.ignore()
+  SocialProvider socialProvider;
 
   @override
   String toString() {

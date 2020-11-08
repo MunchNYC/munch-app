@@ -82,6 +82,8 @@ class AuthRepo {
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
 
+        _userRepo.currentUser.socialProvider = SocialProvider.GOOGLE;
+
         return await _onSignInSuccessful();
       } else{
         return null;
@@ -119,6 +121,8 @@ class AuthRepo {
         firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser));
+
+        _userRepo.currentUser.socialProvider = SocialProvider.FACEBOOK;
 
         return await _onSignInSuccessful();
         break;
@@ -168,6 +172,8 @@ class AuthRepo {
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerAppleUser(authorizationResult, firebaseUser));
 
+        _userRepo.currentUser.socialProvider = SocialProvider.APPLE;
+
         return await _onSignInSuccessful();
         break;
       case AuthorizationStatus.cancelled:
@@ -188,6 +194,19 @@ class AuthRepo {
   }
 
   Future<bool> signOut() async {
+    User currentUser = UserRepo.getInstance().currentUser;
+
+    switch(currentUser.socialProvider){
+      case SocialProvider.GOOGLE:
+        await GoogleSignIn().signOut();
+        break;
+      case SocialProvider.FACEBOOK:
+        await FacebookLogin().logOut();
+        break;
+      case SocialProvider.APPLE:
+        break;
+    }
+
     // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
     await _userRepo.signOutUser();
 
