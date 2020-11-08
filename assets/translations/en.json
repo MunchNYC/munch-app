@@ -92,7 +92,6 @@
     "map_screen.lets_eat_button.text": "Let's Eat!",
     "map_screen.save_location_button.text": "Save",
     "map_screen.search_field.placeholder.text": "Search a location",
-    "map_screen.location_update.successful.message": "Munch location successfully updated.",
 
     "restaurant_swipe_screen.restaurant_card.yelp.reviews.text": "Reviews",
     "restaurant_swipe_screen.restaurant_card.working_hours.closed.text": "Closed",

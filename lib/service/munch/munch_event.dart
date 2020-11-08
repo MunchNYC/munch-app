@@ -59,11 +59,9 @@ class NoMoreImagesCarouselEvent extends MunchEvent {
 }
 
 class SaveMunchPreferencesEvent extends MunchEvent {
-  String munchId;
-  String munchName;
-  bool notificationsEnabled;
+  Munch munch;
 
-  SaveMunchPreferencesEvent({this.munchId, this.munchName, this.notificationsEnabled});
+  SaveMunchPreferencesEvent({this.munch});
 }
 
 class KickMemberEvent extends MunchEvent {
@@ -92,12 +90,4 @@ class ReviewMunchEvent extends MunchEvent {
   String munchId;
 
   ReviewMunchEvent({this.munchReviewValue, this.munchId, this.forcedReview = false});
-}
-
-class UpdateMunchLocationEvent extends MunchEvent{
-  String munchId;
-  Coordinates coordinates;
-  int radius;
-
-  UpdateMunchLocationEvent({this.munchId, this.coordinates, this.radius});
 }

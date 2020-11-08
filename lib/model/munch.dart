@@ -37,6 +37,7 @@ class Munch{
   // special processor
   DateTime creationTimestamp;
 
+  @nonNullable
   Coordinates coordinates;
 
   @nonNullable
@@ -62,7 +63,7 @@ class Munch{
   @Field.decode(isNullable: false)
   String matchedRestaurantName;
 
-  @Field.decode(isNullable: false)
+  @nonNullable
   bool receivePushNotifications;
 
   // special processor, alias specified there
@@ -128,6 +129,7 @@ class Munch{
       this.matchedRestaurantName = null;
     }
 
+    // Otherwise keep last value of munchStatusChanged, before it is reverted to false on swipe or decision screen
     if(this.munchStatus != detailedMunch.munchStatus){
       this.munchStatusChanged = true;
     }
@@ -140,7 +142,7 @@ class Munch{
     return "id: $id; name: $name;";
   }
 
-  Munch({this.name, this.coordinates, this.radius});
+  Munch({this.id, this.name, this.receivePushNotifications, this.coordinates, this.radius});
 }
 
 @GenSerializer(fields: const {

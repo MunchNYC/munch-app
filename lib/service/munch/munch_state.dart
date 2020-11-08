@@ -90,9 +90,3 @@ class ReviewMunchState extends MunchState {
   ReviewMunchState.loading({this.munchReviewValue, message = ""}) :super.loading(message: message);
   ReviewMunchState.failed({exception, message = ""}) :super.failed(exception: exception, message: message);
 }
-
-class MunchLocationUpdatingState extends MunchState{
-  MunchLocationUpdatingState.ready({data}):super.ready(data: data);
-  MunchLocationUpdatingState.loading({message = ""}):super.loading(message: message);
-  MunchLocationUpdatingState.failed({exception, message = ""}):super.failed(exception: exception, message: message);
-}

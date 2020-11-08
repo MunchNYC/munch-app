@@ -29,9 +29,11 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
     setMapValue(ret, 'name', model.name);
-    setMapValue(ret, 'coordinates',
+    setMapValueIfNotNull(ret, 'coordinates',
         _coordinatesJsonSerializer.toMap(model.coordinates));
     setMapValueIfNotNull(ret, 'radius', model.radius);
+    setMapValueIfNotNull(
+        ret, 'receivePushNotifications', model.receivePushNotifications);
     return ret;
   }
 
@@ -52,7 +54,9 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
             getJserDefault('creationTimestamp') ??
             obj.creationTimestamp;
     obj.coordinates =
-        _coordinatesJsonSerializer.fromMap(map['coordinates'] as Map);
+        _coordinatesJsonSerializer.fromMap(map['coordinates'] as Map) ??
+            getJserDefault('coordinates') ??
+            obj.coordinates;
     obj.radius = map['radius'] as int ?? getJserDefault('radius') ?? obj.radius;
     obj.imageUrl =
         map['imageUrl'] as String ?? getJserDefault('imageUrl') ?? obj.imageUrl;

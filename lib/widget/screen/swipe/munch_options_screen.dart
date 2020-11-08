@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:munch/api/api.dart';
+import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
@@ -54,9 +55,15 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   String _munchName;
   bool _pushNotificationsEnabled = true;
 
+  // will be filled after returning from change location screen
+  Coordinates _coordinates;
+  int _radius;
+
   Completer<bool> _popScopeCompleter;
 
   bool _locationChanged = false;
+
+  bool _locationChangedReturnValue = false;
 
   MunchBloc _munchBloc;
 
@@ -123,8 +130,12 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
+  bool _checkOptionsChanged(){
+    return widget.munch.name != _munchNameTextController.text || widget.munch.receivePushNotifications != _pushNotificationsEnabled || _locationChanged;
+  }
+
   Future<bool> _onWillPopScope(BuildContext context) async {
-    if(widget.munch.name != _munchNameTextController.text || widget.munch.receivePushNotifications != _pushNotificationsEnabled) {
+    if(_checkOptionsChanged()) {
       if(_popScopeCompleter != null){
         _popScopeCompleter.complete(false);
       }
@@ -149,7 +160,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       }
     }
 
-    NavigationHelper.popRoute(context, result: _locationChanged);
+    NavigationHelper.popRoute(context, result: _locationChangedReturnValue);
 
     return false;
   }
@@ -187,6 +198,11 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _preferencesListener(MunchPreferencesSavingState state){
+    _locationChangedReturnValue = _locationChanged;
+
+    // Reset this flag to prevent triggering alert again
+    _locationChanged = false;
+
     if(_popScopeCompleter != null){
       _popScopeCompleter.complete(true);
     } else{
@@ -533,7 +549,14 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      _munchBloc.add(SaveMunchPreferencesEvent(munchId: widget.munch.id, munchName: _munchName, notificationsEnabled: _pushNotificationsEnabled));
+
+      if(_checkOptionsChanged()) {
+        Munch munch = Munch(id: widget.munch.id, name: _munchName, receivePushNotifications: _pushNotificationsEnabled, coordinates: _coordinates, radius: _radius);
+
+        _munchBloc.add(SaveMunchPreferencesEvent(munch: munch));
+      } else{
+        _onWillPopScope(context);
+      }
     } else {
       validationSuccess = false;
 
@@ -562,9 +585,12 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onUpdateLocationButtonClicked(){
-    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch).then((value){
-        if(value){
+    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch).then((munchWithNewLocation){
+        if(munchWithNewLocation != null){
           _locationChanged = true;
+
+          _coordinates = munchWithNewLocation.coordinates;
+          _radius = munchWithNewLocation.radius;
         }
     });
   }

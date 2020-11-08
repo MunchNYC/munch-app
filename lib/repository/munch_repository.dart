@@ -193,37 +193,15 @@ class MunchRepo {
     }
   }
 
-  Future<Munch> saveMunchPreferences({String munchId, String munchName, bool notificationsEnabled}) async {
+  Future<Munch> saveMunchPreferences({Munch munch}) async {
     try {
-      Munch munch = await _munchApi.saveMunchPreferences(
-        munchId: munchId,
-        munchName: munchName,
-        notificationsEnabled: notificationsEnabled,
-      );
+      Munch updatedMunch = await _munchApi.saveMunchPreferences(munch: munch);
 
-      updateMunchCache(munch);
+      updateMunchCache(updatedMunch);
 
       return munch;
     } on AccessDeniedException catch (error) {
-      deleteMunchFromCache(munchId);
-
-      throw error;
-    }
-  }
-
-  Future<Munch> updateMunchLocation({String munchId, Coordinates coordinates, int radius}) async {
-    try {
-      Munch munch = await _munchApi.saveMunchPreferences(
-        munchId: munchId,
-        coordinates: coordinates,
-        radius: radius,
-      );
-
-      updateMunchCache(munch);
-
-      return munch;
-    } on AccessDeniedException catch (error) {
-      deleteMunchFromCache(munchId);
+      deleteMunchFromCache(munch.id);
 
       throw error;
     }

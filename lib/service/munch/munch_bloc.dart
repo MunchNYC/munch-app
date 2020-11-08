@@ -39,8 +39,6 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield NoMoreCarouselImageState.ready(data: event.isLeftSideTapped);
     } else if(event is SaveMunchPreferencesEvent){
       yield* saveMunchPreferences(event);
-    } else if(event is UpdateMunchLocationEvent){
-      yield* updateMunchLocation(event);
     } else if(event is KickMemberEvent){
       yield* kickMember(event);
     } else if(event is LeaveMunchEvent){
@@ -150,33 +148,12 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield MunchPreferencesSavingState.loading();
 
     try {
-      Munch munch = await _munchRepo.saveMunchPreferences(
-          munchId: saveMunchPreferencesEvent.munchId,
-          munchName: saveMunchPreferencesEvent.munchName,
-          notificationsEnabled: saveMunchPreferencesEvent.notificationsEnabled
-      );
+      Munch munch = await _munchRepo.saveMunchPreferences(munch: saveMunchPreferencesEvent.munch);
 
       yield MunchPreferencesSavingState.ready(data: munch);
     } catch (error) {
       print("Munch preferences saving failed: " + error.toString());
       yield MunchPreferencesSavingState.failed(exception: error, message: error.toString());
-    }
-  }
-
-  Stream<MunchState> updateMunchLocation(UpdateMunchLocationEvent updateMunchLocationEvent) async* {
-    yield MunchLocationUpdatingState.loading();
-
-    try {
-      Munch munch = await _munchRepo.updateMunchLocation(
-          munchId: updateMunchLocationEvent.munchId,
-          coordinates: updateMunchLocationEvent.coordinates,
-          radius: updateMunchLocationEvent.radius
-      );
-
-      yield MunchLocationUpdatingState.ready(data: munch);
-    } catch (error) {
-      print("Munch preferences saving failed: " + error.toString());
-      yield MunchLocationUpdatingState.failed(exception: error, message: error.toString());
     }
   }
 

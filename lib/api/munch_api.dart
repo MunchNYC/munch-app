@@ -110,32 +110,16 @@ class MunchApi extends Api {
     return munch;
   }
 
-  Future<Munch> saveMunchPreferences({String munchId, String munchName, bool notificationsEnabled, Coordinates coordinates, int radius}) async {
-    String putUrl = "/preferences?munchId=$munchId";
+  Future<Munch> saveMunchPreferences({Munch munch}) async {
+    String putUrl = "/preferences?munchId=${munch.id}";
 
-    Map<String, dynamic> fields = {};
-
-    if(munchName != null){
-      fields['name'] = munchName;
-    }
-
-    if(notificationsEnabled != null){
-      fields['receivePushNotifications'] = munchName;
-    }
-
-    if(coordinates != null){
-      fields['coordinates'] = CoordinatesJsonSerializer().toMap(coordinates);
-    }
-
-    if(radius != null){
-      fields['radius'] = radius;
-    }
+    Map<String, dynamic> fields = MunchJsonSerializer().toMap(munch);
 
     var data = await put(putUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch updatedMunch = MunchJsonSerializer().fromMap(data['munchDetailed']);
 
-    return munch;
+    return updatedMunch;
   }
 
   Future<Munch> removeUserFromMunch({String munchId, String userId}) async {

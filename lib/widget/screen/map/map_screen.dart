@@ -78,6 +78,7 @@ class MapScreenState extends State<MapScreen> {
   void didChangeDependencies(){
     // After transition is finished, iOS has bug if animation transition is not finished
     ModalRoute.of(context).animation.addStatusListener((status) {
+      print(status);
       if(status == AnimationStatus.completed){
         _locationBloc.add(GetCurrentLocationEvent());
       }
@@ -185,12 +186,12 @@ class MapScreenState extends State<MapScreen> {
       }
     } else {
       if(state is CurrentLocationFetchingState){
+        _currentLocation = state.data;
+
         if(widget.editLocation) {
           _initCurrentMunchLocation();
         } else{
           if (state.hasData) {
-            _currentLocation = state.data;
-
             _initCurrentMapLocation();
           } else {
             _initLocationDefaultValues();
@@ -383,10 +384,6 @@ class MapScreenState extends State<MapScreen> {
         Munch createdMunch = state.data;
 
         DialogHelper(dialogContent: MunchCodeDialog(createdMunch), isModal: true).show(context);
-      } else if(state is MunchLocationUpdatingState){
-        NavigationHelper.popRoute(context, result: true);
-
-        Utility.showFlushbar(App.translate("map_screen.location_update.successful.message"), context);
       }
     }
   }
@@ -422,8 +419,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   Widget _saveLocationButton() {
-    return CustomButton<MunchState, MunchLocationUpdatingState>.bloc(
-      cubit: _munchBloc,
+    return CustomButton(
       minWidth: 200.0,
       borderRadius: 12.0,
       padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -431,19 +427,18 @@ class MapScreenState extends State<MapScreen> {
       textColor: Palette.background,
       content: Text(App.translate("map_screen.save_location_button.text"), style: AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: (){
-        _onSaveLocationButtonClicked();
+        Munch munchWithUpdatedLocation;
+
+        Coordinates newCoordinates = Coordinates(latitude: _centralCircle.center.latitude, longitude: _centralCircle.center.longitude);
+
+        if(!widget.munch.coordinates.equals(newCoordinates) || widget.munch.radius != _circleRadius) {
+           munchWithUpdatedLocation = Munch(coordinates: newCoordinates, radius: _circleRadius);
+        }
+
+        return NavigationHelper.popRoute(context, result: munchWithUpdatedLocation);
       },
     );
   }
-
-  void _onSaveLocationButtonClicked(){
-    _munchBloc.add(UpdateMunchLocationEvent(
-        munchId: widget.munch.id,
-        coordinates: Coordinates(latitude: _centralCircle.center.latitude, longitude: _centralCircle.center.longitude),
-        radius: _circleRadius)
-    );
-  }
-
 
   Future _onSearchBarClicked() async {
     Prediction prediction = await PlacesAutocomplete.show(

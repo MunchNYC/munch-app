@@ -265,7 +265,9 @@ class _DecisionScreenState extends State<DecisionScreen>{
     return InkWell(
         onTap: (){
           NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
-                  (value) => setState(() {})  //refresh the data on page
+              (value){
+                _checkNavigationToSwipeScreen();
+              }  //refresh the data on page
           );
         },
         child: Container(
