@@ -69,10 +69,10 @@ class AuthRepo {
 
   Future<User> signInWithGoogle() async {
     // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
-    GoogleSignIn googleSignInRepo = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
+    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
 
     try {
-      GoogleSignInAccount account = await googleSignInRepo.signIn();
+      GoogleSignInAccount account = await googleSignIn.signIn();
 
       if(account != null) {
         final authentication = await account.authentication;
@@ -149,6 +149,8 @@ class AuthRepo {
     // Apple login doesn't auto-fill firebase user's name well
     if(user.email == null) {
       user.email = authorizationResult.credential.email;
+
+      print(authorizationResult.credential.email);
     }
 
     if(user.displayName == null && (authorizationResult.credential.fullName.givenName != null || authorizationResult.credential.fullName.familyName != null)) {
@@ -205,7 +207,7 @@ class AuthRepo {
 
     switch(currentUser.socialProvider){
       case SocialProvider.GOOGLE:
-        await GoogleSignIn().signOut();
+        await GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "").signOut();
         break;
       case SocialProvider.FACEBOOK:
         await FacebookLogin().logOut();

@@ -31,7 +31,13 @@ class UserRepo {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     if(socialProvider == null) {
-      socialProvider = SocialProvider.values[sharedPreferences.getInt(StorageKeys.SOCIAL_PROVIDER)];
+      int socialProviderIndex = sharedPreferences.getInt(StorageKeys.SOCIAL_PROVIDER);
+
+      if(socialProviderIndex != null) {
+        socialProvider = SocialProvider.values[socialProviderIndex];
+      } else{
+        socialProvider = null;
+      }
     } else{
       await sharedPreferences.setInt(StorageKeys.SOCIAL_PROVIDER, socialProvider.index);
     }
