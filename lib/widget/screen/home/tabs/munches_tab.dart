@@ -61,10 +61,7 @@ class MunchesTabState extends State<MunchesTab> {
 
   UniqueKey _focusDetectorKey = UniqueKey();
 
-  // Just first time when user opens the app, check if there is upcoming notification in tab bar
-  static bool _checkUpcomingNotification = true;
-
-  bool _showUpcomingNotification = false;
+  bool _showDecidedNotification = false;
 
   bool _historicalPagesFinished = false;
   bool _getHistoricalPageRequestInProgress = false;
@@ -96,6 +93,16 @@ class MunchesTabState extends State<MunchesTab> {
     }
   }
 
+  void _checkDecidedMunchesStatusNotification(){
+    _showDecidedNotification = false;
+
+    for(int i = 0; i < _decidedMunches.length; i++){
+      if(_decidedMunches[i].munchStatusChanged){
+        _showDecidedNotification = true;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FocusDetector(
@@ -103,13 +110,22 @@ class MunchesTabState extends State<MunchesTab> {
       onFocusGained: (){
         setState(() {
           _checkMunchCacheRefresh();
+          _checkDecidedMunchesStatusNotification();
         }); // refresh data on the screen if screen comes up from background or from Navigator.pop
       },
       child: _buildNotificationsBloc()
     );
   }
 
+
   void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
+    if(state is DetailedMunchNotificationState){
+      Munch munch = state.data;
+
+      if(munch.munchStatusChanged && munch.munchStatus == MunchStatus.DECIDED){
+        _showDecidedNotification = true;
+      }
+    }
     // if we have to listen for anything which will not be automatically done
   }
 
@@ -168,7 +184,7 @@ class MunchesTabState extends State<MunchesTab> {
                   _currentTab = index;
 
                   if(_currentTab == 1){
-                    _showUpcomingNotification = false;
+                    _showDecidedNotification = false;
                   }
                 });
               },
@@ -186,19 +202,10 @@ class MunchesTabState extends State<MunchesTab> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(App.translate("munches_tab.decided_tab.title")),
-                        BlocBuilder(
-                          cubit: munchBloc,
-                            buildWhen: (MunchState previous, MunchState current) =>  current is MunchesFetchingState && current.ready,
-                            builder: (BuildContext context, MunchState state){
-                                if(_showUpcomingNotification){
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: AppDimensions.scaleSizeToScreen(16.0)),
-                                      child: Icon(Icons.circle, color: Color(0xFFE60000), size: AppDimensions.scaleSizeToScreen(10.0))
-                                    );
-                                }
-
-                                return Container();
-                            }
+                        if(_showDecidedNotification)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: AppDimensions.scaleSizeToScreen(16.0)),
+                          child: Icon(Icons.circle, color: Color(0xFFE60000), size: AppDimensions.scaleSizeToScreen(10.0))
                         )
                       ],
                     )
@@ -243,18 +250,11 @@ class MunchesTabState extends State<MunchesTab> {
     _unmodifiableMunches = _munchRepo.munchStatusLists[MunchStatus.UNMODIFIABLE];
     _historicalMunches = _munchRepo.munchStatusLists[MunchStatus.HISTORICAL];
 
+    _showDecidedNotification = false;
+
     _initHistoricalPaginationData();
 
-    // just first time when user receives munches
-    if(_checkUpcomingNotification) {
-      if(_unmodifiableMunches.length > 0){
-        _showUpcomingNotification = true;
-      }
-
-      _checkUpcomingNotification = false;
-    }
-
-   if(_decidedMunches.length + _unmodifiableMunches.length < INITIAL_THRESHOLD_FOR_HISTORICAL_MUNCHES){
+    if(_decidedMunches.length + _unmodifiableMunches.length < INITIAL_THRESHOLD_FOR_HISTORICAL_MUNCHES){
       _throwGetNextHistoricalPageEvent();
     }
 

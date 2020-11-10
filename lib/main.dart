@@ -42,7 +42,8 @@ class MunchApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.transparent, // navigation bar color
       statusBarColor: Colors.transparent, // status bar color
-      statusBarIconBrightness: Brightness.dark
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarIconBrightness: Brightness.dark
     )); // status bar colorSystemUiOverlayStyle.light);
 
     SystemChrome.setPreferredOrientations([

@@ -122,7 +122,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     } else{
       _tutorialState = TutorialState.values[tutorialStateIndex];
     }
-    
+
     if(_tutorialState != TutorialState.FINISHED){
       widget.tutorialTriggerListenerActive = true;
     }

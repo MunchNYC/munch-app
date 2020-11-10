@@ -28,9 +28,19 @@ class MunchListWidget extends StatelessWidget {
   }
 
   Widget _munchLeading(){
-    return AspectRatio(
-      aspectRatio: 1,
-      child: CircleAvatar(backgroundImage: NetworkImage(munch.imageUrl)),
+    return Stack(
+      children: [
+        AspectRatio(
+          aspectRatio: 1,
+          child: CircleAvatar(backgroundImage: NetworkImage(munch.imageUrl)),
+        ),
+        if(munch.munchStatusChanged && munch.munchStatus == MunchStatus.DECIDED)
+        Positioned(
+          top: 0.0,
+          right: 0.0,
+          child: Icon(Icons.circle, color: Color(0xFFE60000), size: AppDimensions.scaleSizeToScreen(12.0)),
+        )
+      ],
     );
   }
 
