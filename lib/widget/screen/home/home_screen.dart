@@ -87,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
           backgroundColor: Palette.background,
           extendBodyBehindAppBar: true,
+          resizeToAvoidBottomInset: false, // this needs to be set there as false, in order to support keyboard on create join dialog without overflowing
           appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
           body: IndexedStack(
               index: _currentIndex, children: _navigators), // new

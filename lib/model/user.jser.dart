@@ -22,7 +22,7 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
             .toMap(model.pushNotificationsInfo));
     setMapValue(ret, 'userId', model.uid);
     setMapValueIfNotNull(ret, 'email', model.email);
-    setMapValue(ret, 'displayName', model.displayName);
+    setMapValueIfNotNull(ret, 'displayName', model.displayName);
     setMapValueIfNotNull(ret, 'imageUrl', model.imageUrl);
     return ret;
   }
@@ -37,7 +37,9 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
             obj.pushNotificationsInfo;
     obj.uid = map['userId'] as String;
     obj.email = map['email'] as String ?? getJserDefault('email') ?? obj.email;
-    obj.displayName = map['displayName'] as String;
+    obj.displayName = map['displayName'] as String ??
+        getJserDefault('displayName') ??
+        obj.displayName;
     obj.imageUrl =
         map['imageUrl'] as String ?? getJserDefault('imageUrl') ?? obj.imageUrl;
     return obj;

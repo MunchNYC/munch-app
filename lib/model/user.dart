@@ -21,6 +21,7 @@ class User{
   @nonNullable
   String email;
 
+  @nonNullable
   String displayName;
 
   @nonNullable

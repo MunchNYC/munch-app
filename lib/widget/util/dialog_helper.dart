@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/service/util/super_state.dart';
 import 'package:munch/theme/palette.dart';
+import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 
 // DON'T EVER PUT BlocProvider in Context tree of widget which will be disposes (like dialog), because Flutter will disable bloc provided into this BlocProvider
@@ -23,9 +24,12 @@ class DialogHelper{
               onWillPop: () async{
                   return !isModal;
               },
-              child:  Dialog(
+              child: Dialog(
+                  insetPadding: EdgeInsets.symmetric(horizontal: 24.0),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                  child: SingleChildScrollView(
+                  child: SizedBox(
+                    width: App.REF_DEVICE_WIDTH,
+                    child: SingleChildScrollView(
                       padding: EdgeInsets.symmetric(vertical: 24.0),
                       child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -38,7 +42,7 @@ class DialogHelper{
                             )
                           ]
                       )
-                  )
+                  ))
               )
           );
         }

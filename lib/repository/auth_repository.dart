@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:munch/util/notifications_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
@@ -82,8 +84,8 @@ class AuthRepo {
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
 
-        _userRepo.currentUser.socialProvider = SocialProvider.GOOGLE;
-
+        await _userRepo.setCurrentUserSocialProvider(SocialProvider.GOOGLE);
+        
         return await _onSignInSuccessful();
       } else{
         return null;
@@ -121,8 +123,8 @@ class AuthRepo {
         firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser));
-
-        _userRepo.currentUser.socialProvider = SocialProvider.FACEBOOK;
+        
+        await _userRepo.setCurrentUserSocialProvider(SocialProvider.FACEBOOK);
 
         return await _onSignInSuccessful();
         break;
@@ -145,9 +147,14 @@ class AuthRepo {
 
     // Apple returns email and full name just on first successful login to app, after that it returns null for that fields if user logs in again
     // Apple login doesn't auto-fill firebase user's name well
-    user.email = authorizationResult.credential.email;
-    user.displayName = authorizationResult.credential.fullName.givenName ?? "" +
-        " " + authorizationResult.credential.fullName.familyName ?? "";
+    if(user.email == null) {
+      user.email = authorizationResult.credential.email;
+    }
+
+    if(user.displayName == null && (authorizationResult.credential.fullName.givenName != null || authorizationResult.credential.fullName.familyName != null)) {
+      user.displayName = authorizationResult.credential.fullName.givenName ?? "" +
+              " " + authorizationResult.credential.fullName.familyName ?? "";
+    }
 
     user = await _userRepo.registerUser(user);
 
@@ -172,7 +179,7 @@ class AuthRepo {
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerAppleUser(authorizationResult, firebaseUser));
 
-        _userRepo.currentUser.socialProvider = SocialProvider.APPLE;
+        await _userRepo.setCurrentUserSocialProvider(SocialProvider.APPLE);
 
         return await _onSignInSuccessful();
         break;
@@ -206,7 +213,7 @@ class AuthRepo {
       case SocialProvider.APPLE:
         break;
     }
-
+    
     // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
     await _userRepo.signOutUser();
 

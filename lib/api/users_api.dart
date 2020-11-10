@@ -13,6 +13,8 @@ class UsersApi extends Api {
 
     Map<String, dynamic> fields = UserJsonSerializer().toMap(user);
 
+    print(fields);
+
     var data = await post(postUrl, fields);
 
     return UserJsonSerializer().fromMap(data['muncher']);

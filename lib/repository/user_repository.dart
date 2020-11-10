@@ -6,7 +6,9 @@ import 'package:munch/api/api.dart';
 import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
+import 'package:munch/repository/auth_repository.dart';
 import 'package:munch/util/app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepo {
   static UserRepo _instance;
@@ -24,6 +26,18 @@ class UserRepo {
   }
 
   User get currentUser => _currentUser;
+
+  Future setCurrentUserSocialProvider(SocialProvider socialProvider) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    if(socialProvider == null) {
+      socialProvider = SocialProvider.values[sharedPreferences.getInt(StorageKeys.SOCIAL_PROVIDER)];
+    } else{
+      await sharedPreferences.setInt(StorageKeys.SOCIAL_PROVIDER, socialProvider.index);
+    }
+
+    _currentUser.socialProvider = socialProvider;
+  }
 
   Future<User> getCurrentUser({bool forceRefresh = false}) async {
     if (_currentUser != null && !forceRefresh) {
@@ -46,6 +60,11 @@ class UserRepo {
         User user = await _usersApi.getAuthenticatedUser();
 
         await setCurrentUser(user);
+
+        // null means it will be fetched from storage, we need it stored to local storage because user is remembered
+        await setCurrentUserSocialProvider(null);
+
+        print(_currentUser.socialProvider);
 
         return _currentUser;
       } catch(exception){

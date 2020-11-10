@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
@@ -17,18 +18,14 @@ class MunchCodeDialog extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 240.0,
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-          children: <Widget>[
-            _titleText(),
-            SizedBox(height: 20.0),
-            _munchCodeContainer(context),
-            SizedBox(height: 16.0),
-            _continueButton(context)
-          ]
-      ),
+    return Column(
+      children: <Widget>[
+        _titleText(),
+        SizedBox(height: 20.0),
+        _munchCodeContainer(context),
+        SizedBox(height: 16.0),
+        _continueButton(context)
+      ]
     );
   }
 

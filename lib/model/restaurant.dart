@@ -82,8 +82,7 @@ class Restaurant{
 
       if (currentTimeOfDayValue < openTimeValue) {
         if (i == 0) {
-          currentStatus = App.translate(
-              "restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + workingTimes.open;
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + workingTimes.open;
         } else {
           currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") + " " + workingTimes.open;
         }

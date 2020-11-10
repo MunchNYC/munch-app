@@ -2,6 +2,7 @@ class StorageKeys {
   static const String ACCESS_TOKEN = "access_token";
   static const String FCM_TOKEN = "fcm_token";
   static const String SWIPE_TUTORIAL_STATE = "swipe_tutorial_state";
+  static const String SOCIAL_PROVIDER = "social_provider";
 }
 
 class CommunicationSettings {
