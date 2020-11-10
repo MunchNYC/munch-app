@@ -67,10 +67,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield HistoricalMunchesPageFetchingState.loading();
 
     try {
-      List<Munch> munchesList = await _munchRepo.getHistoricalMunches(
-        page: getHistoricalMunchesEvent.page,
-        timestamp: getHistoricalMunchesEvent.timestamp
-      );
+      List<Munch> munchesList = await _munchRepo.getHistoricalMunchesNextPage();
 
       yield HistoricalMunchesPageFetchingState.ready(data: munchesList);
     } catch (error) {

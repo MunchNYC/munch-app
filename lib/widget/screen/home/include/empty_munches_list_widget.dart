@@ -2,12 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:munch/service/munch/munch_bloc.dart';
+import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
+import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/util/custom_button.dart';
+import 'package:munch/widget/util/dialog_helper.dart';
 
-// TODO: In-progress
 class EmptyMunchesListWidget extends StatelessWidget{
+  MunchBloc munchBloc;
+
+  EmptyMunchesListWidget({this.munchBloc});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -17,31 +24,108 @@ class EmptyMunchesListWidget extends StatelessWidget{
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text("Tap the ", style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.primary)),
-              CustomButton(
-                color: Palette.background,
-                padding: EdgeInsets.zero,
-                content: Icon(
-                  Icons.add,
-                  size: 14,
-                  color: Palette.secondaryDark,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  // needs to be centered Y with arrow left side, and we need to increase padding by that difference
+                  padding: EdgeInsets.only(top: 16.0 + (16.0 - AppDimensions.scaleSizeToScreenHeight(16.0))),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("Tap the ", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.primary)),
+                      Icon(
+                        Icons.add,
+                        size: AppDimensions.scaleSizeToScreen(16.0),
+                        color: Palette.secondaryDark,
+                      ),
+                      Text(" icon to get started", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.primary)),
+                    ],
+                  )
                 ),
-                flat: true,
-                onPressedCallback: (){}
-              ),
-              Text(" to get started", style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.primary)),
-              Padding(
-                padding: EdgeInsets.only(right: 4.0, bottom: 20.0),
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(pi),
-                  child: Transform.rotate(angle: -pi / 2, child: ImageIcon(AssetImage("assets/icons/curvedArrow.png"), size: 28.0, color: Palette.secondaryDark))
-                ),
+                SizedBox(width: 8.0),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 2.0),
+                    child: Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(pi),
+                        child: Transform.rotate(angle: -pi / 2, child: ImageIcon(AssetImage("assets/icons/curvedArrow.png"), size: 30.0, color: Palette.secondaryDark))
+                    ),
+                  )
+                )
+
+              ],
+            ),
+          SizedBox(height: 60.0),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+                style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400),
+                children: [
+                  TextSpan(
+                    text: "Join",
+                    style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500),
+                  ),
+                  TextSpan(
+                    text: " your friends with their invite code.",
+                  )
+                ]
+            )
+          ),
+          SizedBox(height: 16.0),
+          Text("- OR -", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400)),
+          SizedBox(height: 16.0),
+          RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                  style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400),
+                  children: [
+                    TextSpan(
+                      text: "Create",
+                      style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500),
+                    ),
+                    TextSpan(
+                      text: " a new Munch and invite your friends.",
+                    )
+                  ]
               )
-            ],
+          ),
+          Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/fallingFoodBackground.jpg'),
+                    colorFilter: new ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                    alignment: Alignment.topCenter,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(top: 60.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomButton(
+                        content: Text("Get Munch'n", style: AppTextStyle.style(AppTextStylePattern.heading6Inverse, fontWeight: FontWeight.w400)),
+                        minWidth: double.infinity,
+                        borderRadius: 12.0,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        color: Palette.secondaryDark,
+                        textColor: Palette.background,
+                        onPressedCallback: () {
+                          DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
+                        }
+                      ),
+                    ],
+                  )
+                )
+              ),
           )
         ],
       )

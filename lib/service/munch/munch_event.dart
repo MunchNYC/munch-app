@@ -1,4 +1,3 @@
-import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 
 abstract class MunchEvent {}
@@ -6,10 +5,7 @@ abstract class MunchEvent {}
 class GetMunchesEvent extends MunchEvent {}
 
 class GetHistoricalMunchesPageEvent extends MunchEvent {
-  int page;
-  int timestamp;
-
-  GetHistoricalMunchesPageEvent({this.page, this.timestamp});
+  GetHistoricalMunchesPageEvent();
 }
 
 class JoinMunchEvent extends MunchEvent {

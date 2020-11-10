@@ -46,7 +46,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
     this.borderRadius = 0,
     this.borderWidth = 0.0,
     this.borderColor,
-    this.elevation = 8.0,
+    this.elevation = 4.0,
     this.disabled = false
   });
 
@@ -65,7 +65,7 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
     this.borderRadius = 0,
     this.borderWidth = 0.0,
     this.borderColor,
-    this.elevation = 8.0,
+    this.elevation = 4.0,
     this.additionalLoadingConditionCallback,
     this.disabled = false,
   }){

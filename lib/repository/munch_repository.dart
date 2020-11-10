@@ -1,6 +1,5 @@
 import 'package:munch/api/api.dart';
 import 'package:munch/api/munch_api.dart';
-import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
@@ -14,6 +13,12 @@ class MunchRepo {
 
   Map<MunchStatus, List<Munch>> munchStatusLists;
   Map<String, Munch> munchMap;
+
+  int _historicalPageNumber = -1;
+  DateTime _historicalPaginationUTCDate;
+
+  // Last time getMunches was called
+  DateTime getMunchesCallLastUTC;
 
   MunchRepo._internal(){
     munchStatusLists = Map<MunchStatus, List<Munch>>();
@@ -81,7 +86,14 @@ class MunchRepo {
       if(currentMunchList != newMunchList) {
         deleteMunchFromCache(currentMunch.id);
 
-        _insertSortedToMunchList(newMunchList, currentMunch);
+        if(newMunch.munchStatus == MunchStatus.HISTORICAL){
+          // if no pages are fetched just remove HISTORICAL munch from cache
+          if(_historicalPageNumber > -1) {
+            newMunchList.insert(0, currentMunch);
+          }
+        } else {
+          _insertSortedToMunchList(newMunchList, currentMunch);
+        }
 
         // _delete is removing it from map
         munchMap[newMunch.id] = currentMunch;
@@ -89,7 +101,15 @@ class MunchRepo {
 
       currentMunch.merge(newMunch);
     } else{
-      _insertSortedToMunchList(newMunchList, newMunch);
+      if(newMunch.munchStatus == MunchStatus.HISTORICAL){
+        // if no pages are fetched just remove HISTORICAL munch from cache
+        if(_historicalPageNumber > -1) {
+          // This if condition here is really hard to reproduce, but it's here because of any possible edge case
+          newMunchList.insert(0, newMunch);
+        }
+      } else {
+        _insertSortedToMunchList(newMunchList, newMunch);
+      }
 
       munchMap[newMunch.id] = newMunch;
     }
@@ -110,6 +130,8 @@ class MunchRepo {
 
     _clearMunchCache();
 
+    getMunchesCallLastUTC = DateTime.now().toUtc();
+
     for(int i = 0; i < getMunchesResponse.undecidedMunches.length; i++){
       _addMunchToCache(getMunchesResponse.undecidedMunches[i]);
     }
@@ -121,11 +143,22 @@ class MunchRepo {
     return getMunchesResponse;
   }
 
-  Future<List<Munch>> getHistoricalMunches({int page, int timestamp}) async{
-    List<Munch> historicalMunchesList = await _munchApi.getHistoricalMunches(page: page, timestamp: timestamp);
+  void resetHistoricalMunchesPagination(){
+    _historicalPageNumber = -1;
+    _historicalPaginationUTCDate = null;
+  }
+
+  Future<List<Munch>> getHistoricalMunchesNextPage() async{
+    _historicalPageNumber++;
+
+    if(_historicalPaginationUTCDate == null){
+      _historicalPaginationUTCDate = DateTime.now().toUtc();
+    }
+
+    List<Munch> historicalMunchesList = await _munchApi.getHistoricalMunches(page: _historicalPageNumber, timestamp: _historicalPaginationUTCDate.millisecondsSinceEpoch);
 
     for(int i = 0; i < historicalMunchesList.length; i++){
-      updateMunchCache(historicalMunchesList[i]);
+      _addMunchToCache(historicalMunchesList[i]);
     }
 
     return historicalMunchesList;

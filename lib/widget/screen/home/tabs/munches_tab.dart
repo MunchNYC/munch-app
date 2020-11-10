@@ -17,13 +17,13 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/screen/home/include/empty_munches_list_widget.dart';
 import 'package:munch/widget/screen/home/include/review_munch_dialog.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munch_list_widget.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
-import 'package:munch/widget/util/empty_list_view_widget.dart';
 import 'package:munch/widget/util/error_list_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 
@@ -41,7 +41,9 @@ class MunchesTab extends StatefulWidget {
 class MunchesTabState extends State<MunchesTab> {
   static const SKELETON_ITEMS_NUMBER = 15;
   // how many DECIDED and UNMODIFIABLE munches should be present to not trigger historical endpoint immediately after getMunches
-  static const INITIAL_THRESHOLD_FOR_HISTORICAL_MUNCHES = 12;
+  static const INITIAL_THRESHOLD_FOR_HISTORICAL_MUNCHES = 6;
+  // FocusDetector will use this value to call getMunches again if more than 18 hours passed after last call
+  static const GET_MUNCHES_REFRESH_HOURS = 18;
 
   MunchBloc munchBloc;
   
@@ -64,8 +66,6 @@ class MunchesTabState extends State<MunchesTab> {
 
   bool _showUpcomingNotification = false;
 
-  int _historicalPageNumber = -1;
-  DateTime _historicalPaginationUTCDate;
   bool _historicalPagesFinished = false;
   bool _getHistoricalPageRequestInProgress = false;
 
@@ -76,18 +76,9 @@ class MunchesTabState extends State<MunchesTab> {
   }
 
   void _throwGetNextHistoricalPageEvent(){
-    if(_historicalPaginationUTCDate == null){
-      _historicalPaginationUTCDate = DateTime.now().toUtc();
-    }
-
-    _historicalPageNumber++;
-
     _getHistoricalPageRequestInProgress = true;
 
-    munchBloc.add(GetHistoricalMunchesPageEvent(
-        page: _historicalPageNumber,
-        timestamp: _historicalPaginationUTCDate.millisecondsSinceEpoch)
-    );
+    munchBloc.add(GetHistoricalMunchesPageEvent());
   }
 
   @override
@@ -97,13 +88,21 @@ class MunchesTabState extends State<MunchesTab> {
     super.initState();
   }
 
+  void _checkMunchCacheRefresh(){
+    Duration differenceLastFetch = DateTime.now().toUtc().difference(_munchRepo.getMunchesCallLastUTC);
+
+    if(differenceLastFetch.inHours >= GET_MUNCHES_REFRESH_HOURS){
+      _throwGetMunchesEvent();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FocusDetector(
       key: _focusDetectorKey,
       onFocusGained: (){
         setState(() {
-
+          _checkMunchCacheRefresh();
         }); // refresh data on the screen if screen comes up from background or from Navigator.pop
       },
       child: _buildNotificationsBloc()
@@ -211,13 +210,12 @@ class MunchesTabState extends State<MunchesTab> {
   }
 
   void _initHistoricalPaginationData(){
-    _historicalPageNumber = -1;
+    _munchRepo.resetHistoricalMunchesPagination();
     _historicalPagesFinished = false;
-    _historicalPaginationUTCDate = null;
   }
 
   void _openReviewMunchDialog({Munch munch, String imageUrl, bool forcedReview = false}){
-    OverlayDialogHelper(widget: ReviewMunchDialog(munchBloc: munchBloc, munch: munch, imageUrl: imageUrl, forcedReview: forcedReview,), isModal: true).show(context);
+    OverlayDialogHelper(widget: ReviewMunchDialog(munchBloc: munchBloc, munch: munch, imageUrl: imageUrl, forcedReview: forcedReview), isModal: forcedReview).show(context);
   }
 
   void _showRequestedReviewIfExists(){
@@ -263,8 +261,6 @@ class MunchesTabState extends State<MunchesTab> {
     _requestedReviews = getMunchesResponse.requestedReviews;
 
     _showRequestedReviewIfExists();
-
-
   }
 
   void _historicalMunchesPageListener(List<Munch> historicalMunchesPageList){
@@ -374,7 +370,7 @@ class MunchesTabState extends State<MunchesTab> {
             slivers: [
               SliverFillRemaining(
                   hasScrollBody: true,
-                  child: EmptyListViewWidget(iconData: Icons.people, text: App.translate("munches_tab.still_deciding_list_view.empty.text"))
+                  child: EmptyMunchesListWidget(munchBloc: munchBloc)
               ),
             ]
         )
