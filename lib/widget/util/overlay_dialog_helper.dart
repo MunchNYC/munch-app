@@ -8,8 +8,9 @@ class OverlayDialogHelper{
   bool isModal;
   Widget widget;
   bool useRootNavigator;
+  bool transparent;
 
-  OverlayDialogHelper({this.isModal = false, this.widget, this.useRootNavigator = true});
+  OverlayDialogHelper({this.isModal = false, this.widget, this.useRootNavigator = true, this.transparent = false});
 
   void show(BuildContext context){
     showGeneralDialog(
@@ -17,7 +18,7 @@ class OverlayDialogHelper{
         useRootNavigator: useRootNavigator,
         barrierDismissible: !isModal,
         barrierLabel: "",
-        barrierColor: Palette.secondaryLight.withAlpha(150),
+        barrierColor: transparent ? Colors.transparent : Palette.secondaryLight.withAlpha(150),
         transitionDuration: const Duration(milliseconds: 200),
         pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
           return WillPopScope(

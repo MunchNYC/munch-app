@@ -31,8 +31,7 @@ import 'include/restaurant_card.dart';
 
 class RestaurantSwipeScreen extends StatefulWidget {
   Munch munch;
-  bool tutorialStateInitialized = false;
-
+  bool tutorialTriggerListenerActive = false;
   // will be true if we need to call back-end to get detailed munch instead of compact
   bool shouldFetchDetailedMunch;
 
@@ -70,6 +69,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   bool _restaurantsApiCallInProgress = false;
 
+  TutorialState _tutorialState;
+
   @override
   void initState() {
     _munchBloc = MunchBloc();
@@ -85,6 +86,13 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     }
 
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _initializeTutorialState();
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -104,24 +112,20 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
-  void _initializeTutorialState(Restaurant restaurant) async{
+  void _initializeTutorialState() async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     int tutorialStateIndex = sharedPreferences.getInt(StorageKeys.SWIPE_TUTORIAL_STATE);
 
-    TutorialState tutorialState;
-
     if(tutorialStateIndex == null){
-      tutorialState = TutorialState.TUTORIAL_CAROUSEL;
+      _tutorialState = TutorialState.TUTORIAL_CAROUSEL;
     } else{
-      tutorialState = TutorialState.values[tutorialStateIndex];
+      _tutorialState = TutorialState.values[tutorialStateIndex];
     }
-
-    if(tutorialState != TutorialState.FINISHED){
-      OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(restaurant, tutorialState)).show(context);
+    
+    if(_tutorialState != TutorialState.FINISHED){
+      widget.tutorialTriggerListenerActive = true;
     }
-
-    widget.tutorialStateInitialized = true;
   }
 
   void _throwGetSwipeRestaurantNextPageEvent(){
@@ -333,10 +337,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   void _noMoreCarouselImageListener(MunchState state){
     _cardPerspectiveAnimationLeft = state.data;
 
-    if(_currentRestaurants.length > 0 && !widget.tutorialStateInitialized){
-      _initializeTutorialState(_currentRestaurants[0]);
-    }
-
     _cardPerspectiveAnimatorKey.triggerAnimation();
 
     Vibration.hasVibrator().then((value) async {
@@ -476,6 +476,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
+  //              OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState)).show(context);
   /*
     must be wrapped inside layout builder,
     otherwise feedback widget won't work, width and height of it should be defined, because feedback cannot see Expanded widget above
@@ -483,7 +484,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _draggableCard(){
     return LayoutBuilder(
       builder: (context, constraints) =>
-          Stack(
+        Stack(
             children:[
               Draggable(
                 child: _currentCardMap[_currentRestaurants[0].id],
@@ -509,6 +510,20 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   }
                 },
               ),
+              if(widget.tutorialTriggerListenerActive)
+              Positioned.fill(
+                  child: GestureDetector(
+                    // listener to trigger tutorial
+                    onTapDown: (TapDownDetails details){
+                      OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState)).show(context);
+
+                      setState(() {
+                        widget.tutorialTriggerListenerActive = false;
+                      });
+                    },
+                    child: Container(color: Colors.transparent, width: double.infinity, height: double.infinity)
+                  )
+              )
           ]),
     );
   }

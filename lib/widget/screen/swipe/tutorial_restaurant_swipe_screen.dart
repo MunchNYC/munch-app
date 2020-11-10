@@ -43,7 +43,8 @@ class _TutorialRestaurantSwipeScreenState extends State<TutorialRestaurantSwipeS
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: _onScreenTapped,
+        // listener to trigger tutorial
+        onTapDown: (TapDownDetails details) =>  _onScreenTapped(),
         child: Scaffold(
             appBar: AppBar(backgroundColor: Colors.transparent, automaticallyImplyLeading: false,elevation: 0.0),
             backgroundColor: Colors.transparent,
