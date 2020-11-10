@@ -66,8 +66,6 @@ class MunchApi extends Api {
 
     Map<String, dynamic> fields = MunchJsonSerializer().toMap(munch);
 
-    print(fields);
-
     var data = await post(postUrl, fields);
 
     Munch createdMunch = MunchJsonSerializer().fromMap(data['munchDetailed']);
