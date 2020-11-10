@@ -86,20 +86,14 @@ class MunchesTabState extends State<MunchesTab> {
   }
 
   void _checkMunchCacheRefresh(){
-    Duration differenceLastFetch = DateTime.now().toUtc().difference(_munchRepo.getMunchesCallLastUTC);
+    if(_munchRepo.getMunchesCallLastUTC != null) {
+      Duration differenceLastFetch = DateTime.now().toUtc().difference(_munchRepo.getMunchesCallLastUTC);
 
-    if(differenceLastFetch.inHours >= GET_MUNCHES_REFRESH_HOURS){
-      _throwGetMunchesEvent();
-    }
-  }
-
-  void _checkDecidedMunchesStatusNotification(){
-    _showDecidedNotification = false;
-
-    for(int i = 0; i < _decidedMunches.length; i++){
-      if(_decidedMunches[i].munchStatusChanged){
-        _showDecidedNotification = true;
+      if (differenceLastFetch.inHours >= GET_MUNCHES_REFRESH_HOURS) {
+        _throwGetMunchesEvent();
       }
+    } else{
+      _throwGetMunchesEvent();
     }
   }
 
@@ -110,7 +104,6 @@ class MunchesTabState extends State<MunchesTab> {
       onFocusGained: (){
         setState(() {
           _checkMunchCacheRefresh();
-          _checkDecidedMunchesStatusNotification();
         }); // refresh data on the screen if screen comes up from background or from Navigator.pop
       },
       child: _buildNotificationsBloc()

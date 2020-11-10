@@ -76,7 +76,7 @@ class MunchRepo {
     munchList.insert(indexToInsert, munch);
   }
 
-  void updateMunchCache(Munch newMunch){
+  Munch updateMunchCache(Munch newMunch){
     Munch currentMunch = munchMap[newMunch.id];
     List<Munch> newMunchList = munchStatusLists[newMunch.munchStatus];
 
@@ -100,6 +100,10 @@ class MunchRepo {
       }
 
       currentMunch.merge(newMunch);
+
+      currentMunch.lastUpdatedUTC = DateTime.now().toUtc();
+
+      return currentMunch;
     } else{
       if(newMunch.munchStatus == MunchStatus.HISTORICAL){
         // if no pages are fetched just remove HISTORICAL munch from cache
@@ -112,9 +116,11 @@ class MunchRepo {
       }
 
       munchMap[newMunch.id] = newMunch;
-    }
 
-    newMunch.lastUpdatedUTC = DateTime.now().toUtc();
+      newMunch.lastUpdatedUTC = DateTime.now().toUtc();
+
+      return newMunch;
+    }
   }
 
   void _addMunchToCache(Munch munch){
@@ -169,7 +175,7 @@ class MunchRepo {
 
     Munch munch = await _munchApi.joinMunch(munchId);
 
-    updateMunchCache(munch);
+    munch = updateMunchCache(munch);
 
     return munch;
   }
@@ -177,7 +183,7 @@ class MunchRepo {
   Future<Munch> createMunch(Munch munch) async{
     Munch createdMunch = await _munchApi.createMunch(munch);
 
-    updateMunchCache(createdMunch);
+    munch = updateMunchCache(createdMunch);
 
     return createdMunch;
   }
@@ -186,7 +192,7 @@ class MunchRepo {
     try {
       Munch munch = await _munchApi.getDetailedMunch(munchId);
 
-      updateMunchCache(munch);
+      munch = updateMunchCache(munch);
 
       return munch;
     } on AccessDeniedException catch (error) {
@@ -216,7 +222,7 @@ class MunchRepo {
           liked: liked
       );
 
-      updateMunchCache(munch);
+      munch = updateMunchCache(munch);
 
       return munch;
     } on AccessDeniedException catch (error) {
@@ -230,7 +236,7 @@ class MunchRepo {
     try {
       Munch updatedMunch = await _munchApi.saveMunchPreferences(munch: munch);
 
-      updateMunchCache(updatedMunch);
+      munch = updateMunchCache(updatedMunch);
 
       return munch;
     } on AccessDeniedException catch (error) {
@@ -258,7 +264,7 @@ class MunchRepo {
         currentMunch.numberOfMembers--;
       }
 
-      updateMunchCache(munch);
+      munch = updateMunchCache(munch);
 
       return munch;
     } on AccessDeniedException catch (error) {
@@ -286,7 +292,7 @@ class MunchRepo {
         munchId: munchId,
       );
 
-      updateMunchCache(munch);
+      munch = updateMunchCache(munch);
 
       return munch;
     } on AccessDeniedException catch (error) {
@@ -303,7 +309,7 @@ class MunchRepo {
         munchId: munchId,
       );
 
-      updateMunchCache(munch);
+      munch = updateMunchCache(munch);
 
       return munch;
     } on AccessDeniedException catch (error) {

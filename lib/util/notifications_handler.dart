@@ -120,7 +120,6 @@ class NotificationsHandler{
   }
 
   void _configureNotificationsReceiveCallbacks(){
-    try {
       try {
         _firebaseMessaging.configure(
           // App in Foreground
@@ -172,12 +171,11 @@ class NotificationsHandler{
               return;
             }
         );
+
+        print("Notifications listener configured");
       } on Exception catch (e, s) {
         print(s);
       }
-    } on Exception catch (e, s) {
-      print(s);
-    }
   }
 
   void _showNotification(Map notification, Map data) async {
