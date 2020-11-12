@@ -1,5 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -66,5 +67,9 @@ class Utility{
 
   static DateTime convertUnixTimestampToUTC(int value){
     return DateTime.fromMicrosecondsSinceEpoch(value * 1000, isUtc: true);
+  }
+
+  static String convertTo24HourFormat(String dateTime12HoursString){
+    return DateFormat("HH:mm").format(DateFormat("y-M-d hh:mm aa").parse(dateTime12HoursString));
   }
 }

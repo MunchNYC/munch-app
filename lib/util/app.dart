@@ -15,6 +15,8 @@ class App {
   static double devicePixelRatio;
   static double textScaleFactor;
 
+  static bool use24HoursFormat;
+
   static AppLocalizations appLocalizations;
 
   static String deviceId;
@@ -26,10 +28,13 @@ class App {
   }
 
   static void _initScreenProperties(BuildContext context){
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
-    devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-    textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+
+    screenWidth = mediaQueryData.size.width;
+    screenHeight = mediaQueryData.size.height;
+    devicePixelRatio = mediaQueryData.devicePixelRatio;
+    textScaleFactor = mediaQueryData.textScaleFactor;
+    use24HoursFormat = mediaQueryData.alwaysUse24HourFormat;
   }
 
   static void initAppContext(BuildContext context){
