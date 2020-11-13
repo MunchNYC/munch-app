@@ -50,6 +50,7 @@ enum TutorialState{
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.2;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
+  static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 500;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;
@@ -74,22 +75,21 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   bool _swipeReturnedAnimationInProgress = false;
   bool _swipeCompletedAnimationInProgress = false;
 
-  Restaurant _currentAnimatedRestaurant;
-  Widget _currentAnimatedRestaurantCard;
-  double _currentAnimatedRestaurantDX;
-  double _currentAnimatedRestaurantDY;
-  double _currentAnimatedCardWidth;
-  double _currentAnimatedCardHeight;
-  Offset _currentAnimatedCardStartingPosition;
-
-  int _swipeCompletedRequiredTimeMillis;
-  double _swipeCompletedDistanceX;
-  double _swipeCompletedDistanceY;
-
-  int _defaultSwipeCompletedDurationMillis = 500;
-
   AnimatorKey<Offset> _swipeReturnedAnimatorKey = AnimatorKey<Offset>();
   AnimatorKey<double> _swipeCompletedAnimatorKey = AnimatorKey<double>();
+
+  // Current Animation details for swiped restaurant
+  Restaurant _currentAnimatedRestaurant;
+  Widget _currentAnimatedRestaurantCard;
+  Offset _currentAnimatedRestaurantGlobalOffset;
+
+  int _swipeCompletedRequiredTimeMillis;
+  Offset _swipeCompletedDistance;
+
+  // Restaurant card static details
+  double _restaurantCardWidth;
+  double _restaurantCardHeight;
+  Offset _restaurantCardStartingGlobalOffset;
 
   @override
   void initState() {
@@ -296,8 +296,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return  Animator(
         animatorKey: _swipeReturnedAnimatorKey,
         tween: Tween<Offset>(
-            begin: Offset(_currentAnimatedRestaurantDX, _currentAnimatedRestaurantDY),
-            end: Offset(_currentAnimatedCardStartingPosition.dx, _currentAnimatedCardStartingPosition.dy)
+            begin: _currentAnimatedRestaurantGlobalOffset,
+            end: _restaurantCardStartingGlobalOffset
         ),
         cycles: 1,
         duration: Duration(milliseconds: 500),
@@ -313,8 +313,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               offset: anim.value,
               transformHitTests: false,
               child: Container(
-                width: _currentAnimatedCardWidth,
-                height: _currentAnimatedCardHeight,
+                width: _restaurantCardWidth,
+                height: _restaurantCardHeight,
                 child: _currentAnimatedRestaurantCard,
               )
           );
@@ -338,14 +338,15 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           });
         },
         builder: (context, anim, child){
-          double dx = _currentAnimatedRestaurantDX + anim.value * _swipeCompletedDistanceX;
-          double dy = _currentAnimatedRestaurantDY + anim.value * _swipeCompletedDistanceY;
+          double dx = _currentAnimatedRestaurantGlobalOffset.dx + anim.value * _swipeCompletedDistance.dx;
+          double dy = _currentAnimatedRestaurantGlobalOffset.dy + anim.value * _swipeCompletedDistance.dy;
+
           return Transform.translate(
               offset: Offset(dx, dy),
               transformHitTests: false,
               child: Container(
-                width: _currentAnimatedCardWidth,
-                height: _currentAnimatedCardHeight,
+                width: _restaurantCardWidth,
+                height: _restaurantCardHeight,
                 child: _currentAnimatedRestaurantCard,
               )
           );
@@ -587,7 +588,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                     : Container(),
                 onDragStarted: (){
                   RenderBox renderBox = context.findRenderObject();
-                  _currentAnimatedCardStartingPosition = renderBox.localToGlobal(Offset.zero);
+                  _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
                 },
                 // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED GOOD BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
                 onDragEnd: (DraggableDetails draggableDetails) => _onDragEndListener(context, draggableDetails)
@@ -789,16 +790,22 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   void _onDragEndListener(BuildContext context, DraggableDetails details){
-    _currentAnimatedRestaurantDX = details.offset.dx;
-    _currentAnimatedRestaurantDY = details.offset.dy;
-    _currentAnimatedCardWidth = context.findRenderObject().semanticBounds.width;
-    _currentAnimatedCardHeight = context.findRenderObject().semanticBounds.height;
+    // Take global position of top left corner where restaurant card drag finished
+    _currentAnimatedRestaurantGlobalOffset = details.offset;
+
+    // Take static restaurant card sizes
+    _restaurantCardWidth = context.findRenderObject().semanticBounds.width;
+    _restaurantCardHeight = context.findRenderObject().semanticBounds.height;
+
+    // Save restaurant data and restaurant card data for animation
     _currentAnimatedRestaurant = _currentRestaurants[0];
     _currentAnimatedRestaurantCard = _currentCardMap[_currentRestaurants[0].id];
 
-    double dx = _currentAnimatedRestaurantDX - _currentAnimatedCardStartingPosition.dx;
+    // How many restaurant card moved by x-axis from starting position
+    double dx = _currentAnimatedRestaurantGlobalOffset.dx - _restaurantCardStartingGlobalOffset.dx;
 
-    if(dx.abs() > _currentAnimatedCardWidth * SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD){
+    // Is it enough to mark it as completed swipe
+    if(dx.abs() > _restaurantCardWidth * SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD){
       if (dx < 0) {
         _onSwipeLeft();
       } else {
@@ -807,6 +814,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
       _triggerSwipeCompletedAnimation(details);
     } else{
+      // Card should return to initial position
       _triggerSwipeReturnedAnimation();
     }
 
@@ -826,50 +834,65 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   void _triggerSwipeCompletedAnimation(DraggableDetails details){
-    double dx = _currentAnimatedRestaurantDX - _currentAnimatedCardStartingPosition.dx;
-    double dy = _currentAnimatedRestaurantDY - _currentAnimatedCardStartingPosition.dy;
+    // How many restaurant card moved by x-axis from starting position
+    double dx = _currentAnimatedRestaurantGlobalOffset.dx - _restaurantCardStartingGlobalOffset.dx;
+    // How many restaurant card moved by y-axis from starting position
+    double dy = _currentAnimatedRestaurantGlobalOffset.dy - _restaurantCardStartingGlobalOffset.dy;
 
+    // Distances which need to be passed to make card leave the screen
     double distanceX;
     double distanceY;
 
+    // Total distances need by card to leave the screen. The lower one determines which axis will first cause card to leave the screen
     double fullDistanceX;
     double fullDistanceY;
 
     if(dx < 0){
-      fullDistanceX = _currentAnimatedCardStartingPosition.dx + _currentAnimatedCardWidth;
+      fullDistanceX = _restaurantCardStartingGlobalOffset.dx + _restaurantCardWidth;
     } else{
-      fullDistanceX = App.screenWidth - _currentAnimatedCardStartingPosition.dx;
+      fullDistanceX = App.screenWidth - _restaurantCardStartingGlobalOffset.dx;
     }
 
     distanceX = fullDistanceX - dx.abs();
 
     if(dy < 0){
-      fullDistanceY = _currentAnimatedCardStartingPosition.dy + _currentAnimatedCardHeight;
+      fullDistanceY = _restaurantCardStartingGlobalOffset.dy + _restaurantCardHeight;
     } else{
-      fullDistanceY = App.screenHeight - _currentAnimatedCardStartingPosition.dy;
+      fullDistanceY = App.screenHeight - _restaurantCardStartingGlobalOffset.dy;
     }
 
     distanceY = fullDistanceY - dy.abs();
 
+    // Percentages of passed distances based on total distances
     double startDistanceXPct = dx.abs() / fullDistanceX;
     double startDistanceYPct = dy.abs() / fullDistanceY;
 
+    // How much animation duration should be scaled down based on distance travelled by axis which will first leave the screen
     double distanceTimeFactor;
 
+    // Remaining minimal distances to be passed to make the card leave the screen
+    double swipeCompletedDistanceX;
+    double swipeCompletedDistanceY;
+
+    // If card is leaving on x-axis first
     if(startDistanceXPct > startDistanceYPct){
       distanceTimeFactor = distanceX / fullDistanceX;
 
-      _swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * distanceX;
-      _swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * (startDistanceYPct / startDistanceXPct) * distanceY;
-
+      // Distances remaining to be passed
+      swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * distanceX;
+      swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * (startDistanceYPct / startDistanceXPct) * distanceY;
     } else{
+      // If card is leaving on y-axis first
       distanceTimeFactor = distanceY / fullDistanceY;
 
-      _swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * (startDistanceXPct / startDistanceYPct) * distanceX;
-      _swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * distanceY;
+      // Distances remaining to be passed
+      swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * (startDistanceXPct / startDistanceYPct) * distanceX;
+      swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * distanceY;
     }
 
-    _swipeCompletedRequiredTimeMillis = (distanceTimeFactor * _defaultSwipeCompletedDurationMillis).ceil();
+    _swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
+
+    _swipeCompletedRequiredTimeMillis = (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
 
     setState(() {
       _swipeCompletedAnimationInProgress = true;
