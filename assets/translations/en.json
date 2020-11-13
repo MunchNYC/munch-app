@@ -65,6 +65,15 @@
     "munches_tab.decided_list_view.empty.text": "No munches yet",
     "munches_tab.join_munch.successful.message": "Munch successfully joined.",
 
+    "empty_munches_list_widget.tutorial.description_row_1.text": "Tap the",
+    "empty_munches_list_widget.tutorial.description_row_2.text": "icon to get started",
+    "empty_munches_list_widget.tutorial.join_row_1.text": "Join",
+    "empty_munches_list_widget.tutorial.join_row_2.text": "your friends with their invite code.",
+    "empty_munches_list_widget.tutorial.join_create_row_separator.text": "OR",
+    "empty_munches_list_widget.tutorial.create_row_1.text": "Create",
+    "empty_munches_list_widget.tutorial.create_row_2.text": "a new Munch and invite your friends.",
+    "empty_munches_list_widget.start_button.text": "Get Munch'n",
+
     "account_tab.menu_item.notifications.text": "Notifications",
     "account_tab.menu_item.invite_friends.text": "Invite friends",
     "account_tab.menu_item.feedback.text": "Give us feedback",

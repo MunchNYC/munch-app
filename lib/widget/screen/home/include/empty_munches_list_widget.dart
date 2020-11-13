@@ -6,6 +6,7 @@ import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
+import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
@@ -36,13 +37,13 @@ class EmptyMunchesListWidget extends StatelessWidget{
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text("Tap the ", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.primary)),
+                      Text(App.translate("empty_munches_list_widget.tutorial.description_row_1.text") + " ", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.primary)),
                       Icon(
                         Icons.add,
                         size: AppDimensions.scaleSizeToScreen(16.0),
                         color: Palette.secondaryDark,
                       ),
-                      Text(" icon to get started", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.primary)),
+                      Text(" " + App.translate("empty_munches_list_widget.tutorial.description_row_2.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.primary)),
                     ],
                   )
                 ),
@@ -68,17 +69,17 @@ class EmptyMunchesListWidget extends StatelessWidget{
                 style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400),
                 children: [
                   TextSpan(
-                    text: "Join",
+                    text: App.translate("empty_munches_list_widget.tutorial.join_row_1.text"),
                     style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500),
                   ),
                   TextSpan(
-                    text: " your friends with their invite code.",
+                    text: " " + App.translate("empty_munches_list_widget.tutorial.join_row_2.text"),
                   )
                 ]
             )
           ),
           SizedBox(height: 16.0),
-          Text("- OR -", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400)),
+          Text("- " + App.translate("empty_munches_list_widget.tutorial.join_create_row_separator.text") + " -", style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400)),
           SizedBox(height: 16.0),
           RichText(
               textAlign: TextAlign.center,
@@ -86,11 +87,11 @@ class EmptyMunchesListWidget extends StatelessWidget{
                   style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400),
                   children: [
                     TextSpan(
-                      text: "Create",
+                      text: App.translate("empty_munches_list_widget.tutorial.create_row_1.text"),
                       style: AppTextStyle.style(AppTextStylePattern.heading6SecondaryDark, fontWeight: FontWeight.w500),
                     ),
                     TextSpan(
-                      text: " a new Munch and invite your friends.",
+                      text: " " + App.translate("empty_munches_list_widget.tutorial.create_row_2.text"),
                     )
                   ]
               )
@@ -112,7 +113,7 @@ class EmptyMunchesListWidget extends StatelessWidget{
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomButton(
-                        content: Text("Get Munch'n", style: AppTextStyle.style(AppTextStylePattern.heading6Inverse, fontWeight: FontWeight.w400)),
+                        content: Text(App.translate("empty_munches_list_widget.start_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6Inverse, fontWeight: FontWeight.w400)),
                         minWidth: double.infinity,
                         borderRadius: 12.0,
                         padding: EdgeInsets.symmetric(vertical: 16.0),
