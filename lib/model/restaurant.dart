@@ -78,6 +78,7 @@ class Restaurant{
 
     WorkingHours dayWorkingHours = getDayWorkingHours(nowInRestaurantTimezone);
 
+
     for (int i = 0; i < dayWorkingHours.workingTimes.length; i++) {
       WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
 
@@ -91,7 +92,7 @@ class Restaurant{
       int openTimeValue = openTime.hour * 60 + openTime.minute;
       int closedTimeValue = closedTime.hour * 60 + closedTime.minute;
 
-      if (closedTimeValue < openTimeValue) {
+      if (closedTimeValue <= openTimeValue) {
         // if it's closed after midnight
         closedTimeValue = 24 * 60 + closedTimeValue;
       }
@@ -143,7 +144,7 @@ class Restaurant{
         int previousDayLastOpenTimeValue = previousDayLastOpenTime.hour * 60 + previousDayLastOpenTime.minute;
         int previousDayLastClosedTimeValue = previousDayLastClosedTime.hour * 60 + previousDayLastClosedTime.minute;
 
-        if(previousDayLastClosedTimeValue < previousDayLastOpenTimeValue){
+        if(previousDayLastClosedTimeValue <= previousDayLastOpenTimeValue){
           // if it's closed after midnight
           if(currentTimeOfDayValue < previousDayLastClosedTimeValue){
             currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text")
