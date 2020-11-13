@@ -51,6 +51,8 @@
 	<string>741959219991997</string>
 	<key>FacebookDisplayName</key>
 	<string>Munch</string>
+	<key>LSApplicationCategoryType</key>
+    <array>public.app-category.social-networking</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
