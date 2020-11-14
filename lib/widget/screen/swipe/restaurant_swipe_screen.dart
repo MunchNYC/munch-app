@@ -48,9 +48,9 @@ enum TutorialState{
 }
 
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
-  static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.2;
+  static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.25;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
-  static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 500;
+  static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 400;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;

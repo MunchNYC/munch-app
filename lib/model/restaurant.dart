@@ -78,7 +78,6 @@ class Restaurant{
 
     WorkingHours dayWorkingHours = getDayWorkingHours(nowInRestaurantTimezone);
 
-
     for (int i = 0; i < dayWorkingHours.workingTimes.length; i++) {
       WorkingTimes workingTimes = dayWorkingHours.workingTimes[i];
 
