@@ -151,20 +151,11 @@ class AuthRepo {
   }
 
   Future<User> _registerAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
-    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
-
-    // Apple returns email and full name just on first successful login to app, after that it returns null for that fields if user logs in again
-    // Apple login doesn't auto-fill firebase user's name well
-    if(user.email == null) {
-      user.email = authorizationResult.credential.email;
-
-      print(authorizationResult.credential.email);
-    }
-
-    if(user.displayName == null && (authorizationResult.credential.fullName.givenName != null || authorizationResult.credential.fullName.familyName != null)) {
-      user.displayName = authorizationResult.credential.fullName.givenName ?? "" +
-              " " + authorizationResult.credential.fullName.familyName ?? "";
-    }
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: authorizationResult.credential.fullName.givenName ?? "" + " " + authorizationResult.credential.fullName.familyName ?? "",
+        email: authorizationResult.credential.email
+    );
 
     user = await _userRepo.registerUser(user);
 
