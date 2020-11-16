@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
+import 'package:munch/api/facebook_graph_api.dart';
 import 'package:munch/config/constants.dart';
+import 'package:munch/model/response/facebook_graph_profile_response.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
@@ -60,7 +62,7 @@ class AuthRepo {
   }
 
   Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async{
-    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
+    User user = User(uid: firebaseUser.uid, displayName: account.displayName, email: account.email, imageUrl: account.photoUrl);
 
     user = await _userRepo.registerUser(user);
 
@@ -105,7 +107,13 @@ class AuthRepo {
   }
 
   Future<User> _registerFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
-    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
+    String accessToken = facebookLoginResult.accessToken.token;
+
+    FacebookGraphApi facebookGraphApi = FacebookGraphApi();
+
+    FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
+
+    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, imageUrl: profile.photoUrl);
 
     user = await _userRepo.registerUser(user);
 
@@ -143,20 +151,11 @@ class AuthRepo {
   }
 
   Future<User> _registerAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
-    User user = User.fromFirebaseUser(firebaseUser: firebaseUser);
-
-    // Apple returns email and full name just on first successful login to app, after that it returns null for that fields if user logs in again
-    // Apple login doesn't auto-fill firebase user's name well
-    if(user.email == null) {
-      user.email = authorizationResult.credential.email;
-
-      print(authorizationResult.credential.email);
-    }
-
-    if(user.displayName == null && (authorizationResult.credential.fullName.givenName != null || authorizationResult.credential.fullName.familyName != null)) {
-      user.displayName = authorizationResult.credential.fullName.givenName ?? "" +
-              " " + authorizationResult.credential.fullName.familyName ?? "";
-    }
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: authorizationResult.credential.fullName.givenName ?? "" + " " + authorizationResult.credential.fullName.familyName ?? "",
+        email: authorizationResult.credential.email
+    );
 
     user = await _userRepo.registerUser(user);
 
@@ -202,10 +201,23 @@ class AuthRepo {
     return _userRepo.currentUser;
   }
 
-  Future<bool> signOut() async {
+  Future signOut() async {
     User currentUser = UserRepo.getInstance().currentUser;
 
-    switch(currentUser.socialProvider){
+    SocialProvider socialProvider;
+
+    if(currentUser != null) {
+      socialProvider = currentUser.socialProvider;
+      // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
+      // must be wrapped inside try catch to prevent breaking of the script if this call is failed
+      try {
+        await _userRepo.signOutUser();
+      } catch(error){}
+    } else{
+      socialProvider = await _userRepo.getStoredSocialProvider();
+    }
+
+    switch (socialProvider) {
       case SocialProvider.GOOGLE:
         await GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "").signOut();
         break;
@@ -215,18 +227,17 @@ class AuthRepo {
       case SocialProvider.APPLE:
         break;
     }
-    
-    // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
-    await _userRepo.signOutUser();
 
     NotificationsHandler.getInstance().stopNotifications();
 
-    return _auth.signOut().catchError((error) {
-      print("LoginRepo::logout() encountered an error:\n${error.error}");
-      return false;
-    }).then((value) {
-      return true;
-    });
+    if(_auth.currentUser != null) {
+      return _auth.signOut().catchError((error) {
+        print("LoginRepo::logout() encountered an error:\n${error.error}");
+        return false;
+      }).then((value) {
+        return true;
+      });
+    }
   }
 
 }

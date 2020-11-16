@@ -23,8 +23,9 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
-    String string = await rootBundle.loadString("assets/translations/${locale.languageCode}.json");
-    language = json.decode(string);
+    final ByteData data = await rootBundle.load("assets/translations/${locale.languageCode}.json");
+    String jsonContent = utf8.decode(data.buffer.asUint8List());
+    language = json.decode(jsonContent);
     return SynchronousFuture<AppLocalizations>(AppLocalizations());
   }
 

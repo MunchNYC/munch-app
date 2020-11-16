@@ -57,7 +57,7 @@ abstract class Api{
               throw ServerConnectionException.fromMessage(App.translate("api.error.request_timeout"));
             });
 
-        return _returnResponse(response);
+        return returnResponse(response);
       } on UnauthorisedException catch (e) {
         print("Attempt ${attempt + 1} failed due to UnauthorisedException.");
 
@@ -145,7 +145,7 @@ abstract class Api{
     return {CommunicationSettings.tokenHeader: "Bearer " + accessToken};
   }
 
-  dynamic _returnResponse(http.Response response) {
+  dynamic returnResponse(http.Response response) {
     print(response.statusCode);
     print(response.body);
 

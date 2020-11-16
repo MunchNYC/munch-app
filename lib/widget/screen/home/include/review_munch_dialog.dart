@@ -95,7 +95,7 @@ class ReviewMunchDialog extends StatelessWidget{
                                         SizedBox(height: 20.0),
                                         _didNotGoLabel(state),
                                         SizedBox(height: 20.0),
-                                        _skipLabel(state),
+                                        _skipLabel(state, context),
                                     ]
                                 )
                             )
@@ -174,7 +174,7 @@ class ReviewMunchDialog extends StatelessWidget{
     );
   }
 
-  Widget _skipLabel(MunchState state){
+  Widget _skipLabel(MunchState state, BuildContext context){
     return CustomButton(
       cubit: munchBloc,
       padding: EdgeInsets.zero,
@@ -183,7 +183,11 @@ class ReviewMunchDialog extends StatelessWidget{
       flat: true,
       content: Text(App.translate("review_munch_dialog.skip_label.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight), textAlign: TextAlign.center),
       onPressedCallback: (){
-        munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.SKIPPED, munchId: munch.id, forcedReview: forcedReview));
+        if(forcedReview) {
+          munchBloc.add(ReviewMunchEvent(munchReviewValue: MunchReviewValue.SKIPPED, munchId: munch.id, forcedReview: forcedReview));
+        } else{
+          NavigationHelper.popRoute(context);
+        }
       },
     );
   }

@@ -47,14 +47,14 @@ class App {
   }
 
   static initializeDeviceData() async {
-      var deviceInfo = DeviceInfoPlugin();
-      if (Platform.isIOS) {
-        var iosDeviceInfo = await deviceInfo.iosInfo;
-        deviceId = iosDeviceInfo.identifierForVendor; // unique ID on iOS
-      } else {
-        var androidDeviceInfo = await deviceInfo.androidInfo;
-        deviceId = androidDeviceInfo.androidId; // unique ID on Android
-      }
-   }
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      deviceId = iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      deviceId = androidDeviceInfo.androidId; // unique ID on Android
+    }
+  }
 
 }

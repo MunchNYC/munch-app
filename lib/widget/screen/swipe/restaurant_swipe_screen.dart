@@ -48,8 +48,9 @@ enum TutorialState{
 }
 
 class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
-  static const double SWIPE_TO_SCREEN_RATIO_THRESHOLD = 0.2;
+  static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.25;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
+  static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 400;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;
@@ -70,6 +71,25 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   bool _restaurantsApiCallInProgress = false;
 
   TutorialState _tutorialState;
+
+  bool _swipeReturnedAnimationInProgress = false;
+  bool _swipeCompletedAnimationInProgress = false;
+
+  AnimatorKey<Offset> _swipeReturnedAnimatorKey = AnimatorKey<Offset>();
+  AnimatorKey<double> _swipeCompletedAnimatorKey = AnimatorKey<double>();
+
+  // Current Animation details for swiped restaurant
+  Restaurant _currentAnimatedRestaurant;
+  Widget _currentAnimatedRestaurantCard;
+  Offset _currentAnimatedRestaurantGlobalOffset;
+
+  int _swipeCompletedRequiredTimeMillis;
+  Offset _swipeCompletedDistance;
+
+  // Restaurant card static details
+  double _restaurantCardWidth;
+  double _restaurantCardHeight;
+  Offset _restaurantCardStartingGlobalOffset;
 
   @override
   void initState() {
@@ -251,16 +271,86 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: _onWillPopScope,
-        child: Scaffold(
-          appBar: _appBar(context),
-          backgroundColor: Palette.background,
-          body: Container(
-              width: double.infinity,
-              height: double.infinity,
-              padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 8.0, left: 0.0, right: 0.0),
-              child: _buildNotificationsBloc()
-          )
-      )
+        child:  Stack(
+          children: [
+            Scaffold(
+              appBar: _appBar(context),
+              backgroundColor: Palette.background,
+              body: Container(
+                width: double.infinity,
+                height: double.infinity,
+                padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 8.0, left: 0.0, right: 0.0),
+                child: _buildNotificationsBloc()
+              )
+            ),
+            if(_swipeReturnedAnimationInProgress)
+            _swipeReturnedAnimator(),
+            if(_swipeCompletedAnimationInProgress)
+            _swipeCompletedAnimator()
+          ],
+        )
+    );
+  }
+
+  Widget _swipeReturnedAnimator(){
+    return  Animator(
+        animatorKey: _swipeReturnedAnimatorKey,
+        tween: Tween<Offset>(
+            begin: _currentAnimatedRestaurantGlobalOffset,
+            end: _restaurantCardStartingGlobalOffset
+        ),
+        cycles: 1,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        endAnimationListener: (value){
+          setState(() {
+            _addTopCard();
+            _swipeReturnedAnimationInProgress = false;
+          });
+        },
+        builder: (context, anim, child){
+          return Transform.translate(
+              offset: anim.value,
+              transformHitTests: false,
+              child: Container(
+                width: _restaurantCardWidth,
+                height: _restaurantCardHeight,
+                child: _currentAnimatedRestaurantCard,
+              )
+          );
+        }
+    );
+  }
+
+  Widget _swipeCompletedAnimator(){
+    return Animator(
+        animatorKey: _swipeCompletedAnimatorKey,
+        tween: Tween<double>(
+            begin: 0.0,
+            end: 1.0
+        ),
+        cycles: 1,
+        duration: Duration(milliseconds: _swipeCompletedRequiredTimeMillis),
+        curve: Curves.linear,
+        endAnimationListener: (value){
+          setState(() {
+            _swipeCompletedAnimationInProgress = false;
+          });
+        },
+        builder: (context, anim, child){
+          double dx = _currentAnimatedRestaurantGlobalOffset.dx + anim.value * _swipeCompletedDistance.dx;
+          double dy = _currentAnimatedRestaurantGlobalOffset.dy + anim.value * _swipeCompletedDistance.dy;
+
+          return Transform.translate(
+              offset: Offset(dx, dy),
+              transformHitTests: false,
+              child: Container(
+                width: _restaurantCardWidth,
+                height: _restaurantCardHeight,
+                child: _currentAnimatedRestaurantCard,
+              )
+          );
+        }
     );
   }
 
@@ -425,7 +515,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             child: _currentRestaurants.length > 0 ?
             Animator(
               animatorKey: _cardPerspectiveAnimatorKey,
-              triggerOnInit: false,
               tween: Tween<double>(
                   begin: 0.0, end: 0.1
               ),
@@ -476,7 +565,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
-  //              OverlayDialogHelper(isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState)).show(context);
   /*
     must be wrapped inside layout builder,
     otherwise feedback widget won't work, width and height of it should be defined, because feedback cannot see Expanded widget above
@@ -485,8 +573,9 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return LayoutBuilder(
       builder: (context, constraints) =>
         Stack(
-            children:[
-              Draggable(
+          overflow: Overflow.visible,
+          children:[
+            Draggable(
                 child: _currentCardMap[_currentRestaurants[0].id],
                 ignoringFeedbackSemantics: false,
                 feedback: Container(
@@ -497,18 +586,12 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 childWhenDragging: _currentRestaurants.length > 1
                     ? _currentCardMap[_currentRestaurants[1].id]
                     : Container(),
-                onDragEnd: (DraggableDetails details) {
-                  double swipeToScreenRatio = (details.offset.dx.abs() /
-                      App.screenWidth);
-
-                  if (swipeToScreenRatio > SWIPE_TO_SCREEN_RATIO_THRESHOLD) {
-                    if (details.offset.dx < 0) {
-                      _onSwipeLeft();
-                    } else {
-                      _onSwipeRight();
-                    }
-                  }
+                onDragStarted: (){
+                  RenderBox renderBox = context.findRenderObject();
+                  _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
                 },
+                // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED GOOD BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
+                onDragEnd: (DraggableDetails draggableDetails) => _onDragEndListener(context, draggableDetails)
               ),
               if(widget.tutorialTriggerListenerActive)
               Positioned.fill(
@@ -668,6 +751,12 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     );
   }
 
+  void _addTopCard() {
+    _currentCardMap[_currentAnimatedRestaurant.id] = _currentAnimatedRestaurantCard;
+
+    _currentRestaurants.insert(0, _currentAnimatedRestaurant);
+  }
+
   void _removeTopCard() {
     _currentCardMap.remove(_currentRestaurants[0].id);
 
@@ -691,10 +780,6 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         munchId: widget.munch.id,
         restaurantId: _currentRestaurants[0].id)
     );
-
-    setState(() {
-      _removeTopCard();
-    });
   }
 
   void _onSwipeRight(){
@@ -702,9 +787,119 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         munchId: widget.munch.id,
         restaurantId: _currentRestaurants[0].id)
     );
+  }
+
+  void _onDragEndListener(BuildContext context, DraggableDetails details){
+    // Take global position of top left corner where restaurant card drag finished
+    _currentAnimatedRestaurantGlobalOffset = details.offset;
+
+    // Take static restaurant card sizes
+    _restaurantCardWidth = context.findRenderObject().semanticBounds.width;
+    _restaurantCardHeight = context.findRenderObject().semanticBounds.height;
+
+    // Save restaurant data and restaurant card data for animation
+    _currentAnimatedRestaurant = _currentRestaurants[0];
+    _currentAnimatedRestaurantCard = _currentCardMap[_currentRestaurants[0].id];
+
+    // How many restaurant card moved by x-axis from starting position
+    double dx = _currentAnimatedRestaurantGlobalOffset.dx - _restaurantCardStartingGlobalOffset.dx;
+
+    // Is it enough to mark it as completed swipe
+    if(dx.abs() > _restaurantCardWidth * SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD){
+      if (dx < 0) {
+        _onSwipeLeft();
+      } else {
+        _onSwipeRight();
+      }
+
+      _triggerSwipeCompletedAnimation(details);
+    } else{
+      // Card should return to initial position
+      _triggerSwipeReturnedAnimation();
+    }
 
     setState(() {
       _removeTopCard();
+    });
+  }
+
+  void _triggerSwipeReturnedAnimation(){
+    setState(() {
+      _swipeReturnedAnimationInProgress = true;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _swipeReturnedAnimatorKey.triggerAnimation();
+    });
+  }
+
+  void _triggerSwipeCompletedAnimation(DraggableDetails details){
+    // How many restaurant card moved by x-axis from starting position
+    double dx = _currentAnimatedRestaurantGlobalOffset.dx - _restaurantCardStartingGlobalOffset.dx;
+    // How many restaurant card moved by y-axis from starting position
+    double dy = _currentAnimatedRestaurantGlobalOffset.dy - _restaurantCardStartingGlobalOffset.dy;
+
+    // Distances which need to be passed to make card leave the screen
+    double distanceX;
+    double distanceY;
+
+    // Total distances need by card to leave the screen. The lower one determines which axis will first cause card to leave the screen
+    double fullDistanceX;
+    double fullDistanceY;
+
+    if(dx < 0){
+      fullDistanceX = _restaurantCardStartingGlobalOffset.dx + _restaurantCardWidth;
+    } else{
+      fullDistanceX = App.screenWidth - _restaurantCardStartingGlobalOffset.dx;
+    }
+
+    distanceX = fullDistanceX - dx.abs();
+
+    if(dy < 0){
+      fullDistanceY = _restaurantCardStartingGlobalOffset.dy + _restaurantCardHeight;
+    } else{
+      fullDistanceY = App.screenHeight - _restaurantCardStartingGlobalOffset.dy;
+    }
+
+    distanceY = fullDistanceY - dy.abs();
+
+    // Percentages of passed distances based on total distances
+    double startDistanceXPct = dx.abs() / fullDistanceX;
+    double startDistanceYPct = dy.abs() / fullDistanceY;
+
+    // How much animation duration should be scaled down based on distance travelled by axis which will first leave the screen
+    double distanceTimeFactor;
+
+    // Remaining minimal distances to be passed to make the card leave the screen
+    double swipeCompletedDistanceX;
+    double swipeCompletedDistanceY;
+
+    // If card is leaving on x-axis first
+    if(startDistanceXPct > startDistanceYPct){
+      distanceTimeFactor = distanceX / fullDistanceX;
+
+      // Distances remaining to be passed
+      swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * distanceX;
+      swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * (startDistanceYPct / startDistanceXPct) * distanceY;
+    } else{
+      // If card is leaving on y-axis first
+      distanceTimeFactor = distanceY / fullDistanceY;
+
+      // Distances remaining to be passed
+      swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * (startDistanceXPct / startDistanceYPct) * distanceX;
+      swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * distanceY;
+    }
+
+    _swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
+
+    _swipeCompletedRequiredTimeMillis = (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
+
+    setState(() {
+      _swipeCompletedAnimationInProgress = true;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _swipeCompletedAnimatorKey.triggerAnimation();
     });
   }
 }

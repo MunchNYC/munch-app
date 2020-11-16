@@ -132,6 +132,7 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
         height: widget.height,
         // splash color on button tap
         splashColor: widget.splashColor,
+        highlightColor: widget.splashColor,
         // shape with border color
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(widget.borderRadius),

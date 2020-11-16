@@ -27,18 +27,28 @@ class UserRepo {
 
   User get currentUser => _currentUser;
 
-  Future setCurrentUserSocialProvider(SocialProvider socialProvider) async {
+  Future<SocialProvider> getStoredSocialProvider() async {
+    SocialProvider socialProvider;
+
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    if(socialProvider == null) {
-      int socialProviderIndex = sharedPreferences.getInt(StorageKeys.SOCIAL_PROVIDER);
+    int socialProviderIndex = sharedPreferences.getInt(StorageKeys.SOCIAL_PROVIDER);
 
-      if(socialProviderIndex != null) {
-        socialProvider = SocialProvider.values[socialProviderIndex];
-      } else{
-        socialProvider = null;
-      }
+    if(socialProviderIndex != null) {
+      socialProvider = SocialProvider.values[socialProviderIndex];
     } else{
+      socialProvider = null;
+    }
+
+    return socialProvider;
+  }
+
+  Future setCurrentUserSocialProvider(SocialProvider socialProvider) async {
+    if(socialProvider == null) {
+      socialProvider = await getStoredSocialProvider();
+    } else{
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
       await sharedPreferences.setInt(StorageKeys.SOCIAL_PROVIDER, socialProvider.index);
     }
 

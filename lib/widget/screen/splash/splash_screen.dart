@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
+import 'package:munch/repository/auth_repository.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
@@ -56,6 +56,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
   }
 
+  void _navigateToLoginScreen(){
+    NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
+  }
+
   void _splashScreenNavigationLogic(){
       UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
         String deepLink = await DeepLinkHandler.getInstance().getAppStartDeepLink();
@@ -64,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         if (user == null) {
           // navigate with delay because if user is not stored in local storage, it will happen very fast, we want to animate splash logo smooth
           Future.delayed(Duration(seconds: 1)).then((value){
-            NavigationHelper.navigateToLogin(context, fromSplashScreen: true);
+            _navigateToLoginScreen();
           });
         } else {
           await NotificationsHandler.getInstance().initializeNotifications();
@@ -79,13 +83,19 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 
   void _onAuthUserFetchingException(error){
-    Utility.showErrorFlushbar(error.toString() + "\n" + App.translate("api.error.fetch_data_exception.retry.text"), context);
-
     if(error is ServerConnectionException){
+      Utility.showErrorFlushbar(error.toString() + "\n" + App.translate("api.error.fetch_data_exception.retry.text"), context);
+
       // we already waited for CommunicationSettings.maxServerWaitTimeSec so we can execute request again
       _splashScreenNavigationLogic();
-    } else{
+    } else if(error is InternetConnectionException){
+      Utility.showErrorFlushbar(error.toString() + "\n" + App.translate("api.error.fetch_data_exception.retry.text"), context);
+
       _reconnectAttempt(seconds: CommunicationSettings.connectionRetryTimeSec);
+    } else{
+      AuthRepo.getInstance().signOut();
+      
+      _navigateToLoginScreen();
     }
   }
 
