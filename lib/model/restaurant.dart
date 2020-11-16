@@ -123,41 +123,41 @@ class Restaurant{
   }
 
   Map<String, dynamic> getPreviousWorkingDayLastStatus(tz.TZDateTime nowInRestaurantTimezone){
-      String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
-      bool isClosed = true;
+    String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
+    bool isClosed = true;
 
-      int currentTimeOfDayValue = nowInRestaurantTimezone.hour * 60 + nowInRestaurantTimezone.minute;
+    int currentTimeOfDayValue = nowInRestaurantTimezone.hour * 60 + nowInRestaurantTimezone.minute;
 
-      WorkingHours previousDayWorkingHours = getDayWorkingHours(nowInRestaurantTimezone.subtract(Duration(days: 1)));
+    WorkingHours previousDayWorkingHours = getDayWorkingHours(nowInRestaurantTimezone.subtract(Duration(days: 1)));
 
-      if(previousDayWorkingHours.workingTimes.length > 0){
-        WorkingTimes lastWorkingTimesElement = previousDayWorkingHours.workingTimes.last;
+    if(previousDayWorkingHours.workingTimes.length > 0){
+      WorkingTimes lastWorkingTimesElement = previousDayWorkingHours.workingTimes.last;
 
-        // date must be set with DateFormat("y-M-d").format(nowInRestaurantTimezone) otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed sometimes in a year
-        String previousDayLastOpenTime12HourFormat = DateFormat("y-M-d").format(nowInRestaurantTimezone) + " " + lastWorkingTimesElement.open;
-        String previousDayLastClosedTime24HourFormat = DateFormat("y-M-d").format(nowInRestaurantTimezone) + " "  + lastWorkingTimesElement.closed;
+      // date must be set with DateFormat("y-M-d").format(nowInRestaurantTimezone) otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed sometimes in a year
+      String previousDayLastOpenTime12HourFormat = DateFormat("y-M-d").format(nowInRestaurantTimezone) + " " + lastWorkingTimesElement.open;
+      String previousDayLastClosedTime24HourFormat = DateFormat("y-M-d").format(nowInRestaurantTimezone) + " "  + lastWorkingTimesElement.closed;
 
-        TimeOfDay previousDayLastOpenTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastOpenTime12HourFormat));
-        TimeOfDay previousDayLastClosedTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastClosedTime24HourFormat));
+      TimeOfDay previousDayLastOpenTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastOpenTime12HourFormat));
+      TimeOfDay previousDayLastClosedTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastClosedTime24HourFormat));
 
-        int previousDayLastOpenTimeValue = previousDayLastOpenTime.hour * 60 + previousDayLastOpenTime.minute;
-        int previousDayLastClosedTimeValue = previousDayLastClosedTime.hour * 60 + previousDayLastClosedTime.minute;
+      int previousDayLastOpenTimeValue = previousDayLastOpenTime.hour * 60 + previousDayLastOpenTime.minute;
+      int previousDayLastClosedTimeValue = previousDayLastClosedTime.hour * 60 + previousDayLastClosedTime.minute;
 
-        if(previousDayLastClosedTimeValue <= previousDayLastOpenTimeValue){
-          // if it's closed after midnight
-          if(currentTimeOfDayValue < previousDayLastClosedTimeValue){
-            currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text")
-                + " " + (!App.use24HoursFormat ? lastWorkingTimesElement.closed : Utility.convertTo24HourFormat(previousDayLastClosedTime24HourFormat));
+      if(previousDayLastClosedTimeValue <= previousDayLastOpenTimeValue){
+        // if it's closed after midnight
+        if(currentTimeOfDayValue < previousDayLastClosedTimeValue){
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text")
+              + " " + (!App.use24HoursFormat ? lastWorkingTimesElement.closed : Utility.convertTo24HourFormat(previousDayLastClosedTime24HourFormat));
 
-            isClosed = false;
-          }
+          isClosed = false;
         }
       }
+    }
 
-      return Map.of({
-        "isClosed": isClosed,
-        "status": currentStatus
-      });
+    return Map.of({
+      "isClosed": isClosed,
+      "status": currentStatus
+    });
   }
 
   String getWorkingHoursCurrentStatus(){
@@ -176,7 +176,7 @@ class Restaurant{
         currentStatus = currentStatusMap["status"];
       }
     }
-    
+
     return currentStatus;
   }
 
@@ -186,23 +186,23 @@ class Restaurant{
   }
 
   Restaurant({
-      this.id,
-      this.name,
-      this.categories,
-      this.workingHours,
-      this.coordinates,
-      this.city,
-      this.state,
-      this.country,
-      this.address,
-      this.zipCode,
-      this.phoneNumber,
-      this.priceSymbol,
-      this.rating,
-      this.photoUrls,
-      this.reviewsNumber,
-      this.timezone,
-      this.url});
+    this.id,
+    this.name,
+    this.categories,
+    this.workingHours,
+    this.coordinates,
+    this.city,
+    this.state,
+    this.country,
+    this.address,
+    this.zipCode,
+    this.phoneNumber,
+    this.priceSymbol,
+    this.rating,
+    this.photoUrls,
+    this.reviewsNumber,
+    this.timezone,
+    this.url});
 }
 
 @GenSerializer()

@@ -15,7 +15,7 @@ import 'package:munch/widget/screen/swipe/include/restaurant_card.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 
-import 'util/test_util.dart';
+import '../util/test_util.dart';
 
 Future<Restaurant> mockRestaurantInLocalTimezone() async{
   return Restaurant(
@@ -47,9 +47,20 @@ List<WorkingHours> getClosedRestaurantWorkingHours({bool workingHoursSplit}){
           WorkingTimes(
             open: DateFormat('jm').format(now.subtract(Duration(minutes: 3))),
             closed: DateFormat('jm').format(now.subtract(Duration(minutes: 2))),
-          )
+          ),
         ]
-    )
+    ),
+    // Previous weekday
+    WorkingHours(
+        dayOfWeek: DateFormat("EEEE").format(now.subtract(Duration(days: 1))),
+        workingTimes: [
+          WorkingTimes(
+            open: DateFormat('jm').format(now.subtract(Duration(minutes: 5))),
+            closed: DateFormat('jm').format(now.subtract(Duration(minutes: 4))),
+          ),
+        ]
+    ),
+
   ];
 }
 
@@ -58,6 +69,8 @@ Future testRestaurantClosed(WidgetTester tester, Restaurant restaurant) async{
     restaurant.workingHours = getClosedRestaurantWorkingHours(workingHoursSplit: i == 0 ? true : false);
 
     await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+
+    App.use24HoursFormat = false;
 
     String textToFind = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
 
@@ -87,7 +100,17 @@ List<WorkingHours> getReOpensRestaurantWorkingHours(){
             closed: DateFormat('jm').format(now.add(Duration(minutes: 3))),
           )
         ]
-    )
+    ),
+    // Previous weekday
+    WorkingHours(
+        dayOfWeek: DateFormat("EEEE").format(now.subtract(Duration(days: 1))),
+        workingTimes: [
+          WorkingTimes(
+            open: DateFormat('jm').format(now.subtract(Duration(minutes: 5))),
+            closed: DateFormat('jm').format(now.subtract(Duration(minutes: 4))),
+          ),
+        ]
+    ),
   ];
 }
 
@@ -95,6 +118,8 @@ Future testRestaurantReOpens(WidgetTester tester, Restaurant restaurant) async{
     restaurant.workingHours = getReOpensRestaurantWorkingHours();
 
     await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+
+    App.use24HoursFormat = false;
 
     String textToFind = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") + " " + restaurant.workingHours[0].workingTimes[1].open;
 
@@ -120,7 +145,16 @@ List<WorkingHours> getOpenUntilRestaurantWorkingHours({bool workingHoursSplit}){
             closed: DateFormat('jm').format(now.add(Duration(minutes: 3))),
           )
         ]
-    )
+    ),
+    WorkingHours(
+        dayOfWeek: DateFormat("EEEE").format(now.subtract(Duration(days: 1))),
+        workingTimes: [
+          WorkingTimes(
+            open: DateFormat('jm').format(now.subtract(Duration(minutes: 5))),
+            closed: DateFormat('jm').format(now.subtract(Duration(minutes: 4))),
+          ),
+        ]
+    ),
   ];
 }
 
@@ -129,6 +163,8 @@ Future testRestaurantOpenUntil(WidgetTester tester, Restaurant restaurant) async
       restaurant.workingHours = getOpenUntilRestaurantWorkingHours(workingHoursSplit: i == 0 ? true : false);
 
       await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+
+      App.use24HoursFormat = false;
 
       String textToFind = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") + " " +  (i == 0 ? restaurant.workingHours[0].workingTimes[1].closed : restaurant.workingHours[0].workingTimes[0].closed);
 
@@ -159,7 +195,17 @@ List<WorkingHours> getOpensRestaurantWorkingHours({bool workingHoursSplit}){
             closed: DateFormat('jm').format(now.add(Duration(minutes: 5))),
           )
         ]
-    )
+    ),
+    // Previous weekday
+    WorkingHours(
+        dayOfWeek: DateFormat("EEEE").format(now.subtract(Duration(days: 1))),
+        workingTimes: [
+          WorkingTimes(
+            open: DateFormat('jm').format(now.subtract(Duration(minutes: 5))),
+            closed: DateFormat('jm').format(now.subtract(Duration(minutes: 4))),
+          ),
+        ]
+    ),
   ];
 }
 
@@ -168,6 +214,8 @@ Future testRestaurantOpens(WidgetTester tester, Restaurant restaurant) async{
     restaurant.workingHours = getOpensRestaurantWorkingHours(workingHoursSplit: i == 0 ? true : false);
 
     await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+
+    App.use24HoursFormat = false;
 
     String textToFind = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.opens.text") + " " + restaurant.workingHours[0].workingTimes[0].open;
 

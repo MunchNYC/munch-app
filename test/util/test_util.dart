@@ -7,6 +7,7 @@ import 'package:munch/util/app.dart';
 class TestUtil{
   static Future testAppWidget({WidgetTester tester, Widget widgetToTest}) async{
     const LocalizationsDelegate<AppLocalizations> delegate = const AppLocalizationsDelegate();
+
     const Locale testLocale = Locale('en');
 
     await delegate.load(testLocale);

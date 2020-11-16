@@ -55,7 +55,7 @@ dependencies:
   webview_flutter: ^1.0.1
   package_info: ^0.4.3
   firebase_messaging: ^7.0.3
-  device_info: ^0.4.2+8
+  device_info: ^1.0.0
   focus_detector: ^1.0.3
   flutter_local_notifications: ^2.0.1
   flutter_slidable: ^0.5.7

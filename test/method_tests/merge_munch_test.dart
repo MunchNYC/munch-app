@@ -6,7 +6,7 @@ import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 
-import 'util/test_util.dart';
+import '../util/test_util.dart';
 
 Munch mockCompactMunch(){
   Munch munch = new Munch();
