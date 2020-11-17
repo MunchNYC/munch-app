@@ -38,16 +38,15 @@ class RestaurantSwipeScreen extends StatefulWidget {
   RestaurantSwipeScreen({this.munch, this.shouldFetchDetailedMunch = false});
 
   @override
-  State<StatefulWidget> createState() {
-    return _RestaurantSwipeScreenState();
-  }
+  State<RestaurantSwipeScreen> createState() => RestaurantSwipeScreenState();
 }
 
 enum TutorialState{
   TUTORIAL_CAROUSEL, TUTORIAL_SWIPE, FINISHED
 }
 
-class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
+@visibleForTesting
+class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.25;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
   static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 400;
@@ -83,8 +82,10 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _currentAnimatedRestaurantCard;
   Offset _currentAnimatedRestaurantGlobalOffset;
 
-  int _swipeCompletedRequiredTimeMillis;
-  Offset _swipeCompletedDistance;
+  @visibleForTesting
+  int swipeCompletedRequiredTimeMillis;
+  @visibleForTesting
+  Offset swipeCompletedDistance;
 
   // Restaurant card static details
   double _restaurantCardWidth;
@@ -330,7 +331,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             end: 1.0
         ),
         cycles: 1,
-        duration: Duration(milliseconds: _swipeCompletedRequiredTimeMillis),
+        duration: Duration(milliseconds: swipeCompletedRequiredTimeMillis),
         curve: Curves.linear,
         endAnimationListener: (value){
           setState(() {
@@ -338,8 +339,8 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           });
         },
         builder: (context, anim, child){
-          double dx = _currentAnimatedRestaurantGlobalOffset.dx + anim.value * _swipeCompletedDistance.dx;
-          double dy = _currentAnimatedRestaurantGlobalOffset.dy + anim.value * _swipeCompletedDistance.dy;
+          double dx = _currentAnimatedRestaurantGlobalOffset.dx + anim.value * swipeCompletedDistance.dx;
+          double dy = _currentAnimatedRestaurantGlobalOffset.dy + anim.value * swipeCompletedDistance.dy;
 
           return Transform.translate(
               offset: Offset(dx, dy),
@@ -812,7 +813,7 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         _onSwipeRight();
       }
 
-      _triggerSwipeCompletedAnimation(details);
+      _triggerSwipeCompletedAnimation();
     } else{
       // Card should return to initial position
       _triggerSwipeReturnedAnimation();
@@ -833,11 +834,12 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     });
   }
 
-  void _triggerSwipeCompletedAnimation(DraggableDetails details){
+  @visibleForTesting
+  void doSwipeCompletedAnimationCalculations({Offset restaurantCardStartingGlobalOffset, Offset currentAnimatedRestaurantCardGlobalOffset, double restaurantCardHeight, double restaurantCardWidth}){
     // How many restaurant card moved by x-axis from starting position
-    double dx = _currentAnimatedRestaurantGlobalOffset.dx - _restaurantCardStartingGlobalOffset.dx;
+    double dx = currentAnimatedRestaurantCardGlobalOffset.dx - restaurantCardStartingGlobalOffset.dx;
     // How many restaurant card moved by y-axis from starting position
-    double dy = _currentAnimatedRestaurantGlobalOffset.dy - _restaurantCardStartingGlobalOffset.dy;
+    double dy = currentAnimatedRestaurantCardGlobalOffset.dy - restaurantCardStartingGlobalOffset.dy;
 
     // Distances which need to be passed to make card leave the screen
     double distanceX;
@@ -848,17 +850,17 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     double fullDistanceY;
 
     if(dx < 0){
-      fullDistanceX = _restaurantCardStartingGlobalOffset.dx + _restaurantCardWidth;
+      fullDistanceX = restaurantCardStartingGlobalOffset.dx + restaurantCardWidth;
     } else{
-      fullDistanceX = App.screenWidth - _restaurantCardStartingGlobalOffset.dx;
+      fullDistanceX = App.screenWidth - restaurantCardStartingGlobalOffset.dx;
     }
 
     distanceX = fullDistanceX - dx.abs();
 
     if(dy < 0){
-      fullDistanceY = _restaurantCardStartingGlobalOffset.dy + _restaurantCardHeight;
+      fullDistanceY = restaurantCardStartingGlobalOffset.dy + restaurantCardHeight;
     } else{
-      fullDistanceY = App.screenHeight - _restaurantCardStartingGlobalOffset.dy;
+      fullDistanceY = App.screenHeight - restaurantCardStartingGlobalOffset.dy;
     }
 
     distanceY = fullDistanceY - dy.abs();
@@ -890,9 +892,18 @@ class _RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * distanceY;
     }
 
-    _swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
+    swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
 
-    _swipeCompletedRequiredTimeMillis = (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
+    swipeCompletedRequiredTimeMillis = (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
+  }
+
+  void _triggerSwipeCompletedAnimation(){
+    doSwipeCompletedAnimationCalculations(
+        restaurantCardStartingGlobalOffset: _restaurantCardStartingGlobalOffset,
+        currentAnimatedRestaurantCardGlobalOffset: _currentAnimatedRestaurantGlobalOffset,
+        restaurantCardHeight: _restaurantCardHeight,
+        restaurantCardWidth: _restaurantCardWidth
+    );
 
     setState(() {
       _swipeCompletedAnimationInProgress = true;

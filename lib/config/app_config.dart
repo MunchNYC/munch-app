@@ -22,7 +22,7 @@ class AppConfig {
 
   static Future forEnvironment(String env) async {
     // set default to dev if nothing was passed
-    env = env ?? 'dev';
+    env = env ?? 'local';
 
     // load the json file
     final contents = await rootBundle.loadString(
@@ -35,7 +35,7 @@ class AppConfig {
     // convert our JSON into an instance of our AppConfig class
     _instance = AppConfigJsonSerializer().fromMap(json);
 
-    _instance.packageInfo =  await PackageInfo.fromPlatform();
+    _instance.packageInfo = await PackageInfo.fromPlatform();
   }
 
   static AppConfig getInstance(){

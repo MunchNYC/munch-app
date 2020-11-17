@@ -1,6 +1,6 @@
 {
   "appTitle": "Munch",
-  "apiUrl": "https://staging-api.munchapp.io",
+  "apiUrl": "http://10.0.2.2:8080",
   "googleMapsApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE",
   "feedbackEmail": "feedback@munchapp.io",
   "privacyPolicyUrl": "https://sites.google.com/view/munchapp-privacy/home",

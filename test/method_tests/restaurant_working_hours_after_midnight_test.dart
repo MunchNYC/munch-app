@@ -167,7 +167,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  testWidgets('Restaurant current working hours status tests',  (WidgetTester tester) async {
+  testWidgets('Restaurant current working hours after midnight status tests',  (WidgetTester tester) async {
     tz.initializeTimeZones();
 
     // pump Anything just to initialize localizations
