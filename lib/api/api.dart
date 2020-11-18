@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:munch/config/app_config.dart';
@@ -26,6 +27,11 @@ abstract class Api{
 
   Api.thirdParty(this.baseUrl);
 
+  static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  Random _rnd = Random();
+  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
   Future<Map<String, String>> generateHeaders(
       {String contentType = "application/json",
         String accept = "application/json",
@@ -33,6 +39,8 @@ abstract class Api{
     Map<String, String> map = Map.of({
       HttpHeaders.contentTypeHeader: contentType,
       HttpHeaders.acceptHeader: accept,
+      "X-Cloud-Trace-Context": getRandomString(32),
+
     });
 
     if (authRequired) {
