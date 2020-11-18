@@ -22,7 +22,7 @@ class AppConfig {
 
   static Future forEnvironment(String env) async {
     // set default to dev if nothing was passed
-    env = env ?? 'local';
+    env = env ?? 'dev';
 
     // load the json file
     final contents = await rootBundle.loadString(

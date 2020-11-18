@@ -57,7 +57,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Map<String, RestaurantCard> _currentCardMap = Map<String, RestaurantCard>();
   List<Restaurant> _currentRestaurants = List<Restaurant>();
 
-  // Sometimes from back-end are return restaurants which swipes are currently processing so don't need to show them in card stack
+  // Sometimes from back-end are returned restaurants which swipes are currently processing so don't need to show them in card stack
   // Because of that we're storing last swiped restaurants in buffer with LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY
   // Map is created just to optimize speed of detection algorithm
   Map<String, Restaurant> _lastSwipedRestaurantsMap = Map<String, Restaurant>();
@@ -156,6 +156,11 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     }
   }
 
+  void _clearRestaurantsCache(){
+    _currentRestaurants.clear();
+    _currentCardMap.clear();
+  }
+
   Widget _appBarTitle(){
     // InkWell to make white space around tapable also
     return InkWell(
@@ -164,7 +169,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
            (shouldReloadRestaurants){
              setState(() {
                if(shouldReloadRestaurants) {
-                 _currentRestaurants.clear();
+                 _clearRestaurantsCache();
 
                  _throwGetSwipeRestaurantNextPageEvent();
                }
@@ -244,7 +249,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   setState(() {
                     // Don't refresh anything if filters are not saved
                     if(filtersSaved) {
-                      _currentRestaurants.clear();
+                      _clearRestaurantsCache();
 
                       _throwGetSwipeRestaurantNextPageEvent();
                     }
@@ -461,14 +466,12 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       _throwGetSwipeRestaurantNextPageEvent();
     } else if(state is RestaurantsPageFetchingState){
       _updateRestaurantsPage(state.data);
+
+      _restaurantsApiCallInProgress = false;
     } else if(state is RestaurantSwipeProcessingState){
       _checkMunchStatusChanged();
     } else if(state is NoMoreCarouselImageState){
       _noMoreCarouselImageListener(state);
-    }
-
-    if(state is RestaurantsPageFetchingState){
-      _restaurantsApiCallInProgress = false;
     }
   }
 
