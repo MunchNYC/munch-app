@@ -36,11 +36,12 @@ abstract class Api{
       {String contentType = "application/json",
         String accept = "application/json",
         bool authRequired = true}) async {
+    String traceContext = getRandomString(32);
+    print("TraceContext: " + traceContext);
     Map<String, String> map = Map.of({
       HttpHeaders.contentTypeHeader: contentType,
       HttpHeaders.acceptHeader: accept,
-      "X-Cloud-Trace-Context": getRandomString(32),
-
+      "X-Cloud-Trace-Context": traceContext,
     });
 
     if (authRequired) {
