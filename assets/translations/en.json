@@ -195,7 +195,7 @@
     "filters_screen.info_dialog.personal_filters.neutral.title":  "I'm Okay With",
     "filters_screen.info_dialog.personal_filters.neutral.description":  "Places you see may or may not include these categories.",
     "filters_screen.info_dialog.group_filters.title": "Group Filters",
-    "filters_screen.info_dialog.group_filters.description": "A smart combination of all personal filters within this Munch. A category placed in Don't Show may be overturned by multiple votes of Only Show.",
+    "filters_screen.info_dialog.group_filters.description": "Places shown in this Munch is based on a smart combination of all personal filters. A category placed in Don't Show may be overturned by multiple votes of Only Show.",
     "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
     "filters_screen.info_dialog.close_button.text": "Close",
 
