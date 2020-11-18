@@ -435,9 +435,9 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         bool hasAmplitudeControl = await Vibration.hasAmplitudeControl();
 
         if (hasAmplitudeControl) {
-          Vibration.vibrate(duration: 150, amplitude: 10);
+          Vibration.vibrate(duration: 10, amplitude: 1);
         } else {
-          Vibration.vibrate(duration: 150);
+          Vibration.vibrate(duration: 10);
         }
       }
     });
