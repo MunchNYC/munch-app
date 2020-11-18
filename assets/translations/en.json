@@ -188,17 +188,11 @@
     "filters_screen.save_changes_alert_dialog.cancel_button.text": "Discard",
 
     "filters_screen.info_dialog.personal_filters.title": "Personal Filters",
-<<<<<<< Updated upstream
-    "filters_screen.info_dialog.personal_filters.whitelist.title": "Only These",
-    "filters_screen.info_dialog.personal_filters.whitelist.description":  "Places you see will have at least one of these categories.",
-    "filters_screen.info_dialog.personal_filters.blacklist.title":  "Definitely No",
-    "filters_screen.info_dialog.personal_filters.blacklist.description":  "Places you see will not include these categories.",
-=======
     "filters_screen.info_dialog.personal_filters.whitelist.title": "Only Show",
-    "filters_screen.info_dialog.personal_filters.whitelist.description":  "Restaurant you see will have at least one of these cuisines types.",
+    "filters_screen.info_dialog.personal_filters.whitelist.description":  "Places you see will have at least one of these categories.",
     "filters_screen.info_dialog.personal_filters.blacklist.title":  "Don't Show",
-    "filters_screen.info_dialog.personal_filters.blacklist.description":  "Restaurant you see will not include these cuisine types.",
->>>>>>> Stashed changes
+    "filters_screen.info_dialog.personal_filters.blacklist.description":  "Places you see will not include these categories.",
+
     "filters_screen.info_dialog.personal_filters.neutral.title":  "I'm Okay With",
     "filters_screen.info_dialog.personal_filters.neutral.description":  "Places you see may or may not include these categories.",
     "filters_screen.info_dialog.group_filters.title": "Group Filters",
