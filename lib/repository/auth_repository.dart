@@ -151,10 +151,11 @@ class AuthRepo {
   }
 
   Future<User> _registerAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
+    String fullName = firebaseUser.displayName ?? ((authorizationResult.credential.fullName.givenName ?? "") + " " + (authorizationResult.credential.fullName.familyName ?? ""));
     User user = User(
         uid: firebaseUser.uid,
-        displayName: authorizationResult.credential.fullName.givenName ?? "" + " " + authorizationResult.credential.fullName.familyName ?? "",
-        email: authorizationResult.credential.email
+        displayName: fullName == " " ? "Private Muncher" : fullName,
+        email: (firebaseUser.email ?? authorizationResult.credential.email) ?? ""
     );
 
     user = await _userRepo.registerUser(user);
