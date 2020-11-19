@@ -47,7 +47,7 @@ dependencies:
   timezone: ^0.5.7
   maps_launcher: ^1.2.2+1
   flutter_facebook_login: ^3.0.0
-  apple_sign_in: ^0.1.0
+  sign_in_with_apple: ^2.5.4
   flutter_launcher_icons: ^0.8.0
   shimmer: ^1.1.1
   shared_preferences: ^0.5.12

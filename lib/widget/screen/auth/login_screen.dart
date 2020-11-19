@@ -1,4 +1,3 @@
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/custom_button.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginScreen extends StatefulWidget {
   bool fromSplashScreen;
@@ -258,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildAppleButton() {
     return FutureBuilder<bool>(
-      future: AppleSignIn.isAvailable(), // render button if apple sign in is available for device
+      future: SignInWithApple.isAvailable(), // render button if apple sign in is available for device
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData && snapshot.data == true) {
           return CustomButton<AuthenticationState, LoginWithAppleState>.bloc(

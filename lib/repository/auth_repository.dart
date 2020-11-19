@@ -4,14 +4,12 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/facebook_graph_api.dart';
-import 'package:munch/config/constants.dart';
 import 'package:munch/model/response/facebook_graph_profile_response.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:munch/util/notifications_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
@@ -150,12 +148,13 @@ class AuthRepo {
     return null;
   }
 
-  Future<User> _registerAppleUser(AuthorizationResult authorizationResult, firebase_auth.User firebaseUser) async {
-    String fullName = firebaseUser.displayName ?? ((authorizationResult.credential.fullName.givenName ?? "") + " " + (authorizationResult.credential.fullName.familyName ?? ""));
+  Future<User> _registerAppleUser(AuthorizationCredentialAppleID credentialAppleID, firebase_auth.User firebaseUser) async {
+    String fullName = firebaseUser.displayName ?? ((credentialAppleID.givenName ?? "") + " " + (credentialAppleID.familyName ?? ""));
+
     User user = User(
         uid: firebaseUser.uid,
         displayName: fullName == " " ? "Private Muncher" : fullName,
-        email: (firebaseUser.email ?? authorizationResult.credential.email) ?? ""
+        email: (firebaseUser.email ?? credentialAppleID.email) ?? ""
     );
 
     user = await _userRepo.registerUser(user);
@@ -164,36 +163,39 @@ class AuthRepo {
   }
 
   Future<User> signInWithApple() async {
-    final AuthorizationResult authorizationResult = await AppleSignIn.performRequests([
-      AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])
-    ]);
+    try {
+      final AuthorizationCredentialAppleID credentialAppleID = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
 
-    switch (authorizationResult.status) {
-      case AuthorizationStatus.authorized:
-        firebase_auth.OAuthProvider oAuthProvider = firebase_auth.OAuthProvider("apple.com");
+      firebase_auth.OAuthProvider oAuthProvider = firebase_auth.OAuthProvider("apple.com");
 
-        final firebase_auth.AuthCredential credential = oAuthProvider.credential(
-            idToken: String.fromCharCodes(authorizationResult.credential.identityToken),
-            accessToken: String.fromCharCodes(authorizationResult.credential.authorizationCode)
-        );
+      final firebase_auth.AuthCredential credential = oAuthProvider.credential(
+          idToken: credentialAppleID.identityToken,
+          accessToken: credentialAppleID.authorizationCode
+      );
 
-        firebase_auth.User firebaseUser = await _firebaseSignIn(credential);
+      firebase_auth.User firebaseUser = await _firebaseSignIn(credential);
 
-        await _synchronizeCurrentUser(registerUserCallback: () => _registerAppleUser(authorizationResult, firebaseUser));
+      await _synchronizeCurrentUser(registerUserCallback: () => _registerAppleUser(credentialAppleID, firebaseUser));
 
-        await _userRepo.setCurrentUserSocialProvider(SocialProvider.APPLE);
+      await _userRepo.setCurrentUserSocialProvider(SocialProvider.APPLE);
 
-        return await _onSignInSuccessful();
-        break;
-      case AuthorizationStatus.cancelled:
-        break;
-      case AuthorizationStatus.error:
-        print("Error signing in with Apple: " + authorizationResult.error.localizedDescription);
+      return await _onSignInSuccessful();
+    } catch(exception){
+      print("Error signing in with Apple: " + exception.toString());
+
+      if(exception is SignInWithAppleAuthorizationException){
+        if(exception.code == AuthorizationErrorCode.canceled){
+          return null;
+        }
+      } else{
         throw FetchDataException.fromMessage(App.translate("apple_login.platform_exception.text"));
-        break;
+      }
     }
-
-    return null;
   }
 
   Future<User> _onSignInSuccessful() async {
