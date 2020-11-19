@@ -37,7 +37,7 @@ abstract class Api{
         String accept = "application/json",
         bool authRequired = true}) async {
     String correlationId = getRandomString(32);
-    print("TraceContext: " + correlationId);
+    print("CorrelationID: " + correlationId);
     Map<String, String> map = Map.of({
       HttpHeaders.contentTypeHeader: contentType,
       HttpHeaders.acceptHeader: accept,
