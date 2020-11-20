@@ -44,6 +44,8 @@ class NotificationsHandler{
   }
 
   Future initializeNotifications() async {
+    notificationsBloc = NotificationsBloc();
+    
     // It will return null for Android
     bool permissionRequestResult = await _firebaseMessaging.requestNotificationPermissions(
       const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: false),
@@ -60,8 +62,6 @@ class NotificationsHandler{
     var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = IOSInitializationSettings();
     var initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-
-    notificationsBloc = NotificationsBloc();
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onNotificationTapped);
   }
