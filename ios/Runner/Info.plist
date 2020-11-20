@@ -46,13 +46,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
 	<string>741959219991997</string>
 	<key>FacebookDisplayName</key>
 	<string>Munch</string>
 	<key>LSApplicationCategoryType</key>
-    <string>public.app-category.lifestyle</string>
+	<string>public.app-category.lifestyle</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
