@@ -69,18 +69,14 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Need to upload image</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Need to upload image</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
