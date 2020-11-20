@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -158,7 +160,9 @@ class _LoginScreenState extends State<LoginScreen> {
           width: double.infinity,
           child: _facebookButton(),
         ),
+        if(Platform.isIOS)
         SizedBox(height: 16.0),
+        if(Platform.isIOS)
         SizedBox(
           width: double.infinity,
           child: _buildAppleButton(),
