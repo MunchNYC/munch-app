@@ -106,7 +106,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
               children: [
                 Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
                 SizedBox(height: 4.0),
-                Text(user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 1, overflow: TextOverflow.fade)
+                Text(user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade)
               ],
             )
         )
@@ -119,6 +119,11 @@ class _ProfileTabScreenState extends State<ProfileTab> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          AccountTabMenuItem(text: App.translate("account_tab.menu_item.personal_information.text"),
+              onTap: _onPersonalInformationTapped,
+              trailingIcon: ImageIcon(AssetImage("assets/icons/inviteFriends.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+          ),
+          _menuListItemDivider(),
           AccountTabMenuItem(text: App.translate("account_tab.menu_item.notifications.text"),
               onTap: _onNotificationsItemClicked,
               trailingIcon: ImageIcon(AssetImage("assets/icons/notification.png"), size: AppDimensions.scaleSizeToScreen(28.0))
@@ -151,6 +156,10 @@ class _ProfileTabScreenState extends State<ProfileTab> {
           _menuListItemDivider(),
         ]
     );
+  }
+
+  void _onPersonalInformationTapped() {
+
   }
 
   void _onNotificationsItemClicked(){
