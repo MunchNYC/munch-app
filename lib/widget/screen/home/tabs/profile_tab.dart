@@ -121,7 +121,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
         children: [
           AccountTabMenuItem(text: App.translate("account_tab.menu_item.personal_information.text"),
               onTap: _onPersonalInformationTapped,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/inviteFriends.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+              trailingIcon: ImageIcon(AssetImage("assets/icons/personalInformation.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
           AccountTabMenuItem(text: App.translate("account_tab.menu_item.notifications.text"),
@@ -131,7 +131,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
           _menuListItemDivider(),
           AccountTabMenuItem(text: App.translate("account_tab.menu_item.invite_friends.text"),
               onTap: _onInviteFriendsItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/groups.png"), size: AppDimensions.scaleSizeToScreen(28.0))
+              trailingIcon: ImageIcon(AssetImage("assets/icons/inviteFriends.png"), size: AppDimensions.scaleSizeToScreen(28.0))
           ),
           _menuListItemDivider(),
           AccountTabMenuItem(text: App.translate("account_tab.menu_item.feedback.text"),
