@@ -10,6 +10,7 @@ import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/home/include/account_tab_menu_item.dart';
@@ -159,7 +160,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
   void _onInviteFriendsItemClicked() async{
     await WcFlutterShare.share(
         sharePopupTitle: App.translate("account_tab.invite_friends.item.share_popup.title"),
-        text: App.translate("account_tab.invite_friends.item.share_popup.text") + "\n" + "https://munch.com",
+        text: App.translate("account_tab.invite_friends.item.share_popup.text") + "\n" + AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.HOME_ROUTE_PATH,
         mimeType: "text/plain"
     );
   }
