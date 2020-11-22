@@ -46,13 +46,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
 	<string>741959219991997</string>
 	<key>FacebookDisplayName</key>
 	<string>Munch</string>
 	<key>LSApplicationCategoryType</key>
-    <string>public.app-category.lifestyle</string>
+	<string>public.app-category.lifestyle</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
@@ -69,18 +69,14 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Need to upload image</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location used to provide the best app experience</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Need to upload image</string>
+	<string>Your current location is used to make it easier to find nearby restaurants.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
