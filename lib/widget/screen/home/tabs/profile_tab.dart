@@ -159,7 +159,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
   }
 
   void _onPersonalInformationTapped() {
-
+    NavigationHelper.navigateToPersonalInformationScreen(context, user: user);
   }
 
   void _onNotificationsItemClicked(){
