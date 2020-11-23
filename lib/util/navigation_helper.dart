@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:munch/model/user.dart';
 import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
+import 'package:munch/widget/screen/home/personal_information_screen.dart';
 import 'package:munch/widget/screen/map/map_screen.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/widget/screen/swipe/decision_screen.dart';
@@ -165,6 +167,12 @@ class NavigationHelper {
       {Munch munch, bool addToBackStack: true}) {
     return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
         screen: FiltersScreen(munch: munch));
+  }
+
+  static Future navigateToPersonalInformationScreen(BuildContext context,
+      {User user, bool addToBackStack: true}) {
+    return _navigateTo(context, addToBackStack: addToBackStack, rootNavigator: true,
+        screen: PersonalInformationScreen(user: user));
   }
 
   static Future navigateToPrivacyPolicyScreen(BuildContext context,
