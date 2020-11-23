@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:munch/api/filters_api.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
 import 'package:munch/repository/filters_repository.dart';
