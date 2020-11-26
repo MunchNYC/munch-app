@@ -2,20 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/service/profile/profile_bloc.dart';
+import 'package:munch/service/profile/profile_event.dart';
 import 'package:munch/service/profile/profile_state.dart';
 import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
-import 'package:munch/util/notifications_handler.dart';
 import 'package:munch/util/utility.dart';
-import 'package:munch/widget/screen/swipe/include/kick_member_alert_dialog.dart';
-import 'package:munch/widget/screen/swipe/include/leave_munch_alert_dialog.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/cupertion_alert_dialog_builder.dart';
@@ -23,7 +20,6 @@ import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:munch/util/utility.dart';
 
 class PersonalInformationScreen extends StatefulWidget {
@@ -39,10 +35,10 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   final GlobalKey<FormState> _personalInformationFormKey = GlobalKey<FormState>();
   bool _personalInformationFormAutoValidate = false;
   FocusNode _nameFieldFocusNode = FocusNode();
-  String _fullName;
-
   TextEditingController _nameTextController = TextEditingController();
+  Completer<bool> _popScopeCompleter;
 
+  String _fullName;
   ProfileBloc _profileBloc;
 
   @override
@@ -97,6 +93,10 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     bool showLoadingIndicator = false;
     if (state.loading) {
       showLoadingIndicator = true;
+
+      if (state is UpdatePersonalInformationState) {
+        showLoadingIndicator = false;
+      }
     }
 
     if (showLoadingIndicator) {
@@ -158,7 +158,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       return App.translate("personal_information_screen.full_name_field.required.validation");
     }
 
-    RegExp regex = new RegExp(r'\p{L}');
+    RegExp regex = new RegExp(r'^([A-Za-z\s])*$');
 
     if (!regex.hasMatch(name)) {
       return App.translate("personal_information_screen.name_field.regex.validation");
@@ -174,57 +174,56 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       leading: AppBarBackButton(),
       backgroundColor: Palette.background,
       actions: <Widget>[
-//        if(widget.munch.isModifiable)
-//          Padding(padding:
-//          EdgeInsets.only(right: 24.0),
-//              child:  CustomButton<MunchState, MunchPreferencesSavingState>.bloc(
-//                cubit: _munchBloc,
-//                flat: true,
-//                // very important to set, otherwise title won't be aligned good
-//                padding: EdgeInsets.zero,
-//                color: Colors.transparent,
-//                textColor: Palette.primary.withOpacity(0.6),
-//                content: Text(App.translate("options_screen.app_bar.action.text"),
-//                    style: AppTextStyle.style(AppTextStylePattern.heading6,
-//                        fontWeight: FontWeight.w600,
-//                        fontSizeOffset: 1.0,
-//                        color: Palette.primary.withOpacity(0.6))),
-//                onPressedCallback: _onSaveButtonClicked,
-//              )
-//          ),
+        Padding(padding:
+        EdgeInsets.only(right: 24.0),
+            child:  CustomButton<ProfileState, UpdatePersonalInformationState>.bloc(
+              cubit: _profileBloc,
+              flat: true,
+              // very important to set, otherwise title won't be aligned good
+              padding: EdgeInsets.zero,
+              color: Colors.transparent,
+              textColor: Palette.primary.withOpacity(0.6),
+              content: Text(App.translate("personal_information_screen.app_bar.action.text"),
+                  style: AppTextStyle.style(AppTextStylePattern.heading6,
+                      fontWeight: FontWeight.w600,
+                      fontSizeOffset: 1.0,
+                      color: Palette.primary.withOpacity(0.6))),
+              onPressedCallback: _onSaveButtonTapped,
+            )
+        ),
       ],
     );
   }
 
   Future<bool> _onWillPopScope(BuildContext context) async {
-//    if (_nameChanged()) {
-//      if (_popScopeCompleter != null) {
-//        _popScopeCompleter.complete(false);
-//      }
-//
-//      _popScopeCompleter = Completer<bool>();
-//
-//      CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
-//          dialogTitle: App.translate("options_screen.save_changes_alert_dialog.title"),
-//          dialogDescription:App.translate("options_screen.save_changes_alert_dialog.description"),
-//          confirmText: App.translate("options_screen.save_changes_alert_dialog.confirm_button.text"),
-//          cancelText: App.translate("options_screen.save_changes_alert_dialog.cancel_button.text"),
-//          confirmCallback: _onSaveChangesDialogButtonClicked,
-//          cancelCallback: _onDiscardChangesDialogButtonClicked
-//      );
-//
-//      // decision will be made after dialog tap
-//      bool shouldReturn = await _popScopeCompleter.future;
-//
-//      if(!shouldReturn){
-//        // save button clicked and something is wrong
-//        return false;
-//      }
-//    }
-//
-//    NavigationHelper.popRoute(context, result: _locationChangedReturnValue);
-//
-//    return false;
+    if (_changesMade()) {
+      if (_popScopeCompleter != null) {
+        _popScopeCompleter.complete(false);
+      }
+
+      _popScopeCompleter = Completer<bool>();
+
+      CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
+          dialogTitle: App.translate("options_screen.save_changes_alert_dialog.title"),
+          dialogDescription:App.translate("options_screen.save_changes_alert_dialog.description"),
+          confirmText: App.translate("options_screen.save_changes_alert_dialog.confirm_button.text"),
+          cancelText: App.translate("options_screen.save_changes_alert_dialog.cancel_button.text"),
+          confirmCallback: _onSaveChangesDialogButtonClicked,
+          cancelCallback: _onDiscardChangesDialogButtonClicked
+      );
+
+      // decision will be made after dialog tap
+      bool shouldReturn = await _popScopeCompleter.future;
+
+      if(!shouldReturn){
+        // save button tapped and something is wrong
+        return false;
+      }
+    }
+
+    NavigationHelper.popRoute(context);
+
+    return false;
   }
 
   void _initializeFormFields() {
@@ -233,5 +232,59 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _onFirstNameFieldFocusChange() {
 
+  }
+
+  bool _changesMade() {
+    return widget.user.displayName != _nameTextController.text;
+  }
+
+  bool _onSaveButtonTapped(){
+    bool validationSuccess = true;
+
+    if (_personalInformationFormKey.currentState.validate()) {
+      _personalInformationFormKey.currentState.save();
+
+      // close keyboard by giving focus to unnamed node
+      FocusScope.of(context).unfocus();
+
+
+      if(_changesMade()) {
+        User user = User(
+          uid: widget.user.uid,
+          email: widget.user.email,
+          displayName: _fullName,
+          imageUrl: widget.user.imageUrl,
+          accessToken: widget.user.accessToken
+        );
+
+        _profileBloc.add(UpdatePersonalInformationEvent(user: user));
+      } else {
+        _onWillPopScope(context);
+      }
+    } else {
+      validationSuccess = false;
+
+      _personalInformationFormAutoValidate = true;
+    }
+
+    return validationSuccess;
+  }
+
+  void _onSaveChangesDialogButtonClicked(){
+    // close dialog
+    NavigationHelper.popRoute(context);
+
+    bool validationSuccess = _onSaveButtonTapped();
+
+    if(!validationSuccess){
+      _popScopeCompleter.complete(false);
+    }
+  }
+
+  void _onDiscardChangesDialogButtonClicked(){
+    // close dialog
+    NavigationHelper.popRoute(context);
+
+    _popScopeCompleter.complete(true);
   }
 }
