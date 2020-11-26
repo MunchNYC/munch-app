@@ -1,10 +1,14 @@
 import 'package:bloc/bloc.dart';
+import 'package:munch/model/user.dart';
+import 'package:munch/repository/user_repository.dart';
 import 'profile_state.dart';
 import 'profile_event.dart';
 
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc() : super(ProfileState());
+
+  final UserRepo _userRepo = UserRepo.getInstance();
 
   @override
   void onTransition(Transition<ProfileEvent, ProfileState> transition) {
@@ -14,6 +18,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
+    if (event is UpdatePersonalInformationEvent) {
+      yield* updatePersonalInformation(event.user);
+    }
+  }
 
+  Stream<ProfileState> updatePersonalInformation(User user) async* {
+    yield UpdatePersonalInformationState.loading();
+
+    try {
+      User updatedUser = await _userRepo.updateCurrentUser(user);
+      yield UpdatePersonalInformationState.ready(data: updatedUser);
+    } catch (error) {
+      print("Updating Personal Information failed: " + error.toString());
+      yield UpdatePersonalInformationState.failed(exception: error, message: error.toString());
+    }
   }
 }
