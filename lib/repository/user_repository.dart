@@ -105,6 +105,18 @@ class UserRepo {
     _currentUser = user;
   }
 
+  Future updateCurrentUser(User user) async {
+    try {
+      User updatedUser = await _usersApi.updatePersonalInfo(user);
+      _currentUser = updatedUser;
+
+      return updatedUser;
+    } catch (error) {
+
+      throw error;
+    }
+  }
+
   Future signOutUser() async {
     await _usersApi.signOut(App.deviceId);
 
