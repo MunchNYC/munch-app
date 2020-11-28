@@ -44,7 +44,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   @override
   void initState() {
     _initializeFormFields();
-    _nameFieldFocusNode.addListener(_onFirstNameFieldFocusChange);
+    _nameFieldFocusNode.addListener(_onNameFieldFocusChange);
     _profileBloc = ProfileBloc();
     super.initState();
   }
@@ -230,8 +230,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     _nameTextController.text = widget.user.displayName;
   }
 
-  void _onFirstNameFieldFocusChange() {
-
+  void _onNameFieldFocusChange() {
+    // add X button
   }
 
   bool _changesMade() {
