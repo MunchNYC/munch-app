@@ -167,13 +167,15 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       onTap: () {
         NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then(
            (shouldReloadRestaurants){
-             setState(() {
-               if(shouldReloadRestaurants) {
-                 _clearRestaurantsCache();
+             if(shouldReloadRestaurants != null) {
+               setState(() {
+                 if (shouldReloadRestaurants) {
+                   _clearRestaurantsCache();
 
-                 _throwGetSwipeRestaurantNextPageEvent();
-               }
-             });
+                   _throwGetSwipeRestaurantNextPageEvent();
+                 }
+               });
+             }
          }); //refresh the data on the page
       },
       child: Column(

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/munch_repository.dart';
+import 'package:munch/repository/user_repository.dart';
 
 import 'app.dart';
 import 'navigation_helper.dart';
@@ -41,15 +42,23 @@ class DeepLinkHandler{
     String path = uri.path;
     List<String> pathSegments = uri.pathSegments;
 
+    bool userSignedIn = UserRepo.getInstance().currentUser != null;
+
     switch(_deepLinkRouter.getRoute(path)){
       case DeepLinkRoute.MUNCH_ROUTE:
-          _deepLinkRouter.executeMunchRoute(pathSegments[1]);
+          if(userSignedIn) {
+            _deepLinkRouter.executeMunchRoute(pathSegments[1]);
+          }
           break;
       case DeepLinkRoute.JOIN_ROUTE:
-          _deepLinkRouter.executeJoinRoute(pathSegments[2]);
+          if(userSignedIn) {
+            _deepLinkRouter.executeJoinRoute(pathSegments[2]);
+          }
           break;
       case DeepLinkRoute.HOME_ROUTE:
-          _deepLinkRouter.executeHomeRoute();
+          if(userSignedIn) {
+            _deepLinkRouter.executeHomeRoute();
+          }
           break;
       default:
           print("No route");
@@ -96,11 +105,11 @@ class DeepLinkRouter{
   }
 
   void _navigateOnError(){
-    NavigationHelper.navigateToHome(
-      null,
-      popAllRoutes: true,
-      navigatorState: App.rootNavigatorKey.currentState,
-    );
+      NavigationHelper.navigateToHome(
+        null,
+        popAllRoutes: true,
+        navigatorState: App.rootNavigatorKey.currentState,
+      );
   }
 
   void executeMunchRoute(String munchId){
