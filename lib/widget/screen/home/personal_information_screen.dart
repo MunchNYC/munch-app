@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/user.dart';
+import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/profile/profile_bloc.dart';
 import 'package:munch/service/profile/profile_event.dart';
 import 'package:munch/service/profile/profile_state.dart';
@@ -37,6 +38,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   FocusNode _nameFieldFocusNode = FocusNode();
   TextEditingController _nameTextController = TextEditingController();
   Completer<bool> _popScopeCompleter;
+  bool _nameChanged = false;
 
   String _fullName;
   ProfileBloc _profileBloc;
@@ -82,6 +84,17 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     if (state.hasError) {
       _forceNavigationToHomeScreen();
       Utility.showErrorFlushbar(state.message, context);
+    } else if (state is UpdatePersonalInformationState) {
+      _updatePersonalInfoListener(state);
+    }
+  }
+
+  void _updatePersonalInfoListener(UpdatePersonalInformationState state) {
+    _nameChanged = false;
+    if (_popScopeCompleter != null) {
+      _popScopeCompleter.complete(true);
+    } else {
+      _onWillPopScope(context);
     }
   }
 
@@ -208,8 +221,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
           dialogDescription:App.translate("options_screen.save_changes_alert_dialog.description"),
           confirmText: App.translate("options_screen.save_changes_alert_dialog.confirm_button.text"),
           cancelText: App.translate("options_screen.save_changes_alert_dialog.cancel_button.text"),
-          confirmCallback: _onSaveChangesDialogButtonClicked,
-          cancelCallback: _onDiscardChangesDialogButtonClicked
+          confirmCallback: _onSaveChangesDialogButtonTapped,
+          cancelCallback: _onDiscardChangesDialogButtonTapped
       );
 
       // decision will be made after dialog tap
@@ -221,7 +234,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       }
     }
 
-    NavigationHelper.popRoute(context);
+    NavigationHelper.popRoute(context, result: UserRepo.getInstance().currentUser);
 
     return false;
   }
@@ -235,10 +248,10 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   }
 
   bool _changesMade() {
-    return widget.user.displayName != _nameTextController.text;
+    return _nameChanged;
   }
 
-  bool _onSaveButtonTapped(){
+  bool _onSaveButtonTapped() {
     bool validationSuccess = true;
 
     if (_personalInformationFormKey.currentState.validate()) {
@@ -247,8 +260,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-
-      if(_changesMade()) {
+      if (widget.user.displayName != _nameTextController.text) {
         User user = User(
           uid: widget.user.uid,
           email: widget.user.email,
@@ -270,7 +282,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     return validationSuccess;
   }
 
-  void _onSaveChangesDialogButtonClicked(){
+  void _onSaveChangesDialogButtonTapped() {
     // close dialog
     NavigationHelper.popRoute(context);
 
@@ -281,7 +293,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     }
   }
 
-  void _onDiscardChangesDialogButtonClicked(){
+  void _onDiscardChangesDialogButtonTapped() {
     // close dialog
     NavigationHelper.popRoute(context);
 
