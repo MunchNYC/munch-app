@@ -20,8 +20,6 @@ import 'package:munch/widget/util/cupertion_alert_dialog_builder.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
-import 'package:munch/widget/util/overlay_dialog_helper.dart';
-import 'package:munch/util/utility.dart';
 
 class PersonalInformationScreen extends StatefulWidget {
   User user;
@@ -184,6 +182,14 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     return AppBar(
       elevation: 0.0,
       automaticallyImplyLeading: false,
+      title: Text(
+        App.translate("personal_information_screen.app_bar.title"),
+        style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.normal),
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.fade,
+        maxLines: 1,
+      ),
+      centerTitle: false,
       leading: AppBarBackButton(),
       backgroundColor: Palette.background,
       actions: <Widget>[

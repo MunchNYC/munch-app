@@ -588,7 +588,8 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onUpdateLocationButtonClicked(){
-    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch).then((munchWithNewLocation){
+    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch)
+        .then((munchWithNewLocation) {
         if(munchWithNewLocation != null){
           _locationChanged = true;
 

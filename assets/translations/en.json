@@ -87,6 +87,7 @@
     "account_tab.invite_friends.item.share_popup.title": "Invite Friends",
     "account_tab.invite_friends.item.share_popup.text": "Munch makes deciding where to eat fun and easy. Tap the link to start Munch'n!",
 
+    "personal_information_screen.app_bar.title": "Personal Information",
     "personal_information_screen.app_bar.action.text": "Save",
     "personal_information_screen.full_name_field.label.text": "Full Name",
     "personal_information_screen.full_name_field.required.validation": "Name cannot be blank.",
