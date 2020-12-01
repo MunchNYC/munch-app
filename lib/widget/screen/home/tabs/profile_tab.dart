@@ -24,7 +24,7 @@ class ProfileTab extends StatefulWidget {
 class _ProfileTabScreenState extends State<ProfileTab> {
   AuthenticationBloc _authenticationBloc;
 
-  User user = UserRepo.getInstance().currentUser;
+  User _user = UserRepo.getInstance().currentUser;
 
   @override
   void initState() {
@@ -96,7 +96,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: 36.0),
+        CircleAvatar(backgroundImage: NetworkImage(_user.imageUrl), radius: 36.0),
         SizedBox(width: 16.0),
         // Flexible needs to be put here to support TextOverflow of Text widgets in a Column below, otherwise they will not work
         Flexible(
@@ -104,9 +104,9 @@ class _ProfileTabScreenState extends State<ProfileTab> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
+                Text(_user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
                 SizedBox(height: 4.0),
-                Text(user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade)
+                Text(_user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade)
               ],
             )
         )
@@ -159,9 +159,12 @@ class _ProfileTabScreenState extends State<ProfileTab> {
   }
 
   void _onPersonalInformationTapped() {
-    NavigationHelper.navigateToPersonalInformationScreen(context, user: user).then((user) {
-      if (user != null) {
-        // set local user to passed back user
+    print("opening personal information scree - our user: " + _user.displayName);
+    NavigationHelper.navigateToPersonalInformationScreen(context, user: _user).then((user) {
+      if (user != null && user is User) {
+        setState(() {
+          _user = user;
+        });
       }
     });
   }
