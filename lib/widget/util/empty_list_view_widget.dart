@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
-import 'package:munch/util/app.dart';
 
 class EmptyListViewWidget extends StatelessWidget{
   IconData iconData;

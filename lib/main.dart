@@ -38,7 +38,7 @@ class MunchApp extends StatelessWidget {
   }
 
   void _setSystemSettings(){
-    // Just default values, which are overriden when AppBar widget is present
+    // Just default values, which are overridden when AppBar widget is present
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.transparent, // navigation bar color
       statusBarColor: Colors.transparent, // status bar color

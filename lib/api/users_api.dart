@@ -45,6 +45,21 @@ class UsersApi extends Api {
     return user;
   }
 
+  Future<User> updatePersonalInfo(User user) async {
+    final String patchUrl = '/data';
+
+    Map<String, dynamic> fields = Map.of({
+      "pushInfo": PushNotificationsInfoJsonSerializer().toMap(user.pushNotificationsInfo),
+      "displayName": user.displayName,
+      "imageUrl": user.imageUrl,
+      "email": user.email
+    });
+
+    var data = await patch(patchUrl, fields);
+    User returnedUser = UserJsonSerializer().fromMap(data['muncher']);
+
+    return returnedUser;
+  }
 
   Future signOut(String deviceId) async {
     final String postUrl = '/logout';

@@ -155,7 +155,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
       bool shouldReturn = await _popScopeCompleter.future;
 
       if(!shouldReturn){
-        // save button clicked and something is wrong
+        // save button tapped and something is wrong
         return false;
       }
     }
@@ -517,14 +517,14 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
 
   Widget _leaveMunchButton(){
     return CustomButton<MunchState, MunchLeavingState>.bloc(
-          cubit: _munchBloc,
-          flat: true,
-          // very important to set, otherwise title won't be aligned good
-          padding: EdgeInsets.zero,
-          color: Colors.transparent,
-          textColor: Palette.error,
-          content: Text(App.translate("options_screen.leave_munch_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.error)),
-          onPressedCallback: _onLeaveButtonClicked
+        cubit: _munchBloc,
+        flat: true,
+        // very important to set, otherwise title won't be aligned good
+        padding: EdgeInsets.zero,
+        color: Colors.transparent,
+        textColor: Palette.error,
+        content: Text(App.translate("options_screen.leave_munch_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.error)),
+        onPressedCallback: _onLeaveButtonClicked
     );
   }
 
@@ -588,7 +588,8 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
   }
 
   void _onUpdateLocationButtonClicked(){
-    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch).then((munchWithNewLocation){
+    NavigationHelper.navigateToMapScreen(context, editLocation: true, munch: widget.munch)
+        .then((munchWithNewLocation) {
         if(munchWithNewLocation != null){
           _locationChanged = true;
 

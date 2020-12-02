@@ -74,6 +74,7 @@
     "empty_munches_list_widget.tutorial.create_row_2.text": "a new Munch and invite your friends.",
     "empty_munches_list_widget.start_button.text": "Get Munch'n",
 
+    "account_tab.menu_item.personal_information.text": "Personal Information",
     "account_tab.menu_item.notifications.text": "Notifications",
     "account_tab.menu_item.invite_friends.text": "Invite friends",
     "account_tab.menu_item.feedback.text": "Give us feedback",
@@ -85,6 +86,12 @@
 
     "account_tab.invite_friends.item.share_popup.title": "Invite Friends",
     "account_tab.invite_friends.item.share_popup.text": "Munch makes deciding where to eat fun and easy. Tap the link to start Munch'n!",
+
+    "personal_information_screen.app_bar.title": "Personal Information",
+    "personal_information_screen.app_bar.action.text": "Save",
+    "personal_information_screen.full_name_field.label.text": "Full Name",
+    "personal_information_screen.full_name_field.required.validation": "Name cannot be blank.",
+    "personal_information_screen.name_field.regex.validation": "Invalid characters were found.",
 
     "munch_list_widget.creation_timestamp.today.text": "Today",
     "munch_list_widget.creation_timestamp.yesterday.text": "Yesterday",
