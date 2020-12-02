@@ -33,7 +33,6 @@ class PersonalInformationScreen extends StatefulWidget {
 class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   final GlobalKey<FormState> _personalInformationFormKey = GlobalKey<FormState>();
   bool _personalInformationFormAutoValidate = false;
-  FocusNode _nameFieldFocusNode = FocusNode();
   TextEditingController _nameTextController = TextEditingController();
   Completer<bool> _popScopeCompleter;
   bool _nameChanged = false;
@@ -44,7 +43,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   @override
   void initState() {
     _initializeFormFields();
-    _nameFieldFocusNode.addListener(_onNameFieldFocusChange);
     _profileBloc = ProfileBloc();
     super.initState();
   }
@@ -64,7 +62,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   @override
   void dispose() {
     _profileBloc?.close();
-    _nameFieldFocusNode.dispose();
     super.dispose();
   }
 
@@ -149,7 +146,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                 contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
                 borderRadius: 0.0,
                 borderColor: Palette.background,
-                focusNode: _nameFieldFocusNode,
                 controller: _nameTextController,
                 onSaved: (value) => _fullName = value,
                 validator: (value) => _validateFullName(value),
@@ -247,10 +243,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
-  }
-
-  void _onNameFieldFocusChange() {
-    // add X button
   }
 
   bool _changesMade() {
