@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   void didChangeDependencies() {
     App.initAppContext(context);
-
+    DeepLinkHandler.getInstance().initializeDeepLinkListener();
     _delayedAnimation(milliseconds: 2000);
 
     _splashScreenNavigationLogic();
@@ -63,7 +63,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void _splashScreenNavigationLogic(){
       UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
         String deepLink = await DeepLinkHandler.getInstance().getAppStartDeepLink();
-        DeepLinkHandler.getInstance().initializeDeepLinkListener();
 
         if (user == null) {
           // navigate with delay because if user is not stored in local storage, it will happen very fast, we want to animate splash logo smooth
