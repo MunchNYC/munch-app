@@ -7,6 +7,10 @@ enum SocialProvider{
   GOOGLE, FACEBOOK, APPLE
 }
 
+enum Gender {
+  MALE, FEMALE, OTHER, NOTSPECIFIED
+}
+
 class User{
   @Field.ignore()
   String accessToken;
@@ -25,6 +29,12 @@ class User{
   String displayName;
 
   @nonNullable
+  String gender;
+
+  @nullable
+  String birthday;
+
+  @nonNullable
   String imageUrl;
 
   @Field.ignore()
@@ -32,10 +42,10 @@ class User{
 
   @override
   String toString() {
-    return "uid: $uid; displayName: $displayName";
+    return "uid: $uid; displayName: $displayName; gender: $gender; birthday: $birthday";
   }
 
-  User({this.uid, this.email, this.displayName, this.imageUrl, this.accessToken = ""});
+  User({this.uid, this.email, this.displayName, this.gender, this.birthday, this.imageUrl, this.accessToken = ""});
 
   User.fromFirebaseUser({final firebase_auth.User firebaseUser, final String accessToken = ""})
       :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, imageUrl: firebaseUser.photoURL, accessToken: accessToken);
