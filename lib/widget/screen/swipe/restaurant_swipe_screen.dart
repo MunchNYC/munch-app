@@ -49,7 +49,7 @@ enum TutorialState { TUTORIAL_CAROUSEL, TUTORIAL_SWIPE, FINISHED }
 class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.25;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
-  static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 400;
+  static const int SWIPE_ANIMATION_REF_TIME_MILLIS = 150;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;
@@ -299,7 +299,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             begin: _currentAnimatedRestaurantGlobalOffset,
             end: _restaurantCardStartingGlobalOffset),
         cycles: 1,
-        duration: Duration(milliseconds: 500),
+        duration: Duration(milliseconds: SWIPE_ANIMATION_REF_TIME_MILLIS),
         curve: Curves.easeInOut,
         endAnimationListener: (value) {
           setState(() {
@@ -428,7 +428,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _cardPerspectiveAnimationLeft = state.data;
 
     _cardPerspectiveAnimatorKey.triggerAnimation();
-    Vibrator.vibrate(1, duration: 10);
+    Vibrator.vibrate(amplitude: 1, duration: 10);
   }
 
   void _forceNavigationToHomeScreen() {
@@ -664,14 +664,14 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     if (_animateMatchedRestaurant) {
       _animateMatchedRestaurant = false;
-      Vibrator.vibrate(255, duration: 450);
+      Vibrator.vibrate(amplitude: 255, duration: 450);
       return TranslationAnimatedWidget(
           enabled: widget.munch.munchStatus == MunchStatus.DECIDED,
           curve: Curves.bounceInOut,
           duration: Duration(milliseconds: 1500),
           values: [
             Offset(0, 100), // hidden
-            Offset(0, -40),
+            Offset(0, -50),
             Offset(0, 0),
           ],
           child: _decidedStatusContainerWidget);
@@ -863,7 +863,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
 
     swipeCompletedRequiredTimeMillis =
-        (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
+        (distanceTimeFactor * SWIPE_ANIMATION_REF_TIME_MILLIS).ceil();
   }
 
   void _triggerSwipeCompletedAnimation() {
