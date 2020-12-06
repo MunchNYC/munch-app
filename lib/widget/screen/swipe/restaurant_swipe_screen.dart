@@ -123,25 +123,21 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     super.dispose();
   }
 
-  Widget _tutorialOverlayDialog(
-      Restaurant restaurant, TutorialState tutorialState) {
+  Widget _tutorialOverlayDialog(Restaurant restaurant, TutorialState tutorialState) {
     return Container(
       height: double.infinity,
       width: double.infinity,
       // color must be set otherwise container will be zero-sized, so gesture detectors won't be recognized
       color: Colors.transparent,
       child: TutorialRestaurantSwipeScreen(
-          munch: widget.munch,
-          restaurant: restaurant,
-          tutorialState: tutorialState),
+          munch: widget.munch, restaurant: restaurant, tutorialState: tutorialState),
     );
   }
 
   void _initializeTutorialState() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    int tutorialStateIndex =
-        sharedPreferences.getInt(StorageKeys.SWIPE_TUTORIAL_STATE);
+    int tutorialStateIndex = sharedPreferences.getInt(StorageKeys.SWIPE_TUTORIAL_STATE);
 
     if (tutorialStateIndex == null) {
       _tutorialState = TutorialState.TUTORIAL_CAROUSEL;
@@ -170,8 +166,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     // InkWell to make white space around tapable also
     return InkWell(
         onTap: () {
-          NavigationHelper.navigateToMunchOptionsScreen(context,
-                  munch: widget.munch)
+          NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch)
               .then((shouldReloadRestaurants) {
             if (shouldReloadRestaurants != null) {
               setState(() {
@@ -191,8 +186,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           children: <Widget>[
             Text(
               widget.munch.name,
-              style: AppTextStyle.style(AppTextStylePattern.heading6,
-                  fontWeight: FontWeight.w500),
+              style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
@@ -208,9 +202,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 SizedBox(width: 4.0),
                 Text("·", style: AppTextStyle.style(AppTextStylePattern.body2)),
                 SizedBox(width: 2.0),
-                Text(
-                    App.translate(
-                        "restaurant_swipe_screen.app_bar.second_line.info_label.text"),
+                Text(App.translate("restaurant_swipe_screen.app_bar.second_line.info_label.text"),
                     style: AppTextStyle.style(AppTextStylePattern.body2,
                         color: Palette.secondaryLight))
               ],
@@ -251,8 +243,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             padding: EdgeInsets.only(right: 24.0),
             child: GestureDetector(
               onTap: () {
-                NavigationHelper.navigateToFiltersScreen(context,
-                        munch: widget.munch)
+                NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch)
                     .then((filtersSaved) {
                   setState(() {
                     // Don't refresh anything if filters are not saved
@@ -292,9 +283,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 body: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    padding:
-                        AppDimensions.padding(AppPaddingType.screenWithAppBar)
-                            .copyWith(top: 8.0, left: 0.0, right: 0.0),
+                    padding: AppDimensions.padding(AppPaddingType.screenWithAppBar)
+                        .copyWith(top: 8.0, left: 0.0, right: 0.0),
                     child: _buildNotificationsBloc())),
             if (_swipeReturnedAnimationInProgress) _swipeReturnedAnimator(),
             if (_swipeCompletedAnimationInProgress) _swipeCompletedAnimator()
@@ -342,10 +332,10 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           });
         },
         builder: (context, anim, child) {
-          double dx = _currentAnimatedRestaurantGlobalOffset.dx +
-              anim.value * swipeCompletedDistance.dx;
-          double dy = _currentAnimatedRestaurantGlobalOffset.dy +
-              anim.value * swipeCompletedDistance.dy;
+          double dx =
+              _currentAnimatedRestaurantGlobalOffset.dx + anim.value * swipeCompletedDistance.dx;
+          double dy =
+              _currentAnimatedRestaurantGlobalOffset.dy + anim.value * swipeCompletedDistance.dy;
 
           return Transform.translate(
               offset: Offset(dx, dy),
@@ -358,8 +348,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         });
   }
 
-  void _munchStatusNotificationListener(
-      BuildContext context, NotificationsState state) {
+  void _munchStatusNotificationListener(BuildContext context, NotificationsState state) {
     if (state is DetailedMunchNotificationState) {
       Munch munch = state.data;
 
@@ -387,17 +376,14 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         buildWhen: (NotificationsState previous, NotificationsState current) =>
             current is DetailedMunchNotificationState && current.ready,
         // in every other condition enter builder
-        builder: (BuildContext context, NotificationsState state) =>
-            _buildMunchBloc());
+        builder: (BuildContext context, NotificationsState state) => _buildMunchBloc());
   }
 
   void _navigateToDecisionScreen() {
-    NavigationHelper.navigateToDecisionScreen(context,
-        munch: widget.munch, addToBackStack: false);
+    NavigationHelper.navigateToDecisionScreen(context, munch: widget.munch, addToBackStack: false);
   }
 
-  void _checkMunchStatusChanged(
-      {bool navigateToDecisionScreenIfChanged: false}) {
+  void _checkMunchStatusChanged({bool navigateToDecisionScreenIfChanged: false}) {
     if (widget.munch.munchStatusChanged) {
       widget.munch.munchStatusChanged = false;
 
@@ -429,8 +415,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       if (_currentCardMap.containsKey(restaurant.id)) {
         _newCardMap[restaurant.id] = _currentCardMap[restaurant.id];
       } else {
-        _newCardMap[restaurant.id] =
-            RestaurantCard(restaurant, munchBloc: _munchBloc);
+        _newCardMap[restaurant.id] = RestaurantCard(restaurant, munchBloc: _munchBloc);
       }
     });
 
@@ -476,15 +461,12 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _buildMunchBloc() {
     return BlocConsumer<MunchBloc, MunchState>(
         cubit: _munchBloc,
-        listenWhen: (MunchState previous, MunchState current) =>
-            current.hasError || current.ready,
-        listener: (BuildContext context, MunchState state) =>
-            _swipeScreenListener(context, state),
+        listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
+        listener: (BuildContext context, MunchState state) => _swipeScreenListener(context, state),
         buildWhen: (MunchState previous, MunchState current) =>
             !(current is RestaurantSwipeProcessingState && current.hasError),
         // in every other condition enter builder
-        builder: (BuildContext context, MunchState state) =>
-            _buildSwipeScreen(context, state));
+        builder: (BuildContext context, MunchState state) => _buildSwipeScreen(context, state));
   }
 
   Widget _buildSwipeScreen(BuildContext context, MunchState state) {
@@ -494,15 +476,12 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     bool showLoadingIndicator = false;
 
-    if ((state.initial ||
-        state.loading ||
-        state is DetailedMunchFetchingState)) {
+    if ((state.initial || state.loading || state is DetailedMunchFetchingState)) {
       // even if DetailedMunchFetchingState is ready we have to wait for restaurants page to be ready
       // if RestaurantSwipeProcessingState is loading, don't render this indicator
       showLoadingIndicator = true;
 
-      if ((state is RestaurantsPageFetchingState ||
-              state is RestaurantSwipeProcessingState) &&
+      if ((state is RestaurantsPageFetchingState || state is RestaurantSwipeProcessingState) &&
           _currentRestaurants.length != 0) {
         // if RestaurantsPageFetchingState or RestaurantSwipeProcessingState and one (or more) card is on top of the stack, don't render indicator
         showLoadingIndicator = false;
@@ -533,9 +512,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                           // More info about perspective: https://medium.com/flutterdevs/perspective-in-flutter-904c6cade292
                           transform: Matrix4.identity()
                             ..setEntry(3, 2, anim.value * 0.01)
-                            ..rotateY(_cardPerspectiveAnimationLeft
-                                ? anim.value
-                                : -anim.value),
+                            ..rotateY(_cardPerspectiveAnimationLeft ? anim.value : -anim.value),
                           alignment: FractionalOffset.center,
                           child: _draggableCard(),
                         );
@@ -543,10 +520,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   : _emptyCardStack(),
               padding: EdgeInsets.symmetric(horizontal: 8.0))),
       SizedBox(height: 8.0),
-      Divider(
-          height: 1.0,
-          thickness: 2.0,
-          color: Palette.secondaryLight.withOpacity(0.7)),
+      Divider(height: 1.0, thickness: 2.0, color: Palette.secondaryLight.withOpacity(0.7)),
       _decisionInfoBar()
     ]);
   }
@@ -557,20 +531,16 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: Text(
-              App.translate("restaurant_swipe_screen.empty_card_stack.title"),
+          child: Text(App.translate("restaurant_swipe_screen.empty_card_stack.title"),
               style: AppTextStyle.style(AppTextStylePattern.heading2,
                   fontWeight: FontWeight.w400, fontSizeOffset: 2.0),
               textAlign: TextAlign.center),
         ),
         SizedBox(height: 36.0),
         widget.munch.munchStatus == MunchStatus.UNDECIDED
-            ? Text(
-                App.translate(
-                    "restaurant_swipe_screen.empty_card_stack.undecided.description"),
+            ? Text(App.translate("restaurant_swipe_screen.empty_card_stack.undecided.description"),
                 style: AppTextStyle.style(AppTextStylePattern.heading6,
-                    fontWeight: FontWeight.w500,
-                    color: Palette.primary.withOpacity(0.7)),
+                    fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
                 textAlign: TextAlign.center)
             : Text(
                 App.translate(
@@ -581,8 +551,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                     App.translate(
                         "restaurant_swipe_screen.empty_card_stack.decided.description.second_sentence"),
                 style: AppTextStyle.style(AppTextStylePattern.heading6,
-                    fontWeight: FontWeight.w500,
-                    color: Palette.primary.withOpacity(0.7)),
+                    fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
                 textAlign: TextAlign.center),
       ]),
     );
@@ -594,8 +563,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   */
   Widget _draggableCard() {
     return LayoutBuilder(
-      builder: (context, constraints) =>
-          Stack(overflow: Overflow.visible, children: [
+      builder: (context, constraints) => Stack(overflow: Overflow.visible, children: [
         Draggable(
             child: _currentCardMap[_currentRestaurants[0].id],
             ignoringFeedbackSemantics: false,
@@ -609,8 +577,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 : Container(),
             onDragStarted: () {
               RenderBox renderBox = context.findRenderObject();
-              _restaurantCardStartingGlobalOffset =
-                  renderBox.localToGlobal(Offset.zero);
+              _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
             },
             // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED GOOD BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
             onDragEnd: (DraggableDetails draggableDetails) =>
@@ -622,8 +589,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                   onTapDown: (TapDownDetails details) {
                     OverlayDialogHelper(
                             isModal: true,
-                            widget: _tutorialOverlayDialog(
-                                _currentRestaurants[0], _tutorialState))
+                            widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
                         .show(context);
 
                     setState(() {
@@ -631,9 +597,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                     });
                   },
                   child: Container(
-                      color: Colors.transparent,
-                      width: double.infinity,
-                      height: double.infinity)))
+                      color: Colors.transparent, width: double.infinity, height: double.infinity)))
       ]),
     );
   }
@@ -643,8 +607,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         child: Stack(
       children: [
         _buildStillDecidingStatusContainer(),
-        if (widget.munch.munchStatus != MunchStatus.UNDECIDED)
-          _buildDecidedStatusContainer()
+        if (widget.munch.munchStatus != MunchStatus.UNDECIDED) _buildDecidedStatusContainer()
       ],
     ));
   }
@@ -676,13 +639,11 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                 borderRadius: BorderRadius.circular(8.0),
                 child: Container(
                     width: double.infinity,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                     decoration: BoxDecoration(
                         color: Palette.background,
                         borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                            width: 1.0, color: Palette.secondaryDark)),
+                        border: Border.all(width: 1.0, color: Palette.secondaryDark)),
                     child: Center(
                         child: Text(
                             App.translate(
@@ -726,8 +687,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
           Expanded(
               child: Text(
-                  App.translate(
-                      "restaurant_swipe_screen.munch_status.decided.action_message.text"),
+                  App.translate("restaurant_swipe_screen.munch_status.decided.action_message.text"),
                   style: AppTextStyle.style(AppTextStylePattern.body3,
                       fontSizeOffset: 1.0, fontWeight: FontWeight.w500))),
           Expanded(
@@ -738,19 +698,15 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                       borderRadius: BorderRadius.circular(8.0),
                       child: Container(
                           width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 12.0),
+                          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                           decoration: BoxDecoration(
                               color: Palette.secondaryDark,
                               borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                  width: 1.0, color: Palette.secondaryDark)),
+                              border: Border.all(width: 1.0, color: Palette.secondaryDark)),
                           child: Center(
-                              child: Text(
-                                  widget.munch.matchedRestaurantName ?? "",
+                              child: Text(widget.munch.matchedRestaurantName ?? "",
                                   // will be null if this field is hidden
-                                  style: AppTextStyle.style(
-                                      AppTextStylePattern.body3,
+                                  style: AppTextStyle.style(AppTextStylePattern.body3,
                                       color: Palette.background,
                                       fontSizeOffset: 1.0,
                                       fontWeight: FontWeight.w500),
@@ -761,8 +717,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   void _addTopCard() {
-    _currentCardMap[_currentAnimatedRestaurant.id] =
-        _currentAnimatedRestaurantCard;
+    _currentCardMap[_currentAnimatedRestaurant.id] = _currentAnimatedRestaurantCard;
 
     _currentRestaurants.insert(0, _currentAnimatedRestaurant);
   }
@@ -772,10 +727,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     Restaurant restaurant = _currentRestaurants.removeAt(0);
 
-    if (_lastSwipedRestaurants.length + 1 ==
-        LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY) {
-      Restaurant restaurantRemovedFromLastSwipedList =
-          _lastSwipedRestaurants.removeLast();
+    if (_lastSwipedRestaurants.length + 1 == LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY) {
+      Restaurant restaurantRemovedFromLastSwipedList = _lastSwipedRestaurants.removeLast();
       _lastSwipedRestaurantsMap.remove(restaurantRemovedFromLastSwipedList.id);
     }
 
@@ -810,8 +763,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     _currentAnimatedRestaurantCard = _currentCardMap[_currentRestaurants[0].id];
 
     // How many restaurant card moved by x-axis from starting position
-    double dx = _currentAnimatedRestaurantGlobalOffset.dx -
-        _restaurantCardStartingGlobalOffset.dx;
+    double dx = _currentAnimatedRestaurantGlobalOffset.dx - _restaurantCardStartingGlobalOffset.dx;
 
     // Is it enough to mark it as completed swipe
     if (dx.abs() > _restaurantCardWidth * SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD) {
@@ -849,11 +801,11 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       double restaurantCardHeight,
       double restaurantCardWidth}) {
     // How many restaurant card moved by x-axis from starting position
-    double dx = currentAnimatedRestaurantCardGlobalOffset.dx -
-        restaurantCardStartingGlobalOffset.dx;
+    double dx =
+        currentAnimatedRestaurantCardGlobalOffset.dx - restaurantCardStartingGlobalOffset.dx;
     // How many restaurant card moved by y-axis from starting position
-    double dy = currentAnimatedRestaurantCardGlobalOffset.dy -
-        restaurantCardStartingGlobalOffset.dy;
+    double dy =
+        currentAnimatedRestaurantCardGlobalOffset.dy - restaurantCardStartingGlobalOffset.dy;
 
     // Distances which need to be passed to make card leave the screen
     double distanceX;
@@ -864,8 +816,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     double fullDistanceY;
 
     if (dx < 0) {
-      fullDistanceX =
-          restaurantCardStartingGlobalOffset.dx + restaurantCardWidth;
+      fullDistanceX = restaurantCardStartingGlobalOffset.dx + restaurantCardWidth;
     } else {
       fullDistanceX = App.screenWidth - restaurantCardStartingGlobalOffset.dx;
     }
@@ -873,8 +824,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     distanceX = fullDistanceX - dx.abs();
 
     if (dy < 0) {
-      fullDistanceY =
-          restaurantCardStartingGlobalOffset.dy + restaurantCardHeight;
+      fullDistanceY = restaurantCardStartingGlobalOffset.dy + restaurantCardHeight;
     } else {
       fullDistanceY = App.screenHeight - restaurantCardStartingGlobalOffset.dy;
     }
@@ -898,22 +848,19 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
       // Distances remaining to be passed
       swipeCompletedDistanceX = (dx < 0 ? -1 : 1) * distanceX;
-      swipeCompletedDistanceY = (dy < 0 ? -1 : 1) *
-          (startDistanceYPct / startDistanceXPct) *
-          distanceY;
+      swipeCompletedDistanceY =
+          (dy < 0 ? -1 : 1) * (startDistanceYPct / startDistanceXPct) * distanceY;
     } else {
       // If card is leaving on y-axis first
       distanceTimeFactor = distanceY / fullDistanceY;
 
       // Distances remaining to be passed
-      swipeCompletedDistanceX = (dx < 0 ? -1 : 1) *
-          (startDistanceXPct / startDistanceYPct) *
-          distanceX;
+      swipeCompletedDistanceX =
+          (dx < 0 ? -1 : 1) * (startDistanceXPct / startDistanceYPct) * distanceX;
       swipeCompletedDistanceY = (dy < 0 ? -1 : 1) * distanceY;
     }
 
-    swipeCompletedDistance =
-        Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
+    swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
 
     swipeCompletedRequiredTimeMillis =
         (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
@@ -922,8 +869,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   void _triggerSwipeCompletedAnimation() {
     doSwipeCompletedAnimationCalculations(
         restaurantCardStartingGlobalOffset: _restaurantCardStartingGlobalOffset,
-        currentAnimatedRestaurantCardGlobalOffset:
-            _currentAnimatedRestaurantGlobalOffset,
+        currentAnimatedRestaurantCardGlobalOffset: _currentAnimatedRestaurantGlobalOffset,
         restaurantCardHeight: _restaurantCardHeight,
         restaurantCardWidth: _restaurantCardWidth);
 
