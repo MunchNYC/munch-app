@@ -50,6 +50,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.25;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
   static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 150;
+  static const int SWIPE_RETURNED_ANIMATION_REF_TIME_MILLIS = 150;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;
@@ -299,7 +300,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             begin: _currentAnimatedRestaurantGlobalOffset,
             end: _restaurantCardStartingGlobalOffset),
         cycles: 1,
-        duration: Duration(milliseconds: 500),
+        duration: Duration(milliseconds: SWIPE_RETURNED_ANIMATION_REF_TIME_MILLIS),
         curve: Curves.easeInOut,
         endAnimationListener: (value) {
           setState(() {
@@ -671,7 +672,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
           duration: Duration(milliseconds: 1500),
           values: [
             Offset(0, 100), // hidden
-            Offset(0, -30),
+            Offset(0, -50),
             Offset(0, 0),
           ],
           child: _decidedStatusContainerWidget);
@@ -790,8 +791,6 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _swipeReturnedAnimatorKey.controller.duration =
-          Duration(milliseconds: SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS);
       _swipeReturnedAnimatorKey.triggerAnimation();
     });
   }
