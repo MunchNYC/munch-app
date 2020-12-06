@@ -13,9 +13,6 @@ class UsersApi extends Api {
 
     Map<String, dynamic> fields = UserJsonSerializer().toMap(user);
 
-    print("fields: ");
-    print(fields);
-
     var data = await post(postUrl, fields);
 
     return UserJsonSerializer().fromMap(data['muncher']);
@@ -52,7 +49,9 @@ class UsersApi extends Api {
       "pushInfo": PushNotificationsInfoJsonSerializer().toMap(user.pushNotificationsInfo),
       "displayName": user.displayName,
       "imageUrl": user.imageUrl,
-      "email": user.email
+      "email": user.email,
+      "gender": user.gender,
+      "birthday": user.birthday
     });
 
     var data = await patch(patchUrl, fields);
