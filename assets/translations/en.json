@@ -92,6 +92,9 @@
     "personal_information_screen.full_name_field.label.text": "Full Name",
     "personal_information_screen.full_name_field.required.validation": "Name cannot be blank.",
     "personal_information_screen.name_field.regex.validation": "Invalid characters were found.",
+    "personal_information_screen.gender_field.label.text": "Gender",
+    "personal_information_screen.birthday_field.label.text": "Birthday",
+    "personal_information_screen.readonly_state.text": "Edit",
 
     "munch_list_widget.creation_timestamp.today.text": "Today",
     "munch_list_widget.creation_timestamp.yesterday.text": "Yesterday",
