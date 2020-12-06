@@ -664,7 +664,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
     if (_animateMatchedRestaurant) {
       _animateMatchedRestaurant = false;
-      Vibrator.vibrate(pattern: [100, 250, 200, 400], intensities: [0, 160, 0, 250]);
+      Vibrator.vibrate(amplitude: 255, duration: 450);
       return TranslationAnimatedWidget(
           enabled: widget.munch.munchStatus == MunchStatus.DECIDED,
           curve: Curves.bounceInOut,
