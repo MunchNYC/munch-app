@@ -49,8 +49,7 @@ enum TutorialState { TUTORIAL_CAROUSEL, TUTORIAL_SWIPE, FINISHED }
 class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   static const double SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD = 0.25;
   static const int LAST_SWIPED_RESTAURANTS_BUFFER_CAPACITY = 5;
-  static const int SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS = 150;
-  static const int SWIPE_RETURNED_ANIMATION_REF_TIME_MILLIS = 150;
+  static const int SWIPE_ANIMATION_REF_TIME_MILLIS = 150;
 
   AnimatorKey<double> _cardPerspectiveAnimatorKey = AnimatorKey<double>();
   bool _cardPerspectiveAnimationLeft = false;
@@ -300,7 +299,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             begin: _currentAnimatedRestaurantGlobalOffset,
             end: _restaurantCardStartingGlobalOffset),
         cycles: 1,
-        duration: Duration(milliseconds: SWIPE_RETURNED_ANIMATION_REF_TIME_MILLIS),
+        duration: Duration(milliseconds: SWIPE_ANIMATION_REF_TIME_MILLIS),
         curve: Curves.easeInOut,
         endAnimationListener: (value) {
           setState(() {
@@ -864,7 +863,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     swipeCompletedDistance = Offset(swipeCompletedDistanceX, swipeCompletedDistanceY);
 
     swipeCompletedRequiredTimeMillis =
-        (distanceTimeFactor * SWIPE_COMPLETED_ANIMATION_REF_TIME_MILLIS).ceil();
+        (distanceTimeFactor * SWIPE_ANIMATION_REF_TIME_MILLIS).ceil();
   }
 
   void _triggerSwipeCompletedAnimation() {
