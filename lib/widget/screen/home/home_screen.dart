@@ -143,7 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void onTabTapped(int index) {
     if (_currentIndex == index) {
-      _tabs[index].currentState.popUntil((route) => route.isFirst);
+      GlobalKey<NavigatorState> currentTab = _tabs[index];
+      if(currentTab!=null) {
+        currentTab.currentState.popUntil((route) => route.isFirst);
+      }
     }
 
     setState(() {
