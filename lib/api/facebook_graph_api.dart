@@ -12,7 +12,7 @@ class FacebookGraphApi extends Api {
   FacebookGraphApi(): super.thirdParty("https://graph.facebook.com/v"  + API_VERSION);
 
   Future<FacebookGraphProfileResponse> getUserProfile(String accessToken) async {
-    String getUrl = "/me?fields=name,first_name,last_name,email,picture&access_token=$accessToken";
+    String getUrl = "/me?fields=name,first_name,last_name,email,picture,gender,birthday&access_token=$accessToken";
 
     var data = await get(getUrl);
 
