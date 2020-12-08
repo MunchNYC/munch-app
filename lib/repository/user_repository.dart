@@ -213,11 +213,11 @@ class UserRepo {
   }
 
   bool _isValidUser(User user) {
-    bool _isValid(String string) {
+    bool _hasValid(String string) {
       return (string != null && string != "");
     }
 
-    if (_isValid(user.displayName) && _isValid(user.email)) {
+    if (_hasValid(user.displayName) && _hasValid(user.email)) {
       return true;
     }
     return false;
