@@ -12,7 +12,9 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Munch"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules">
 
         <!-- FACEBOOK LOGIN START -->
         <meta-data android:name="com.facebook.sdk.ApplicationId"

@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/facebook_graph_api.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/response/facebook_graph_profile_response.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
@@ -90,11 +92,14 @@ class AuthRepo {
       } else{
         return null;
       }
-    } catch(error){
+    } catch(error, stacktrace){
       if(error is PlatformException){
         if(error.code == "network_error"){
           throw InternetConnectionException();
         } else {
+          print(stacktrace.toString());
+          // TODO remove after confirmed fixed for users https://github.com/mogol/flutter_secure_storage/issues/43
+          FlutterSecureStorage().delete(key: StorageKeys.ACCESS_TOKEN);
           throw FetchDataException.fromMessage(App.translate("google_login.platform_exception.text"));
         }
       } else{
