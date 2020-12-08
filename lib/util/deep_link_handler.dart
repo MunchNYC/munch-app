@@ -76,7 +76,7 @@ enum DeepLinkRoute{
 class DeepLinkRouter{
   static const String MUNCH_ROUTE_PATH = "/munches";
   static const String JOIN_ROUTE_PATH = "/munches/join";
-  static const String HOME_ROUTE_PATH = "/munch/home";
+  static const String HOME_ROUTE_PATH = "/munches/home";
 
   static final RegExp munchRouteRegex = RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[a-zA-Z0-9]+$');
   static final RegExp joinRouteRegex = RegExp(r'^' + JOIN_ROUTE_PATH + r'/[a-zA-Z0-9]{6}$');
