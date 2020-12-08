@@ -58,7 +58,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       }
     } catch (error) {
       print("Facebook login failed: " + error.toString());
-      yield LoginWithFacebookState.failed(message: error.toString()); // "Google authentication failed."
+      yield LoginWithFacebookState.failed(message: error.toString()); // "Facebook authentication failed."
     }
   }
 
@@ -77,7 +77,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       }
     } catch (error) {
       print("Apple login failed: " + error.toString());
-      yield LoginWithAppleState.failed(message: error.toString()); // "Google authentication failed."
+      yield LoginWithAppleState.failed(message: error.toString()); // "Apple authentication failed."
     }
   }
 
