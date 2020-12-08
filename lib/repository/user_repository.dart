@@ -6,7 +6,6 @@ import 'package:munch/api/api.dart';
 import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
-import 'package:munch/repository/auth_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -204,9 +203,23 @@ class UserRepo {
     _clearFCMToken();
   }
 
-  Future<User> registerUser(User user) async{
-    User registeredUser = await _usersApi.registerUser(user);
+  Future<User> registerUser(User user) async {
+    if (_isValidUser(user)) {
+      User registeredUser = await _usersApi.registerUser(user);
+      return registeredUser;
+    } else {
+      throw (App.translate("register_user.required_field_missing.text"));
+    }
+  }
 
-    return registeredUser;
+  bool _isValidUser(User user) {
+    bool _hasValid(String string) {
+      return (string != null && string != "");
+    }
+
+    if (_hasValid(user.displayName) && _hasValid(user.email)) {
+      return true;
+    }
+    return false;
   }
 }

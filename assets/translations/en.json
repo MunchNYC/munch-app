@@ -252,5 +252,7 @@
     "facebook_login.platform_exception.text": "Failed to connect to Facebook servers.",
     "apple_login.platform_exception.text": "Failed to connect to Apple servers.",
 
+    "register_user.required_field_missing.text": "Your log in account must have a valid name and email.",
+
     "url_launcher.error.message": "Url cannot be opened"
 }
