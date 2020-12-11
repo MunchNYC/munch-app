@@ -96,6 +96,11 @@
     "personal_information_screen.birthday_field.label.text": "Birthday",
     "personal_information_screen.readonly_state.text": "Edit",
 
+    "personal_information_screen.gender.male.text": "Male",
+    "personal_information_screen.gender.female.text": "Female",
+    "personal_information_screen.gender.other.text": "Other",
+    "personal_information_screen.gender.no_answer.text": "Not Specified",
+
     "munch_list_widget.creation_timestamp.today.text": "Today",
     "munch_list_widget.creation_timestamp.yesterday.text": "Yesterday",
     "munch_list_widget.creation_timestamp.tomorrow.text": "Tomorrow",
