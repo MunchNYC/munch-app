@@ -1,34 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'facebook_graph_profile_response.dart';
+part of 'google_sign_in_response.dart';
 
 // **************************************************************************
 // JaguarSerializerGenerator
 // **************************************************************************
 
-abstract class _$FacebookGraphProfileResponseJsonSerializer
-    implements Serializer<FacebookGraphProfileResponse> {
+abstract class _$GoogleSignInResponseJsonSerializer
+    implements Serializer<GoogleSignInResponse> {
   @override
-  Map<String, dynamic> toMap(FacebookGraphProfileResponse model) {
+  Map<String, dynamic> toMap(GoogleSignInResponse model) {
     if (model == null) return null;
     Map<String, dynamic> ret = <String, dynamic>{};
-    setMapValue(ret, 'name', model.name);
-    setMapValue(ret, 'email', model.email);
     setMapValue(ret, 'gender', model.gender);
     setMapValue(ret, 'birthday', model.birthday);
-    setMapValue(ret, 'photoUrl', model.photoUrl);
     return ret;
   }
 
   @override
-  FacebookGraphProfileResponse fromMap(Map map) {
+  GoogleSignInResponse fromMap(Map map) {
     if (map == null) return null;
-    final obj = FacebookGraphProfileResponse();
-    obj.name = map['name'] as String;
-    obj.email = map['email'] as String;
+    final obj = GoogleSignInResponse();
     obj.gender = map['gender'] as String;
     obj.birthday = map['birthday'] as String;
-    obj.photoUrl = map['photoUrl'] as String;
     return obj;
   }
 }
