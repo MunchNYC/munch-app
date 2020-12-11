@@ -54,7 +54,7 @@ class UsersApi extends Api {
       "birthday": user.birthday
     });
 
-    print("our fields: " + fields.toString());
+    print("updating personal info with fields: " + fields.toString());
 
     var data = await patch(patchUrl, fields);
     User returnedUser = UserJsonSerializer().fromMap(data['muncher']);
