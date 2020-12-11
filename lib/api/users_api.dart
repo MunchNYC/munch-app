@@ -50,9 +50,11 @@ class UsersApi extends Api {
       "displayName": user.displayName,
       "imageUrl": user.imageUrl,
       "email": user.email,
-      "gender": user.gender,
+      "gender": user.gender.toString().split(".").last,
       "birthday": user.birthday
     });
+
+    print("our fields: " + fields.toString());
 
     var data = await patch(patchUrl, fields);
     User returnedUser = UserJsonSerializer().fromMap(data['muncher']);
