@@ -102,12 +102,14 @@ class UserRepo {
     }
 
     _currentUser = user;
+    print("current user set: " + _currentUser.toString());
   }
 
   Future updateCurrentUser(User user) async {
     try {
       User updatedUser = await _usersApi.updatePersonalInfo(user);
       _currentUser = updatedUser;
+      print("current user updated: " + _currentUser.toString());
 
       return updatedUser;
     } catch (error) {
