@@ -35,11 +35,16 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   final GlobalKey<FormState> _personalInformationFormKey = GlobalKey<FormState>();
   bool _personalInformationFormAutoValidate = false;
   TextEditingController _nameTextController = TextEditingController();
+  TextEditingController _genderTextController = TextEditingController();
+  FixedExtentScrollController _scrollController;
   Completer<bool> _popScopeCompleter;
+  List<Gender> _genders = [Gender.NOANSWER, Gender.MALE, Gender.FEMALE, Gender.OTHER];
   bool _nameChanged = false;
+  bool _genderChanged = false;
+  bool _munchNameFieldReadOnly = true;
 
   String _fullName;
-  String _gender;
+  Gender _gender;
   String _birthday;
   ProfileBloc _profileBloc;
 
@@ -80,7 +85,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _personalInformationScreenListener(BuildContext context, ProfileState state) {
     if (state.hasError) {
-      _forceNavigationToHomeScreen();
+      NavigationHelper.navigateToHome(context, popAllRoutes: true);
       Utility.showErrorFlushbar(state.message, context);
     } else if (state is UpdatePersonalInformationState) {
       _updatePersonalInfoListener(state);
@@ -89,6 +94,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _updatePersonalInfoListener(UpdatePersonalInformationState state) {
     _nameChanged = false;
+    _genderChanged = false;
     if (_popScopeCompleter != null) {
       _popScopeCompleter.complete(true);
     } else {
@@ -184,7 +190,11 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
               borderRadius: 0.0,
               borderColor: Palette.background,
-              initialValue: _gender,
+              controller: _genderTextController,
+              onSaved: (value) {
+                print(value);
+                _gender = value;
+              },
               readOnly: true,
               onTap: (){},
             )
@@ -198,7 +208,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               content: _munchNameFieldReadOnly
                   ? Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink))
                   : FaIcon(FontAwesomeIcons.solidTimesCircle, size: 14.0, color: Palette.secondaryLight.withAlpha(150)),
-              onPressedCallback: (){}
+              onPressedCallback: _onEditGenderTapped
           )
       ],
     );
@@ -235,12 +245,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         )
       ],
     );
-  }
-
-  bool _munchNameFieldReadOnly = true;
-
-  void _forceNavigationToHomeScreen(){
-    NavigationHelper.navigateToHome(context, popAllRoutes: true);
   }
 
   String _validateFullName(String name) {
@@ -326,12 +330,53 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
-    _gender = widget.user.gender;
+    _genderTextController.text = User.genderToString(widget.user.gender);
+    _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
     _birthday = widget.user.birthday;
   }
 
+  void _onEditGenderTapped() async {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    height: 120,
+                    child: CupertinoPicker(
+                      scrollController: _scrollController,
+                        diameterRatio: 1.0,
+                        itemExtent: 40.0,
+                        onSelectedItemChanged: (int index) {
+                          _updateGender(index);
+                        },
+                        children: <Widget>[
+                          Center(child: Text("Not Specified", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                          Center(child: Text("Male", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                          Center(child: Text("Female", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                          Center(child: Text("Other", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
+                        ]
+                    )
+                  )
+                )
+              ]
+            )
+          ]
+        )
+      );
+    }
+  );
+
+  }
+
   bool _changesMade() {
-    return _nameChanged;
+    return _nameChanged || widget.user.gender.toString().split(".").last != _genderTextController.text;
   }
 
   bool _onSaveButtonTapped() {
@@ -343,11 +388,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      if (widget.user.displayName != _nameTextController.text) {
+      if (_changesMade()) {
         User user = User(
           uid: widget.user.uid,
           email: widget.user.email,
           displayName: _fullName,
+          gender: _gender,
           imageUrl: widget.user.imageUrl,
           accessToken: widget.user.accessToken
         );
@@ -381,5 +427,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     NavigationHelper.popRoute(context);
 
     _popScopeCompleter.complete(true);
+  }
+
+  void _updateGender(int index) async {
+    _gender = _genders[index];
+    setState(() {
+      _genderTextController.text = User.genderToString(_genders[index]);
+    });
   }
 }
