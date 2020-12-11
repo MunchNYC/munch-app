@@ -38,7 +38,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   TextEditingController _genderTextController = TextEditingController();
   FixedExtentScrollController _scrollController;
   Completer<bool> _popScopeCompleter;
-  List<Gender> _genders = [Gender.NOANSWER, Gender.MALE, Gender.FEMALE, Gender.OTHER];
+  List<Gender> _genders = Gender.values;
   bool _nameChanged = false;
   bool _genderChanged = false;
   bool _munchNameFieldReadOnly = true;
