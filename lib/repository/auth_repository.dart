@@ -6,7 +6,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/facebook_graph_api.dart';
 import 'package:munch/config/constants.dart';
+import 'package:munch/api/google_sign_in_api.dart';
 import 'package:munch/model/response/facebook_graph_profile_response.dart';
+import 'package:munch/model/response/google_sign_in_response.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
@@ -52,16 +54,23 @@ class AuthRepo {
     throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
   }
 
-  Future _synchronizeCurrentUser({Function registerUserCallback}) async{
+  Future _synchronizeCurrentUser({Function registerUserCallback, Function updateUserCallback}) async {
     User user = await _userRepo.getCurrentUser(forceRefresh: true);
 
-    if(user == null){
+    if (user == null) {
       user = await registerUserCallback();
+      await _userRepo.setCurrentUser(user);
+    } else {
+      user = await updateUserCallback();
       await _userRepo.setCurrentUser(user);
     }
   }
 
-  Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async{
+  Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async {
+
+    GoogleSignInApi googleSignInApi = GoogleSignInApi();
+    GoogleSignInResponse googleSignInResponse = await googleSignInApi.getUserProfile(await account.authHeaders);
+
     User user = User(uid: firebaseUser.uid, displayName: account.displayName, email: account.email, imageUrl: account.photoUrl);
 
     user = await _userRepo.registerUser(user);
@@ -71,7 +80,7 @@ class AuthRepo {
 
   Future<User> signInWithGoogle() async {
     // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
-    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
+    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email", "gender", "birthday"], hostedDomain: "");
 
     try {
       GoogleSignInAccount account = await googleSignIn.signIn();
@@ -116,9 +125,23 @@ class AuthRepo {
 
     FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
 
-    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, imageUrl: profile.photoUrl);
+    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), birthday: profile.birthday, imageUrl: profile.photoUrl);
 
     user = await _userRepo.registerUser(user);
+
+    return user;
+  }
+
+  Future<User> _updateFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
+    String accessToken = facebookLoginResult.accessToken.token;
+
+    FacebookGraphApi facebookGraphApi = FacebookGraphApi();
+
+    FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
+
+    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), birthday: profile.birthday, imageUrl: profile.photoUrl);
+
+    user = await _userRepo.updateCurrentUser(user);
 
     return user;
   }
@@ -133,7 +156,10 @@ class AuthRepo {
 
         firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
-        await _synchronizeCurrentUser(registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser));
+        await _synchronizeCurrentUser(
+            registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser),
+            updateUserCallback: () => _updateFacebookUser(facebookLoginResult, firebaseUser)
+        );
         
         await _userRepo.setCurrentUserSocialProvider(SocialProvider.FACEBOOK);
 
