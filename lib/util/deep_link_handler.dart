@@ -43,26 +43,24 @@ class DeepLinkHandler{
     List<String> pathSegments = uri.pathSegments;
 
     bool userSignedIn = UserRepo.getInstance().currentUser != null;
-
-    switch(_deepLinkRouter.getRoute(path)){
-      case DeepLinkRoute.MUNCH_ROUTE:
-          if(userSignedIn) {
-            _deepLinkRouter.executeMunchRoute(pathSegments[1]);
-          }
+    if (userSignedIn) {
+      UserRepo.getInstance().postLoginDeeplink = null;
+      switch (_deepLinkRouter.getRoute(path)) {
+        case DeepLinkRoute.MUNCH_ROUTE:
+          _deepLinkRouter.executeMunchRoute(pathSegments[1]);
           break;
-      case DeepLinkRoute.JOIN_ROUTE:
-          if(userSignedIn) {
-            _deepLinkRouter.executeJoinRoute(pathSegments[2]);
-          }
+        case DeepLinkRoute.JOIN_ROUTE:
+          _deepLinkRouter.executeJoinRoute(pathSegments[2]);
           break;
-      case DeepLinkRoute.HOME_ROUTE:
-          if(userSignedIn) {
-            _deepLinkRouter.executeHomeRoute();
-          }
+        case DeepLinkRoute.HOME_ROUTE:
+          _deepLinkRouter.executeHomeRoute();
           break;
-      default:
+        default:
           print("No route");
           break;
+      }
+    } else {
+      UserRepo.getInstance().postLoginDeeplink = deepLink;
     }
   }
 }

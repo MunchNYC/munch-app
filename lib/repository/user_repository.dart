@@ -14,7 +14,7 @@ class UserRepo {
   final UsersApi _usersApi = UsersApi();
 
   User _currentUser;
-
+  String postLoginDeeplink;
   UserRepo._internal();
 
   factory UserRepo.getInstance() {

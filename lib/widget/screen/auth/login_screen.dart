@@ -6,18 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:munch/config/constants.dart';
+import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/auth/authentication_bloc.dart';
 import 'package:munch/service/auth/authentication_event.dart';
 import 'package:munch/service/auth/authentication_state.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:munch/repository/munch_repository.dart';
 
 class LoginScreen extends StatefulWidget {
   bool fromSplashScreen;
@@ -56,11 +59,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _loginListener(BuildContext context, AuthenticationState state){
+  void _loginListener(BuildContext context, AuthenticationState state) {
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
-    } else if(state is LoginWithGoogleState || state is LoginWithFacebookState || state is LoginWithAppleState){
-      NavigationHelper.navigateToHome(context);
+    } else if (state is LoginWithGoogleState ||
+        state is LoginWithFacebookState ||
+        state is LoginWithAppleState) {
+      if (UserRepo.getInstance().postLoginDeeplink != null) {
+        DeepLinkHandler.getInstance().onDeepLinkReceived(UserRepo.getInstance().postLoginDeeplink);
+      } else {
+        NavigationHelper.navigateToHome(context);
+      }
     }
   }
 
@@ -144,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ]
     );
   }
-  
+
   Widget _loginButtons(){
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -170,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
-  
+
   Widget _footerText(){
     return Container(
         padding: EdgeInsets.only(left: 32.0, right: 32.0, top: 36.0, bottom: 24.0),
@@ -208,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
         )
     );
   }
-  
+
   Widget _googleButton() {
     return CustomButton<AuthenticationState, LoginWithGoogleState>.bloc(
       cubit: _authenticationBloc,
