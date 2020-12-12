@@ -10,7 +10,7 @@ enum SocialProvider{
 }
 
 enum Gender {
-  MALE, FEMALE, OTHER, NOANSWER
+  NOANSWER, MALE, FEMALE, OTHER
 }
 
 class User{
@@ -58,7 +58,7 @@ class User{
       case Gender.NOANSWER:
         return App.translate("personal_information_screen.gender.no_answer.text");
       default:
-        return "";
+        return null;
     }
   }
 
