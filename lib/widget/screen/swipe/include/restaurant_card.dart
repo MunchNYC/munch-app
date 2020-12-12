@@ -8,12 +8,16 @@ import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/theme/dimensions.dart';
+import 'package:munch/model/munch.dart';
+import 'package:munch/model/user.dart';
 
 class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
+  Munch munch;
   MunchBloc munchBloc;
 
-  RestaurantCard(this.restaurant, {this.munchBloc}): super(key: Key(restaurant.id));
+  RestaurantCard(this.restaurant, this.munch, {this.munchBloc}): super(key: Key(restaurant.id));
 
   // must be saved here, because of Dragging purposes. Otherwise we cannot keep same image as it was when drag started
   int currentCarouselPage = 0;
@@ -23,6 +27,14 @@ class RestaurantCard extends StatefulWidget {
 }
 
 class _RestaurantCardState extends State<RestaurantCard>{
+  static const double AVATAR_RADIUS = 12.0;
+  static const double AVATAR_CONTAINER_PARENT_PERCENT = 0.5;
+  static const double AVATAR_SPACING = 4.0;
+
+  // avatar size calculations
+  static final double _totalAvatarWidth =  (AVATAR_RADIUS * 2 + AVATAR_SPACING);
+  static final double _maxAvatarContainerWidth = (App.screenWidth - AppDimensions.padding(AppPaddingType.screenWithAppBar).horizontal) * AVATAR_CONTAINER_PARENT_PERCENT;
+  static final int _maxAvatarsPerRow = (_maxAvatarContainerWidth / _totalAvatarWidth).floor();
   // Must be instantiated here to be always created again when drag starts, otherwise we'll get exceptions because carousel controller won't be instantiated again when we start dragging
   CarouselController _carouselController = CarouselController();
 
@@ -100,46 +112,144 @@ class _RestaurantCardState extends State<RestaurantCard>{
     );
   }
 
-  Widget _imageCarousel(){
+  Widget _imageCarousel() {
     return Container(
-     width: double.infinity,
-     decoration: BoxDecoration(
-         color: Palette.background, // this is duplicated in order to show background while we're  waiting for image to be rendered
-         borderRadius: BorderRadius.only(
-             bottomLeft: Radius.circular(16.0),
-             bottomRight: Radius.circular(16.0)
-         )
-     ),
-     child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(16.0),
-          bottomRight: Radius.circular(16.0)
-        ),
-        child: Stack(
-          children: [
-            CarouselSlider(
-              items: widget.restaurant.photoUrls.map((photoUrl) =>
-                SizedBox(
-                  width: double.infinity,
-                  child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
-                )
-              ).toList(),
-              options: CarouselOptions(
-                height: double.infinity,
-                autoPlay: false,
-                enlargeCenterPage: false,
-                viewportFraction: 1.0,
-                scrollPhysics: NeverScrollableScrollPhysics(),
-                initialPage: widget.currentCarouselPage,
-                enableInfiniteScroll: false
+        width: double.infinity,
+        decoration: BoxDecoration(
+            color: Palette.background,
+            // this is duplicated in order to show background while we're  waiting for image to be rendered
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16.0), bottomRight: Radius.circular(16.0))),
+        child: ClipRRect(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16.0), bottomRight: Radius.circular(16.0)),
+            child: Stack(children: [
+              CarouselSlider(
+                items: widget.restaurant.photoUrls
+                    .map((photoUrl) => SizedBox(
+                          width: double.infinity,
+                          child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
+                        ))
+                    .toList(),
+                options: CarouselOptions(
+                    height: double.infinity,
+                    autoPlay: false,
+                    enlargeCenterPage: false,
+                    viewportFraction: 1.0,
+                    scrollPhysics: NeverScrollableScrollPhysics(),
+                    initialPage: widget.currentCarouselPage,
+                    enableInfiniteScroll: false),
+                carouselController: _carouselController,
               ),
-              carouselController: _carouselController,
-            ),
-            _carouselControlsRow()
-        ]
-      )
-     )
+              _carouselControlsRow(),
+              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked()
+            ])));
+  }
+
+  Widget _userWhoLiked() {
+      return Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Align(
+                alignment: Alignment.topRight,
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
+                      child: Container(
+                        padding: EdgeInsets.all(3),
+                        alignment: Alignment.topRight,
+                        color: Colors.white60,
+                        // padding: EdgeInsets.all(100),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("🤤 by",
+                                style: AppTextStyle.style(AppTextStylePattern.heading6,
+                                    fontWeight: FontWeight.w500)),
+                            SizedBox(width: 4.0),
+                            _userAvatars(widget.restaurant.usersWhoLiked)
+                          ],
+                        ),
+                      ))
+                ]))
+          ]);
+  }
+
+  Widget _userAvatar(User user) {
+    return Padding(
+      padding: EdgeInsets.only(left: AVATAR_SPACING),
+      child: CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: AVATAR_RADIUS),
     );
+  }
+
+  Widget _circleAvatar(int number) {
+    return Padding(
+      padding: EdgeInsets.only(left: AVATAR_SPACING),
+      child: CircleAvatar(
+          backgroundColor: Palette.secondaryLight,
+          child: Text(number.toString() + "+",
+              style: AppTextStyle.style(AppTextStylePattern.body2Inverse)),
+          radius: AVATAR_RADIUS),
+    );
+  }
+
+  Widget _userAvatars(List<String> userIds) {
+    List<Widget> _avatarList = List<Widget>();
+
+    // flag if members array has partial response - that means only auth user is in array
+    bool munchMembersNotAvailable = false;
+
+    for (int i = 0; i < userIds.length; i++) {
+      if (i + 1 == _maxAvatarsPerRow && _maxAvatarsPerRow < userIds.length) {
+        int avatarsLeft = userIds.length - i;
+        _avatarList.add(_circleAvatar(avatarsLeft));
+
+        break;
+      } else {
+        User user = widget.munch.getMunchMember(userIds[i]);
+
+        // if user is not in members array, response is partial
+        if (user == null) {
+          munchMembersNotAvailable = true;
+          break;
+        }
+
+        _avatarList.add(_userAvatar(user));
+      }
+    }
+
+    double avatarContainerWidth;
+
+    // in case members array is partial (just auth user in array), maximum two circles should be returned (one for auth user and rest for other users)
+    if (munchMembersNotAvailable) {
+      avatarContainerWidth = 2 * _totalAvatarWidth;
+
+      _avatarList.clear();
+
+      _avatarList.add(_userAvatar(widget.munch.members[0]));
+
+      int avatarsLeft = userIds.length - 1;
+
+      if (avatarsLeft > 0) {
+        _avatarList.add(_circleAvatar(avatarsLeft));
+      }
+    } else {
+      if (_maxAvatarsPerRow < userIds.length) {
+        avatarContainerWidth = _maxAvatarContainerWidth;
+      } else {
+        avatarContainerWidth = userIds.length * _totalAvatarWidth;
+      }
+    }
+
+    return SizedBox(
+        width: avatarContainerWidth,
+        child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: _avatarList));
   }
 
   void _onCarouselLeftSideTapped(){

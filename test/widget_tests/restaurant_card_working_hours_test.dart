@@ -13,6 +13,7 @@ import 'package:munch/util/app.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/swipe/include/restaurant_card.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:munch/model/munch.dart';
 
 
 import '../util/test_util.dart';
@@ -68,7 +69,7 @@ Future testRestaurantClosed(WidgetTester tester, Restaurant restaurant) async{
   for(int i = 0; i < 2; i++) {
     restaurant.workingHours = getClosedRestaurantWorkingHours(workingHoursSplit: i == 0 ? true : false);
 
-    await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+    await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant, Munch()));
 
     App.use24HoursFormat = false;
 
@@ -117,7 +118,7 @@ List<WorkingHours> getReOpensRestaurantWorkingHours(){
 Future testRestaurantReOpens(WidgetTester tester, Restaurant restaurant) async{
     restaurant.workingHours = getReOpensRestaurantWorkingHours();
 
-    await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+    await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant, Munch()));
 
     App.use24HoursFormat = false;
 
@@ -162,7 +163,7 @@ Future testRestaurantOpenUntil(WidgetTester tester, Restaurant restaurant) async
   for (int i = 0; i < 2; i++){
       restaurant.workingHours = getOpenUntilRestaurantWorkingHours(workingHoursSplit: i == 0 ? true : false);
 
-      await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+      await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant, Munch()));
 
       App.use24HoursFormat = false;
 
@@ -213,7 +214,7 @@ Future testRestaurantOpens(WidgetTester tester, Restaurant restaurant) async{
   for(int i = 0; i < 2; i++){
     restaurant.workingHours = getOpensRestaurantWorkingHours(workingHoursSplit: i == 0 ? true : false);
 
-    await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant));
+    await TestUtil.testAppWidget(tester: tester, widgetToTest: RestaurantCard(restaurant, Munch()));
 
     App.use24HoursFormat = false;
 
