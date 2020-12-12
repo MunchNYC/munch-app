@@ -1,4 +1,5 @@
 import 'package:munch/model/user.dart';
+import 'package:munch/util/app.dart';
 import 'api.dart';
 
 class UsersApi extends Api {
@@ -45,12 +46,19 @@ class UsersApi extends Api {
   Future<User> updatePersonalInfo(User user) async {
     final String patchUrl = '/data';
 
+    // TODO: Replace User parameter with optional User.properties as parameter
+    // Should only be patching fields that have changed.
+    String _gender = user.gender.toString().split(".").last;
+    if (_gender == "null") {
+      _gender = "NOANSWER";
+    }
+
     Map<String, dynamic> fields = Map.of({
       "pushInfo": PushNotificationsInfoJsonSerializer().toMap(user.pushNotificationsInfo),
       "displayName": user.displayName,
       "imageUrl": user.imageUrl,
       "email": user.email,
-      "gender": user.gender.toString().split(".").last,
+      "gender": _gender,
       "birthday": user.birthday
     });
 
