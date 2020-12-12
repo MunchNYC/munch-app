@@ -34,8 +34,7 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
         'hours',
         codeIterable(model.workingHours,
             (val) => _workingHoursJsonSerializer.toMap(val as WorkingHours)));
-    setMapValue(ret, 'coordinates',
-        _coordinatesJsonSerializer.toMap(model.coordinates));
+    setMapValue(ret, 'coordinates', _coordinatesJsonSerializer.toMap(model.coordinates));
     setMapValue(ret, 'city', passProcessor.serialize(model.city));
     setMapValue(ret, 'state', passProcessor.serialize(model.state));
     setMapValue(ret, 'country', passProcessor.serialize(model.country));
@@ -44,11 +43,13 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     setMapValue(ret, 'phoneNumber', passProcessor.serialize(model.phoneNumber));
     setMapValue(ret, 'price', passProcessor.serialize(model.priceSymbol));
     setMapValue(ret, 'rating', model.rating);
-    setMapValue(ret, 'photos',
-        codeIterable(model.photoUrls, (val) => passProcessor.serialize(val)));
+    setMapValue(
+        ret, 'photos', codeIterable(model.photoUrls, (val) => passProcessor.serialize(val)));
     setMapValue(ret, 'reviewCount', model.reviewsNumber);
     setMapValue(ret, 'timezone', passProcessor.serialize(model.timezone));
     setMapValue(ret, 'url', passProcessor.serialize(model.url));
+    setMapValue(ret, 'usersWhoLiked',
+        codeIterable(model.photoUrls, (val) => passProcessor.serialize(model.usersWhoLiked)));
     return ret;
   }
 
@@ -78,6 +79,8 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     obj.reviewsNumber = map['reviewCount'] as int;
     obj.timezone = passProcessor.deserialize(map['timezone']);
     obj.url = passProcessor.deserialize(map['url']);
+    obj.usersWhoLiked = codeIterable<String>(
+        map['usersWhoLiked'] as Iterable, (val) => passProcessor.deserialize(val));
     return obj;
   }
 }

@@ -47,6 +47,9 @@ class Restaurant{
 
   String url;
 
+  @nonNullable
+  List<String> usersWhoLiked;
+
   @Field.ignore()
   String get categoryTitles => categories.map((RestaurantCategory restaurantCategory) => restaurantCategory.title).join(", ");
 
@@ -202,7 +205,9 @@ class Restaurant{
     this.photoUrls,
     this.reviewsNumber,
     this.timezone,
-    this.url});
+    this.url,
+    this.usersWhoLiked
+  });
 }
 
 @GenSerializer()
