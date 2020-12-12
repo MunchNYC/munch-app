@@ -336,43 +336,42 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   }
 
   void _onEditGenderTapped() async {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      return Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    height: 120,
-                    child: CupertinoPicker(
-                      scrollController: _scrollController,
-                        diameterRatio: 1.0,
-                        itemExtent: 40.0,
-                        onSelectedItemChanged: (int index) {
-                          _updateGender(index);
-                        },
-                        children: <Widget>[
-                          Center(child: Text("Not Specified", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                          Center(child: Text("Male", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                          Center(child: Text("Female", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                          Center(child: Text("Other", style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
-                        ]
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      height: 120,
+                      child: CupertinoPicker(
+                        scrollController: _scrollController,
+                          diameterRatio: 1.0,
+                          itemExtent: 40.0,
+                          onSelectedItemChanged: (int index) {
+                            _updateGender(index);
+                          },
+                          children: <Widget>[
+                            Center(child: Text(App.translate("personal_information_screen.gender.no_answer.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(child: Text(App.translate("personal_information_screen.gender.male.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(child: Text(App.translate("personal_information_screen.gender.female.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(child: Text(App.translate("personal_information_screen.gender.other.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
+                          ]
+                      )
                     )
                   )
-                )
-              ]
-            )
-          ]
-        )
-      );
-    }
-  );
-
+                ]
+              )
+            ]
+          )
+        );
+      }
+    );
   }
 
   bool _changesMade() {
