@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/profile/profile_bloc.dart';
@@ -34,10 +35,17 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   final GlobalKey<FormState> _personalInformationFormKey = GlobalKey<FormState>();
   bool _personalInformationFormAutoValidate = false;
   TextEditingController _nameTextController = TextEditingController();
+  TextEditingController _genderTextController = TextEditingController();
+  FixedExtentScrollController _scrollController;
   Completer<bool> _popScopeCompleter;
+  List<Gender> _genders = Gender.values;
   bool _nameChanged = false;
+  bool _genderChanged = false;
+  bool _munchNameFieldReadOnly = true;
 
   String _fullName;
+  Gender _gender;
+  String _birthday;
   ProfileBloc _profileBloc;
 
   @override
@@ -77,7 +85,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _personalInformationScreenListener(BuildContext context, ProfileState state) {
     if (state.hasError) {
-      _forceNavigationToHomeScreen();
+      NavigationHelper.navigateToHome(context, popAllRoutes: true);
       Utility.showErrorFlushbar(state.message, context);
     } else if (state is UpdatePersonalInformationState) {
       _updatePersonalInfoListener(state);
@@ -86,6 +94,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _updatePersonalInfoListener(UpdatePersonalInformationState state) {
     _nameChanged = false;
+    _genderChanged = false;
     if (_popScopeCompleter != null) {
       _popScopeCompleter.complete(true);
     } else {
@@ -117,47 +126,125 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   Widget _renderScreen(BuildContext context) {
     return SingleChildScrollView(
       padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 36.0, bottom: 24.0), // must be 36.0 because label is floating below
-    child: Form(
-      key: _personalInformationFormKey,
-      autovalidate: _personalInformationFormAutoValidate,
       child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [_fullNameRow()]
+        children: [
+          SizedBox(height: 8.0),
+          _fullNameRow(),
+          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
+          SizedBox(height: 16.0),
+          _genderRow(),
+          Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
+          SizedBox(height: 16.0),
+          _birthdayRow()
+        ]
       )
-    )
     );
   }
 
   Widget _fullNameRow() {
+    return Form(
+        key: _personalInformationFormKey,
+        autovalidate: _personalInformationFormAutoValidate,
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Expanded(
+                    child: CustomFormField(
+                        labelText: App.translate("personal_information_screen.full_name_field.label.text"),
+                        labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+                        textStyle: AppTextStyle.style(
+                            AppTextStylePattern.heading6,
+                            fontWeight: FontWeight.w500,
+                            color: Palette.primary
+                        ),
+                        fillColor: Palette.background,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+                        borderRadius: 0.0,
+                        borderColor: Palette.background,
+                        controller: _nameTextController,
+                        onSaved: (value) => _fullName = value,
+                        validator: (value) => _validateFullName(value),
+                        errorHasBorders: false
+                    )
+                )
+              ])
+            ]
+        )
+    );
+  }
+
+  Widget _genderRow() {
+    return Row(
+    mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Expanded(
+            child: CustomFormField(
+              labelText: App.translate("personal_information_screen.gender_field.label.text"),
+              labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+              textStyle: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
+              fillColor: Palette.background,
+              contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+              borderRadius: 0.0,
+              borderColor: Palette.background,
+              controller: _genderTextController,
+              onSaved: (value) {
+                print(value);
+                _gender = value;
+              },
+              readOnly: true,
+              onTap: (){},
+            )
+        ),
+          SizedBox(width: 12.0),
+          CustomButton(
+              flat: true,
+              // very important to set, otherwise title won't be aligned good
+              padding: EdgeInsets.zero,
+              color: Colors.transparent,
+              content: _munchNameFieldReadOnly
+                  ? Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink))
+                  : FaIcon(FontAwesomeIcons.solidTimesCircle, size: 14.0, color: Palette.secondaryLight.withAlpha(150)),
+              onPressedCallback: _onEditGenderTapped
+          )
+      ],
+    );
+  }
+
+  Widget _birthdayRow() {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
             child: CustomFormField(
-                labelText: App.translate("personal_information_screen.full_name_field.label.text"),
-                labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
-                textStyle: AppTextStyle.style(
-                    AppTextStylePattern.heading6,
-                    fontWeight: FontWeight.w500,
-                    color: Palette.primary
-                ),
-                fillColor: Palette.background,
-                contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
-                borderRadius: 0.0,
-                borderColor: Palette.background,
-                controller: _nameTextController,
-                onSaved: (value) => _fullName = value,
-                validator: (value) => _validateFullName(value),
-                errorHasBorders: false
+              labelText: App.translate("personal_information_screen.birthday_field.label.text"),
+              labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+              textStyle: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
+              fillColor: Palette.background,
+              contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+              borderRadius: 0.0,
+              borderColor: Palette.background,
+              initialValue: _birthday,
+              readOnly: true,
+              onTap: (){},
             )
+        ),
+        SizedBox(width: 12.0),
+        CustomButton(
+            flat: true,
+            // very important to set, otherwise title won't be aligned good
+            padding: EdgeInsets.zero,
+            color: Colors.transparent,
+            content: _munchNameFieldReadOnly
+                ? Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink))
+                : FaIcon(FontAwesomeIcons.solidTimesCircle, size: 14.0, color: Palette.secondaryLight.withAlpha(150)),
+            onPressedCallback: (){}
         )
-      ]
+      ],
     );
-  }
-
-  void _forceNavigationToHomeScreen(){
-    NavigationHelper.navigateToHome(context, popAllRoutes: true);
   }
 
   String _validateFullName(String name) {
@@ -243,10 +330,52 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
+    _genderTextController.text = User.genderToString(widget.user.gender);
+    _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
+    _birthday = widget.user.birthday;
+  }
+
+  void _onEditGenderTapped() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      height: 120,
+                      child: CupertinoPicker(
+                        scrollController: _scrollController,
+                          diameterRatio: 1.0,
+                          itemExtent: 40.0,
+                          onSelectedItemChanged: (int index) {
+                            _updateGender(index);
+                          },
+                          children: <Widget>[
+                            Center(child: Text(App.translate("personal_information_screen.gender.no_answer.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(child: Text(App.translate("personal_information_screen.gender.male.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(child: Text(App.translate("personal_information_screen.gender.female.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(child: Text(App.translate("personal_information_screen.gender.other.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
+                          ]
+                      )
+                    )
+                  )
+                ]
+              )
+            ]
+          )
+        );
+      }
+    );
   }
 
   bool _changesMade() {
-    return _nameChanged;
+    return _nameChanged || widget.user.gender.toString().split(".").last != _genderTextController.text;
   }
 
   bool _onSaveButtonTapped() {
@@ -258,11 +387,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       // close keyboard by giving focus to unnamed node
       FocusScope.of(context).unfocus();
 
-      if (widget.user.displayName != _nameTextController.text) {
+      if (_changesMade()) {
         User user = User(
           uid: widget.user.uid,
           email: widget.user.email,
           displayName: _fullName,
+          gender: _gender,
           imageUrl: widget.user.imageUrl,
           accessToken: widget.user.accessToken
         );
@@ -296,5 +426,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     NavigationHelper.popRoute(context);
 
     _popScopeCompleter.complete(true);
+  }
+
+  void _updateGender(int index) async {
+    _gender = _genders[index];
+    setState(() {
+      _genderTextController.text = User.genderToString(_genders[index]);
+    });
   }
 }

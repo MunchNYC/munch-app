@@ -159,7 +159,7 @@ class _ProfileTabScreenState extends State<ProfileTab> {
   }
 
   void _onPersonalInformationTapped() {
-    print("opening personal information scree - our user: " + _user.displayName);
+    print("opening personal information screen - our user: " + _user.toString());
     NavigationHelper.navigateToPersonalInformationScreen(context, user: _user).then((user) {
       if (user != null && user is User) {
         setState(() {

@@ -7,6 +7,7 @@ part of 'user.dart';
 // **************************************************************************
 
 abstract class _$UserJsonSerializer implements Serializer<User> {
+  final _genderProcessor = const GenderProcessor();
   Serializer<PushNotificationsInfo> __pushNotificationsInfoJsonSerializer;
   Serializer<PushNotificationsInfo> get _pushNotificationsInfoJsonSerializer =>
       __pushNotificationsInfoJsonSerializer ??=
@@ -23,6 +24,7 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     setMapValue(ret, 'userId', model.uid);
     setMapValueIfNotNull(ret, 'email', model.email);
     setMapValueIfNotNull(ret, 'displayName', model.displayName);
+    setMapValue(ret, 'birthday', model.birthday);
     setMapValueIfNotNull(ret, 'imageUrl', model.imageUrl);
     return ret;
   }
@@ -40,6 +42,8 @@ abstract class _$UserJsonSerializer implements Serializer<User> {
     obj.displayName = map['displayName'] as String ??
         getJserDefault('displayName') ??
         obj.displayName;
+    obj.gender = _genderProcessor.deserialize(map['gender'] as String);
+    obj.birthday = map['birthday'] as String;
     obj.imageUrl =
         map['imageUrl'] as String ?? getJserDefault('imageUrl') ?? obj.imageUrl;
     return obj;

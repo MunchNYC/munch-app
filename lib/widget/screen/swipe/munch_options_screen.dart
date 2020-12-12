@@ -238,7 +238,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     }
   }
 
-  Widget _buildMunchBloc(){
+  Widget _buildMunchBloc() {
     return BlocConsumer<MunchBloc, MunchState>(
         cubit: _munchBloc,
         listenWhen: (MunchState previous, MunchState current) => current.hasError || current.ready,
@@ -503,19 +503,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen>{
     );
   }
 
-  Widget _updateLocationButton(){
-    return CustomButton(
-        flat: true,
-        // very important to set, otherwise title won't be aligned good
-        padding: EdgeInsets.zero,
-        color: Colors.transparent,
-        textColor: Palette.primary,
-        content: Text(App.translate("options_screen.update_location_button.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary)),
-        onPressedCallback: _onUpdateLocationButtonClicked
-    );
-  }
-
-  Widget _leaveMunchButton(){
+  Widget _leaveMunchButton() {
     return CustomButton<MunchState, MunchLeavingState>.bloc(
         cubit: _munchBloc,
         flat: true,

@@ -5,9 +5,11 @@ part 'facebook_graph_profile_response.jser.dart';
 class FacebookGraphProfileResponse{
   String name;
   String email;
+  String gender;
+  String birthday;
   String photoUrl;
 
-  FacebookGraphProfileResponse({this.name, this.email, this.photoUrl});
+  FacebookGraphProfileResponse({this.name, this.email, this.gender, this.birthday, this.photoUrl});
 }
 
 @GenSerializer()
