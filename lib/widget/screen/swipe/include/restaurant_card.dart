@@ -149,7 +149,6 @@ class _RestaurantCardState extends State<RestaurantCard>{
   Widget _userWhoLiked() {
       return Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Align(
                 alignment: Alignment.topRight,
