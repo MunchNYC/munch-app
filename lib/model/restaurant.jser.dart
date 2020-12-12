@@ -49,7 +49,7 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     setMapValue(ret, 'timezone', passProcessor.serialize(model.timezone));
     setMapValue(ret, 'url', passProcessor.serialize(model.url));
     setMapValue(ret, 'usersWhoLiked',
-        codeIterable(model.photoUrls, (val) => passProcessor.serialize(model.usersWhoLiked)));
+        codeIterable(model.usersWhoLiked, (val) => passProcessor.serialize(model.usersWhoLiked)));
     return ret;
   }
 
