@@ -342,7 +342,7 @@ class MapScreenState extends State<MapScreen> {
 
   Widget _buildRadiusSelectionButton(int index) {
     return CustomButton(
-      minWidth: 50.0,
+      minWidth: 64.0,
       borderRadius: 4.0,
       color: _circleRadius == _radiusValuesMetres[index] ? Palette.secondaryDark : Palette.background,
       content: Text(RADIUS_VALUES_MILES[index].toString() + " " + App.translate("map_screen.distance_button.unit.text"),
