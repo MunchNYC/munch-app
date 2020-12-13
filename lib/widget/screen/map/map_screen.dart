@@ -48,7 +48,7 @@ class MapScreenState extends State<MapScreen> {
   static const LatLng DEFAULT_CAMERA_POSITION = LatLng(40.7128, -74.0060);
 
   static const double MILES_TO_METERS_RATIO = 1609.344;
-  static const List<double> RADIUS_VALUES_MILES = [0.5, 1, 2];
+  static const List<double> RADIUS_VALUES_MILES = [0.5, 1, 2, 5];
   static const List<double> RADIUS_VALUES_ZOOMS = [DEFAULT_MAP_ZOOM, DEFAULT_MAP_ZOOM - 1.0, DEFAULT_MAP_ZOOM - 2.0];
 
   static List<int> _radiusValuesMetres = RADIUS_VALUES_MILES.map((value) => (value * MILES_TO_METERS_RATIO).floor()).toList();
@@ -333,14 +333,16 @@ class MapScreenState extends State<MapScreen> {
         SizedBox(width: 12.0),
         _buildRadiusSelectionButton(1),
         SizedBox(width: 12.0),
-        _buildRadiusSelectionButton(2)
+        _buildRadiusSelectionButton(2),
+        SizedBox(width: 12.0),
+        _buildRadiusSelectionButton(3)
       ]
     );
   }
 
   Widget _buildRadiusSelectionButton(int index) {
     return CustomButton(
-      minWidth: 92.0,
+      minWidth: 50.0,
       borderRadius: 4.0,
       color: _circleRadius == _radiusValuesMetres[index] ? Palette.secondaryDark : Palette.background,
       content: Text(RADIUS_VALUES_MILES[index].toString() + " " + App.translate("map_screen.distance_button.unit.text"),
