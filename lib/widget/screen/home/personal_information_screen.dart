@@ -43,7 +43,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   bool _genderChanged = false;
   bool _munchNameFieldReadOnly = true;
 
-  String _fullName;
   Gender _gender;
   String _birthday;
   ProfileBloc _profileBloc;
@@ -166,7 +165,10 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                         borderRadius: 0.0,
                         borderColor: Palette.background,
                         controller: _nameTextController,
-                        onSaved: (value) => _fullName = value,
+                        onSaved: (value) => {
+                          if (value != widget.user.displayName)
+                          _nameChanged = true
+                        },
                         validator: (value) => _validateFullName(value),
                         errorHasBorders: false
                     )
@@ -388,7 +390,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         User user = User(
           uid: widget.user.uid,
           email: widget.user.email,
-          displayName: _fullName,
+          displayName: _nameTextController.text,
           gender: _gender,
           imageUrl: widget.user.imageUrl,
           accessToken: widget.user.accessToken
@@ -427,11 +429,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _updateGender(int index) async {
     _gender = _genders[index];
-    if (widget.user.gender == _genders[index]) {
-      _genderChanged = false;
-    } else {
-      _genderChanged = true;
-    }
+    _genderChanged = (widget.user.gender == _genders[index]) ? false : true;
     setState(() {
       _genderTextController.text = User.genderToString(_genders[index]);
     });
