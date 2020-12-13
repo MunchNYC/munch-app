@@ -63,6 +63,7 @@ class User{
   }
 
   static Gender stringToGender(String string) {
+    if (string == null) { return Gender.NOANSWER; }
     if (string.toUpperCase() == "MALE") {
       return Gender.MALE;
     } else if (string.toUpperCase() == "FEMALE") {
