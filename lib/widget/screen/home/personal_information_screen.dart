@@ -191,10 +191,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               borderRadius: 0.0,
               borderColor: Palette.background,
               controller: _genderTextController,
-              onSaved: (value) {
-                print(value);
-                _gender = value;
-              },
+              onSaved: (value){},
               readOnly: true,
               onTap: (){},
             )
@@ -375,7 +372,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   }
 
   bool _changesMade() {
-    return _nameChanged || widget.user.gender.toString().split(".").last != _genderTextController.text;
+    return _nameChanged || _genderChanged;
   }
 
   bool _onSaveButtonTapped() {
@@ -430,6 +427,11 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _updateGender(int index) async {
     _gender = _genders[index];
+    if (widget.user.gender == _genders[index]) {
+      _genderChanged = false;
+    } else {
+      _genderChanged = true;
+    }
     setState(() {
       _genderTextController.text = User.genderToString(_genders[index]);
     });
