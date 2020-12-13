@@ -147,34 +147,33 @@ class _RestaurantCardState extends State<RestaurantCard>{
   }
 
   Widget _userWhoLiked() {
-      return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-                alignment: Alignment.topRight,
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
-                      child: Container(
-                        padding: EdgeInsets.all(3),
-                        alignment: Alignment.topRight,
-                        color: Colors.white60,
-                        // padding: EdgeInsets.all(100),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("🤤 by",
-                                style: AppTextStyle.style(AppTextStylePattern.heading6,
-                                    fontWeight: FontWeight.w500)),
-                            SizedBox(width: 4.0),
-                            _userAvatars(widget.restaurant.usersWhoLiked)
-                          ],
-                        ),
-                      ))
-                ]))
-          ]);
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Align(
+          alignment: Alignment.topRight,
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            ClipRRect(
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10)),
+                child: Container(
+                  padding: EdgeInsets.all(3),
+                  alignment: Alignment.topRight,
+                  color: Colors.white60,
+                  // padding: EdgeInsets.all(100),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _userAvatars(widget.restaurant.usersWhoLiked),
+                      SizedBox(width: 4.0),
+                      Image(
+                        image: AssetImage("assets/images/checkLiked.png"),
+                        width: 24.0,
+                        height: 24.0,
+                      ),
+                    ],
+                  ),
+                ))
+          ]))
+    ]);
   }
 
   Widget _userAvatar(User user) {
