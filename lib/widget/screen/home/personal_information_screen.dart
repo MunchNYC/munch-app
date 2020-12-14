@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/service/profile/profile_bloc.dart';
@@ -36,19 +36,22 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   bool _personalInformationFormAutoValidate = false;
   TextEditingController _nameTextController = TextEditingController();
   TextEditingController _genderTextController = TextEditingController();
+  TextEditingController _birthdayTextController = TextEditingController();
   FixedExtentScrollController _scrollController;
   Completer<bool> _popScopeCompleter;
   List<Gender> _genders = Gender.values;
   bool _nameChanged = false;
   bool _genderChanged = false;
-  bool _munchNameFieldReadOnly = true;
+  bool _birthdayChanged = false;
+  DateFormat _dateFormat = DateFormat('MMMM dd, yyyy');
 
   Gender _gender;
-  String _birthday;
+  DateTime _birthday;
   ProfileBloc _profileBloc;
 
   @override
   void initState() {
+    _birthday = DateTime.parse(widget.user.birthday);
     _initializeFormFields();
     _profileBloc = ProfileBloc();
     super.initState();
@@ -94,6 +97,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _updatePersonalInfoListener(UpdatePersonalInformationState state) {
     _nameChanged = false;
     _genderChanged = false;
+    _birthdayChanged = false;
     if (_popScopeCompleter != null) {
       _popScopeCompleter.complete(true);
     } else {
@@ -193,7 +197,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               borderRadius: 0.0,
               borderColor: Palette.background,
               controller: _genderTextController,
-              onSaved: (value){},
               readOnly: true,
               onTap: (){},
             )
@@ -204,9 +207,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               // very important to set, otherwise title won't be aligned good
               padding: EdgeInsets.zero,
               color: Colors.transparent,
-              content: _munchNameFieldReadOnly
-                  ? Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink))
-                  : FaIcon(FontAwesomeIcons.solidTimesCircle, size: 14.0, color: Palette.secondaryLight.withAlpha(150)),
+              content: Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
               onPressedCallback: _onEditGenderTapped
           )
       ],
@@ -226,7 +227,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
               borderRadius: 0.0,
               borderColor: Palette.background,
-              initialValue: _birthday,
+              controller: _birthdayTextController,
               readOnly: true,
               onTap: (){},
             )
@@ -237,10 +238,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
             // very important to set, otherwise title won't be aligned good
             padding: EdgeInsets.zero,
             color: Colors.transparent,
-            content: _munchNameFieldReadOnly
-                ? Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink))
-                : FaIcon(FontAwesomeIcons.solidTimesCircle, size: 14.0, color: Palette.secondaryLight.withAlpha(150)),
-            onPressedCallback: (){}
+            content: Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
+            onPressedCallback: _onEditBirthdayTapped
         )
       ],
     );
@@ -330,8 +329,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
     _genderTextController.text = User.genderToString(widget.user.gender);
+    _birthdayTextController.text = _dateFormat.format(_birthday);
     _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
-    _birthday = widget.user.birthday;
   }
 
   void _onEditGenderTapped() async {
@@ -350,17 +349,15 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                       height: 120,
                       child: CupertinoPicker(
                         scrollController: _scrollController,
-                          diameterRatio: 1.0,
-                          itemExtent: 40.0,
-                          onSelectedItemChanged: (int index) {
-                            _updateGender(index);
-                          },
-                          children: <Widget>[
-                            Center(child: Text(App.translate("personal_information_screen.gender.no_answer.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                            Center(child: Text(App.translate("personal_information_screen.gender.male.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                            Center(child: Text(App.translate("personal_information_screen.gender.female.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                            Center(child: Text(App.translate("personal_information_screen.gender.other.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
-                          ]
+                        diameterRatio: 1.0,
+                        itemExtent: 40.0,
+                        onSelectedItemChanged: (int index) { _updateGender(index); },
+                        children: <Widget>[
+                          Center(child: Text(App.translate("personal_information_screen.gender.no_answer.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                          Center(child: Text(App.translate("personal_information_screen.gender.male.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                          Center(child: Text(App.translate("personal_information_screen.gender.female.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                          Center(child: Text(App.translate("personal_information_screen.gender.other.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
+                        ]
                       )
                     )
                   )
@@ -373,8 +370,39 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     );
   }
 
+  void _onEditBirthdayTapped() async {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                          child: Container(
+                              height: 240,
+                              child: CupertinoDatePicker(
+                                mode: CupertinoDatePickerMode.date,
+                                initialDateTime: _dateFormat.parse(_birthdayTextController.text),
+                                maximumDate: DateTime.now().add(Duration(seconds: 1)),
+                                onDateTimeChanged: (value) { _updateBirthday(value); }
+                              ),
+                          )
+                      )
+                    ]
+                )
+              ]
+            )
+          );
+        }
+    );
+  }
+
   bool _changesMade() {
-    return _nameChanged || _genderChanged;
+    return _nameChanged || _genderChanged || _birthdayChanged;
   }
 
   bool _onSaveButtonTapped() {
@@ -392,6 +420,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
           email: widget.user.email,
           displayName: _nameTextController.text,
           gender: _gender,
+          birthday: _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString(),
           imageUrl: widget.user.imageUrl,
           accessToken: widget.user.accessToken
         );
@@ -430,8 +459,15 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _updateGender(int index) async {
     _gender = _genders[index];
     _genderChanged = (widget.user.gender == _genders[index]) ? false : true;
-    setState(() {
-      _genderTextController.text = User.genderToString(_genders[index]);
-    });
+
+    _genderTextController.text = User.genderToString(_genders[index]);
+  }
+
+  void _updateBirthday(DateTime dateTime) async {
+    _birthdayChanged = (widget.user.birthday == dateTime.year.toString() + "-" + dateTime.month.toString() + "-" + dateTime.day.toString()) ? false : true;
+
+    _birthday = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    _birthdayTextController.text = _dateFormat.format(dateTime);
   }
 }

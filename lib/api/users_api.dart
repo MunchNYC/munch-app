@@ -53,6 +53,7 @@ class UsersApi extends Api {
       _gender = "NOANSWER";
     }
 
+    // Birthday must be in form of "YYYY-MM-DD"
     Map<String, dynamic> fields = Map.of({
       "pushInfo": PushNotificationsInfoJsonSerializer().toMap(user.pushNotificationsInfo),
       "displayName": user.displayName,
