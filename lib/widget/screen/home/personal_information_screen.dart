@@ -383,7 +383,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     children: <Widget>[
                       Expanded(
                           child: Container(
-                              height: 120,
+                              height: 240,
                               child: CupertinoDatePicker(
                                 mode: CupertinoDatePickerMode.date,
                                 initialDateTime: _dateFormat.parse(_birthdayTextController.text),
