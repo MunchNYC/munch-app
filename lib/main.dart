@@ -10,6 +10,7 @@ import 'config/app_config.dart';
 import 'config/firebase_listener.dart';
 import 'config/localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_uxcam/flutter_uxcam.dart';
 
 Future loadEnvironment() async{
   const ENV = String.fromEnvironment('ENV', defaultValue: 'dev');
@@ -61,6 +62,8 @@ class MunchApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterUxcam.optIntoSchematicRecordings();
+    FlutterUxcam.startWithKey("u3gl0xgcub9403e");
     return StatefulWrapper(
         onInit: initializeApp,
         child: MaterialApp(

@@ -25,6 +25,7 @@ dependencies:
   flutter:
     sdk: flutter
   carousel_slider: ^2.2.0
+  flutter_uxcam: ^1.1.1
   google_sign_in: ^4.4.4
   firebase_auth: ^0.18.0+1
   google_maps_flutter: 0.5.28+1

@@ -2,6 +2,7 @@ import 'dart:async';
 // firebase recommends to prefix this import with namespace to avoid collisions
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_uxcam/flutter_uxcam.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
@@ -102,6 +103,9 @@ class UserRepo {
     }
 
     _currentUser = user;
+    FlutterUxcam.setUserIdentity(user.uid);
+    FlutterUxcam.setUserProperty("email", user.email);
+    FlutterUxcam.setUserProperty("name", user.displayName);
     print("current user set: " + _currentUser.toString());
   }
 

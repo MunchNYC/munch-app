@@ -152,7 +152,7 @@
     "options_screen.change_location_field.label.text": "Change Location",
     "options_screen.change_location_field.value.text": "Choose a new location.",
     "options_screen.change_location_button.text": "Change",
-    "options_screen.leave_munch_button.text": "Leave Munch",
+    "options_screen.leave_munch_button.text": "Leave this Munch",
     "options_screen.update_location_button.text": "Update Location",
     "options_screen.members.title": "Members",
     "options_screen.member_list.host.text": "Host",
