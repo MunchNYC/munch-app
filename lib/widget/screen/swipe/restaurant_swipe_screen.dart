@@ -415,7 +415,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       if (_currentCardMap.containsKey(restaurant.id)) {
         _newCardMap[restaurant.id] = _currentCardMap[restaurant.id];
       } else {
-        _newCardMap[restaurant.id] = RestaurantCard(restaurant, munchBloc: _munchBloc);
+        _newCardMap[restaurant.id] = RestaurantCard(restaurant, widget.munch, munchBloc: _munchBloc);
       }
     });
 
