@@ -425,7 +425,12 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
           accessToken: widget.user.accessToken
         );
 
-        _profileBloc.add(UpdatePersonalInformationEvent(user: user));
+        Map<String, dynamic> fields;
+        if (_nameChanged) fields["displayName"] = _nameTextController.text;
+        if (_genderChanged) fields["gender"] = _gender;
+        if (_birthdayChanged) fields["birthday"] = _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString();
+
+        _profileBloc.add(UpdatePersonalInformationEvent(fields: fields));
       } else {
         _onWillPopScope(context);
       }
