@@ -8,6 +8,7 @@ import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/util/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartlook/smartlook.dart';
 
 class UserRepo {
   static UserRepo _instance;
@@ -102,6 +103,8 @@ class UserRepo {
     }
 
     _currentUser = user;
+    Map<String, String> map = {"email": user.email, "name": user.displayName};
+    Smartlook.setUserIdentifier(user.uid, map);
     print("current user set: " + _currentUser.toString());
   }
 
@@ -113,7 +116,6 @@ class UserRepo {
 
       return updatedUser;
     } catch (error) {
-
       throw error;
     }
   }

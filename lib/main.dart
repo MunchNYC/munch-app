@@ -10,6 +10,7 @@ import 'config/app_config.dart';
 import 'config/firebase_listener.dart';
 import 'config/localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:smartlook/smartlook.dart';
 
 Future loadEnvironment() async{
   const ENV = String.fromEnvironment('ENV', defaultValue: 'dev');
@@ -61,6 +62,10 @@ class MunchApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SetupOptions options = (
+        new SetupOptionsBuilder('4af32dcf3dbf2c8314683ec324339899c7ec9a52')
+    ).build();
+    Smartlook.setupAndStartRecording(options);
     return StatefulWrapper(
         onInit: initializeApp,
         child: MaterialApp(
