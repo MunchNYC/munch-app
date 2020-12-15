@@ -108,9 +108,9 @@ class UserRepo {
     print("current user set: " + _currentUser.toString());
   }
 
-  Future updateCurrentUser(User user) async {
+  Future updateCurrentUser(Map<String, dynamic> fields) async {
     try {
-      User updatedUser = await _usersApi.updatePersonalInfo(user);
+      User updatedUser = await _usersApi.updatePersonalInfo(fields);
       _currentUser = updatedUser;
       print("current user updated: " + _currentUser.toString());
 

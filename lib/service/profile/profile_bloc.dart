@@ -19,15 +19,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   @override
   Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
     if (event is UpdatePersonalInformationEvent) {
-      yield* updatePersonalInformation(event.user);
+      yield* updatePersonalInformation(event.fields);
     }
   }
 
-  Stream<ProfileState> updatePersonalInformation(User user) async* {
+  Stream<ProfileState> updatePersonalInformation(Map<String, dynamic> fields) async* {
     yield UpdatePersonalInformationState.loading();
 
     try {
-      User updatedUser = await _userRepo.updateCurrentUser(user);
+      User updatedUser = await _userRepo.updateCurrentUser(fields);
       yield UpdatePersonalInformationState.ready(data: updatedUser);
     } catch (error) {
       print("Updating Personal Information failed: " + error.toString());
