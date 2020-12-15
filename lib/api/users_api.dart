@@ -43,8 +43,9 @@ class UsersApi extends Api {
     return user;
   }
 
-  /// Available fields to patch
-  /// displayName, imageUrl, email, gender, birthday
+  /// Available fields to patch: [displayName], [imageUrl], [email], [gender], [birthday]
+  /// [gender] options: MALE, FEMALE, OTHER, NOANSWER
+  /// [birthday] required format: YYYY-MM-DD
   Future<User> updatePersonalInfo(Map<String, dynamic> fields) async {
     final String patchUrl = '/data';
 
