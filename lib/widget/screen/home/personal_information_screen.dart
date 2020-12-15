@@ -415,16 +415,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       FocusScope.of(context).unfocus();
 
       if (_changesMade()) {
-        User user = User(
-          uid: widget.user.uid,
-          email: widget.user.email,
-          displayName: _nameTextController.text,
-          gender: _gender,
-          birthday: _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString(),
-          imageUrl: widget.user.imageUrl,
-          accessToken: widget.user.accessToken
-        );
-
         Map<String, dynamic> fields;
         if (_nameChanged) fields["displayName"] = _nameTextController.text;
         if (_genderChanged) fields["gender"] = _gender;
