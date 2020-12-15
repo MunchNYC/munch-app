@@ -134,22 +134,29 @@ class AuthRepo {
 
   Future<User> _updateFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
     User currentUser = await _userRepo.getCurrentUser(forceRefresh: true);
-    Map<String, dynamic> fields;
 
     String accessToken = facebookLoginResult.accessToken.token;
-
     FacebookGraphApi facebookGraphApi = FacebookGraphApi();
-
     FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
 
-    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), birthday: profile.birthday, imageUrl: profile.photoUrl);
+    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), imageUrl: profile.photoUrl);
 
-    if (currentUser.displayName == null)
-    fields["displayName"] = profile.name;
-    if (currentUser.email == null)
-    fields["email"] = profile.email;
-    if (currentUser.gender == null);
-    fields["gender"] = User.stringToGender(profile.gender).toString().split(".").last;
+    Map<String, dynamic> fields;
+    if (currentUser.displayName == null) {
+      fields["displayName"] = profile.name;
+    } else {
+      user.displayName = currentUser.displayName;
+    }
+    if (currentUser.email == null) {
+      fields["email"] = profile.email;
+    } else {
+      user.email = currentUser.email;
+    }
+    if (currentUser.gender == null) {
+      fields["gender"] = User.stringToGender(profile.gender).toString().split(".").last;
+    } else {
+      user.gender = currentUser.gender;
+    }
 
     user = await _userRepo.updateCurrentUser(fields);
 
