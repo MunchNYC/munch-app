@@ -60,7 +60,7 @@ class AuthRepo {
     if (user == null) {
       user = await registerUserCallback();
       await _userRepo.setCurrentUser(user);
-    } else {
+    } else if (updateUserCallback != null) {
       user = await updateUserCallback();
       await _userRepo.setCurrentUser(user);
     }
@@ -133,6 +133,9 @@ class AuthRepo {
   }
 
   Future<User> _updateFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
+    User currentUser = await _userRepo.getCurrentUser(forceRefresh: true);
+    Map<String, dynamic> fields;
+
     String accessToken = facebookLoginResult.accessToken.token;
 
     FacebookGraphApi facebookGraphApi = FacebookGraphApi();
@@ -141,7 +144,14 @@ class AuthRepo {
 
     User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), birthday: profile.birthday, imageUrl: profile.photoUrl);
 
-    user = await _userRepo.updateCurrentUser(user);
+    if (currentUser.displayName == null)
+    fields["displayName"] = profile.name;
+    if (currentUser.email == null)
+    fields["email"] = profile.email;
+    if (currentUser.gender == null);
+    fields["gender"] = User.stringToGender(profile.gender).toString().split(".").last;
+
+    user = await _userRepo.updateCurrentUser(fields);
 
     return user;
   }
