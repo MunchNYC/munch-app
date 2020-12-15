@@ -7,7 +7,7 @@ class GenderProcessor implements FieldProcessor<Gender, String> {
   @override
   Gender deserialize(String value) {
     if (value == null) return null;
-    return Gender.values.firstWhere( (gender) => (gender.toString().split(".").last.toLowerCase() == value.toLowerCase()));
+    return Gender.values.firstWhere( (gender) => (gender.toString().split(".").last.toUpperCase() == value.toUpperCase()));
   }
 
   @override
