@@ -415,9 +415,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       FocusScope.of(context).unfocus();
 
       if (_changesMade()) {
-        Map<String, dynamic> fields;
+        Map<String, dynamic> fields = Map<String, dynamic>();
         if (_nameChanged) fields["displayName"] = _nameTextController.text;
-        if (_genderChanged) fields["gender"] = _gender;
+        if (_genderChanged) fields["gender"] = _gender.toString().split(".").last;
         if (_birthdayChanged) fields["birthday"] = _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString();
 
         _profileBloc.add(UpdatePersonalInformationEvent(fields: fields));
