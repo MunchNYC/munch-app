@@ -5,15 +5,11 @@ import 'package:munch/util/app.dart';
 
 part 'user.jser.dart';
 
-enum SocialProvider{
-  GOOGLE, FACEBOOK, APPLE
-}
+enum SocialProvider { GOOGLE, FACEBOOK, APPLE }
 
-enum Gender {
-  NOANSWER, MALE, FEMALE, OTHER
-}
+enum Gender { NOANSWER, MALE, FEMALE, OTHER }
 
-class User{
+class User {
   @Field.ignore()
   String accessToken;
 
@@ -63,7 +59,9 @@ class User{
   }
 
   static Gender stringToGender(String string) {
-    if (string == null) { return Gender.NOANSWER; }
+    if (string == null) {
+      return Gender.NOANSWER;
+    }
     if (string.toUpperCase() == "MALE") {
       return Gender.MALE;
     } else if (string.toUpperCase() == "FEMALE") {
@@ -78,7 +76,12 @@ class User{
   User({this.uid, this.email, this.displayName, this.gender, this.birthday, this.imageUrl, this.accessToken = ""});
 
   User.fromFirebaseUser({final firebase_auth.User firebaseUser, final String accessToken = ""})
-      :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, imageUrl: firebaseUser.photoURL, accessToken: accessToken);
+      : this(
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            imageUrl: firebaseUser.photoURL,
+            accessToken: accessToken);
 }
 
 @GenSerializer(fields: const {
@@ -87,7 +90,7 @@ class User{
 })
 class UserJsonSerializer extends Serializer<User> with _$UserJsonSerializer {}
 
-class PushNotificationsInfo{
+class PushNotificationsInfo {
   String deviceId;
 
   @Alias('pushToken')
@@ -97,4 +100,5 @@ class PushNotificationsInfo{
 }
 
 @GenSerializer()
-class PushNotificationsInfoJsonSerializer extends Serializer<PushNotificationsInfo> with _$PushNotificationsInfoJsonSerializer {}
+class PushNotificationsInfoJsonSerializer extends Serializer<PushNotificationsInfo>
+    with _$PushNotificationsInfoJsonSerializer {}

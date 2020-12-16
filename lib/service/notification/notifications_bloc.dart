@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/munch_repository.dart';
-import 'package:munch/service/munch/munch_state.dart';
 import 'package:munch/service/notification/notifications_event.dart';
 import 'package:munch/service/notification/notifications_state.dart';
 
@@ -18,21 +17,22 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
   @override
   Stream<NotificationsState> mapEventToState(NotificationsEvent event) async* {
-    if(event is MunchDataChangedNotificationsEvent){
+    if (event is MunchDataChangedNotificationsEvent) {
       yield* _getDetailedMunch(event);
-    } else if(event is KickMemberNotificationEvent){
+    } else if (event is KickMemberNotificationEvent) {
       yield* _currentUserKickedFromMunch(event);
     }
   }
 
-  bool _isNotificationIsLate(String munchId, DateTime timestampUTC){
-    return _munchRepo.munchMap.containsKey(munchId) && _munchRepo.munchMap[munchId].lastUpdatedUTC.isAfter(timestampUTC);
+  bool _isNotificationIsLate(String munchId, DateTime timestampUTC) {
+    return _munchRepo.munchMap.containsKey(munchId) &&
+        _munchRepo.munchMap[munchId].lastUpdatedUTC.isAfter(timestampUTC);
   }
 
   Stream<NotificationsState> _getDetailedMunch(MunchDataChangedNotificationsEvent event) async* {
     String munchId = event.munchId;
 
-    if(_isNotificationIsLate(munchId, event.timestampUTC)){
+    if (_isNotificationIsLate(munchId, event.timestampUTC)) {
       return;
     }
 
@@ -51,7 +51,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   Stream<NotificationsState> _currentUserKickedFromMunch(KickMemberNotificationEvent event) async* {
     String munchId = event.munchId;
 
-    if(_isNotificationIsLate(munchId, event.timestampUTC)){
+    if (_isNotificationIsLate(munchId, event.timestampUTC)) {
       return;
     }
 

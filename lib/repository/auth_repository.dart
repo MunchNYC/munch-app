@@ -5,8 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/facebook_graph_api.dart';
-import 'package:munch/config/constants.dart';
 import 'package:munch/api/google_sign_in_api.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/response/facebook_graph_profile_response.dart';
 import 'package:munch/model/response/google_sign_in_response.dart';
 import 'package:munch/model/user.dart';
@@ -67,11 +67,11 @@ class AuthRepo {
   }
 
   Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async {
-
     GoogleSignInApi googleSignInApi = GoogleSignInApi();
     GoogleSignInResponse googleSignInResponse = await googleSignInApi.getUserProfile(await account.authHeaders);
 
-    User user = User(uid: firebaseUser.uid, displayName: account.displayName, email: account.email, imageUrl: account.photoUrl);
+    User user =
+        User(uid: firebaseUser.uid, displayName: account.displayName, email: account.email, imageUrl: account.photoUrl);
 
     user = await _userRepo.registerUser(user);
 
@@ -80,30 +80,30 @@ class AuthRepo {
 
   Future<User> signInWithGoogle() async {
     // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
-    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
+    GoogleSignIn googleSignIn =
+        GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
 
     try {
       GoogleSignInAccount account = await googleSignIn.signIn();
 
-      if(account != null) {
+      if (account != null) {
         final authentication = await account.authentication;
         final credentials = firebase_auth.GoogleAuthProvider.credential(
-            idToken: authentication.idToken,
-            accessToken: authentication.accessToken);
+            idToken: authentication.idToken, accessToken: authentication.accessToken);
 
         firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
         await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
 
         await _userRepo.setCurrentUserSocialProvider(SocialProvider.GOOGLE);
-        
+
         return await _onSignInSuccessful();
-      } else{
+      } else {
         return null;
       }
-    } catch(error, stacktrace){
-      if(error is PlatformException){
-        if(error.code == "network_error"){
+    } catch (error, stacktrace) {
+      if (error is PlatformException) {
+        if (error.code == "network_error") {
           throw InternetConnectionException();
         } else {
           print("error stack trace: " + stacktrace.toString());
@@ -111,7 +111,7 @@ class AuthRepo {
           FlutterSecureStorage().delete(key: StorageKeys.ACCESS_TOKEN);
           throw FetchDataException.fromMessage(App.translate("google_login.platform_exception.text"));
         }
-      } else{
+      } else {
         // just forward the error if it's not PlatformException
         throw error;
       }
@@ -125,7 +125,13 @@ class AuthRepo {
 
     FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
 
-    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), birthday: profile.birthday, imageUrl: profile.photoUrl);
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: profile.name,
+        email: profile.email,
+        gender: User.stringToGender(profile.gender),
+        birthday: profile.birthday,
+        imageUrl: profile.photoUrl);
 
     user = await _userRepo.registerUser(user);
 
@@ -139,7 +145,12 @@ class AuthRepo {
     FacebookGraphApi facebookGraphApi = FacebookGraphApi();
     FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
 
-    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), imageUrl: profile.photoUrl);
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: profile.name,
+        email: profile.email,
+        gender: User.stringToGender(profile.gender),
+        imageUrl: profile.photoUrl);
 
     Map<String, dynamic> fields;
     if (currentUser.displayName == null) {
@@ -175,9 +186,8 @@ class AuthRepo {
 
         await _synchronizeCurrentUser(
             registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser),
-            updateUserCallback: () => _updateFacebookUser(facebookLoginResult, firebaseUser)
-        );
-        
+            updateUserCallback: () => _updateFacebookUser(facebookLoginResult, firebaseUser));
+
         await _userRepo.setCurrentUserSocialProvider(SocialProvider.FACEBOOK);
 
         return await _onSignInSuccessful();
@@ -185,7 +195,7 @@ class AuthRepo {
       case FacebookLoginStatus.cancelledByUser:
         break;
       case FacebookLoginStatus.error:
-        if(facebookLoginResult.errorMessage == "net::ERR_INTERNET_DISCONNECTED"){
+        if (facebookLoginResult.errorMessage == "net::ERR_INTERNET_DISCONNECTED") {
           throw InternetConnectionException();
         } else {
           throw FetchDataException.fromMessage(App.translate("facebook_login.platform_exception.text"));
@@ -196,14 +206,15 @@ class AuthRepo {
     return null;
   }
 
-  Future<User> _registerAppleUser(AuthorizationCredentialAppleID credentialAppleID, firebase_auth.User firebaseUser) async {
-    String fullName = firebaseUser.displayName ?? ((credentialAppleID.givenName ?? "") + " " + (credentialAppleID.familyName ?? ""));
+  Future<User> _registerAppleUser(
+      AuthorizationCredentialAppleID credentialAppleID, firebase_auth.User firebaseUser) async {
+    String fullName =
+        firebaseUser.displayName ?? ((credentialAppleID.givenName ?? "") + " " + (credentialAppleID.familyName ?? ""));
 
     User user = User(
         uid: firebaseUser.uid,
         displayName: fullName == " " ? "Private Muncher" : fullName,
-        email: (firebaseUser.email ?? credentialAppleID.email) ?? ""
-    );
+        email: (firebaseUser.email ?? credentialAppleID.email) ?? "");
 
     user = await _userRepo.registerUser(user);
 
@@ -222,9 +233,7 @@ class AuthRepo {
       firebase_auth.OAuthProvider oAuthProvider = firebase_auth.OAuthProvider("apple.com");
 
       final firebase_auth.AuthCredential credential = oAuthProvider.credential(
-          idToken: credentialAppleID.identityToken,
-          accessToken: credentialAppleID.authorizationCode
-      );
+          idToken: credentialAppleID.identityToken, accessToken: credentialAppleID.authorizationCode);
 
       firebase_auth.User firebaseUser = await _firebaseSignIn(credential);
 
@@ -233,14 +242,14 @@ class AuthRepo {
       await _userRepo.setCurrentUserSocialProvider(SocialProvider.APPLE);
 
       return await _onSignInSuccessful();
-    } catch(exception){
+    } catch (exception) {
       print("Error signing in with Apple: " + exception.toString());
 
-      if(exception is SignInWithAppleAuthorizationException){
-        if(exception.code == AuthorizationErrorCode.canceled){
+      if (exception is SignInWithAppleAuthorizationException) {
+        if (exception.code == AuthorizationErrorCode.canceled) {
           return null;
         }
-      } else{
+      } else {
         throw FetchDataException.fromMessage(App.translate("apple_login.platform_exception.text"));
       }
     }
@@ -257,20 +266,21 @@ class AuthRepo {
 
     SocialProvider socialProvider;
 
-    if(currentUser != null) {
+    if (currentUser != null) {
       socialProvider = currentUser.socialProvider;
       // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
       // must be wrapped inside try catch to prevent breaking of the script if this call is failed
       try {
         await _userRepo.signOutUser();
-      } catch(error){}
-    } else{
+      } catch (error) {}
+    } else {
       socialProvider = await _userRepo.getStoredSocialProvider();
     }
 
     switch (socialProvider) {
       case SocialProvider.GOOGLE:
-        await GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "").signOut();
+        await GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "")
+            .signOut();
         break;
       case SocialProvider.FACEBOOK:
         await FacebookLogin().logOut();
@@ -281,7 +291,7 @@ class AuthRepo {
 
     NotificationsHandler.getInstance().stopNotifications();
 
-    if(_auth.currentUser != null) {
+    if (_auth.currentUser != null) {
       return _auth.signOut().catchError((error) {
         print("LoginRepo::logout() encountered an error:\n${error.error}");
         return false;
@@ -290,5 +300,4 @@ class AuthRepo {
       });
     }
   }
-
 }

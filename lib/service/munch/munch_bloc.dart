@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_munches_response.dart';
@@ -25,27 +26,27 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       yield* getMunches();
     } else if (event is GetHistoricalMunchesPageEvent) {
       yield* getHistoricalMunches(event);
-    } else if (event is JoinMunchEvent){
+    } else if (event is JoinMunchEvent) {
       yield* joinMunch(event.munchCode);
-    } else if(event is CreateMunchEvent){
+    } else if (event is CreateMunchEvent) {
       yield* createMunch(event.munch);
-    } else if(event is GetDetailedMunchEvent){
+    } else if (event is GetDetailedMunchEvent) {
       yield* getDetailedMunch(event.munchId);
-    } else if(event is GetRestaurantsPageEvent){
+    } else if (event is GetRestaurantsPageEvent) {
       yield* getRestaurantsPage(event.munchId);
-    } else if(event is RestaurantSwipeEvent){
+    } else if (event is RestaurantSwipeEvent) {
       yield* processRestaurantSwipe(event);
-    } else if(event is NoMoreImagesCarouselEvent) {
+    } else if (event is NoMoreImagesCarouselEvent) {
       yield NoMoreCarouselImageState.ready(data: event.isLeftSideTapped);
-    } else if(event is SaveMunchPreferencesEvent){
+    } else if (event is SaveMunchPreferencesEvent) {
       yield* saveMunchPreferences(event);
-    } else if(event is KickMemberEvent){
+    } else if (event is KickMemberEvent) {
       yield* kickMember(event);
-    } else if(event is LeaveMunchEvent){
+    } else if (event is LeaveMunchEvent) {
       yield* leaveMunch(event.munchId);
-    } else if(event is NewMunchRestaurantEvent){
+    } else if (event is NewMunchRestaurantEvent) {
       yield* cancelMunchDecision(event.munchId);
-    } else if(event is ReviewMunchEvent){
+    } else if (event is ReviewMunchEvent) {
       yield* reviewMunch(event);
     }
   }
@@ -131,8 +132,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
       Munch munch = await _munchRepo.swipeRestaurant(
           munchId: restaurantSwipeEvent.munchId,
           restaurantId: restaurantSwipeEvent.restaurantId,
-          liked: restaurantSwipeEvent.liked
-      );
+          liked: restaurantSwipeEvent.liked);
 
       yield RestaurantSwipeProcessingState.ready(data: munch);
     } catch (error) {
@@ -159,8 +159,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
 
     try {
       Munch munch = await _munchRepo.kickMember(
-          munchId: kickMemberEvent.munchId,
-          userId: kickMemberEvent.userId,
+        munchId: kickMemberEvent.munchId,
+        userId: kickMemberEvent.userId,
       );
 
       yield KickingMemberState.ready(data: munch);
@@ -199,7 +199,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
   }
 
   Stream<MunchState> reviewMunch(ReviewMunchEvent reviewMunchEvent) async* {
-    ReviewMunchState reviewMunchStateLoading = ReviewMunchState.loading(munchReviewValue: reviewMunchEvent.munchReviewValue);
+    ReviewMunchState reviewMunchStateLoading =
+        ReviewMunchState.loading(munchReviewValue: reviewMunchEvent.munchReviewValue);
 
     yield reviewMunchStateLoading;
 
@@ -209,12 +210,7 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
         munchId: reviewMunchEvent.munchId,
       );
 
-      yield ReviewMunchState.ready(
-        data: Map.of({
-           "munch": munch,
-           "forcedReview": reviewMunchEvent.forcedReview
-        })
-      );
+      yield ReviewMunchState.ready(data: Map.of({"munch": munch, "forcedReview": reviewMunchEvent.forcedReview}));
     } catch (error) {
       print("Munch decision cancellation failed: " + error.toString());
       yield ReviewMunchState.failed(exception: error, message: error.toString());
