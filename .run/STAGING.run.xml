@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="STAGING" type="FlutterRunConfigurationType" factoryName="Flutter">
-    <option name="additionalArgs" value="--dart-define=ENV=staging  --dart-define=devMapsApiKey=AIzaSyCX6HE9z3D0Vvjm6jrq1HTzNPcx1mRj5w0" />
+    <option name="additionalArgs" value="--dart-define=ENV=staging --dart-define=devMapsApiKey=AIzaSyCX6HE9z3D0Vvjm6jrq1HTzNPcx1mRj5w0" />
     <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
     <method v="2" />
   </configuration>
