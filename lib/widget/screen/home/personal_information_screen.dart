@@ -51,7 +51,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   @override
   void initState() {
-    _birthday = DateTime.parse(widget.user.birthday);
+    if (widget.user.birthday != null) {
+      _birthday = DateTime.parse(widget.user.birthday);
+    }
     _initializeFormFields();
     _profileBloc = ProfileBloc();
     super.initState();
@@ -60,13 +62,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => _onWillPopScope(context),
-      child: Scaffold(
-        appBar: _appBar(context),
-        backgroundColor: Palette.background,
-        body: _buildPersonalInformationBloc()
-      )
-    );
+        onWillPop: () => _onWillPopScope(context),
+        child: Scaffold(
+            appBar: _appBar(context), backgroundColor: Palette.background, body: _buildPersonalInformationBloc()));
   }
 
   @override
@@ -81,8 +79,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         listenWhen: (ProfileState previous, ProfileState current) => current.hasError || current.ready,
         listener: (BuildContext context, ProfileState state) => _personalInformationScreenListener(context, state),
         buildWhen: (ProfileState previous, ProfileState current) => current.loading || current.ready,
-        builder: (BuildContext context, ProfileState state) => _buildPersonalInformationScreen(context, state)
-    );
+        builder: (BuildContext context, ProfileState state) => _buildPersonalInformationScreen(context, state));
   }
 
   void _personalInformationScreenListener(BuildContext context, ProfileState state) {
@@ -128,9 +125,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   Widget _renderScreen(BuildContext context) {
     return SingleChildScrollView(
-      padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 36.0, bottom: 24.0), // must be 36.0 because label is floating below
-      child: Column(
-        children: [
+        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 36.0, bottom: 24.0),
+        // must be 36.0 because label is floating below
+        child: Column(children: [
           SizedBox(height: 8.0),
           _fullNameRow(),
           Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
@@ -139,77 +136,63 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
           Divider(height: 36.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
           SizedBox(height: 16.0),
           _birthdayRow()
-        ]
-      )
-    );
+        ]));
   }
 
   Widget _fullNameRow() {
     return Form(
         key: _personalInformationFormKey,
         autovalidate: _personalInformationFormAutoValidate,
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Expanded(
-                    child: CustomFormField(
-                        labelText: App.translate("personal_information_screen.full_name_field.label.text"),
-                        labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
-                        textStyle: AppTextStyle.style(
-                            AppTextStylePattern.heading6,
-                            fontWeight: FontWeight.w500,
-                            color: Palette.primary
-                        ),
-                        fillColor: Palette.background,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
-                        borderRadius: 0.0,
-                        borderColor: Palette.background,
-                        controller: _nameTextController,
-                        onSaved: (value) => {
-                          if (value != widget.user.displayName)
-                          _nameChanged = true
-                        },
-                        validator: (value) => _validateFullName(value),
-                        errorHasBorders: false
-                    )
-                )
-              ])
-            ]
-        )
-    );
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            Expanded(
+                child: CustomFormField(
+                    labelText: App.translate("personal_information_screen.full_name_field.label.text"),
+                    labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+                        fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+                    textStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+                        fontWeight: FontWeight.w500, color: Palette.primary),
+                    fillColor: Palette.background,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+                    borderRadius: 0.0,
+                    borderColor: Palette.background,
+                    controller: _nameTextController,
+                    onSaved: (value) => {if (value != widget.user.displayName) _nameChanged = true},
+                    validator: (value) => _validateFullName(value),
+                    errorHasBorders: false))
+          ])
+        ]));
   }
 
   Widget _genderRow() {
     return Row(
-    mainAxisSize: MainAxisSize.max,
+      mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
             child: CustomFormField(
-              labelText: App.translate("personal_information_screen.gender_field.label.text"),
-              labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
-              textStyle: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
-              fillColor: Palette.background,
-              contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
-              borderRadius: 0.0,
-              borderColor: Palette.background,
-              controller: _genderTextController,
-              readOnly: true,
-              onTap: (){},
-            )
-        ),
-          SizedBox(width: 12.0),
-          CustomButton(
-              flat: true,
-              // very important to set, otherwise title won't be aligned good
-              padding: EdgeInsets.zero,
-              color: Colors.transparent,
-              content: Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
-              onPressedCallback: _onEditGenderTapped
-          )
+          labelText: App.translate("personal_information_screen.gender_field.label.text"),
+          labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+              fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+          textStyle:
+              AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
+          fillColor: Palette.background,
+          contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+          borderRadius: 0.0,
+          borderColor: Palette.background,
+          controller: _genderTextController,
+          readOnly: true,
+          onTap: () {},
+        )),
+        SizedBox(width: 12.0),
+        CustomButton(
+            flat: true,
+            // very important to set, otherwise title won't be aligned good
+            padding: EdgeInsets.zero,
+            color: Colors.transparent,
+            content: Text(App.translate("personal_information_screen.readonly_state.text"),
+                style: AppTextStyle.style(AppTextStylePattern.heading6,
+                    fontWeight: FontWeight.w400, color: Palette.hyperlink)),
+            onPressedCallback: _onEditGenderTapped)
       ],
     );
   }
@@ -220,27 +203,29 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       children: <Widget>[
         Expanded(
             child: CustomFormField(
-              labelText: App.translate("personal_information_screen.birthday_field.label.text"),
-              labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,  fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
-              textStyle: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
-              fillColor: Palette.background,
-              contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
-              borderRadius: 0.0,
-              borderColor: Palette.background,
-              controller: _birthdayTextController,
-              readOnly: true,
-              onTap: (){},
-            )
-        ),
+          labelText: App.translate("personal_information_screen.birthday_field.label.text"),
+          labelStyle: AppTextStyle.style(AppTextStylePattern.heading6,
+              fontWeight: FontWeight.w500, color: Palette.primary.withOpacity(0.7)),
+          textStyle:
+              AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, color: Palette.primary),
+          fillColor: Palette.background,
+          contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 12.0),
+          borderRadius: 0.0,
+          borderColor: Palette.background,
+          controller: _birthdayTextController,
+          readOnly: true,
+          onTap: () {},
+        )),
         SizedBox(width: 12.0),
         CustomButton(
             flat: true,
             // very important to set, otherwise title won't be aligned good
             padding: EdgeInsets.zero,
             color: Colors.transparent,
-            content: Text(App.translate("personal_information_screen.readonly_state.text"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w400, color: Palette.hyperlink)),
-            onPressedCallback: _onEditBirthdayTapped
-        )
+            content: Text(App.translate("personal_information_screen.readonly_state.text"),
+                style: AppTextStyle.style(AppTextStylePattern.heading6,
+                    fontWeight: FontWeight.w400, color: Palette.hyperlink)),
+            onPressedCallback: _onEditBirthdayTapped)
       ],
     );
   }
@@ -274,9 +259,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       leading: AppBarBackButton(),
       backgroundColor: Palette.background,
       actions: <Widget>[
-        Padding(padding:
-        EdgeInsets.only(right: 24.0),
-            child:  CustomButton<ProfileState, UpdatePersonalInformationState>.bloc(
+        Padding(
+            padding: EdgeInsets.only(right: 24.0),
+            child: CustomButton<ProfileState, UpdatePersonalInformationState>.bloc(
               cubit: _profileBloc,
               flat: true,
               // very important to set, otherwise title won't be aligned good
@@ -285,12 +270,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               textColor: Palette.primary.withOpacity(0.6),
               content: Text(App.translate("personal_information_screen.app_bar.action.text"),
                   style: AppTextStyle.style(AppTextStylePattern.heading6,
-                      fontWeight: FontWeight.w600,
-                      fontSizeOffset: 1.0,
-                      color: Palette.primary.withOpacity(0.6))),
+                      fontWeight: FontWeight.w600, fontSizeOffset: 1.0, color: Palette.primary.withOpacity(0.6))),
               onPressedCallback: _onSaveButtonTapped,
-            )
-        ),
+            )),
       ],
     );
   }
@@ -305,17 +287,16 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
           dialogTitle: App.translate("options_screen.save_changes_alert_dialog.title"),
-          dialogDescription:App.translate("options_screen.save_changes_alert_dialog.description"),
+          dialogDescription: App.translate("options_screen.save_changes_alert_dialog.description"),
           confirmText: App.translate("options_screen.save_changes_alert_dialog.confirm_button.text"),
           cancelText: App.translate("options_screen.save_changes_alert_dialog.cancel_button.text"),
           confirmCallback: _onSaveChangesDialogButtonTapped,
-          cancelCallback: _onDiscardChangesDialogButtonTapped
-      );
+          cancelCallback: _onDiscardChangesDialogButtonTapped);
 
       // decision will be made after dialog tap
       bool shouldReturn = await _popScopeCompleter.future;
 
-      if(!shouldReturn){
+      if (!shouldReturn) {
         // save button tapped and something is wrong
         return false;
       }
@@ -329,45 +310,44 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
     _genderTextController.text = User.genderToString(widget.user.gender);
-    _birthdayTextController.text = _dateFormat.format(_birthday);
+    _birthdayTextController.text = (_birthday != null) ? _dateFormat.format(_birthday) : "";
     _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
   }
 
   void _onEditGenderTapped() async {
     showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Expanded(
+                  child: Container(
                       height: 120,
                       child: CupertinoPicker(
-                        scrollController: _scrollController,
-                        diameterRatio: 1.0,
-                        itemExtent: 40.0,
-                        onSelectedItemChanged: (int index) { _updateGender(index); },
-                        children: <Widget>[
-                          Center(child: Text(App.translate("personal_information_screen.gender.no_answer.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                          Center(child: Text(App.translate("personal_information_screen.gender.male.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                          Center(child: Text(App.translate("personal_information_screen.gender.female.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
-                          Center(child: Text(App.translate("personal_information_screen.gender.other.text"), style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
-                        ]
-                      )
-                    )
-                  )
-                ]
-              )
-            ]
-          )
-        );
-      }
-    );
+                          scrollController: _scrollController,
+                          diameterRatio: 1.0,
+                          itemExtent: 40.0,
+                          onSelectedItemChanged: (int index) {
+                            _updateGender(index);
+                          },
+                          children: <Widget>[
+                            Center(
+                                child: Text(App.translate("personal_information_screen.gender.no_answer.text"),
+                                    style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(
+                                child: Text(App.translate("personal_information_screen.gender.male.text"),
+                                    style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(
+                                child: Text(App.translate("personal_information_screen.gender.female.text"),
+                                    style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0))),
+                            Center(
+                                child: Text(App.translate("personal_information_screen.gender.other.text"),
+                                    style: AppTextStyle.style(AppTextStylePattern.body, fontSizeOffset: 12.0)))
+                          ])))
+            ])
+          ]));
+        });
   }
 
   void _onEditBirthdayTapped() async {
@@ -375,30 +355,23 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         context: context,
         builder: (BuildContext context) {
           return Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Expanded(
-                          child: Container(
-                              height: 240,
-                              child: CupertinoDatePicker(
-                                mode: CupertinoDatePickerMode.date,
-                                initialDateTime: _dateFormat.parse(_birthdayTextController.text),
-                                maximumDate: DateTime.now().add(Duration(seconds: 1)),
-                                onDateTimeChanged: (value) { _updateBirthday(value); }
-                              ),
-                          )
-                      )
-                    ]
-                )
-              ]
-            )
-          );
-        }
-    );
+              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Expanded(
+                  child: Container(
+                height: 240,
+                child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime:
+                        (_birthday != null) ? _dateFormat.parse(_birthdayTextController.text) : DateTime.now(),
+                    maximumDate: DateTime.now().add(Duration(seconds: 1)),
+                    onDateTimeChanged: (value) {
+                      _updateBirthday(value);
+                    }),
+              ))
+            ])
+          ]));
+        });
   }
 
   bool _changesMade() {
@@ -415,17 +388,14 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       FocusScope.of(context).unfocus();
 
       if (_changesMade()) {
-        User user = User(
-          uid: widget.user.uid,
-          email: widget.user.email,
-          displayName: _nameTextController.text,
-          gender: _gender,
-          birthday: _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString(),
-          imageUrl: widget.user.imageUrl,
-          accessToken: widget.user.accessToken
-        );
+        Map<String, dynamic> fields = Map<String, dynamic>();
+        if (_nameChanged) fields["displayName"] = _nameTextController.text;
+        if (_genderChanged) fields["gender"] = _gender.toString().split(".").last;
+        if (_birthdayChanged)
+          fields["birthday"] =
+              _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString();
 
-        _profileBloc.add(UpdatePersonalInformationEvent(user: user));
+        _profileBloc.add(UpdatePersonalInformationEvent(fields: fields));
       } else {
         _onWillPopScope(context);
       }
@@ -444,7 +414,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
     bool validationSuccess = _onSaveButtonTapped();
 
-    if(!validationSuccess){
+    if (!validationSuccess) {
       _popScopeCompleter.complete(false);
     }
   }
@@ -464,7 +434,10 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   }
 
   void _updateBirthday(DateTime dateTime) async {
-    _birthdayChanged = (widget.user.birthday == dateTime.year.toString() + "-" + dateTime.month.toString() + "-" + dateTime.day.toString()) ? false : true;
+    _birthdayChanged = (widget.user.birthday ==
+            dateTime.year.toString() + "-" + dateTime.month.toString() + "-" + dateTime.day.toString())
+        ? false
+        : true;
 
     _birthday = DateTime(dateTime.year, dateTime.month, dateTime.day);
 

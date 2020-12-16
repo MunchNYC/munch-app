@@ -1,4 +1,5 @@
 import 'dart:async';
+
 // firebase recommends to prefix this import with namespace to avoid collisions
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -16,6 +17,7 @@ class UserRepo {
 
   User _currentUser;
   String postLoginDeeplink;
+
   UserRepo._internal();
 
   factory UserRepo.getInstance() {
@@ -34,9 +36,9 @@ class UserRepo {
 
     int socialProviderIndex = sharedPreferences.getInt(StorageKeys.SOCIAL_PROVIDER);
 
-    if(socialProviderIndex != null) {
+    if (socialProviderIndex != null) {
       socialProvider = SocialProvider.values[socialProviderIndex];
-    } else{
+    } else {
       socialProvider = null;
     }
 
@@ -44,9 +46,9 @@ class UserRepo {
   }
 
   Future setCurrentUserSocialProvider(SocialProvider socialProvider) async {
-    if(socialProvider == null) {
+    if (socialProvider == null) {
       socialProvider = await getStoredSocialProvider();
-    } else{
+    } else {
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
       await sharedPreferences.setInt(StorageKeys.SOCIAL_PROVIDER, socialProvider.index);
@@ -63,7 +65,7 @@ class UserRepo {
       firebase_auth.User firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
 
       // User is not logged in
-      if(firebaseUser == null){
+      if (firebaseUser == null) {
         return null;
       }
 
@@ -83,8 +85,8 @@ class UserRepo {
         print(_currentUser.socialProvider);
 
         return _currentUser;
-      } catch(exception){
-        if(exception is NotFoundException){
+      } catch (exception) {
+        if (exception is NotFoundException) {
           return null;
         }
 
@@ -98,7 +100,7 @@ class UserRepo {
     user.accessToken = await getAccessToken();
     String fcmToken = await getFCMToken();
 
-    if(fcmToken != null){
+    if (fcmToken != null) {
       user.pushNotificationsInfo = PushNotificationsInfo(fcmToken: fcmToken, deviceId: App.deviceId);
     }
 
@@ -108,9 +110,10 @@ class UserRepo {
     print("current user set: " + _currentUser.toString());
   }
 
-  Future updateCurrentUser(User user) async {
+  Future updateCurrentUser(Map<String, dynamic> fields) async {
+    if (fields == null || fields.isEmpty) return UserRepo.getInstance()._currentUser;
     try {
-      User updatedUser = await _usersApi.updatePersonalInfo(user);
+      User updatedUser = await _usersApi.updatePersonalInfo(fields);
       _currentUser = updatedUser;
       print("current user updated: " + _currentUser.toString());
 
@@ -146,7 +149,7 @@ class UserRepo {
 
     await flutterSecureStorage.delete(key: StorageKeys.ACCESS_TOKEN);
 
-    if(_currentUser != null) {
+    if (_currentUser != null) {
       _currentUser.accessToken = null;
     }
   }
@@ -175,7 +178,7 @@ class UserRepo {
     FlutterSecureStorage flutterSecureStorage = FlutterSecureStorage();
     await flutterSecureStorage.delete(key: StorageKeys.FCM_TOKEN);
 
-    if(_currentUser != null) {
+    if (_currentUser != null) {
       _currentUser.pushNotificationsInfo = null;
     }
   }

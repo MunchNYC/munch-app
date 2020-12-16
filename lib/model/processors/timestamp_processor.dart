@@ -6,7 +6,7 @@ class TimestampProcessor implements FieldProcessor<DateTime, int> {
 
   @override
   DateTime deserialize(int value) {
-    if(value == null) return null;
+    if (value == null) return null;
 
     return DateTime.fromMicrosecondsSinceEpoch(value * 1000);
   }

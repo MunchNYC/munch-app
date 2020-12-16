@@ -1,5 +1,5 @@
-abstract class LocationEvent { }
+abstract class LocationEvent {}
 
-class GetCurrentLocationEvent extends LocationEvent{
+class GetCurrentLocationEvent extends LocationEvent {
   GetCurrentLocationEvent();
 }

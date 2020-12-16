@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
+
 import 'package:flutter/services.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:package_info/package_info.dart';
@@ -14,7 +16,8 @@ class AppConfig {
   String termsOfServiceUrl;
   String websiteUrl;
   String deepLinkUrl;
-
+  String googleMapsIosApiKey;
+  String googleMapsAndroidApiKey;
   @Field.ignore()
   PackageInfo packageInfo;
 
@@ -34,18 +37,35 @@ class AppConfig {
 
     // convert our JSON into an instance of our AppConfig class
     _instance = AppConfigJsonSerializer().fromMap(json);
-
+    _instance._resolveMapsApiKey();
     _instance.packageInfo = await PackageInfo.fromPlatform();
   }
 
-  static AppConfig getInstance(){
-    if(_instance == null){
+  void _resolveMapsApiKey() {
+    const devGoogleMapsApiKey = String.fromEnvironment('devMapsApiKey');
+    if (devGoogleMapsApiKey != null && devGoogleMapsApiKey.isNotEmpty) {
+      googleMapsApiKey = devGoogleMapsApiKey;
+      print("using Dev Maps apiKey:" + googleMapsApiKey);
+    } else {
+      if (Platform.isAndroid) {
+        googleMapsApiKey = googleMapsAndroidApiKey;
+        print("using android Maps apiKey:" + googleMapsApiKey);
+      } else if (Platform.isIOS) {
+        googleMapsApiKey = googleMapsIosApiKey;
+        print("using ios Maps apiKey:" + googleMapsApiKey);
+      } else {
+        throw Exception("Failed to resolve maps api key");
+      }
+    }
+  }
+
+  static AppConfig getInstance() {
+    if (_instance == null) {
       forEnvironment(null);
     }
 
     return _instance;
   }
-
 }
 
 @GenSerializer()

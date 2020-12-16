@@ -1,12 +1,12 @@
 import 'package:munch/model/user.dart';
-import 'package:munch/util/app.dart';
+
 import 'api.dart';
 
 class UsersApi extends Api {
   static const String ENDPOINT_SET_PREFIX = 'users';
   static const int API_VERSION = 1;
 
-  UsersApi(): super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
+  UsersApi() : super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
 
   // Will return user which already exists in DB, or newly created user
   Future<User> registerUser(User user) async {
@@ -43,25 +43,11 @@ class UsersApi extends Api {
     return user;
   }
 
-  Future<User> updatePersonalInfo(User user) async {
+  /// Available fields to patch: [displayName], [imageUrl], [email], [gender], [birthday]
+  /// [gender] options: MALE, FEMALE, OTHER, NOANSWER
+  /// [birthday] required format: YYYY-MM-DD
+  Future<User> updatePersonalInfo(Map<String, dynamic> fields) async {
     final String patchUrl = '/data';
-
-    // TODO: Replace User parameter with optional User.properties as parameter
-    // Should only be patching fields that have changed.
-    String _gender = user.gender.toString().split(".").last;
-    if (_gender == "null") {
-      _gender = "NOANSWER";
-    }
-
-    // Birthday must be in form of "YYYY-MM-DD"
-    Map<String, dynamic> fields = Map.of({
-      "pushInfo": PushNotificationsInfoJsonSerializer().toMap(user.pushNotificationsInfo),
-      "displayName": user.displayName,
-      "imageUrl": user.imageUrl,
-      "email": user.email,
-      "gender": _gender,
-      "birthday": user.birthday
-    });
 
     print("updating personal info with fields: " + fields.toString());
 

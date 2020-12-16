@@ -15,7 +15,7 @@ class AppCircularProgressIndicator extends StatelessWidget {
       size: 32.0,
     );
 
-    if(centered){
+    if (centered) {
       _spinKitThreeBounce = Center(child: _spinKitThreeBounce);
     }
 

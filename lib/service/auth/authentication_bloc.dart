@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/auth_repository.dart';
 import 'package:munch/util/app.dart';
-import 'authentication_state.dart';
+
 import 'authentication_event.dart';
+import 'authentication_state.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   AuthenticationBloc() : super(AuthenticationState());
