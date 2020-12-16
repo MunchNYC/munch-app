@@ -53,8 +53,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void initState() {
     if (widget.user.birthday != null) {
       _birthday = DateTime.parse(widget.user.birthday);
-    } else {
-      _birthday = DateTime.now();
     }
     _initializeFormFields();
     _profileBloc = ProfileBloc();
@@ -333,7 +331,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
     _genderTextController.text = User.genderToString(widget.user.gender);
-    _birthdayTextController.text = _dateFormat.format(_birthday);
+    _birthdayTextController.text = (_birthday != null) ? _dateFormat.format(_birthday) : "";
     _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
   }
 
@@ -390,7 +388,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                               height: 240,
                               child: CupertinoDatePicker(
                                 mode: CupertinoDatePickerMode.date,
-                                initialDateTime: _dateFormat.parse(_birthdayTextController.text),
+                                initialDateTime: (_birthday != null) ? _dateFormat.parse(_birthdayTextController.text) : DateTime.now(),
                                 maximumDate: DateTime.now().add(Duration(seconds: 1)),
                                 onDateTimeChanged: (value) { _updateBirthday(value); }
                               ),
