@@ -14,6 +14,8 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     setMapValue(ret, 'appTitle', model.appTitle);
     setMapValue(ret, 'apiUrl', model.apiUrl);
     setMapValue(ret, 'googleMapsApiKey', model.googleMapsApiKey);
+    setMapValue(ret, 'googleMapsAndroidApiKey', model.googleMapsAndroidApiKey);
+    setMapValue(ret, 'googleMapsIosApiKey', model.googleMapsIosApiKey);
     setMapValue(ret, 'feedbackEmail', model.feedbackEmail);
     setMapValue(ret, 'privacyPolicyUrl', model.privacyPolicyUrl);
     setMapValue(ret, 'termsOfServiceUrl', model.termsOfServiceUrl);
@@ -29,6 +31,8 @@ abstract class _$AppConfigJsonSerializer implements Serializer<AppConfig> {
     obj.appTitle = map['appTitle'] as String;
     obj.apiUrl = map['apiUrl'] as String;
     obj.googleMapsApiKey = map['googleMapsApiKey'] as String;
+    obj.googleMapsAndroidApiKey = map['googleMapsAndroidApiKey'] as String;
+    obj.googleMapsIosApiKey = map['googleMapsIosApiKey'] as String;
     obj.feedbackEmail = map['feedbackEmail'] as String;
     obj.privacyPolicyUrl = map['privacyPolicyUrl'] as String;
     obj.termsOfServiceUrl = map['termsOfServiceUrl'] as String;
