@@ -51,7 +51,11 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   @override
   void initState() {
-    _birthday = DateTime.parse(widget.user.birthday);
+    if (widget.user.birthday != null) {
+      _birthday = DateTime.parse(widget.user.birthday);
+    } else {
+      _birthday = DateTime.now();
+    }
     _initializeFormFields();
     _profileBloc = ProfileBloc();
     super.initState();
