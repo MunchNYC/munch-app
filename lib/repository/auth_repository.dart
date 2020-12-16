@@ -80,7 +80,7 @@ class AuthRepo {
 
   Future<User> signInWithGoogle() async {
     // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
-    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email", "gender", "birthday"], hostedDomain: "");
+    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
 
     try {
       GoogleSignInAccount account = await googleSignIn.signIn();
@@ -106,7 +106,7 @@ class AuthRepo {
         if(error.code == "network_error"){
           throw InternetConnectionException();
         } else {
-          print(stacktrace.toString());
+          print("error stack trace: " + stacktrace.toString());
           // TODO remove after confirmed fixed for users https://github.com/mogol/flutter_secure_storage/issues/43
           FlutterSecureStorage().delete(key: StorageKeys.ACCESS_TOKEN);
           throw FetchDataException.fromMessage(App.translate("google_login.platform_exception.text"));
