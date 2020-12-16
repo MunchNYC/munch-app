@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
@@ -22,7 +23,7 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
   Stream<FiltersState> mapEventToState(FiltersEvent event) async* {
     if (event is GetFiltersEvent) {
       yield* getFilters();
-    } else if(event is UpdateFiltersEvent){
+    } else if (event is UpdateFiltersEvent) {
       yield* updateFilters(event);
     }
   }
@@ -36,24 +37,26 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
       yield FiltersFetchingState.ready(data: getFiltersResponse);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
-      yield FiltersFetchingState.failed(exception: error, message: error.toString());
+      yield FiltersFetchingState.failed(
+          exception: error, message: error.toString());
     }
   }
 
-  Stream<FiltersState> updateFilters(UpdateFiltersEvent updateFiltersEvent) async* {
+  Stream<FiltersState> updateFilters(
+      UpdateFiltersEvent updateFiltersEvent) async* {
     yield FiltersUpdatingState.loading();
 
     try {
       Munch munch = await _filtersRepo.updateFilters(
-        whitelistFilters: updateFiltersEvent.whitelistFilters,
-        blacklistFilters: updateFiltersEvent.blacklistFilters,
-        munchId: updateFiltersEvent.munchId
-      );
+          whitelistFilters: updateFiltersEvent.whitelistFilters,
+          blacklistFilters: updateFiltersEvent.blacklistFilters,
+          munchId: updateFiltersEvent.munchId);
 
       yield FiltersUpdatingState.ready(data: munch);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
-      yield FiltersUpdatingState.failed(exception: error, message: error.toString());
+      yield FiltersUpdatingState.failed(
+          exception: error, message: error.toString());
     }
   }
 }

@@ -6,12 +6,12 @@ class MunchStatusProcessor implements FieldProcessor<MunchStatus, String> {
 
   @override
   MunchStatus deserialize(String value) {
-    if(value == null) return null;
+    if (value == null) return null;
 
     // munchStatus.toString() returns MunchStatus.DECIDED for example
-    return MunchStatus.values.firstWhere(
-            (munchStatus) => (munchStatus.toString().split(".").last).toUpperCase() == value.toUpperCase()
-    );
+    return MunchStatus.values.firstWhere((munchStatus) =>
+        (munchStatus.toString().split(".").last).toUpperCase() ==
+        value.toUpperCase());
   }
 
   @override

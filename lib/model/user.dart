@@ -5,19 +5,17 @@ import 'package:munch/util/app.dart';
 
 part 'user.jser.dart';
 
-enum SocialProvider{
-  GOOGLE, FACEBOOK, APPLE
-}
+enum SocialProvider { GOOGLE, FACEBOOK, APPLE }
 
-enum Gender {
-  NOANSWER, MALE, FEMALE, OTHER
-}
+enum Gender { NOANSWER, MALE, FEMALE, OTHER }
 
-class User{
+class User {
   @Field.ignore()
   String accessToken;
 
-  @Alias('pushInfo', isNullable: false) // Field.encode not generating good JSON serializer for some reason
+  @Alias('pushInfo',
+      isNullable:
+          false) // Field.encode not generating good JSON serializer for some reason
   PushNotificationsInfo pushNotificationsInfo;
 
   @Alias('userId')
@@ -56,14 +54,17 @@ class User{
       case Gender.OTHER:
         return App.translate("personal_information_screen.gender.other.text");
       case Gender.NOANSWER:
-        return App.translate("personal_information_screen.gender.no_answer.text");
+        return App.translate(
+            "personal_information_screen.gender.no_answer.text");
       default:
         return null;
     }
   }
 
   static Gender stringToGender(String string) {
-    if (string == null) { return Gender.NOANSWER; }
+    if (string == null) {
+      return Gender.NOANSWER;
+    }
     if (string.toUpperCase() == "MALE") {
       return Gender.MALE;
     } else if (string.toUpperCase() == "FEMALE") {
@@ -75,19 +76,33 @@ class User{
     }
   }
 
-  User({this.uid, this.email, this.displayName, this.gender, this.birthday, this.imageUrl, this.accessToken = ""});
+  User(
+      {this.uid,
+      this.email,
+      this.displayName,
+      this.gender,
+      this.birthday,
+      this.imageUrl,
+      this.accessToken = ""});
 
-  User.fromFirebaseUser({final firebase_auth.User firebaseUser, final String accessToken = ""})
-      :this(uid: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, imageUrl: firebaseUser.photoURL, accessToken: accessToken);
+  User.fromFirebaseUser(
+      {final firebase_auth.User firebaseUser, final String accessToken = ""})
+      : this(
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            imageUrl: firebaseUser.photoURL,
+            accessToken: accessToken);
 }
 
 @GenSerializer(fields: const {
   // dontEncode must be specified here if we define custom processor, isNullable means that it CAN be nullable
-  'gender': const Field(processor: GenderProcessor(), dontEncode: true, isNullable: true)
+  'gender': const Field(
+      processor: GenderProcessor(), dontEncode: true, isNullable: true)
 })
 class UserJsonSerializer extends Serializer<User> with _$UserJsonSerializer {}
 
-class PushNotificationsInfo{
+class PushNotificationsInfo {
   String deviceId;
 
   @Alias('pushToken')
@@ -97,4 +112,6 @@ class PushNotificationsInfo{
 }
 
 @GenSerializer()
-class PushNotificationsInfoJsonSerializer extends Serializer<PushNotificationsInfo> with _$PushNotificationsInfoJsonSerializer {}
+class PushNotificationsInfoJsonSerializer
+    extends Serializer<PushNotificationsInfo>
+    with _$PushNotificationsInfoJsonSerializer {}

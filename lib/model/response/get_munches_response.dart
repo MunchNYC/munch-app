@@ -3,13 +3,15 @@ import 'package:munch/model/munch.dart';
 
 part 'get_munches_response.jser.dart';
 
-class GetMunchesResponse{
+class GetMunchesResponse {
   List<Munch> undecidedMunches;
   List<Munch> decidedMunches;
   List<RequestedReview> requestedReviews;
 
-  GetMunchesResponse({this.undecidedMunches, this.decidedMunches, this.requestedReviews});
+  GetMunchesResponse(
+      {this.undecidedMunches, this.decidedMunches, this.requestedReviews});
 }
 
 @GenSerializer()
-class GetMunchesResponseJsonSerializer extends Serializer<GetMunchesResponse> with _$GetMunchesResponseJsonSerializer {}
+class GetMunchesResponseJsonSerializer extends Serializer<GetMunchesResponse>
+    with _$GetMunchesResponseJsonSerializer {}

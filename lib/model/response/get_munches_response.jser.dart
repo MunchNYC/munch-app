@@ -9,11 +9,14 @@ part of 'get_munches_response.dart';
 abstract class _$GetMunchesResponseJsonSerializer
     implements Serializer<GetMunchesResponse> {
   Serializer<Munch> __munchJsonSerializer;
+
   Serializer<Munch> get _munchJsonSerializer =>
       __munchJsonSerializer ??= MunchJsonSerializer();
   Serializer<RequestedReview> __requestedReviewJsonSerializer;
+
   Serializer<RequestedReview> get _requestedReviewJsonSerializer =>
       __requestedReviewJsonSerializer ??= RequestedReviewJsonSerializer();
+
   @override
   Map<String, dynamic> toMap(GetMunchesResponse model) {
     if (model == null) return null;

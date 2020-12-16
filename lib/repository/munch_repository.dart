@@ -20,7 +20,7 @@ class MunchRepo {
   // Last time getMunches was called
   DateTime getMunchesCallLastUTC;
 
-  MunchRepo._internal(){
+  MunchRepo._internal() {
     munchStatusLists = Map<MunchStatus, List<Munch>>();
 
     munchStatusLists[MunchStatus.UNDECIDED] = List<Munch>();
@@ -38,18 +38,18 @@ class MunchRepo {
     return _instance;
   }
 
-  void _clearMunchCache(){
-    for(int i = 0; i < MunchStatus.values.length; i++){
+  void _clearMunchCache() {
+    for (int i = 0; i < MunchStatus.values.length; i++) {
       munchStatusLists[MunchStatus.values[i]].clear();
     }
 
     munchMap.clear();
   }
 
-  void deleteMunchFromCache(String munchId){
+  void deleteMunchFromCache(String munchId) {
     Munch munch = munchMap[munchId];
 
-    if(munch != null) {
+    if (munch != null) {
       List<Munch> munchList = munchStatusLists[munch.munchStatus];
 
       munchList.removeWhere((element) => munch.id == element.id);
@@ -61,13 +61,13 @@ class MunchRepo {
   /*
     Insert munch to munchList sorted by creation timestamp
    */
-  void _insertSortedToMunchList(List<Munch> munchList, Munch munch){
+  void _insertSortedToMunchList(List<Munch> munchList, Munch munch) {
     int indexToInsert = munchList.length;
 
-    for(int i = 0; i < munchList.length; i++){
+    for (int i = 0; i < munchList.length; i++) {
       Munch currentMunch = munchList[i];
 
-      if(currentMunch.creationTimestamp.isBefore(munch.creationTimestamp)){
+      if (currentMunch.creationTimestamp.isBefore(munch.creationTimestamp)) {
         indexToInsert = i;
         break;
       }
@@ -76,19 +76,19 @@ class MunchRepo {
     munchList.insert(indexToInsert, munch);
   }
 
-  Munch updateMunchCache(Munch newMunch){
+  Munch updateMunchCache(Munch newMunch) {
     Munch currentMunch = munchMap[newMunch.id];
     List<Munch> newMunchList = munchStatusLists[newMunch.munchStatus];
 
-    if(currentMunch != null) {
+    if (currentMunch != null) {
       List<Munch> currentMunchList = munchStatusLists[currentMunch.munchStatus];
 
-      if(currentMunchList != newMunchList) {
+      if (currentMunchList != newMunchList) {
         deleteMunchFromCache(currentMunch.id);
 
-        if(newMunch.munchStatus == MunchStatus.HISTORICAL){
+        if (newMunch.munchStatus == MunchStatus.HISTORICAL) {
           // if no pages are fetched just remove HISTORICAL munch from cache
-          if(_historicalPageNumber > -1) {
+          if (_historicalPageNumber > -1) {
             newMunchList.insert(0, currentMunch);
           }
         } else {
@@ -104,10 +104,10 @@ class MunchRepo {
       currentMunch.lastUpdatedUTC = DateTime.now().toUtc();
 
       return currentMunch;
-    } else{
-      if(newMunch.munchStatus == MunchStatus.HISTORICAL){
+    } else {
+      if (newMunch.munchStatus == MunchStatus.HISTORICAL) {
         // if no pages are fetched just remove HISTORICAL munch from cache
-        if(_historicalPageNumber > -1) {
+        if (_historicalPageNumber > -1) {
           // This if condition here is really hard to reproduce, but it's here because of any possible edge case
           newMunchList.insert(0, newMunch);
         }
@@ -123,7 +123,7 @@ class MunchRepo {
     }
   }
 
-  void _addMunchToCache(Munch munch){
+  void _addMunchToCache(Munch munch) {
     munchStatusLists[munch.munchStatus].add(munch);
 
     munchMap[munch.id] = munch;
@@ -131,46 +131,48 @@ class MunchRepo {
     munch.lastUpdatedUTC = DateTime.now().toUtc();
   }
 
-  Future<GetMunchesResponse> getMunches() async{
+  Future<GetMunchesResponse> getMunches() async {
     GetMunchesResponse getMunchesResponse = await _munchApi.getMunches();
 
     _clearMunchCache();
 
     getMunchesCallLastUTC = DateTime.now().toUtc();
 
-    for(int i = 0; i < getMunchesResponse.undecidedMunches.length; i++){
+    for (int i = 0; i < getMunchesResponse.undecidedMunches.length; i++) {
       _addMunchToCache(getMunchesResponse.undecidedMunches[i]);
     }
 
-    for(int i = 0; i < getMunchesResponse.decidedMunches.length; i++){
+    for (int i = 0; i < getMunchesResponse.decidedMunches.length; i++) {
       _addMunchToCache(getMunchesResponse.decidedMunches[i]);
     }
 
     return getMunchesResponse;
   }
 
-  void resetHistoricalMunchesPagination(){
+  void resetHistoricalMunchesPagination() {
     _historicalPageNumber = -1;
     _historicalPaginationUTCDate = null;
   }
 
-  Future<List<Munch>> getHistoricalMunchesNextPage() async{
+  Future<List<Munch>> getHistoricalMunchesNextPage() async {
     _historicalPageNumber++;
 
-    if(_historicalPaginationUTCDate == null){
+    if (_historicalPaginationUTCDate == null) {
       _historicalPaginationUTCDate = DateTime.now().toUtc();
     }
 
-    List<Munch> historicalMunchesList = await _munchApi.getHistoricalMunches(page: _historicalPageNumber, timestamp: _historicalPaginationUTCDate.millisecondsSinceEpoch);
+    List<Munch> historicalMunchesList = await _munchApi.getHistoricalMunches(
+        page: _historicalPageNumber,
+        timestamp: _historicalPaginationUTCDate.millisecondsSinceEpoch);
 
-    for(int i = 0; i < historicalMunchesList.length; i++){
+    for (int i = 0; i < historicalMunchesList.length; i++) {
       _addMunchToCache(historicalMunchesList[i]);
     }
 
     return historicalMunchesList;
   }
 
-  Future<Munch> joinMunch(String munchCode) async{
+  Future<Munch> joinMunch(String munchCode) async {
     String munchId = await _munchApi.getMunchIdForCode(munchCode);
 
     Munch munch = await _munchApi.joinMunch(munchId);
@@ -180,7 +182,7 @@ class MunchRepo {
     return munch;
   }
 
-  Future<Munch> createMunch(Munch munch) async{
+  Future<Munch> createMunch(Munch munch) async {
     Munch createdMunch = await _munchApi.createMunch(munch);
 
     munch = updateMunchCache(createdMunch);
@@ -188,7 +190,7 @@ class MunchRepo {
     return createdMunch;
   }
 
-  Future<Munch> getDetailedMunch(String munchId) async{
+  Future<Munch> getDetailedMunch(String munchId) async {
     try {
       Munch munch = await _munchApi.getDetailedMunch(munchId);
 
@@ -202,9 +204,10 @@ class MunchRepo {
     }
   }
 
-  Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async{
+  Future<List<Restaurant>> getSwipeRestaurantsPage(String munchId) async {
     try {
-      List<Restaurant> restaurantList = await _munchApi.getSwipeRestaurantsPage(munchId);
+      List<Restaurant> restaurantList =
+          await _munchApi.getSwipeRestaurantsPage(munchId);
 
       return restaurantList;
     } on AccessDeniedException catch (error) {
@@ -214,13 +217,11 @@ class MunchRepo {
     }
   }
 
-  Future<Munch> swipeRestaurant({String munchId, String restaurantId, bool liked}) async {
+  Future<Munch> swipeRestaurant(
+      {String munchId, String restaurantId, bool liked}) async {
     try {
       Munch munch = await _munchApi.swipeRestaurant(
-          munchId: munchId,
-          restaurantId: restaurantId,
-          liked: liked
-      );
+          munchId: munchId, restaurantId: restaurantId, liked: liked);
 
       munch = updateMunchCache(munch);
 
@@ -246,12 +247,10 @@ class MunchRepo {
     }
   }
 
-  Future<Munch> kickMember({String munchId, String userId}) async{
+  Future<Munch> kickMember({String munchId, String userId}) async {
     try {
-      Munch munch = await _munchApi.removeUserFromMunch(
-          munchId: munchId,
-          userId: userId
-      );
+      Munch munch =
+          await _munchApi.removeUserFromMunch(munchId: munchId, userId: userId);
 
       /*
         This must be done, because otherwise after updateMunchCache user can exists in Munch even if kicked, if partial response received on Kick
@@ -274,7 +273,7 @@ class MunchRepo {
     }
   }
 
-  Future leaveMunch({String munchId}) async{
+  Future leaveMunch({String munchId}) async {
     try {
       await _munchApi.deleteSelfFromMunch(munchId: munchId);
 
@@ -302,7 +301,8 @@ class MunchRepo {
     }
   }
 
-  Future<Munch> reviewMunch({MunchReviewValue munchReviewValue, String munchId}) async {
+  Future<Munch> reviewMunch(
+      {MunchReviewValue munchReviewValue, String munchId}) async {
     try {
       Munch munch = await _munchApi.reviewMunch(
         reviewValue: Utility.convertEnumValueToString(munchReviewValue),
@@ -318,5 +318,4 @@ class MunchRepo {
       throw error;
     }
   }
-
 }

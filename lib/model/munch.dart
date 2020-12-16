@@ -10,15 +10,11 @@ import 'package:munch/util/deep_link_handler.dart';
 
 part 'munch.jser.dart';
 
-enum MunchStatus{
-  UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL
-}
+enum MunchStatus { UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL }
 
-enum MunchReviewValue{
-  LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED
-}
+enum MunchReviewValue { LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED }
 
-class Munch{
+class Munch {
   @Field.decode()
   String id;
 
@@ -28,7 +24,10 @@ class Munch{
   String name;
 
   // isNullable means - put null conditions (maybe better name is @nullable, this is not logical)
-  @Field.decode(isNullable: false, alias: 'host') // if Field.decode is defined alias must be defined inside it
+  @Field.decode(
+      isNullable: false,
+      alias:
+          'host') // if Field.decode is defined alias must be defined inside it
   String hostUserId;
 
   @Field.decode(isNullable: false)
@@ -77,19 +76,25 @@ class Munch{
   bool munchStatusChanged = false;
 
   @Field.ignore()
-  String get joinLink => AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
+  String get joinLink =>
+      AppConfig.getInstance().deepLinkUrl +
+      DeepLinkRouter.JOIN_ROUTE_PATH +
+      "/" +
+      code;
 
   @Field.ignore()
-  bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.HISTORICAL;
+  bool get isModifiable =>
+      munchStatus != MunchStatus.UNMODIFIABLE &&
+      munchStatus != MunchStatus.HISTORICAL;
 
-  int getNumberOfMembers(){
+  int getNumberOfMembers() {
     return numberOfMembers ?? members.length;
   }
 
-  User getMunchMember(String userId){
-    User user = members.firstWhere((User user){
+  User getMunchMember(String userId) {
+    User user = members.firstWhere((User user) {
       return user.uid == userId;
-    }, orElse: (){
+    }, orElse: () {
       return null;
     });
 
@@ -98,7 +103,7 @@ class Munch{
 
   // detailedMunch - new munch fetched
   // called with instance of current munch
-  void merge(Munch detailedMunch){
+  void merge(Munch detailedMunch) {
     this.name = detailedMunch.name;
     this.code = detailedMunch.code;
     this.hostUserId = detailedMunch.hostUserId;
@@ -111,26 +116,27 @@ class Munch{
     this.radius = detailedMunch.radius;
     this.imageUrl = detailedMunch.imageUrl;
 
-    if(detailedMunch.members != null && detailedMunch.members.length > 0){
+    if (detailedMunch.members != null && detailedMunch.members.length > 0) {
       this.members = detailedMunch.members;
       this.numberOfMembers = detailedMunch.members.length;
     }
 
     // if members array is empty take data from current munch if exists
-    if((detailedMunch.members == null || detailedMunch.members.length == 0) && (this.members == null || this.members.length == 0)){
+    if ((detailedMunch.members == null || detailedMunch.members.length == 0) &&
+        (this.members == null || this.members.length == 0)) {
       // If current munch data has null members or empty members array, put current user in that array it's better than to have 0 members on view
       this.members = [UserRepo.getInstance().currentUser];
       this.numberOfMembers = this.numberOfMembers ?? 1;
     }
 
-    if(detailedMunch.matchedRestaurant != null){
+    if (detailedMunch.matchedRestaurant != null) {
       this.matchedRestaurantName = detailedMunch.matchedRestaurant.name;
-    } else{
+    } else {
       this.matchedRestaurantName = null;
     }
 
     // Otherwise keep last value of munchStatusChanged, before it is reverted to false on swipe or decision screen
-    if(this.munchStatus != detailedMunch.munchStatus){
+    if (this.munchStatus != detailedMunch.munchStatus) {
       this.munchStatusChanged = true;
     }
 
@@ -142,17 +148,25 @@ class Munch{
     return "id: $id; name: $name;";
   }
 
-  Munch({this.id, this.name, this.receivePushNotifications, this.coordinates, this.radius});
+  Munch(
+      {this.id,
+      this.name,
+      this.receivePushNotifications,
+      this.coordinates,
+      this.radius});
 }
 
 @GenSerializer(fields: const {
   // dontEncode must be specified here if we define custom processor, isNullable means that it CAN be nullable
-  'creationTimestamp': const Field(processor: TimestampProcessor(), dontEncode: true, isNullable: false),
-  'munchStatus': const Field(processor: MunchStatusProcessor(), dontEncode: true, decodeFrom: 'state')
+  'creationTimestamp': const Field(
+      processor: TimestampProcessor(), dontEncode: true, isNullable: false),
+  'munchStatus': const Field(
+      processor: MunchStatusProcessor(), dontEncode: true, decodeFrom: 'state')
 })
-class MunchJsonSerializer extends Serializer<Munch> with _$MunchJsonSerializer {}
+class MunchJsonSerializer extends Serializer<Munch> with _$MunchJsonSerializer {
+}
 
-class MunchMemberFilters{
+class MunchMemberFilters {
   @Alias('whitelist')
   List<String> whitelistFiltersKeys;
 
@@ -163,9 +177,10 @@ class MunchMemberFilters{
 }
 
 @GenSerializer()
-class MunchMemberFiltersJsonSerializer extends Serializer<MunchMemberFilters> with _$MunchMemberFiltersJsonSerializer {}
+class MunchMemberFiltersJsonSerializer extends Serializer<MunchMemberFilters>
+    with _$MunchMemberFiltersJsonSerializer {}
 
-class MunchFilters{
+class MunchFilters {
   List<MunchGroupFilter> blacklist;
 
   List<MunchGroupFilter> whitelist;
@@ -174,9 +189,10 @@ class MunchFilters{
 }
 
 @GenSerializer()
-class MunchFiltersJsonSerializer extends Serializer<MunchFilters> with _$MunchFiltersJsonSerializer {}
+class MunchFiltersJsonSerializer extends Serializer<MunchFilters>
+    with _$MunchFiltersJsonSerializer {}
 
-class MunchGroupFilter{
+class MunchGroupFilter {
   String key;
 
   List<String> userIds;
@@ -185,18 +201,14 @@ class MunchGroupFilter{
 }
 
 @GenSerializer()
-class MunchGroupFilterJsonSerializer extends Serializer<MunchGroupFilter> with _$MunchGroupFilterJsonSerializer {}
+class MunchGroupFilterJsonSerializer extends Serializer<MunchGroupFilter>
+    with _$MunchGroupFilterJsonSerializer {}
 
-class RequestedReview{
+class RequestedReview {
   String munchId;
   String imageUrl;
 }
 
 @GenSerializer()
-class RequestedReviewJsonSerializer extends Serializer<RequestedReview> with _$RequestedReviewJsonSerializer {}
-
-
-
-
-
-
+class RequestedReviewJsonSerializer extends Serializer<RequestedReview>
+    with _$RequestedReviewJsonSerializer {}

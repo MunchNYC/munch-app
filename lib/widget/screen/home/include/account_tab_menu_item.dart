@@ -11,14 +11,13 @@ class AccountTabMenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(text, style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w400)),
+        onTap: onTap,
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(text,
+              style: AppTextStyle.style(AppTextStylePattern.heading5,
+                  fontWeight: FontWeight.w400)),
           trailingIcon
-        ]
-      )
-    );
+        ]));
   }
 }

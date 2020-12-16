@@ -9,8 +9,10 @@ part of 'get_filters_response.dart';
 abstract class _$GetFiltersResponseJsonSerializer
     implements Serializer<GetFiltersResponse> {
   Serializer<Filter> __filterJsonSerializer;
+
   Serializer<Filter> get _filterJsonSerializer =>
       __filterJsonSerializer ??= FilterJsonSerializer();
+
   @override
   Map<String, dynamic> toMap(GetFiltersResponse model) {
     if (model == null) return null;

@@ -9,9 +9,11 @@ part of 'user.dart';
 abstract class _$UserJsonSerializer implements Serializer<User> {
   final _genderProcessor = const GenderProcessor();
   Serializer<PushNotificationsInfo> __pushNotificationsInfoJsonSerializer;
+
   Serializer<PushNotificationsInfo> get _pushNotificationsInfoJsonSerializer =>
       __pushNotificationsInfoJsonSerializer ??=
           PushNotificationsInfoJsonSerializer();
+
   @override
   Map<String, dynamic> toMap(User model) {
     if (model == null) return null;

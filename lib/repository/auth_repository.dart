@@ -5,8 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/facebook_graph_api.dart';
-import 'package:munch/config/constants.dart';
 import 'package:munch/api/google_sign_in_api.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/model/response/facebook_graph_profile_response.dart';
 import 'package:munch/model/response/google_sign_in_response.dart';
 import 'package:munch/model/user.dart';
@@ -31,7 +31,8 @@ class AuthRepo {
 
   final UserRepo _userRepo = UserRepo.getInstance();
 
-  Future<firebase_auth.User> _firebaseSignIn(firebase_auth.AuthCredential credentials) async {
+  Future<firebase_auth.User> _firebaseSignIn(
+      firebase_auth.AuthCredential credentials) async {
     firebase_auth.UserCredential userCredential;
 
     try {
@@ -44,17 +45,22 @@ class AuthRepo {
       return userCredential.user;
     } catch (error) {
       print(error);
-      if (error.code.toUpperCase() == "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {
-        throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
+      if (error.code.toUpperCase() ==
+          "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {
+        throw UnauthorisedException(401, {
+          "message": App.translate("firebase_auth.credentials_clash.error")
+        });
       }
 
       print("AuthRepo::signIn No user found; " + error.toString());
     }
 
-    throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
+    throw UnauthorisedException(
+        401, {"message": App.translate("firebase_auth.no_account.error")});
   }
 
-  Future _synchronizeCurrentUser({Function registerUserCallback, Function updateUserCallback}) async {
+  Future _synchronizeCurrentUser(
+      {Function registerUserCallback, Function updateUserCallback}) async {
     User user = await _userRepo.getCurrentUser(forceRefresh: true);
 
     if (user == null) {
@@ -66,12 +72,17 @@ class AuthRepo {
     }
   }
 
-  Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async {
-
+  Future<User> _registerGoogleUser(
+      GoogleSignInAccount account, firebase_auth.User firebaseUser) async {
     GoogleSignInApi googleSignInApi = GoogleSignInApi();
-    GoogleSignInResponse googleSignInResponse = await googleSignInApi.getUserProfile(await account.authHeaders);
+    GoogleSignInResponse googleSignInResponse =
+        await googleSignInApi.getUserProfile(await account.authHeaders);
 
-    User user = User(uid: firebaseUser.uid, displayName: account.displayName, email: account.email, imageUrl: account.photoUrl);
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: account.displayName,
+        email: account.email,
+        imageUrl: account.photoUrl);
 
     user = await _userRepo.registerUser(user);
 
@@ -80,12 +91,15 @@ class AuthRepo {
 
   Future<User> signInWithGoogle() async {
     // VERY IMPORTANT TO SET hostedDomain TO EMPTY STRING OTHERWISE GOOGLE SIGN IN WIDGET WILL CRASH ON iOS 9 and 10
-    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
+    GoogleSignIn googleSignIn = GoogleSignIn(
+        signInOption: SignInOption.standard,
+        scopes: ["profile", "email"],
+        hostedDomain: "");
 
     try {
       GoogleSignInAccount account = await googleSignIn.signIn();
 
-      if(account != null) {
+      if (account != null) {
         final authentication = await account.authentication;
         final credentials = firebase_auth.GoogleAuthProvider.credential(
             idToken: authentication.idToken,
@@ -93,53 +107,71 @@ class AuthRepo {
 
         firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
-        await _synchronizeCurrentUser(registerUserCallback: () => _registerGoogleUser(account, firebaseUser));
+        await _synchronizeCurrentUser(
+            registerUserCallback: () =>
+                _registerGoogleUser(account, firebaseUser));
 
         await _userRepo.setCurrentUserSocialProvider(SocialProvider.GOOGLE);
-        
+
         return await _onSignInSuccessful();
-      } else{
+      } else {
         return null;
       }
-    } catch(error, stacktrace){
-      if(error is PlatformException){
-        if(error.code == "network_error"){
+    } catch (error, stacktrace) {
+      if (error is PlatformException) {
+        if (error.code == "network_error") {
           throw InternetConnectionException();
         } else {
           print("error stack trace: " + stacktrace.toString());
           // TODO remove after confirmed fixed for users https://github.com/mogol/flutter_secure_storage/issues/43
           FlutterSecureStorage().delete(key: StorageKeys.ACCESS_TOKEN);
-          throw FetchDataException.fromMessage(App.translate("google_login.platform_exception.text"));
+          throw FetchDataException.fromMessage(
+              App.translate("google_login.platform_exception.text"));
         }
-      } else{
+      } else {
         // just forward the error if it's not PlatformException
         throw error;
       }
     }
   }
 
-  Future<User> _registerFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
+  Future<User> _registerFacebookUser(FacebookLoginResult facebookLoginResult,
+      firebase_auth.User firebaseUser) async {
     String accessToken = facebookLoginResult.accessToken.token;
 
     FacebookGraphApi facebookGraphApi = FacebookGraphApi();
 
-    FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
+    FacebookGraphProfileResponse profile =
+        await facebookGraphApi.getUserProfile(accessToken);
 
-    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), birthday: profile.birthday, imageUrl: profile.photoUrl);
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: profile.name,
+        email: profile.email,
+        gender: User.stringToGender(profile.gender),
+        birthday: profile.birthday,
+        imageUrl: profile.photoUrl);
 
     user = await _userRepo.registerUser(user);
 
     return user;
   }
 
-  Future<User> _updateFacebookUser(FacebookLoginResult facebookLoginResult, firebase_auth.User firebaseUser) async {
+  Future<User> _updateFacebookUser(FacebookLoginResult facebookLoginResult,
+      firebase_auth.User firebaseUser) async {
     User currentUser = await _userRepo.getCurrentUser(forceRefresh: true);
 
     String accessToken = facebookLoginResult.accessToken.token;
     FacebookGraphApi facebookGraphApi = FacebookGraphApi();
-    FacebookGraphProfileResponse profile = await facebookGraphApi.getUserProfile(accessToken);
+    FacebookGraphProfileResponse profile =
+        await facebookGraphApi.getUserProfile(accessToken);
 
-    User user = User(uid: firebaseUser.uid, displayName: profile.name, email: profile.email, gender: User.stringToGender(profile.gender), imageUrl: profile.photoUrl);
+    User user = User(
+        uid: firebaseUser.uid,
+        displayName: profile.name,
+        email: profile.email,
+        gender: User.stringToGender(profile.gender),
+        imageUrl: profile.photoUrl);
 
     Map<String, dynamic> fields;
     if (currentUser.displayName == null) {
@@ -153,7 +185,8 @@ class AuthRepo {
       user.email = currentUser.email;
     }
     if (currentUser.gender == null) {
-      fields["gender"] = User.stringToGender(profile.gender).toString().split(".").last;
+      fields["gender"] =
+          User.stringToGender(profile.gender).toString().split(".").last;
     } else {
       user.gender = currentUser.gender;
     }
@@ -165,19 +198,22 @@ class AuthRepo {
 
   Future<User> signInWithFacebook() async {
     FacebookLogin facebookLogin = FacebookLogin();
-    FacebookLoginResult facebookLoginResult = await facebookLogin.logIn(['email']);
+    FacebookLoginResult facebookLoginResult =
+        await facebookLogin.logIn(['email']);
 
     switch (facebookLoginResult.status) {
       case FacebookLoginStatus.loggedIn:
-        final credentials = firebase_auth.FacebookAuthProvider.credential(facebookLoginResult.accessToken.token);
+        final credentials = firebase_auth.FacebookAuthProvider.credential(
+            facebookLoginResult.accessToken.token);
 
         firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
 
         await _synchronizeCurrentUser(
-            registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser),
-            updateUserCallback: () => _updateFacebookUser(facebookLoginResult, firebaseUser)
-        );
-        
+            registerUserCallback: () =>
+                _registerFacebookUser(facebookLoginResult, firebaseUser),
+            updateUserCallback: () =>
+                _updateFacebookUser(facebookLoginResult, firebaseUser));
+
         await _userRepo.setCurrentUserSocialProvider(SocialProvider.FACEBOOK);
 
         return await _onSignInSuccessful();
@@ -185,10 +221,12 @@ class AuthRepo {
       case FacebookLoginStatus.cancelledByUser:
         break;
       case FacebookLoginStatus.error:
-        if(facebookLoginResult.errorMessage == "net::ERR_INTERNET_DISCONNECTED"){
+        if (facebookLoginResult.errorMessage ==
+            "net::ERR_INTERNET_DISCONNECTED") {
           throw InternetConnectionException();
         } else {
-          throw FetchDataException.fromMessage(App.translate("facebook_login.platform_exception.text"));
+          throw FetchDataException.fromMessage(
+              App.translate("facebook_login.platform_exception.text"));
         }
         break;
     }
@@ -196,14 +234,18 @@ class AuthRepo {
     return null;
   }
 
-  Future<User> _registerAppleUser(AuthorizationCredentialAppleID credentialAppleID, firebase_auth.User firebaseUser) async {
-    String fullName = firebaseUser.displayName ?? ((credentialAppleID.givenName ?? "") + " " + (credentialAppleID.familyName ?? ""));
+  Future<User> _registerAppleUser(
+      AuthorizationCredentialAppleID credentialAppleID,
+      firebase_auth.User firebaseUser) async {
+    String fullName = firebaseUser.displayName ??
+        ((credentialAppleID.givenName ?? "") +
+            " " +
+            (credentialAppleID.familyName ?? ""));
 
     User user = User(
         uid: firebaseUser.uid,
         displayName: fullName == " " ? "Private Muncher" : fullName,
-        email: (firebaseUser.email ?? credentialAppleID.email) ?? ""
-    );
+        email: (firebaseUser.email ?? credentialAppleID.email) ?? "");
 
     user = await _userRepo.registerUser(user);
 
@@ -212,36 +254,40 @@ class AuthRepo {
 
   Future<User> signInWithApple() async {
     try {
-      final AuthorizationCredentialAppleID credentialAppleID = await SignInWithApple.getAppleIDCredential(
+      final AuthorizationCredentialAppleID credentialAppleID =
+          await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
         ],
       );
 
-      firebase_auth.OAuthProvider oAuthProvider = firebase_auth.OAuthProvider("apple.com");
+      firebase_auth.OAuthProvider oAuthProvider =
+          firebase_auth.OAuthProvider("apple.com");
 
       final firebase_auth.AuthCredential credential = oAuthProvider.credential(
           idToken: credentialAppleID.identityToken,
-          accessToken: credentialAppleID.authorizationCode
-      );
+          accessToken: credentialAppleID.authorizationCode);
 
       firebase_auth.User firebaseUser = await _firebaseSignIn(credential);
 
-      await _synchronizeCurrentUser(registerUserCallback: () => _registerAppleUser(credentialAppleID, firebaseUser));
+      await _synchronizeCurrentUser(
+          registerUserCallback: () =>
+              _registerAppleUser(credentialAppleID, firebaseUser));
 
       await _userRepo.setCurrentUserSocialProvider(SocialProvider.APPLE);
 
       return await _onSignInSuccessful();
-    } catch(exception){
+    } catch (exception) {
       print("Error signing in with Apple: " + exception.toString());
 
-      if(exception is SignInWithAppleAuthorizationException){
-        if(exception.code == AuthorizationErrorCode.canceled){
+      if (exception is SignInWithAppleAuthorizationException) {
+        if (exception.code == AuthorizationErrorCode.canceled) {
           return null;
         }
-      } else{
-        throw FetchDataException.fromMessage(App.translate("apple_login.platform_exception.text"));
+      } else {
+        throw FetchDataException.fromMessage(
+            App.translate("apple_login.platform_exception.text"));
       }
     }
   }
@@ -257,20 +303,24 @@ class AuthRepo {
 
     SocialProvider socialProvider;
 
-    if(currentUser != null) {
+    if (currentUser != null) {
       socialProvider = currentUser.socialProvider;
       // clearCurrentUser must be called before signOut, because user has to be authenticated to delete some data
       // must be wrapped inside try catch to prevent breaking of the script if this call is failed
       try {
         await _userRepo.signOutUser();
-      } catch(error){}
-    } else{
+      } catch (error) {}
+    } else {
       socialProvider = await _userRepo.getStoredSocialProvider();
     }
 
     switch (socialProvider) {
       case SocialProvider.GOOGLE:
-        await GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "").signOut();
+        await GoogleSignIn(
+                signInOption: SignInOption.standard,
+                scopes: ["profile", "email"],
+                hostedDomain: "")
+            .signOut();
         break;
       case SocialProvider.FACEBOOK:
         await FacebookLogin().logOut();
@@ -281,7 +331,7 @@ class AuthRepo {
 
     NotificationsHandler.getInstance().stopNotifications();
 
-    if(_auth.currentUser != null) {
+    if (_auth.currentUser != null) {
       return _auth.signOut().catchError((error) {
         print("LoginRepo::logout() encountered an error:\n${error.error}");
         return false;
@@ -290,5 +340,4 @@ class AuthRepo {
       });
     }
   }
-
 }

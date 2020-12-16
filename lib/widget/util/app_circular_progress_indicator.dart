@@ -6,7 +6,8 @@ class AppCircularProgressIndicator extends StatelessWidget {
   final bool centered;
   final Color color;
 
-  AppCircularProgressIndicator({this.centered = true, this.color = Palette.secondaryDark});
+  AppCircularProgressIndicator(
+      {this.centered = true, this.color = Palette.secondaryDark});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class AppCircularProgressIndicator extends StatelessWidget {
       size: 32.0,
     );
 
-    if(centered){
+    if (centered) {
       _spinKitThreeBounce = Center(child: _spinKitThreeBounce);
     }
 

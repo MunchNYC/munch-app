@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:package_info/package_info.dart';
@@ -38,15 +39,15 @@ class AppConfig {
     _instance.packageInfo = await PackageInfo.fromPlatform();
   }
 
-  static AppConfig getInstance(){
-    if(_instance == null){
+  static AppConfig getInstance() {
+    if (_instance == null) {
       forEnvironment(null);
     }
 
     return _instance;
   }
-
 }
 
 @GenSerializer()
-class AppConfigJsonSerializer extends Serializer<AppConfig> with _$AppConfigJsonSerializer {}
+class AppConfigJsonSerializer extends Serializer<AppConfig>
+    with _$AppConfigJsonSerializer {}

@@ -32,7 +32,7 @@ class GetRestaurantsPageEvent extends MunchEvent {
   GetRestaurantsPageEvent(this.munchId);
 }
 
-abstract class RestaurantSwipeEvent extends MunchEvent{
+abstract class RestaurantSwipeEvent extends MunchEvent {
   String munchId;
   String restaurantId;
   bool liked;
@@ -41,11 +41,13 @@ abstract class RestaurantSwipeEvent extends MunchEvent{
 }
 
 class RestaurantSwipeLeftEvent extends RestaurantSwipeEvent {
-  RestaurantSwipeLeftEvent({munchId, restaurantId}): super(munchId: munchId, restaurantId: restaurantId, liked: false);
+  RestaurantSwipeLeftEvent({munchId, restaurantId})
+      : super(munchId: munchId, restaurantId: restaurantId, liked: false);
 }
 
 class RestaurantSwipeRightEvent extends RestaurantSwipeEvent {
-  RestaurantSwipeRightEvent({munchId, restaurantId}): super(munchId: munchId, restaurantId: restaurantId, liked: true);
+  RestaurantSwipeRightEvent({munchId, restaurantId})
+      : super(munchId: munchId, restaurantId: restaurantId, liked: true);
 }
 
 class NoMoreImagesCarouselEvent extends MunchEvent {
@@ -85,5 +87,6 @@ class ReviewMunchEvent extends MunchEvent {
   MunchReviewValue munchReviewValue;
   String munchId;
 
-  ReviewMunchEvent({this.munchReviewValue, this.munchId, this.forcedReview = false});
+  ReviewMunchEvent(
+      {this.munchReviewValue, this.munchId, this.forcedReview = false});
 }

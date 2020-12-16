@@ -6,8 +6,9 @@ import 'package:munch/repository/user_repository.dart';
 import 'app.dart';
 import 'navigation_helper.dart';
 
-class DeepLinkHandler{
-  static const _methodChannel = const MethodChannel('https.munch-app.com/channel');
+class DeepLinkHandler {
+  static const _methodChannel =
+      const MethodChannel('https.munch-app.com/channel');
   static const _eventChannel = const EventChannel('https.munch-app.com/events');
 
   DeepLinkRouter _deepLinkRouter = DeepLinkRouter();
@@ -23,7 +24,7 @@ class DeepLinkHandler{
     return _instance;
   }
 
-  void initializeDeepLinkListener(){
+  void initializeDeepLinkListener() {
     //Checking broadcast stream, if deep link was clicked in opened application
     _eventChannel.receiveBroadcastStream().listen((d) => onDeepLinkReceived(d));
   }
@@ -65,19 +66,17 @@ class DeepLinkHandler{
   }
 }
 
-enum DeepLinkRoute{
-  MUNCH_ROUTE,
-  JOIN_ROUTE,
-  HOME_ROUTE
-}
+enum DeepLinkRoute { MUNCH_ROUTE, JOIN_ROUTE, HOME_ROUTE }
 
-class DeepLinkRouter{
+class DeepLinkRouter {
   static const String MUNCH_ROUTE_PATH = "/munches";
   static const String JOIN_ROUTE_PATH = "/munches/join";
   static const String HOME_ROUTE_PATH = "/munches/home";
 
-  static final RegExp munchRouteRegex = RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[a-zA-Z0-9]+$');
-  static final RegExp joinRouteRegex = RegExp(r'^' + JOIN_ROUTE_PATH + r'/[a-zA-Z0-9]{6}$');
+  static final RegExp munchRouteRegex =
+      RegExp(r'^' + MUNCH_ROUTE_PATH + r'/[a-zA-Z0-9]+$');
+  static final RegExp joinRouteRegex =
+      RegExp(r'^' + JOIN_ROUTE_PATH + r'/[a-zA-Z0-9]{6}$');
   static final RegExp homeRouteRegex = RegExp(r'^' + HOME_ROUTE_PATH + r'$');
 
   final List<RegExp> _routeRegex = [
@@ -92,9 +91,9 @@ class DeepLinkRouter{
     homeRouteRegex: DeepLinkRoute.HOME_ROUTE
   });
 
-  DeepLinkRoute getRoute(String path){
-    for(int i = 0; i < _routeRegex.length; i++){
-      if(_routeRegex[i].hasMatch(path)){
+  DeepLinkRoute getRoute(String path) {
+    for (int i = 0; i < _routeRegex.length; i++) {
+      if (_routeRegex[i].hasMatch(path)) {
         return _routeMap[_routeRegex[i]];
       }
     }
@@ -102,56 +101,53 @@ class DeepLinkRouter{
     return null;
   }
 
-  void _navigateOnError(){
-      NavigationHelper.navigateToHome(
-        null,
-        popAllRoutes: true,
-        navigatorState: App.rootNavigatorKey.currentState,
-      );
+  void _navigateOnError() {
+    NavigationHelper.navigateToHome(
+      null,
+      popAllRoutes: true,
+      navigatorState: App.rootNavigatorKey.currentState,
+    );
   }
 
-  void executeMunchRoute(String munchId){
-    MunchRepo.getInstance().getDetailedMunch(munchId).then((munch){
-      if(munch.munchStatus == MunchStatus.UNDECIDED) {
-        NavigationHelper.navigateToRestaurantSwipeScreen(
-          null,
-          munch: munch,
-          shouldFetchDetailedMunch: false,
-          popAllRoutes: true,
-          slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation,
-          navigatorState: App.rootNavigatorKey.currentState
-        );
-      } else{
-        NavigationHelper.navigateToDecisionScreen(
-            null,
+  void executeMunchRoute(String munchId) {
+    MunchRepo.getInstance().getDetailedMunch(munchId).then((munch) {
+      if (munch.munchStatus == MunchStatus.UNDECIDED) {
+        NavigationHelper.navigateToRestaurantSwipeScreen(null,
             munch: munch,
             shouldFetchDetailedMunch: false,
             popAllRoutes: true,
-            slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation,
-            navigatorState: App.rootNavigatorKey.currentState
-        );
+            slideTransitionBuilder:
+                NavigationAnimationHelper.rightToLeftAnimation,
+            navigatorState: App.rootNavigatorKey.currentState);
+      } else {
+        NavigationHelper.navigateToDecisionScreen(null,
+            munch: munch,
+            shouldFetchDetailedMunch: false,
+            popAllRoutes: true,
+            slideTransitionBuilder:
+                NavigationAnimationHelper.rightToLeftAnimation,
+            navigatorState: App.rootNavigatorKey.currentState);
       }
-    }).catchError((error){
+    }).catchError((error) {
       _navigateOnError();
     });
   }
 
-  void executeJoinRoute(String munchCode){
-    MunchRepo.getInstance().joinMunch(munchCode).then((munch){
-      NavigationHelper.navigateToRestaurantSwipeScreen(
-          null,
+  void executeJoinRoute(String munchCode) {
+    MunchRepo.getInstance().joinMunch(munchCode).then((munch) {
+      NavigationHelper.navigateToRestaurantSwipeScreen(null,
           munch: munch,
           shouldFetchDetailedMunch: false,
           popAllRoutes: true,
-          slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation,
-          navigatorState: App.rootNavigatorKey.currentState
-      );
-    }).catchError((error){
+          slideTransitionBuilder:
+              NavigationAnimationHelper.rightToLeftAnimation,
+          navigatorState: App.rootNavigatorKey.currentState);
+    }).catchError((error) {
       _navigateOnError();
     });
   }
 
-  void executeHomeRoute(){
+  void executeHomeRoute() {
     NavigationHelper.navigateToHome(
       null,
       popAllRoutes: true,

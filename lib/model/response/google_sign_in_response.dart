@@ -1,4 +1,5 @@
 import 'package:jaguar_serializer/jaguar_serializer.dart';
+
 part 'google_sign_in_response.jser.dart';
 
 class GoogleSignInResponse {
@@ -9,4 +10,6 @@ class GoogleSignInResponse {
 }
 
 @GenSerializer()
-class GoogleSignInResponseJsonSerializer extends Serializer<GoogleSignInResponse> with _$GoogleSignInResponseJsonSerializer {}
+class GoogleSignInResponseJsonSerializer
+    extends Serializer<GoogleSignInResponse>
+    with _$GoogleSignInResponseJsonSerializer {}

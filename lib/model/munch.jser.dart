@@ -10,20 +10,26 @@ abstract class _$MunchJsonSerializer implements Serializer<Munch> {
   final _timestampProcessor = const TimestampProcessor();
   final _munchStatusProcessor = const MunchStatusProcessor();
   Serializer<Coordinates> __coordinatesJsonSerializer;
+
   Serializer<Coordinates> get _coordinatesJsonSerializer =>
       __coordinatesJsonSerializer ??= CoordinatesJsonSerializer();
   Serializer<User> __userJsonSerializer;
+
   Serializer<User> get _userJsonSerializer =>
       __userJsonSerializer ??= UserJsonSerializer();
   Serializer<MunchMemberFilters> __munchMemberFiltersJsonSerializer;
+
   Serializer<MunchMemberFilters> get _munchMemberFiltersJsonSerializer =>
       __munchMemberFiltersJsonSerializer ??= MunchMemberFiltersJsonSerializer();
   Serializer<MunchFilters> __munchFiltersJsonSerializer;
+
   Serializer<MunchFilters> get _munchFiltersJsonSerializer =>
       __munchFiltersJsonSerializer ??= MunchFiltersJsonSerializer();
   Serializer<Restaurant> __restaurantJsonSerializer;
+
   Serializer<Restaurant> get _restaurantJsonSerializer =>
       __restaurantJsonSerializer ??= RestaurantJsonSerializer();
+
   @override
   Map<String, dynamic> toMap(Munch model) {
     if (model == null) return null;
@@ -115,8 +121,10 @@ abstract class _$MunchMemberFiltersJsonSerializer
 abstract class _$MunchFiltersJsonSerializer
     implements Serializer<MunchFilters> {
   Serializer<MunchGroupFilter> __munchGroupFilterJsonSerializer;
+
   Serializer<MunchGroupFilter> get _munchGroupFilterJsonSerializer =>
       __munchGroupFilterJsonSerializer ??= MunchGroupFilterJsonSerializer();
+
   @override
   Map<String, dynamic> toMap(MunchFilters model) {
     if (model == null) return null;

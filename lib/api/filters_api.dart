@@ -7,19 +7,24 @@ class FiltersApi extends Api {
   static const String ENDPOINT_SET_PREFIX = 'munch';
   static const int API_VERSION = 1;
 
-  FiltersApi(): super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
+  FiltersApi()
+      : super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
 
   Future<GetFiltersResponse> getFilters() async {
     String getUrl = "/categories";
 
     var data = await get(getUrl);
 
-    GetFiltersResponse getFiltersResponse = GetFiltersResponseJsonSerializer().fromMap(data);
+    GetFiltersResponse getFiltersResponse =
+        GetFiltersResponseJsonSerializer().fromMap(data);
 
     return getFiltersResponse;
   }
 
-  Future<Munch> updateFilters({List<String> whitelistFiltersKeys, List<String> blacklistFiltersKeys, String munchId}) async {
+  Future<Munch> updateFilters(
+      {List<String> whitelistFiltersKeys,
+      List<String> blacklistFiltersKeys,
+      String munchId}) async {
     String postUrl = "/filters?munchId=$munchId";
 
     Map<String, dynamic> fields = {

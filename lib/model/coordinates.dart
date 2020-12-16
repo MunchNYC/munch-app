@@ -11,12 +11,14 @@ class Coordinates {
     return "latitude: $latitude; longitude: $longitude";
   }
 
-  bool equals(Coordinates coordinates){
-    return this.latitude == coordinates.latitude && this.longitude == coordinates.longitude;
+  bool equals(Coordinates coordinates) {
+    return this.latitude == coordinates.latitude &&
+        this.longitude == coordinates.longitude;
   }
 
   Coordinates({this.latitude, this.longitude});
 }
 
 @GenSerializer()
-class CoordinatesJsonSerializer extends Serializer<Coordinates> with _$CoordinatesJsonSerializer {}
+class CoordinatesJsonSerializer extends Serializer<Coordinates>
+    with _$CoordinatesJsonSerializer {}

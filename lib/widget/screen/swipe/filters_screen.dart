@@ -29,7 +29,7 @@ import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 
-class FiltersScreen extends StatefulWidget{
+class FiltersScreen extends StatefulWidget {
   Munch munch;
 
   FiltersScreen({this.munch});
@@ -38,21 +38,25 @@ class FiltersScreen extends StatefulWidget{
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateMixin {
+class _FiltersScreenState extends State<FiltersScreen>
+    with TickerProviderStateMixin {
   static const double AVATAR_RADIUS = 12.0;
   static const double AVATAR_CONTAINER_PARENT_PERCENT = 0.5;
   static const double AVATAR_SPACING = 4.0;
 
   // avatar size calculations
-  static final double _totalAvatarWidth =  (AVATAR_RADIUS * 2 + AVATAR_SPACING);
-  static final double _maxAvatarContainerWidth = (App.screenWidth - AppDimensions.padding(AppPaddingType.screenWithAppBar).horizontal) * AVATAR_CONTAINER_PARENT_PERCENT;
-  static final int _maxAvatarsPerRow = (_maxAvatarContainerWidth / _totalAvatarWidth).floor();
-  
+  static final double _totalAvatarWidth = (AVATAR_RADIUS * 2 + AVATAR_SPACING);
+  static final double _maxAvatarContainerWidth = (App.screenWidth -
+          AppDimensions.padding(AppPaddingType.screenWithAppBar).horizontal) *
+      AVATAR_CONTAINER_PARENT_PERCENT;
+  static final int _maxAvatarsPerRow =
+      (_maxAvatarContainerWidth / _totalAvatarWidth).floor();
+
   Completer<bool> _popScopeCompleter;
 
   List<Filter> _whitelistFilters;
   List<Filter> _blacklistFilters;
-  
+
   List<Filter> _allFilters;
   List<Filter> _topFilters;
 
@@ -62,9 +66,21 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   bool _filtersSaved = false;
 
   final List<Widget> _filtersStatusTexts = [
-    Text(App.translate("filters_screen.filter_controls.filter_status.blacklisted.text"), style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.error)),
-    Text(App.translate("filters_screen.filter_controls.filter_status.neutral.text"), style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight)),
-    Text(App.translate("filters_screen.filter_controls.filter_status.whitelisted.text"), style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.hyperlink))
+    Text(
+        App.translate(
+            "filters_screen.filter_controls.filter_status.blacklisted.text"),
+        style: AppTextStyle.style(AppTextStylePattern.body3,
+            color: Palette.error)),
+    Text(
+        App.translate(
+            "filters_screen.filter_controls.filter_status.neutral.text"),
+        style: AppTextStyle.style(AppTextStylePattern.body3,
+            color: Palette.secondaryLight)),
+    Text(
+        App.translate(
+            "filters_screen.filter_controls.filter_status.whitelisted.text"),
+        style: AppTextStyle.style(AppTextStylePattern.body3,
+            color: Palette.hyperlink))
   ];
 
   FiltersRepo _filtersRepo = FiltersRepo.getInstance();
@@ -82,9 +98,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   void initState() {
     _filtersBloc = FiltersBloc();
 
-    if(_filtersRepo.allFilters == null || _filtersRepo.topFilters == null){
+    if (_filtersRepo.allFilters == null || _filtersRepo.topFilters == null) {
       _filtersBloc.add(GetFiltersEvent());
-    } else{
+    } else {
       _initializeFilters();
     }
 
@@ -98,76 +114,85 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     super.dispose();
   }
 
-  void _addFilterToWhitelist(String filterKey){
+  void _addFilterToWhitelist(String filterKey) {
     Filter filter = _filtersMap[filterKey];
 
     filter.filterStatus = FilterStatus.WHITELISTED;
     _whitelistFilters.add(filter);
   }
 
-  void _addFilterToBlacklist(String filterKey){
+  void _addFilterToBlacklist(String filterKey) {
     Filter filter = _filtersMap[filterKey];
 
     filter.filterStatus = FilterStatus.BLACKLISTED;
     _blacklistFilters.add(filter);
   }
 
-  void _setFilterStatus(Filter filter, FilterStatus filterStatus){
-    if(filter.filterStatus == FilterStatus.WHITELISTED) {
+  void _setFilterStatus(Filter filter, FilterStatus filterStatus) {
+    if (filter.filterStatus == FilterStatus.WHITELISTED) {
       _whitelistFilters.removeWhere((Filter f) => f.key == filter.key);
-    } else if(filter.filterStatus == FilterStatus.BLACKLISTED) {
+    } else if (filter.filterStatus == FilterStatus.BLACKLISTED) {
       _blacklistFilters.removeWhere((Filter f) => f.key == filter.key);
     }
 
-    if(filterStatus == FilterStatus.WHITELISTED){
+    if (filterStatus == FilterStatus.WHITELISTED) {
       _addFilterToWhitelist(filter.key);
-    } else if(filterStatus == FilterStatus.BLACKLISTED){
+    } else if (filterStatus == FilterStatus.BLACKLISTED) {
       _addFilterToBlacklist(filter.key);
-    } else if(filterStatus == FilterStatus.NEUTRAL) {
+    } else if (filterStatus == FilterStatus.NEUTRAL) {
       filter.filterStatus = filterStatus;
     }
   }
 
-  void _initializeFilters(){
+  void _initializeFilters() {
     _whitelistFilters = List<Filter>();
     _blacklistFilters = List<Filter>();
     _allFilters = List<Filter>();
     _topFilters = List<Filter>();
-    
+
     _filtersMap = Map<String, Filter>();
 
-    for(int i = 0; i < _filtersRepo.allFilters.length; i++){
-      Filter clonedFilter = _filtersRepo.allFilters[i].cloneWithStatus(FilterStatus.NEUTRAL);
+    for (int i = 0; i < _filtersRepo.allFilters.length; i++) {
+      Filter clonedFilter =
+          _filtersRepo.allFilters[i].cloneWithStatus(FilterStatus.NEUTRAL);
       // clone filter from Repo, don't need to make dirty objects that will be always alive
       _filtersMap[_filtersRepo.allFilters[i].key] = clonedFilter;
       _allFilters.add(clonedFilter);
     }
 
-    for(int i = 0; i < _filtersRepo.topFilters.length; i++){
+    for (int i = 0; i < _filtersRepo.topFilters.length; i++) {
       _topFilters.add(_filtersMap[_filtersRepo.topFilters[i].key]);
     }
 
-    for(int i = 0; i < widget.munch.munchMemberFilters.whitelistFiltersKeys.length; i++){
-      _addFilterToWhitelist(widget.munch.munchMemberFilters.whitelistFiltersKeys[i]);
+    for (int i = 0;
+        i < widget.munch.munchMemberFilters.whitelistFiltersKeys.length;
+        i++) {
+      _addFilterToWhitelist(
+          widget.munch.munchMemberFilters.whitelistFiltersKeys[i]);
     }
 
-    for(int i = 0; i < widget.munch.munchMemberFilters.blacklistFiltersKeys.length; i++){
-      _addFilterToBlacklist(widget.munch.munchMemberFilters.blacklistFiltersKeys[i]);
+    for (int i = 0;
+        i < widget.munch.munchMemberFilters.blacklistFiltersKeys.length;
+        i++) {
+      _addFilterToBlacklist(
+          widget.munch.munchMemberFilters.blacklistFiltersKeys[i]);
     }
   }
 
-  Widget _appBar(BuildContext context){
+  Widget _appBar(BuildContext context) {
     return AppBar(
       elevation: 0.0,
       automaticallyImplyLeading: false,
       leading: AppBarBackButton(),
-      title: Text(App.translate("filters_screen.app_bar.title"), style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500, fontSizeOffset: 1.0)),
+      title: Text(App.translate("filters_screen.app_bar.title"),
+          style: AppTextStyle.style(AppTextStylePattern.heading6,
+              fontWeight: FontWeight.w500, fontSizeOffset: 1.0)),
       centerTitle: true,
       backgroundColor: Palette.background,
       actions: <Widget>[
-        Padding(padding:
-        EdgeInsets.only(right: 24.0),
-            child:  CustomButton<FiltersState, FiltersUpdatingState>.bloc(
+        Padding(
+            padding: EdgeInsets.only(right: 24.0),
+            child: CustomButton<FiltersState, FiltersUpdatingState>.bloc(
               cubit: _filtersBloc,
               flat: true,
               // very important to set, otherwise title won't be aligned good
@@ -180,35 +205,39 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                       fontSizeOffset: 1.0,
                       color: Palette.primary.withOpacity(0.6))),
               onPressedCallback: _onSaveButtonClicked,
-            )
-        ),
+            )),
       ],
     );
   }
 
-  bool _checkFiltersChangesMade(){
-    List<String> munchWhitelistFiltersKeys = widget.munch.munchMemberFilters.whitelistFiltersKeys;
-    List<String> munchBlacklistFiltersKeys = widget.munch.munchMemberFilters.blacklistFiltersKeys;
+  bool _checkFiltersChangesMade() {
+    List<String> munchWhitelistFiltersKeys =
+        widget.munch.munchMemberFilters.whitelistFiltersKeys;
+    List<String> munchBlacklistFiltersKeys =
+        widget.munch.munchMemberFilters.blacklistFiltersKeys;
 
     bool changesMade = false;
 
-    if((munchWhitelistFiltersKeys.length + munchBlacklistFiltersKeys.length) == (_whitelistFilters.length + _blacklistFilters.length)){
+    if ((munchWhitelistFiltersKeys.length + munchBlacklistFiltersKeys.length) ==
+        (_whitelistFilters.length + _blacklistFilters.length)) {
       // every single filter should match with _filtersMap statuses, otherwise changes are made
-      for(int i = 0; i < munchWhitelistFiltersKeys.length; i++){
-        if(_filtersMap[munchWhitelistFiltersKeys[i]].filterStatus != FilterStatus.WHITELISTED){
+      for (int i = 0; i < munchWhitelistFiltersKeys.length; i++) {
+        if (_filtersMap[munchWhitelistFiltersKeys[i]].filterStatus !=
+            FilterStatus.WHITELISTED) {
           changesMade = true;
           break;
         }
       }
 
       // every single filter should match with _filtersMap statuses, otherwise changes are made
-      for(int i = 0; i < munchBlacklistFiltersKeys.length; i++){
-        if(_filtersMap[munchBlacklistFiltersKeys[i]].filterStatus != FilterStatus.BLACKLISTED){
+      for (int i = 0; i < munchBlacklistFiltersKeys.length; i++) {
+        if (_filtersMap[munchBlacklistFiltersKeys[i]].filterStatus !=
+            FilterStatus.BLACKLISTED) {
           changesMade = true;
           break;
         }
       }
-    } else{
+    } else {
       changesMade = true;
     }
 
@@ -216,22 +245,25 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   Future<bool> _onWillPopScope(BuildContext context) async {
-    if(_checkFiltersChangesMade()) {
+    if (_checkFiltersChangesMade()) {
       _popScopeCompleter = Completer<bool>();
 
       CupertinoAlertDialogBuilder().showAlertDialogWidget(context,
-          dialogTitle: App.translate("filters_screen.save_changes_alert_dialog.title"),
-          dialogDescription:App.translate("filters_screen.save_changes_alert_dialog.description"),
-          confirmText: App.translate("filters_screen.save_changes_alert_dialog.confirm_button.text"),
-          cancelText: App.translate("filters_screen.save_changes_alert_dialog.cancel_button.text"),
+          dialogTitle:
+              App.translate("filters_screen.save_changes_alert_dialog.title"),
+          dialogDescription: App.translate(
+              "filters_screen.save_changes_alert_dialog.description"),
+          confirmText: App.translate(
+              "filters_screen.save_changes_alert_dialog.confirm_button.text"),
+          cancelText: App.translate(
+              "filters_screen.save_changes_alert_dialog.cancel_button.text"),
           confirmCallback: _onSaveChangesDialogButtonClicked,
-          cancelCallback: _onDiscardChangesDialogButtonClicked
-      );
+          cancelCallback: _onDiscardChangesDialogButtonClicked);
 
       // decision will be made after dialog clicking
       bool shouldReturn = await _popScopeCompleter.future;
 
-      if(!shouldReturn){
+      if (!shouldReturn) {
         // save button clicked and something is wrong
         return false;
       }
@@ -249,200 +281,207 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         child: Scaffold(
             appBar: _appBar(context),
             backgroundColor: Palette.background,
-            body: _buildNotificationsBloc()
-        )
-    );
+            body: _buildNotificationsBloc()));
   }
 
-  void _munchStatusNotificationListener(BuildContext context, NotificationsState state){
-    if(state is CurrentUserKickedNotificationState){
+  void _munchStatusNotificationListener(
+      BuildContext context, NotificationsState state) {
+    if (state is CurrentUserKickedNotificationState) {
       String munchId = state.data;
 
-      if(widget.munch.id == munchId){
+      if (widget.munch.id == munchId) {
         NavigationHelper.navigateToHome(context, popAllRoutes: true);
       }
     }
   }
 
-  Widget _buildNotificationsBloc(){
+  Widget _buildNotificationsBloc() {
     return BlocConsumer<NotificationsBloc, NotificationsState>(
         cubit: NotificationsHandler.getInstance().notificationsBloc,
-        listenWhen: (NotificationsState previous, NotificationsState current) => (current is CurrentUserKickedNotificationState) && current.ready,
-        listener: (BuildContext context, NotificationsState state) => _munchStatusNotificationListener(context, state),
-        buildWhen: (NotificationsState previous, NotificationsState current) => current is DetailedMunchNotificationState && current.ready, // in every other condition enter builder
-        builder: (BuildContext context, NotificationsState state) => _buildFiltersBloc()
-    );
+        listenWhen: (NotificationsState previous, NotificationsState current) =>
+            (current is CurrentUserKickedNotificationState) && current.ready,
+        listener: (BuildContext context, NotificationsState state) =>
+            _munchStatusNotificationListener(context, state),
+        buildWhen: (NotificationsState previous, NotificationsState current) =>
+            current is DetailedMunchNotificationState && current.ready,
+        // in every other condition enter builder
+        builder: (BuildContext context, NotificationsState state) =>
+            _buildFiltersBloc());
   }
 
-  void _filtersUpdatingStateListener(FiltersState state){
-    if(state.loading){
+  void _filtersUpdatingStateListener(FiltersState state) {
+    if (state.loading) {
       _selectedFiltersContainerReadonly = true;
-    } else{
+    } else {
       _filtersSaved = true;
 
       // ready
-      if(_popScopeCompleter != null){
+      if (_popScopeCompleter != null) {
         _popScopeCompleter.complete(true);
-      } else{
-        Utility.showFlushbar(App.translate("filters_screen.save.successful.message"), context);
+      } else {
+        Utility.showFlushbar(
+            App.translate("filters_screen.save.successful.message"), context);
       }
     }
   }
 
-  void _forceNavigationToHomeScreen(){
+  void _forceNavigationToHomeScreen() {
     NavigationHelper.navigateToHome(context, popAllRoutes: true);
   }
 
-  void _filtersScreenListener(BuildContext context, FiltersState state){
+  void _filtersScreenListener(BuildContext context, FiltersState state) {
     if (state.hasError) {
-      if(state.exception is AccessDeniedException){
+      if (state.exception is AccessDeniedException) {
         _forceNavigationToHomeScreen();
-      } else{
-        if(_popScopeCompleter != null && !_popScopeCompleter.isCompleted){
+      } else {
+        if (_popScopeCompleter != null && !_popScopeCompleter.isCompleted) {
           _popScopeCompleter.complete(false);
         }
       }
 
       Utility.showErrorFlushbar(state.message, context);
-    } else if(state is FiltersFetchingState){
+    } else if (state is FiltersFetchingState) {
       _initializeFilters();
-    } else if(state is FiltersUpdatingState){
-      _filtersUpdatingStateListener( state);
+    } else if (state is FiltersUpdatingState) {
+      _filtersUpdatingStateListener(state);
     }
   }
 
-  Widget _buildFiltersBloc(){
+  Widget _buildFiltersBloc() {
     return BlocConsumer<FiltersBloc, FiltersState>(
         cubit: _filtersBloc,
-        listenWhen: (FiltersState previous, FiltersState current) => current.hasError || current.ready || (current.loading && current is FiltersUpdatingState),
-        listener: (BuildContext context, FiltersState state) => _filtersScreenListener(context, state),
-        buildWhen: (FiltersState previous, FiltersState current) => current.loading || current.ready,
-        builder: (BuildContext context, FiltersState state) => _buildFiltersScreen(context, state)
-    );
+        listenWhen: (FiltersState previous, FiltersState current) =>
+            current.hasError ||
+            current.ready ||
+            (current.loading && current is FiltersUpdatingState),
+        listener: (BuildContext context, FiltersState state) =>
+            _filtersScreenListener(context, state),
+        buildWhen: (FiltersState previous, FiltersState current) =>
+            current.loading || current.ready,
+        builder: (BuildContext context, FiltersState state) =>
+            _buildFiltersScreen(context, state));
   }
 
-  Widget _buildFiltersScreen(BuildContext context, FiltersState state){
+  Widget _buildFiltersScreen(BuildContext context, FiltersState state) {
     if (state.hasError) {
       return ErrorPageWidget();
     }
 
     bool showLoadingIndicator = false;
 
-    if ((state.initial && (_allFilters == null || _topFilters == null)) || state.loading){
+    if ((state.initial && (_allFilters == null || _topFilters == null)) ||
+        state.loading) {
       showLoadingIndicator = true;
 
-      if(state is FiltersUpdatingState){
+      if (state is FiltersUpdatingState) {
         showLoadingIndicator = false;
       }
     }
 
-    if(showLoadingIndicator){
+    if (showLoadingIndicator) {
       return AppCircularProgressIndicator();
     } else {
       return _renderScreen(context);
     }
   }
 
-  Widget _renderScreen(BuildContext context){
+  Widget _renderScreen(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top: 12.0),
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              _tabHeaders(),
-              Expanded(child:_tabsContent())
-            ]
-        )
-    );
+        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          _tabHeaders(),
+          Expanded(child: _tabsContent())
+        ]));
   }
 
   void _showInfoDialog() {
     DialogHelper(dialogContent: FiltersInfoDialog()).show(context);
   }
 
-  Widget _tabHeaders(){
+  Widget _tabHeaders() {
     return Padding(
-        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
+        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar)
+            .copyWith(top: 0.0, bottom: 0.0),
         child: Align(
-        alignment: Alignment.centerLeft,
-        child:  DefaultTabController(
-            length: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children:[
-                TabBar(
-                  onTap: (int index){
-                    setState(() {
-                      _currentTab = index;
-                    });
-                  },
-                  isScrollable: true, // needs to be set to true in order to make Align widget workable
-                  labelColor: Palette.primary,
-                  unselectedLabelColor: Palette.secondaryLight,
-                  indicatorColor: Palette.primary,
-                  indicatorPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-                  labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-                  labelStyle: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w600),
-                  tabs: [
-                    Tab(text: App.translate("filters_screen.personal_tab.title")),
-                    Tab(text: App.translate("filters_screen.group_tab.title")),
-                  ]
-               ),
-               GestureDetector(
-                 onTap: _showInfoDialog,
-                 child: ImageIcon(AssetImage("assets/icons/info.png"), size: 18.0, color: Palette.primary),
-               )
-            ]
-          )
-        )
-    ));
+            alignment: Alignment.centerLeft,
+            child: DefaultTabController(
+                length: 2,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TabBar(
+                          onTap: (int index) {
+                            setState(() {
+                              _currentTab = index;
+                            });
+                          },
+                          isScrollable: true,
+                          // needs to be set to true in order to make Align widget workable
+                          labelColor: Palette.primary,
+                          unselectedLabelColor: Palette.secondaryLight,
+                          indicatorColor: Palette.primary,
+                          indicatorPadding:
+                              EdgeInsets.only(left: 0.0, right: 15.0),
+                          labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
+                          labelStyle: AppTextStyle.style(
+                              AppTextStylePattern.heading5,
+                              fontWeight: FontWeight.w600),
+                          tabs: [
+                            Tab(
+                                text: App.translate(
+                                    "filters_screen.personal_tab.title")),
+                            Tab(
+                                text: App.translate(
+                                    "filters_screen.group_tab.title")),
+                          ]),
+                      GestureDetector(
+                        onTap: _showInfoDialog,
+                        child: ImageIcon(AssetImage("assets/icons/info.png"),
+                            size: 18.0, color: Palette.primary),
+                      )
+                    ]))));
   }
 
-  Widget _tabsContent(){
+  Widget _tabsContent() {
     return IndexedStack(
         index: _currentTab,
-        children: <Widget>[
-          _renderPersonalTab(),
-          _renderGroupTab()
-        ]
-    );
+        children: <Widget>[_renderPersonalTab(), _renderGroupTab()]);
   }
 
-  Widget _animatedSizeWrapper(Widget child){
+  Widget _animatedSizeWrapper(Widget child) {
     return AnimatedSize(
         duration: Duration(milliseconds: 1000),
         vsync: this,
         curve: Curves.easeInOut,
-        alignment: Alignment(0.0, -1.0), // -1.0 means top side will be fixed, bottom is expandable
-        child: child
-    );
+        alignment: Alignment(0.0, -1.0),
+        // -1.0 means top side will be fixed, bottom is expandable
+        child: child);
   }
 
-  Widget _renderPersonalTab(){
+  Widget _renderPersonalTab() {
     return SingleChildScrollView(
-       padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
-       controller: _personalTabScrollController,
-       child: Container(
-          padding: EdgeInsets.symmetric(vertical: 24.0),
-          child:  Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _animatedSizeWrapper(_whitelistContainerArea()),
-              SizedBox(height: 24.0),
-              _animatedSizeWrapper(_blacklistContainerArea()),
-              SizedBox(height: 24.0),
-              _filtersControlArea()
-            ],
-          )
-       )
-    );
+        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar)
+            .copyWith(top: 0.0, bottom: 0.0),
+        controller: _personalTabScrollController,
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _animatedSizeWrapper(_whitelistContainerArea()),
+                SizedBox(height: 24.0),
+                _animatedSizeWrapper(_blacklistContainerArea()),
+                SizedBox(height: 24.0),
+                _filtersControlArea()
+              ],
+            )));
   }
 
-
-  Widget _renderGroupTab(){
+  Widget _renderGroupTab() {
     return SingleChildScrollView(
-        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar).copyWith(top: 0.0, bottom: 0.0),
+        padding: AppDimensions.padding(AppPaddingType.screenWithAppBar)
+            .copyWith(top: 0.0, bottom: 0.0),
         child: Container(
             padding: EdgeInsets.only(top: 24.0, bottom: 12.0),
             child: Column(
@@ -453,48 +492,61 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                 SizedBox(height: 24.0),
                 _groupBlacklistCuisines(),
                 SizedBox(height: 12.0),
-                Text(App.translate("filters_screen.group_tab.description1.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5))),
+                Text(
+                    App.translate("filters_screen.group_tab.description1.text"),
+                    style: AppTextStyle.style(AppTextStylePattern.body2,
+                        fontSizeOffset: 2.0,
+                        color: Palette.primary.withOpacity(0.5))),
                 SizedBox(height: 12.0),
-                Text(App.translate("filters_screen.group_tab.description2.text"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.primary.withOpacity(0.5)))
+                Text(
+                    App.translate("filters_screen.group_tab.description2.text"),
+                    style: AppTextStyle.style(AppTextStylePattern.body2,
+                        fontSizeOffset: 2.0,
+                        color: Palette.primary.withOpacity(0.5)))
               ],
-            )
-        )
-    );
+            )));
   }
 
-
-  Widget _whitelistContainerHeader(){
+  Widget _whitelistContainerHeader() {
     return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:[
-          Text(App.translate("filters_screen.whitelist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
+        children: [
+          Text(App.translate("filters_screen.whitelist_container.subtitle"),
+              style: AppTextStyle.style(AppTextStylePattern.body2,
+                  fontSizeOffset: 2.0,
+                  color: Palette.secondaryLight,
+                  fontWeight: FontWeight.w600)),
           CustomButton(
             flat: true,
             // very important to set, otherwise title won't be aligned good
             padding: EdgeInsets.zero,
             color: Colors.transparent,
-            content: Text(_selectedFiltersContainerReadonly ?
-            App.translate("filters_screen.whitelist_container.readonly_state.text")
-                : App.translate("filters_screen.whitelist_container.edit_state.text"),
-                style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.hyperlink)),
-            onPressedCallback: (){
+            content: Text(
+                _selectedFiltersContainerReadonly
+                    ? App.translate(
+                        "filters_screen.whitelist_container.readonly_state.text")
+                    : App.translate(
+                        "filters_screen.whitelist_container.edit_state.text"),
+                style: AppTextStyle.style(AppTextStylePattern.body2,
+                    fontSizeOffset: 2.0, color: Palette.hyperlink)),
+            onPressedCallback: () {
               setState(() {
-                _selectedFiltersContainerReadonly = !_selectedFiltersContainerReadonly;
+                _selectedFiltersContainerReadonly =
+                    !_selectedFiltersContainerReadonly;
               });
             },
           )
-        ]
-    );
+        ]);
   }
 
-  Widget _fractionallyClickableAreaFiltersContainer(Filter filter){
+  Widget _fractionallyClickableAreaFiltersContainer(Filter filter) {
     return FractionallySizedBox(
       widthFactor: 0.45,
       alignment: Alignment.centerLeft,
       child: InkWell(
-        onTap: (){
-          if(!_selectedFiltersContainerReadonly) {
+        onTap: () {
+          if (!_selectedFiltersContainerReadonly) {
             setState(() {
               _setFilterStatus(filter, FilterStatus.NEUTRAL);
             });
@@ -505,52 +557,50 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
-  Widget _selectedFiltersContainer(List<Filter> filters, Color color){
+  Widget _selectedFiltersContainer(List<Filter> filters, Color color) {
     return Wrap(
         spacing: 16.0,
         runSpacing: 16.0,
-        children: filters.map((Filter filter) =>
-        ShakeAnimatedWidget(
-          enabled: !_selectedFiltersContainerReadonly,
-          duration: Duration(milliseconds: 750),
-          shakeAngle: Rotation.deg(z: 1),
-          curve: Curves.linear,
-          child: Stack(
-              children:[
-                Container(
-                    padding: EdgeInsets.only(left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
+        children: filters
+            .map((Filter filter) => ShakeAnimatedWidget(
+                enabled: !_selectedFiltersContainerReadonly,
+                duration: Duration(milliseconds: 750),
+                shakeAngle: Rotation.deg(z: 1),
+                curve: Curves.linear,
+                child: Stack(children: [
+                  Container(
+                    padding: EdgeInsets.only(
+                        left: 4.0, right: 8.0, top: 2.0, bottom: 2.0),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(
-                            width: 1.0,
-                            color: color
-                        )
-                    ),
+                        border: Border.all(width: 1.0, color: color)),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if(!_selectedFiltersContainerReadonly)
+                        if (!_selectedFiltersContainerReadonly)
                           Icon(Icons.close, color: Palette.error, size: 12.0),
                         SizedBox(width: 4.0),
                         Flexible(
                             fit: FlexFit.loose,
-                            child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
-                        )
+                            child: Text(filter.label,
+                                style: AppTextStyle.style(
+                                    AppTextStylePattern.heading6,
+                                    fontWeight: FontWeight.w500)))
                       ],
                     ),
-                ),
-                // fill will be same size with container below, and we'll take 0.33 from its fractional width to make area clickable
-                // must be define below widget Container widget to be clickable
-                Positioned.fill(child: _fractionallyClickableAreaFiltersContainer(filter)),
-              ]
-          ))
-        ).toList()
-    );
+                  ),
+                  // fill will be same size with container below, and we'll take 0.33 from its fractional width to make area clickable
+                  // must be define below widget Container widget to be clickable
+                  Positioned.fill(
+                      child:
+                          _fractionallyClickableAreaFiltersContainer(filter)),
+                ])))
+            .toList());
   }
 
-  Widget _whitelistContainerArea(){
+  Widget _whitelistContainerArea() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,33 +612,40 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
-
-  Widget _blacklistContainerHeader(){
+  Widget _blacklistContainerHeader() {
     return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:[
-          Text(App.translate("filters_screen.blacklist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
+        children: [
+          Text(App.translate("filters_screen.blacklist_container.subtitle"),
+              style: AppTextStyle.style(AppTextStylePattern.body2,
+                  fontSizeOffset: 2.0,
+                  color: Palette.secondaryLight,
+                  fontWeight: FontWeight.w600)),
           CustomButton(
             flat: true,
             // very important to set, otherwise title won't be aligned good
             padding: EdgeInsets.zero,
             color: Colors.transparent,
-            content: Text(_selectedFiltersContainerReadonly ?
-            App.translate("filters_screen.blacklist_container.readonly_state.text")
-                : App.translate("filters_screen.blacklist_container.edit_state.text"),
-                style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.hyperlink)),
-            onPressedCallback: (){
+            content: Text(
+                _selectedFiltersContainerReadonly
+                    ? App.translate(
+                        "filters_screen.blacklist_container.readonly_state.text")
+                    : App.translate(
+                        "filters_screen.blacklist_container.edit_state.text"),
+                style: AppTextStyle.style(AppTextStylePattern.body2,
+                    fontSizeOffset: 2.0, color: Palette.hyperlink)),
+            onPressedCallback: () {
               setState(() {
-                _selectedFiltersContainerReadonly = !_selectedFiltersContainerReadonly;
+                _selectedFiltersContainerReadonly =
+                    !_selectedFiltersContainerReadonly;
               });
             },
           )
-        ]
-    );
+        ]);
   }
 
-  Widget _blacklistContainerArea(){
+  Widget _blacklistContainerArea() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -600,58 +657,54 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
-  Widget _previousFilterStatusButton(Filter filter){
+  Widget _previousFilterStatusButton(Filter filter) {
     // InkWell used to force white space to be clickable
     return InkWell(
-      onTap: (){
-        int filterStatusIndex = filter.filterStatus.index - 1;
+        onTap: () {
+          int filterStatusIndex = filter.filterStatus.index - 1;
 
-        if(filterStatusIndex < 0){
-          filterStatusIndex = FilterStatus.values.length - 1;
-        }
+          if (filterStatusIndex < 0) {
+            filterStatusIndex = FilterStatus.values.length - 1;
+          }
 
-        setState(() {
-          _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
-        });
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        child: Align(
-            alignment: Alignment.centerLeft,
-            child: Icon(Icons.arrow_back_ios, color: Palette.secondaryLight, size: 16.0)
-        )
-      )
-    );
+          setState(() {
+            _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
+          });
+        },
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(Icons.arrow_back_ios,
+                    color: Palette.secondaryLight, size: 16.0))));
   }
 
-  Widget _nextFilterStatusButton(Filter filter){
+  Widget _nextFilterStatusButton(Filter filter) {
     // InkWell used to force white space to be clickable
     return InkWell(
-      onTap: (){
-        int filterStatusIndex = filter.filterStatus.index + 1;
+        onTap: () {
+          int filterStatusIndex = filter.filterStatus.index + 1;
 
-        if(filterStatusIndex == FilterStatus.values.length){
-          filterStatusIndex = 0;
-        }
+          if (filterStatusIndex == FilterStatus.values.length) {
+            filterStatusIndex = 0;
+          }
 
-        setState(() {
-          _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
-        });
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        child: Align(
-              alignment: Alignment.centerRight,
-              child: Icon(Icons.arrow_forward_ios, color: Palette.secondaryLight, size: 16.0)
-          )
-        )
-    );
+          setState(() {
+            _setFilterStatus(filter, FilterStatus.values[filterStatusIndex]);
+          });
+        },
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Align(
+                alignment: Alignment.centerRight,
+                child: Icon(Icons.arrow_forward_ios,
+                    color: Palette.secondaryLight, size: 16.0))));
   }
 
   /*
     Padding are added to all components in the row just to be able to increase clickable area of the arrows
    */
-  Widget _filterControlRow(Filter filter){
+  Widget _filterControlRow(Filter filter) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
@@ -660,9 +713,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
             fit: FlexFit.loose,
             child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(filter.label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))
-            )
-        ),
+                child: Text(filter.label,
+                    style: AppTextStyle.style(AppTextStylePattern.heading6,
+                        fontWeight: FontWeight.w500)))),
         SizedBox(width: 4.0),
         Container(
             width: App.REF_DEVICE_WIDTH * 0.4,
@@ -674,96 +727,115 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                 Expanded(child: _previousFilterStatusButton(filter)),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child:  _filtersStatusTexts[_filtersMap[filter.key].filterStatus.index],
+                  child: _filtersStatusTexts[
+                      _filtersMap[filter.key].filterStatus.index],
                 ),
                 // wrapped into expanded to increase tapable area
                 Expanded(child: _nextFilterStatusButton(filter)),
               ],
-            )
-        )
+            ))
       ],
     );
   }
 
-  Widget _allCuisinesModeLink(){
+  Widget _allCuisinesModeLink() {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         setState(() {
           _allCuisinesMode = !_allCuisinesMode;
         });
 
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          if(_allCuisinesMode) {
-            _personalTabScrollController.animateTo(_personalTabScrollController.offset + App.screenHeight / 2, curve: Curves.easeInOut, duration: Duration(milliseconds: 2000));
-          } else{
-            _personalTabScrollController.animateTo(0.0, curve: Curves.ease, duration: Duration(milliseconds: 1000));
+          if (_allCuisinesMode) {
+            _personalTabScrollController.animateTo(
+                _personalTabScrollController.offset + App.screenHeight / 2,
+                curve: Curves.easeInOut,
+                duration: Duration(milliseconds: 2000));
+          } else {
+            _personalTabScrollController.animateTo(0.0,
+                curve: Curves.ease, duration: Duration(milliseconds: 1000));
           }
         });
-
       },
-      child: Text(_allCuisinesMode ?
-      App.translate("filters_screen.filter_controls.all_cuisines_mode.link.text")
-          : App.translate("filters_screen.filter_controls.top_cuisines_mode.link.text"),
-          style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, fontWeight: FontWeight.w600,
+      child: Text(
+          _allCuisinesMode
+              ? App.translate(
+                  "filters_screen.filter_controls.all_cuisines_mode.link.text")
+              : App.translate(
+                  "filters_screen.filter_controls.top_cuisines_mode.link.text"),
+          style: AppTextStyle.style(AppTextStylePattern.body2,
+              fontSizeOffset: 2.0,
+              fontWeight: FontWeight.w600,
               textDecoration: TextDecoration.underline)),
     );
   }
 
-  Widget _filtersControlArea(){
+  Widget _filtersControlArea() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(App.translate("filters_screen.filters_control.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
-        SizedBox(height: 20.0),
-        ListView(
-          padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
-          primary: false,
-          shrinkWrap: true,
-          children: [
-           for(Filter filter in (_allCuisinesMode ? _allFilters : _topFilters))
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                 _filterControlRow(filter),
-                 Divider(thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
-              ]
-             )
-          ],
-        ),
-        SafeArea(
-            top: false,
-            right: false,
-            left: false,
-            child: _allCuisinesModeLink()
-        )
-      ]
-    );
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(App.translate("filters_screen.filters_control.subtitle"),
+              style: AppTextStyle.style(AppTextStylePattern.body2,
+                  fontSizeOffset: 2.0,
+                  color: Palette.secondaryLight,
+                  fontWeight: FontWeight.w600)),
+          SizedBox(height: 20.0),
+          ListView(
+            padding: EdgeInsets.zero,
+            // must be set because of iOS devices, they will auto-add padding if not set
+            primary: false,
+            shrinkWrap: true,
+            children: [
+              for (Filter filter
+                  in (_allCuisinesMode ? _allFilters : _topFilters))
+                Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _filterControlRow(filter),
+                      Divider(
+                          thickness: 1.5,
+                          color: Palette.secondaryLight.withOpacity(0.3)),
+                    ])
+            ],
+          ),
+          SafeArea(
+              top: false,
+              right: false,
+              left: false,
+              child: _allCuisinesModeLink())
+        ]);
   }
 
-  Widget _userAvatar(User user){
+  Widget _userAvatar(User user) {
     return Padding(
       padding: EdgeInsets.only(left: AVATAR_SPACING),
-      child: CircleAvatar(backgroundImage: NetworkImage(user.imageUrl), radius: AVATAR_RADIUS),
+      child: CircleAvatar(
+          backgroundImage: NetworkImage(user.imageUrl), radius: AVATAR_RADIUS),
     );
   }
 
-  Widget _circleAvatar(int number){
+  Widget _circleAvatar(int number) {
     return Padding(
       padding: EdgeInsets.only(left: AVATAR_SPACING),
-      child: CircleAvatar(backgroundColor: Palette.secondaryLight, child: Text(number.toString() + "+", style: AppTextStyle.style(AppTextStylePattern.body2Inverse)), radius: AVATAR_RADIUS),
+      child: CircleAvatar(
+          backgroundColor: Palette.secondaryLight,
+          child: Text(number.toString() + "+",
+              style: AppTextStyle.style(AppTextStylePattern.body2Inverse)),
+          radius: AVATAR_RADIUS),
     );
   }
 
-  Widget _userAvatars(MunchGroupFilter munchGroupFilter){
+  Widget _userAvatars(MunchGroupFilter munchGroupFilter) {
     List<Widget> _avatarList = List<Widget>();
 
     // flag if members array has partial response - that means only auth user is in array
     bool munchMembersNotAvailable = false;
 
-    for(int i = 0; i < munchGroupFilter.userIds.length; i++){
-      if(i + 1 == _maxAvatarsPerRow && _maxAvatarsPerRow < munchGroupFilter.userIds.length){
+    for (int i = 0; i < munchGroupFilter.userIds.length; i++) {
+      if (i + 1 == _maxAvatarsPerRow &&
+          _maxAvatarsPerRow < munchGroupFilter.userIds.length) {
         int avatarsLeft = munchGroupFilter.userIds.length - i;
         _avatarList.add(_circleAvatar(avatarsLeft));
 
@@ -772,7 +844,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         User user = widget.munch.getMunchMember(munchGroupFilter.userIds[i]);
 
         // if user is not in members array, response is partial
-        if(user == null){
+        if (user == null) {
           munchMembersNotAvailable = true;
           break;
         }
@@ -784,7 +856,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     double avatarContainerWidth;
 
     // in case members array is partial (just auth user in array), maximum two circles should be returned (one for auth user and rest for other users)
-    if(munchMembersNotAvailable){
+    if (munchMembersNotAvailable) {
       avatarContainerWidth = 2 * _totalAvatarWidth;
 
       _avatarList.clear();
@@ -793,79 +865,71 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
       int avatarsLeft = munchGroupFilter.userIds.length - 1;
 
-      if(avatarsLeft > 0) {
+      if (avatarsLeft > 0) {
         _avatarList.add(_circleAvatar(avatarsLeft));
       }
-    } else{
-      if(_maxAvatarsPerRow < munchGroupFilter.userIds.length){
+    } else {
+      if (_maxAvatarsPerRow < munchGroupFilter.userIds.length) {
         avatarContainerWidth = _maxAvatarContainerWidth;
-      } else{
-        avatarContainerWidth = munchGroupFilter.userIds.length * _totalAvatarWidth;
+      } else {
+        avatarContainerWidth =
+            munchGroupFilter.userIds.length * _totalAvatarWidth;
       }
     }
 
     return SizedBox(
-      width: avatarContainerWidth,
-      child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: _avatarList
-      )
-    );
-  }
-  
-  Widget _groupCuisinesListItem(MunchGroupFilter munchGroupFilter){
-      return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: Text(_filtersMap[munchGroupFilter.key].label, style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500))),
-                SizedBox(width: 4.0),
-                _userAvatars(munchGroupFilter)
-              ],
-            ),
-            Divider(height: 24.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3)),
-          ]
-      );
+        width: avatarContainerWidth,
+        child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: _avatarList));
   }
 
-  Widget _groupWhitelistCuisines(){
+  Widget _groupCuisinesListItem(MunchGroupFilter munchGroupFilter) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(App.translate("filters_screen.group_tab.whitelist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
-        SizedBox(height: 24.0),
-        ListView(
-          padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
-          primary: false,
-          shrinkWrap: true,
-          children: [
-            for(MunchGroupFilter munchGroupFilter in widget.munch.munchFilters.whitelist)
-              _groupCuisinesListItem(munchGroupFilter)
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                  child: Text(_filtersMap[munchGroupFilter.key].label,
+                      style: AppTextStyle.style(AppTextStylePattern.heading6,
+                          fontWeight: FontWeight.w500))),
+              SizedBox(width: 4.0),
+              _userAvatars(munchGroupFilter)
             ],
-        )
-      ],
-    );
+          ),
+          Divider(
+              height: 24.0,
+              thickness: 1.5,
+              color: Palette.secondaryLight.withOpacity(0.3)),
+        ]);
   }
 
-  Widget _groupBlacklistCuisines(){
+  Widget _groupWhitelistCuisines() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(App.translate("filters_screen.group_tab.blacklist_container.subtitle"), style: AppTextStyle.style(AppTextStylePattern.body2, fontSizeOffset: 2.0, color: Palette.secondaryLight, fontWeight: FontWeight.w600)),
+        Text(
+            App.translate(
+                "filters_screen.group_tab.whitelist_container.subtitle"),
+            style: AppTextStyle.style(AppTextStylePattern.body2,
+                fontSizeOffset: 2.0,
+                color: Palette.secondaryLight,
+                fontWeight: FontWeight.w600)),
         SizedBox(height: 24.0),
         ListView(
-          padding: EdgeInsets.zero, // must be set because of iOS devices, they will auto-add padding if not set
+          padding: EdgeInsets.zero,
+          // must be set because of iOS devices, they will auto-add padding if not set
           primary: false,
           shrinkWrap: true,
           children: [
-            for(MunchGroupFilter munchGroupFilter in widget.munch.munchFilters.blacklist)
+            for (MunchGroupFilter munchGroupFilter
+                in widget.munch.munchFilters.whitelist)
               _groupCuisinesListItem(munchGroupFilter)
           ],
         )
@@ -873,18 +937,49 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
-  void _onSaveButtonClicked(){
-    _filtersBloc.add(UpdateFiltersEvent(whitelistFilters: _whitelistFilters, blacklistFilters: _blacklistFilters, munchId: widget.munch.id));
+  Widget _groupBlacklistCuisines() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+            App.translate(
+                "filters_screen.group_tab.blacklist_container.subtitle"),
+            style: AppTextStyle.style(AppTextStylePattern.body2,
+                fontSizeOffset: 2.0,
+                color: Palette.secondaryLight,
+                fontWeight: FontWeight.w600)),
+        SizedBox(height: 24.0),
+        ListView(
+          padding: EdgeInsets.zero,
+          // must be set because of iOS devices, they will auto-add padding if not set
+          primary: false,
+          shrinkWrap: true,
+          children: [
+            for (MunchGroupFilter munchGroupFilter
+                in widget.munch.munchFilters.blacklist)
+              _groupCuisinesListItem(munchGroupFilter)
+          ],
+        )
+      ],
+    );
   }
 
-  void _onSaveChangesDialogButtonClicked(){
+  void _onSaveButtonClicked() {
+    _filtersBloc.add(UpdateFiltersEvent(
+        whitelistFilters: _whitelistFilters,
+        blacklistFilters: _blacklistFilters,
+        munchId: widget.munch.id));
+  }
+
+  void _onSaveChangesDialogButtonClicked() {
     // close dialog
     NavigationHelper.popRoute(context);
 
     _onSaveButtonClicked();
   }
 
-  void _onDiscardChangesDialogButtonClicked(){
+  void _onDiscardChangesDialogButtonClicked() {
     // close dialog
     NavigationHelper.popRoute(context);
 

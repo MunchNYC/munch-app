@@ -3,7 +3,7 @@ import 'package:munch/model/filter.dart';
 
 part 'get_filters_response.jser.dart';
 
-class GetFiltersResponse{
+class GetFiltersResponse {
   List<Filter> allFilters;
   List<Filter> topFilters;
 
@@ -11,4 +11,5 @@ class GetFiltersResponse{
 }
 
 @GenSerializer()
-class GetFiltersResponseJsonSerializer extends Serializer<GetFiltersResponse> with _$GetFiltersResponseJsonSerializer {}
+class GetFiltersResponseJsonSerializer extends Serializer<GetFiltersResponse>
+    with _$GetFiltersResponseJsonSerializer {}

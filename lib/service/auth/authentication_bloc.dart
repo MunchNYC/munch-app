@@ -1,18 +1,22 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/auth_repository.dart';
 import 'package:munch/util/app.dart';
-import 'authentication_state.dart';
-import 'authentication_event.dart';
 
-class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
+import 'authentication_event.dart';
+import 'authentication_state.dart';
+
+class AuthenticationBloc
+    extends Bloc<AuthenticationEvent, AuthenticationState> {
   AuthenticationBloc() : super(AuthenticationState());
 
   final AuthRepo _authRepo = AuthRepo.getInstance();
 
   @override
-  Stream<AuthenticationState> mapEventToState(AuthenticationEvent event) async* {
+  Stream<AuthenticationState> mapEventToState(
+      AuthenticationEvent event) async* {
     if (event is LoginWithGoogleEvent) {
       yield* loginWithGoogle();
     } else if (event is LoginWithFacebookEvent) {
@@ -35,11 +39,14 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         yield LoginWithGoogleState.ready();
       } else {
         print("Google login cancelled.");
-        yield LoginWithGoogleState.failed(message: App.translate("firebase_auth.google_login.cancelled.error"));
+        yield LoginWithGoogleState.failed(
+            message:
+                App.translate("firebase_auth.google_login.cancelled.error"));
       }
     } catch (error) {
       print("Google login failed: " + error.toString());
-      yield LoginWithGoogleState.failed(message: error.toString()); // "Google authentication failed."
+      yield LoginWithGoogleState.failed(
+          message: error.toString()); // "Google authentication failed."
     }
   }
 
@@ -54,11 +61,14 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         yield LoginWithFacebookState.ready();
       } else {
         print("Facebook login cancelled.");
-        yield LoginWithFacebookState.failed(message: App.translate("firebase_auth.facebook_login.cancelled.error"));
+        yield LoginWithFacebookState.failed(
+            message:
+                App.translate("firebase_auth.facebook_login.cancelled.error"));
       }
     } catch (error) {
       print("Facebook login failed: " + error.toString());
-      yield LoginWithFacebookState.failed(message: error.toString()); // "Facebook authentication failed."
+      yield LoginWithFacebookState.failed(
+          message: error.toString()); // "Facebook authentication failed."
     }
   }
 
@@ -73,11 +83,14 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         yield LoginWithAppleState.ready();
       } else {
         print("Apple login cancelled.");
-        yield LoginWithAppleState.failed(message: App.translate("firebase_auth.apple_login.cancelled.error"));
+        yield LoginWithAppleState.failed(
+            message:
+                App.translate("firebase_auth.apple_login.cancelled.error"));
       }
     } catch (error) {
       print("Apple login failed: " + error.toString());
-      yield LoginWithAppleState.failed(message: error.toString()); // "Apple authentication failed."
+      yield LoginWithAppleState.failed(
+          message: error.toString()); // "Apple authentication failed."
     }
   }
 
@@ -88,7 +101,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     if (result) {
       yield LogoutState.ready();
     } else {
-      yield LogoutState.failed(message: App.translate("firebase_auth.logout.error"));
+      yield LogoutState.failed(
+          message: App.translate("firebase_auth.logout.error"));
     }
   }
 }

@@ -21,13 +21,14 @@ class App {
 
   static String deviceId;
 
-  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
-  static void _initAppLocalizations(BuildContext context){
+  static void _initAppLocalizations(BuildContext context) {
     appLocalizations = AppLocalizations.of(context);
   }
 
-  static void _initScreenProperties(BuildContext context){
+  static void _initScreenProperties(BuildContext context) {
     MediaQueryData mediaQueryData = MediaQuery.of(context);
 
     screenWidth = mediaQueryData.size.width;
@@ -37,12 +38,12 @@ class App {
     use24HoursFormat = mediaQueryData.alwaysUse24HourFormat;
   }
 
-  static void initAppContext(BuildContext context){
+  static void initAppContext(BuildContext context) {
     _initAppLocalizations(context);
     _initScreenProperties(context);
   }
 
-  static String translate(String key){
+  static String translate(String key) {
     return appLocalizations.text(key);
   }
 
@@ -56,5 +57,4 @@ class App {
       deviceId = androidDeviceInfo.androidId; // unique ID on Android
     }
   }
-
 }

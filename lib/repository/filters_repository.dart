@@ -28,9 +28,10 @@ class FiltersRepo {
   List<Filter> _topFilters;
 
   List<Filter> get allFilters => _allFilters;
+
   List<Filter> get topFilters => _topFilters;
 
-  Future<GetFiltersResponse> getFilters() async{
+  Future<GetFiltersResponse> getFilters() async {
     GetFiltersResponse getFiltersResponse = await _filtersApi.getFilters();
 
     _allFilters = getFiltersResponse.allFilters;
@@ -39,16 +40,20 @@ class FiltersRepo {
     return getFiltersResponse;
   }
 
-  Future<Munch> updateFilters({List<Filter> whitelistFilters, List<Filter> blacklistFilters, String munchId}) async{
+  Future<Munch> updateFilters(
+      {List<Filter> whitelistFilters,
+      List<Filter> blacklistFilters,
+      String munchId}) async {
     try {
-      List<String> whitelistFiltersKeys = whitelistFilters.map((Filter filter) => filter.key).toList();
-      List<String> blacklistFiltersKeys = blacklistFilters.map((Filter filter) => filter.key).toList();
+      List<String> whitelistFiltersKeys =
+          whitelistFilters.map((Filter filter) => filter.key).toList();
+      List<String> blacklistFiltersKeys =
+          blacklistFilters.map((Filter filter) => filter.key).toList();
 
       Munch munch = await _filtersApi.updateFilters(
           whitelistFiltersKeys: whitelistFiltersKeys,
           blacklistFiltersKeys: blacklistFiltersKeys,
-          munchId: munchId
-      );
+          munchId: munchId);
 
       _munchRepo.updateMunchCache(munch);
 

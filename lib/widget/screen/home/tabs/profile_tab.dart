@@ -45,122 +45,148 @@ class _ProfileTabScreenState extends State<ProfileTab> {
     // All this logic is made in order to have footer at the bottom of scroll view if scrollable, or at the bottom of the page if view fits less then max height of the screen
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return SingleChildScrollView(
-            padding: AppDimensions.padding(AppPaddingType.screenOnly).copyWith(bottom: 8.0),
-            child: ConstrainedBox(
-              constraints: constraints.copyWith(
-                minHeight: constraints.maxHeight - kToolbarHeight, // kToolbarHeight gives approx. height of appBar/bottomNavigationBar
-                maxHeight: double.infinity,
-              ),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _avatarRow(),
-                    SizedBox(height: 4.0),
-                    IntrinsicHeight(
-                      child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _menuListItemDivider(),
-                              _menuItems(),
-                              Expanded(
-                                child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Text(App.translate("account_tab.version.text") + " " + AppConfig.getInstance().packageInfo.version,
-                                        style: AppTextStyle.style(AppTextStylePattern.body)
-                                    )
-                                ),
-                              ),
-                            ],
-                          )
-                    )
-                  ],
-              ),
-            ),
-          );
-        }
-    );
+      return SingleChildScrollView(
+        padding: AppDimensions.padding(AppPaddingType.screenOnly)
+            .copyWith(bottom: 8.0),
+        child: ConstrainedBox(
+          constraints: constraints.copyWith(
+            minHeight: constraints.maxHeight - kToolbarHeight,
+            // kToolbarHeight gives approx. height of appBar/bottomNavigationBar
+            maxHeight: double.infinity,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _avatarRow(),
+              SizedBox(height: 4.0),
+              IntrinsicHeight(
+                  child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _menuListItemDivider(),
+                  _menuItems(),
+                  Expanded(
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Text(
+                            App.translate("account_tab.version.text") +
+                                " " +
+                                AppConfig.getInstance().packageInfo.version,
+                            style:
+                                AppTextStyle.style(AppTextStylePattern.body))),
+                  ),
+                ],
+              ))
+            ],
+          ),
+        ),
+      );
+    });
   }
 
-  Widget _menuListItemDivider(){
-    return Divider(height: 44.0, thickness: 1.5, color: Palette.secondaryLight.withOpacity(0.3));
+  Widget _menuListItemDivider() {
+    return Divider(
+        height: 44.0,
+        thickness: 1.5,
+        color: Palette.secondaryLight.withOpacity(0.3));
   }
 
-  Widget _avatarRow(){
+  Widget _avatarRow() {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CircleAvatar(backgroundImage: NetworkImage(_user.imageUrl), radius: 36.0),
-        SizedBox(width: 16.0),
-        // Flexible needs to be put here to support TextOverflow of Text widgets in a Column below, otherwise they will not work
-        Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(_user.displayName, style: AppTextStyle.style(AppTextStylePattern.heading3, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade),
-                SizedBox(height: 4.0),
-                Text(_user.email, style: AppTextStyle.style(AppTextStylePattern.body3, fontSizeOffset: 1.0, fontWeight: FontWeight.w400), maxLines: 2, overflow: TextOverflow.fade)
-              ],
-            )
-        )
-      ]
-    );
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircleAvatar(
+              backgroundImage: NetworkImage(_user.imageUrl), radius: 36.0),
+          SizedBox(width: 16.0),
+          // Flexible needs to be put here to support TextOverflow of Text widgets in a Column below, otherwise they will not work
+          Flexible(
+              child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(_user.displayName,
+                  style: AppTextStyle.style(AppTextStylePattern.heading3,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 2,
+                  overflow: TextOverflow.fade),
+              SizedBox(height: 4.0),
+              Text(_user.email,
+                  style: AppTextStyle.style(AppTextStylePattern.body3,
+                      fontSizeOffset: 1.0, fontWeight: FontWeight.w400),
+                  maxLines: 2,
+                  overflow: TextOverflow.fade)
+            ],
+          ))
+        ]);
   }
 
-  Widget _menuItems(){
+  Widget _menuItems() {
     return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.personal_information.text"),
+          AccountTabMenuItem(
+              text: App.translate(
+                  "account_tab.menu_item.personal_information.text"),
               onTap: _onPersonalInformationTapped,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/personalInformation.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(
+                  AssetImage("assets/icons/personalInformation.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.notifications.text"),
+          AccountTabMenuItem(
+              text: App.translate("account_tab.menu_item.notifications.text"),
               onTap: _onNotificationsItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/notification.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(
+                  AssetImage("assets/icons/notification.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.invite_friends.text"),
+          AccountTabMenuItem(
+              text: App.translate("account_tab.menu_item.invite_friends.text"),
               onTap: _onInviteFriendsItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/inviteFriends.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(
+                  AssetImage("assets/icons/inviteFriends.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.feedback.text"),
+          AccountTabMenuItem(
+              text: App.translate("account_tab.menu_item.feedback.text"),
               onTap: _onFeedbackItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/giveUsFeedback.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(
+                  AssetImage("assets/icons/giveUsFeedback.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.privacy_policy.text"),
+          AccountTabMenuItem(
+              text: App.translate("account_tab.menu_item.privacy_policy.text"),
               onTap: _onPrivacyItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/privacy.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(AssetImage("assets/icons/privacy.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.terms_of_use.text"),
+          AccountTabMenuItem(
+              text: App.translate("account_tab.menu_item.terms_of_use.text"),
               onTap: _onTermsItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/termsAndConditions.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(
+                  AssetImage("assets/icons/termsAndConditions.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-          AccountTabMenuItem(text: App.translate("account_tab.menu_item.sign_out.text"),
+          AccountTabMenuItem(
+              text: App.translate("account_tab.menu_item.sign_out.text"),
               onTap: _onSignOutItemClicked,
-              trailingIcon: ImageIcon(AssetImage("assets/icons/logout.png"), size: AppDimensions.scaleSizeToScreen(28.0))
-          ),
+              trailingIcon: ImageIcon(AssetImage("assets/icons/logout.png"),
+                  size: AppDimensions.scaleSizeToScreen(28.0))),
           _menuListItemDivider(),
-        ]
-    );
+        ]);
   }
 
   void _onPersonalInformationTapped() {
-    print("opening personal information screen - our user: " + _user.toString());
-    NavigationHelper.navigateToPersonalInformationScreen(context, user: _user).then((user) {
+    print(
+        "opening personal information screen - our user: " + _user.toString());
+    NavigationHelper.navigateToPersonalInformationScreen(context, user: _user)
+        .then((user) {
       if (user != null && user is User) {
         setState(() {
           _user = user;
@@ -169,27 +195,32 @@ class _ProfileTabScreenState extends State<ProfileTab> {
     });
   }
 
-  void _onNotificationsItemClicked(){
+  void _onNotificationsItemClicked() {
     AppSettings.openAppSettings();
   }
 
-  void _onInviteFriendsItemClicked() async{
+  void _onInviteFriendsItemClicked() async {
     await WcFlutterShare.share(
-        sharePopupTitle: App.translate("account_tab.invite_friends.item.share_popup.title"),
-        text: App.translate("account_tab.invite_friends.item.share_popup.text") + "\n" + AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.HOME_ROUTE_PATH,
-        mimeType: "text/plain"
-    );
+        sharePopupTitle:
+            App.translate("account_tab.invite_friends.item.share_popup.title"),
+        text:
+            App.translate("account_tab.invite_friends.item.share_popup.text") +
+                "\n" +
+                AppConfig.getInstance().deepLinkUrl +
+                DeepLinkRouter.HOME_ROUTE_PATH,
+        mimeType: "text/plain");
   }
 
-  void _onFeedbackItemClicked() async{
-    Utility.launchUrl(context, "mailto:" + AppConfig.getInstance().feedbackEmail);
+  void _onFeedbackItemClicked() async {
+    Utility.launchUrl(
+        context, "mailto:" + AppConfig.getInstance().feedbackEmail);
   }
 
-  void _onPrivacyItemClicked() async{
+  void _onPrivacyItemClicked() async {
     NavigationHelper.navigateToPrivacyPolicyScreen(context);
   }
 
-  void _onTermsItemClicked() async{
+  void _onTermsItemClicked() async {
     NavigationHelper.navigateToTermsOfServiceScreen(context);
   }
 

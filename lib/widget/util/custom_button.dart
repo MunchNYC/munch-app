@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:munch/service/util/super_state.dart';
-import 'package:munch/theme/dimensions.dart';
 import 'package:munch/theme/palette.dart';
 
 class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
@@ -31,26 +30,27 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
     this.listenToBloc = false;
   }
 
-  CustomButton({this.content,
-    this.cubit,
-    this.listenToBloc = false,
-    this.color = Palette.secondaryDark,
-    this.textColor = Palette.background,
-    this.splashColor = Colors.transparent,
-    this.onPressedCallback,
-    this.onActionDoneCallback,
-    this.minWidth = 0.0,
-    this.height = 0.0,
-    this.padding = const EdgeInsets.all(8.0),
-    this.flat = false,
-    this.borderRadius = 0,
-    this.borderWidth = 0.0,
-    this.borderColor,
-    this.elevation = 4.0,
-    this.disabled = false
-  });
+  CustomButton(
+      {this.content,
+      this.cubit,
+      this.listenToBloc = false,
+      this.color = Palette.secondaryDark,
+      this.textColor = Palette.background,
+      this.splashColor = Colors.transparent,
+      this.onPressedCallback,
+      this.onActionDoneCallback,
+      this.minWidth = 0.0,
+      this.height = 0.0,
+      this.padding = const EdgeInsets.all(8.0),
+      this.flat = false,
+      this.borderRadius = 0,
+      this.borderWidth = 0.0,
+      this.borderColor,
+      this.elevation = 4.0,
+      this.disabled = false});
 
-  CustomButton.bloc({this.cubit,
+  CustomButton.bloc({
+    this.cubit,
     this.content,
     this.listenToBloc = true,
     this.color = Palette.secondaryDark,
@@ -68,9 +68,11 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
     this.elevation = 4.0,
     this.additionalLoadingConditionCallback,
     this.disabled = false,
-  }){
-    if(this.additionalLoadingConditionCallback == null){
-      this.additionalLoadingConditionCallback = (SuperState superState){ return true; };
+  }) {
+    if (this.additionalLoadingConditionCallback == null) {
+      this.additionalLoadingConditionCallback = (SuperState superState) {
+        return true;
+      };
     }
   }
 
@@ -78,7 +80,8 @@ class CustomButton<T extends SuperState, V extends T> extends StatefulWidget {
   State<CustomButton> createState() => _CustomButtonState<T, V>();
 }
 
-class _CustomButtonState<T extends SuperState, V extends T> extends State<CustomButton>{
+class _CustomButtonState<T extends SuperState, V extends T>
+    extends State<CustomButton> {
   GlobalKey _buttonKey = GlobalKey();
   double initialWidth;
   double initialHeight;
@@ -97,9 +100,11 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
   // store initialHeight and width of the button to keep button same size when it's content is loading animation
   void _calculateInitialSizes() {
     if (initialWidth == null) {
-      initialWidth = _buttonKey.currentContext.size.width - widget.padding.horizontal * 2;
+      initialWidth =
+          _buttonKey.currentContext.size.width - widget.padding.horizontal * 2;
       // for some strange reason paddingVertical shouldn't be multiplied by 2
-      initialHeight = _buttonKey.currentContext.size.height - widget.padding.vertical;
+      initialHeight =
+          _buttonKey.currentContext.size.height - widget.padding.vertical;
     }
   }
 
@@ -107,17 +112,16 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
     widget.onPressedCallback();
   }
 
-  Widget _loadingAnimation(){
+  Widget _loadingAnimation() {
     // use initialHeight and width of the button to keep button same size when it's content is loading animation, otherwise button will resize
     return SizedBox(
-      width: initialWidth,
-      height: initialHeight,
-      child: SpinKitThreeBounce(
-        color: widget.textColor,
-        // condition in case button is very small
-        size: initialWidth < 30.0 ? initialWidth * 0.5 : 20.0,
-      )
-    );
+        width: initialWidth,
+        height: initialHeight,
+        child: SpinKitThreeBounce(
+          color: widget.textColor,
+          // condition in case button is very small
+          size: initialWidth < 30.0 ? initialWidth * 0.5 : 20.0,
+        ));
   }
 
   Widget _renderButton(BuildContext context, {bool isLoading = false}) {
@@ -136,8 +140,11 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
         // shape with border color
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            side: BorderSide(width: widget.borderWidth, color: widget.disabled ? Palette.disabledColor : widget.borderColor ?? widget.color)
-        ),
+            side: BorderSide(
+                width: widget.borderWidth,
+                color: widget.disabled
+                    ? Palette.disabledColor
+                    : widget.borderColor ?? widget.color)),
         disabledColor: widget.disabled ? Palette.disabledColor : widget.color,
         //wraps child's height
         child: (widget.flat)
@@ -145,13 +152,17 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
                 child: !isLoading ? widget.content : _loadingAnimation(),
                 color: widget.color,
                 textColor: widget.textColor,
-                onPressed: (widget.disabled || isLoading) ? null : () => _buttonPressed(context))
+                onPressed: (widget.disabled || isLoading)
+                    ? null
+                    : () => _buttonPressed(context))
             : RaisedButton(
                 child: !isLoading ? widget.content : _loadingAnimation(),
                 color: widget.color,
                 textColor: widget.textColor,
                 elevation: widget.elevation,
-                onPressed: (widget.disabled || isLoading) ? null : () => _buttonPressed(context)));
+                onPressed: (widget.disabled || isLoading)
+                    ? null
+                    : () => _buttonPressed(context)));
   }
 
   Widget _renderBlocButton(BuildContext context) {
@@ -174,7 +185,9 @@ class _CustomButtonState<T extends SuperState, V extends T> extends State<Custom
     bool isLoading = false;
 
     // Important condition, first time when BlocBuilder is called, condition isn't checked, so state can be different than Initial state
-    if (state.loading && state is V && widget.additionalLoadingConditionCallback(state)) {
+    if (state.loading &&
+        state is V &&
+        widget.additionalLoadingConditionCallback(state)) {
       isLoading = true;
     }
 

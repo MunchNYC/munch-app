@@ -2,11 +2,9 @@ import 'package:jaguar_serializer/jaguar_serializer.dart';
 
 part 'filter.jser.dart';
 
-enum FilterStatus{
-  BLACKLISTED, NEUTRAL, WHITELISTED
-}
+enum FilterStatus { BLACKLISTED, NEUTRAL, WHITELISTED }
 
-class Filter{
+class Filter {
   String key;
 
   String label;
@@ -21,10 +19,11 @@ class Filter{
 
   Filter({this.key, this.label, this.filterStatus});
 
-  Filter cloneWithStatus(FilterStatus filterStatus){
+  Filter cloneWithStatus(FilterStatus filterStatus) {
     return Filter(key: key, label: label, filterStatus: filterStatus);
   }
 }
 
 @GenSerializer()
-class FilterJsonSerializer extends Serializer<Filter> with _$FilterJsonSerializer {}
+class FilterJsonSerializer extends Serializer<Filter>
+    with _$FilterJsonSerializer {}

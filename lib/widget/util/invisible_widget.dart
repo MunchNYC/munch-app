@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class InvisibleWidget extends StatelessWidget{
+class InvisibleWidget extends StatelessWidget {
   Widget child;
 
   InvisibleWidget({this.child});
@@ -15,5 +15,4 @@ class InvisibleWidget extends StatelessWidget{
       maintainAnimation: true,
     );
   }
-
 }
