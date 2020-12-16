@@ -10,15 +10,11 @@ import 'package:munch/util/deep_link_handler.dart';
 
 part 'munch.jser.dart';
 
-enum MunchStatus{
-  UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL
-}
+enum MunchStatus { UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL }
 
-enum MunchReviewValue{
-  LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED
-}
+enum MunchReviewValue { LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED }
 
-class Munch{
+class Munch {
   @Field.decode()
   String id;
 
@@ -82,14 +78,14 @@ class Munch{
   @Field.ignore()
   bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.HISTORICAL;
 
-  int getNumberOfMembers(){
+  int getNumberOfMembers() {
     return numberOfMembers ?? members.length;
   }
 
-  User getMunchMember(String userId){
-    User user = members.firstWhere((User user){
+  User getMunchMember(String userId) {
+    User user = members.firstWhere((User user) {
       return user.uid == userId;
-    }, orElse: (){
+    }, orElse: () {
       return null;
     });
 
@@ -98,7 +94,7 @@ class Munch{
 
   // detailedMunch - new munch fetched
   // called with instance of current munch
-  void merge(Munch detailedMunch){
+  void merge(Munch detailedMunch) {
     this.name = detailedMunch.name;
     this.code = detailedMunch.code;
     this.hostUserId = detailedMunch.hostUserId;
@@ -111,26 +107,27 @@ class Munch{
     this.radius = detailedMunch.radius;
     this.imageUrl = detailedMunch.imageUrl;
 
-    if(detailedMunch.members != null && detailedMunch.members.length > 0){
+    if (detailedMunch.members != null && detailedMunch.members.length > 0) {
       this.members = detailedMunch.members;
       this.numberOfMembers = detailedMunch.members.length;
     }
 
     // if members array is empty take data from current munch if exists
-    if((detailedMunch.members == null || detailedMunch.members.length == 0) && (this.members == null || this.members.length == 0)){
+    if ((detailedMunch.members == null || detailedMunch.members.length == 0) &&
+        (this.members == null || this.members.length == 0)) {
       // If current munch data has null members or empty members array, put current user in that array it's better than to have 0 members on view
       this.members = [UserRepo.getInstance().currentUser];
       this.numberOfMembers = this.numberOfMembers ?? 1;
     }
 
-    if(detailedMunch.matchedRestaurant != null){
+    if (detailedMunch.matchedRestaurant != null) {
       this.matchedRestaurantName = detailedMunch.matchedRestaurant.name;
-    } else{
+    } else {
       this.matchedRestaurantName = null;
     }
 
     // Otherwise keep last value of munchStatusChanged, before it is reverted to false on swipe or decision screen
-    if(this.munchStatus != detailedMunch.munchStatus){
+    if (this.munchStatus != detailedMunch.munchStatus) {
       this.munchStatusChanged = true;
     }
 
@@ -152,7 +149,7 @@ class Munch{
 })
 class MunchJsonSerializer extends Serializer<Munch> with _$MunchJsonSerializer {}
 
-class MunchMemberFilters{
+class MunchMemberFilters {
   @Alias('whitelist')
   List<String> whitelistFiltersKeys;
 
@@ -165,7 +162,7 @@ class MunchMemberFilters{
 @GenSerializer()
 class MunchMemberFiltersJsonSerializer extends Serializer<MunchMemberFilters> with _$MunchMemberFiltersJsonSerializer {}
 
-class MunchFilters{
+class MunchFilters {
   List<MunchGroupFilter> blacklist;
 
   List<MunchGroupFilter> whitelist;
@@ -176,7 +173,7 @@ class MunchFilters{
 @GenSerializer()
 class MunchFiltersJsonSerializer extends Serializer<MunchFilters> with _$MunchFiltersJsonSerializer {}
 
-class MunchGroupFilter{
+class MunchGroupFilter {
   String key;
 
   List<String> userIds;
@@ -187,16 +184,10 @@ class MunchGroupFilter{
 @GenSerializer()
 class MunchGroupFilterJsonSerializer extends Serializer<MunchGroupFilter> with _$MunchGroupFilterJsonSerializer {}
 
-class RequestedReview{
+class RequestedReview {
   String munchId;
   String imageUrl;
 }
 
 @GenSerializer()
 class RequestedReviewJsonSerializer extends Serializer<RequestedReview> with _$RequestedReviewJsonSerializer {}
-
-
-
-
-
-

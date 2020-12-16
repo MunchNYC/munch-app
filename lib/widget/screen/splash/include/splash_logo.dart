@@ -17,14 +17,11 @@ class SplashLogo extends StatelessWidget {
         // can be double.infinity but this is more scalable for bigger screens
         width: App.REF_DEVICE_WIDTH,
         child: Center(
-            child: Hero(
-                tag: isHero ? WidgetKeys.SPLASH_LOGO_HERO_TAG : "",
-                child: Image(
-                    image: AssetImage("assets/images/logo/logo_NoBG_Black_outline.png"),
-                    color: Palette.secondaryDark),
-              ),
-        )
-    );
+          child: Hero(
+            tag: isHero ? WidgetKeys.SPLASH_LOGO_HERO_TAG : "",
+            child: Image(
+                image: AssetImage("assets/images/logo/logo_NoBG_Black_outline.png"), color: Palette.secondaryDark),
+          ),
+        ));
   }
-
 }

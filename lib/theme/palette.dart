@@ -29,21 +29,13 @@ class Palette {
     });
   }
 
-  static int tintValue(int value, double factor) =>
-      max(0, min((value + ((255 - value) * factor)).round(), 255));
+  static int tintValue(int value, double factor) => max(0, min((value + ((255 - value) * factor)).round(), 255));
 
-  static Color tintColor(Color color, double factor) => Color.fromRGBO(
-      tintValue(color.red, factor),
-      tintValue(color.green, factor),
-      tintValue(color.blue, factor),
-      1);
+  static Color tintColor(Color color, double factor) =>
+      Color.fromRGBO(tintValue(color.red, factor), tintValue(color.green, factor), tintValue(color.blue, factor), 1);
 
-  static int shadeValue(int value, double factor) =>
-      max(0, min(value - (value * factor).round(), 255));
+  static int shadeValue(int value, double factor) => max(0, min(value - (value * factor).round(), 255));
 
-  static Color shadeColor(Color color, double factor) => Color.fromRGBO(
-      shadeValue(color.red, factor),
-      shadeValue(color.green, factor),
-      shadeValue(color.blue, factor),
-      1);
+  static Color shadeColor(Color color, double factor) =>
+      Color.fromRGBO(shadeValue(color.red, factor), shadeValue(color.green, factor), shadeValue(color.blue, factor), 1);
 }

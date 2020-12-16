@@ -1,12 +1,12 @@
 import 'package:munch/model/user.dart';
-import 'package:munch/util/app.dart';
+
 import 'api.dart';
 
 class UsersApi extends Api {
   static const String ENDPOINT_SET_PREFIX = 'users';
   static const int API_VERSION = 1;
 
-  UsersApi(): super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
+  UsersApi() : super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
 
   // Will return user which already exists in DB, or newly created user
   Future<User> registerUser(User user) async {

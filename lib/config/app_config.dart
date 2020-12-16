@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
+
 import 'package:flutter/services.dart';
 import 'package:jaguar_serializer/jaguar_serializer.dart';
 import 'package:package_info/package_info.dart';
-import 'dart:io' show Platform;
 
 part 'app_config.jser.dart';
 
@@ -58,14 +59,13 @@ class AppConfig {
     }
   }
 
-  static AppConfig getInstance(){
-    if(_instance == null){
+  static AppConfig getInstance() {
+    if (_instance == null) {
       forEnvironment(null);
     }
 
     return _instance;
   }
-
 }
 
 @GenSerializer()

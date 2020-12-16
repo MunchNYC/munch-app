@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
-import 'profile_state.dart';
-import 'profile_event.dart';
 
+import 'profile_event.dart';
+import 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc() : super(ProfileState());
