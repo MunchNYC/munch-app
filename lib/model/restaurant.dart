@@ -8,7 +8,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 part 'restaurant.jser.dart';
 
-class Restaurant{
+class Restaurant {
   String id;
 
   String name;
@@ -51,9 +51,10 @@ class Restaurant{
   List<String> usersWhoLiked;
 
   @Field.ignore()
-  String get categoryTitles => categories.map((RestaurantCategory restaurantCategory) => restaurantCategory.title).join(", ");
+  String get categoryTitles =>
+      categories.map((RestaurantCategory restaurantCategory) => restaurantCategory.title).join(", ");
 
-  tz.TZDateTime currentTimeInRestaurantTimeZone(){
+  tz.TZDateTime currentTimeInRestaurantTimeZone() {
     tz.Location location = tz.getLocation(timezone);
 
     tz.TZDateTime nowInRestaurantTimezone = tz.TZDateTime.parse(location, DateTime.now().toString());
@@ -61,14 +62,16 @@ class Restaurant{
     return nowInRestaurantTimezone;
   }
 
-  WorkingHours getDayWorkingHours([tz.TZDateTime nowInRestaurantTimezone]){
-    if(nowInRestaurantTimezone == null){
+  WorkingHours getDayWorkingHours([tz.TZDateTime nowInRestaurantTimezone]) {
+    if (nowInRestaurantTimezone == null) {
       nowInRestaurantTimezone = currentTimeInRestaurantTimeZone();
     }
 
     String currentDayOfWeek = DateFormat('EEEE').format(nowInRestaurantTimezone);
 
-    WorkingHours dayWorkingHours = workingHours.firstWhere((WorkingHours workingHours) => workingHours.dayOfWeek.toLowerCase() == currentDayOfWeek.toLowerCase(), orElse: () => null);
+    WorkingHours dayWorkingHours = workingHours.firstWhere(
+        (WorkingHours workingHours) => workingHours.dayOfWeek.toLowerCase() == currentDayOfWeek.toLowerCase(),
+        orElse: () => null);
 
     return dayWorkingHours;
   }
@@ -101,17 +104,20 @@ class Restaurant{
 
       if (currentTimeOfDayValue < openTimeValue) {
         if (i == 0) {
-          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.opens.text")
-              + " " + (!App.use24HoursFormat ? workingTimes.open : Utility.convertTo24HourFormat(openTime12HourFormat));
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.opens.text") +
+              " " +
+              (!App.use24HoursFormat ? workingTimes.open : Utility.convertTo24HourFormat(openTime12HourFormat));
         } else {
-          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text")
-              + " " + (!App.use24HoursFormat ? workingTimes.open : Utility.convertTo24HourFormat(openTime12HourFormat));
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.re-opens.text") +
+              " " +
+              (!App.use24HoursFormat ? workingTimes.open : Utility.convertTo24HourFormat(openTime12HourFormat));
         }
 
         break;
       } else if (currentTimeOfDayValue >= openTimeValue && currentTimeOfDayValue <= closedTimeValue) {
-        currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text")
-            + " " + (!App.use24HoursFormat ? workingTimes.closed : Utility.convertTo24HourFormat(closedTime12HourFormat));
+        currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") +
+            " " +
+            (!App.use24HoursFormat ? workingTimes.closed : Utility.convertTo24HourFormat(closedTime12HourFormat));
 
         isClosed = false;
 
@@ -119,13 +125,10 @@ class Restaurant{
       }
     }
 
-    return Map.of({
-      "isClosed": isClosed,
-      "status": currentStatus
-    });
+    return Map.of({"isClosed": isClosed, "status": currentStatus});
   }
 
-  Map<String, dynamic> getPreviousWorkingDayLastStatus(tz.TZDateTime nowInRestaurantTimezone){
+  Map<String, dynamic> getPreviousWorkingDayLastStatus(tz.TZDateTime nowInRestaurantTimezone) {
     String currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.closed.text");
     bool isClosed = true;
 
@@ -133,49 +136,53 @@ class Restaurant{
 
     WorkingHours previousDayWorkingHours = getDayWorkingHours(nowInRestaurantTimezone.subtract(Duration(days: 1)));
 
-    if(previousDayWorkingHours.workingTimes.length > 0){
+    if (previousDayWorkingHours.workingTimes.length > 0) {
       WorkingTimes lastWorkingTimesElement = previousDayWorkingHours.workingTimes.last;
 
       // date must be set with DateFormat("y-M-d").format(nowInRestaurantTimezone) otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed sometimes in a year
-      String previousDayLastOpenTime12HourFormat = DateFormat("y-M-d").format(nowInRestaurantTimezone) + " " + lastWorkingTimesElement.open;
-      String previousDayLastClosedTime24HourFormat = DateFormat("y-M-d").format(nowInRestaurantTimezone) + " "  + lastWorkingTimesElement.closed;
+      String previousDayLastOpenTime12HourFormat =
+          DateFormat("y-M-d").format(nowInRestaurantTimezone) + " " + lastWorkingTimesElement.open;
+      String previousDayLastClosedTime24HourFormat =
+          DateFormat("y-M-d").format(nowInRestaurantTimezone) + " " + lastWorkingTimesElement.closed;
 
-      TimeOfDay previousDayLastOpenTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastOpenTime12HourFormat));
-      TimeOfDay previousDayLastClosedTime = TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastClosedTime24HourFormat));
+      TimeOfDay previousDayLastOpenTime =
+          TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastOpenTime12HourFormat));
+      TimeOfDay previousDayLastClosedTime =
+          TimeOfDay.fromDateTime(DateFormat('y-M-d hh:mm aa').parse(previousDayLastClosedTime24HourFormat));
 
       int previousDayLastOpenTimeValue = previousDayLastOpenTime.hour * 60 + previousDayLastOpenTime.minute;
       int previousDayLastClosedTimeValue = previousDayLastClosedTime.hour * 60 + previousDayLastClosedTime.minute;
 
-      if(previousDayLastClosedTimeValue <= previousDayLastOpenTimeValue){
+      if (previousDayLastClosedTimeValue <= previousDayLastOpenTimeValue) {
         // if it's closed after midnight
-        if(currentTimeOfDayValue < previousDayLastClosedTimeValue){
-          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text")
-              + " " + (!App.use24HoursFormat ? lastWorkingTimesElement.closed : Utility.convertTo24HourFormat(previousDayLastClosedTime24HourFormat));
+        if (currentTimeOfDayValue < previousDayLastClosedTimeValue) {
+          currentStatus = App.translate("restaurant_swipe_screen.restaurant_card.working_hours.open_until.text") +
+              " " +
+              (!App.use24HoursFormat
+                  ? lastWorkingTimesElement.closed
+                  : Utility.convertTo24HourFormat(previousDayLastClosedTime24HourFormat));
 
           isClosed = false;
         }
       }
     }
 
-    return Map.of({
-      "isClosed": isClosed,
-      "status": currentStatus
-    });
+    return Map.of({"isClosed": isClosed, "status": currentStatus});
   }
 
-  String getWorkingHoursCurrentStatus(){
+  String getWorkingHoursCurrentStatus() {
     tz.TZDateTime nowInRestaurantTimezone = currentTimeInRestaurantTimeZone();
 
     Map<String, dynamic> currentStatusMap = getCurrentWorkingDayStatus(nowInRestaurantTimezone);
 
     String currentStatus = currentStatusMap["status"];
 
-    if(currentStatusMap["isClosed"]){
+    if (currentStatusMap["isClosed"]) {
       // check day before
       currentStatusMap = getPreviousWorkingDayLastStatus(nowInRestaurantTimezone);
 
       // otherwise keep status from current day
-      if(!currentStatusMap["isClosed"]){
+      if (!currentStatusMap["isClosed"]) {
         currentStatus = currentStatusMap["status"];
       }
     }
@@ -188,34 +195,32 @@ class Restaurant{
     return "id: $id; name: $name;";
   }
 
-  Restaurant({
-    this.id,
-    this.name,
-    this.categories,
-    this.workingHours,
-    this.coordinates,
-    this.city,
-    this.state,
-    this.country,
-    this.address,
-    this.zipCode,
-    this.phoneNumber,
-    this.priceSymbol,
-    this.rating,
-    this.photoUrls,
-    this.reviewsNumber,
-    this.timezone,
-    this.url,
-    this.usersWhoLiked
-  });
+  Restaurant(
+      {this.id,
+      this.name,
+      this.categories,
+      this.workingHours,
+      this.coordinates,
+      this.city,
+      this.state,
+      this.country,
+      this.address,
+      this.zipCode,
+      this.phoneNumber,
+      this.priceSymbol,
+      this.rating,
+      this.photoUrls,
+      this.reviewsNumber,
+      this.timezone,
+      this.url,
+      this.usersWhoLiked});
 }
 
 @GenSerializer()
 class RestaurantJsonSerializer extends Serializer<Restaurant> with _$RestaurantJsonSerializer {}
 
-
 // Better name for this is just "Category" but it will have conflict with Flutter class
-class RestaurantCategory{
+class RestaurantCategory {
   String alias;
 
   String title;
@@ -231,15 +236,14 @@ class RestaurantCategory{
 @GenSerializer()
 class RestaurantCategoryJsonSerializer extends Serializer<RestaurantCategory> with _$RestaurantCategoryJsonSerializer {}
 
-
-class WorkingHours{
+class WorkingHours {
   String dayOfWeek;
 
   @Alias('times')
   List<WorkingTimes> workingTimes;
 
-  String getWorkingTimesFormatted(){
-    if(workingTimes.isEmpty){
+  String getWorkingTimesFormatted() {
+    if (workingTimes.isEmpty) {
       return App.translate("restaurant.working_hours.closed.text");
     }
 
@@ -247,11 +251,10 @@ class WorkingHours{
 
     DateTime now = DateTime.now();
 
-
     for (WorkingTimes wt in workingTimes) {
       // date must be set with DateFormat("y-M-d").format(nowInRestaurantTimezone) otherwise DateFormat will return 01:25 AM -> 12:25 AM because date is converted to 1970-01-01 by default and time is changed sometimes in a year
       String openTime12HourFormat = DateFormat("y-M-d").format(now) + " " + wt.open;
-      String closedTime12HourFormat = DateFormat("y-M-d").format(now) + " "  + wt.closed;
+      String closedTime12HourFormat = DateFormat("y-M-d").format(now) + " " + wt.closed;
 
       String openText = !App.use24HoursFormat ? wt.open : Utility.convertTo24HourFormat(openTime12HourFormat);
       String closedText = !App.use24HoursFormat ? wt.closed : Utility.convertTo24HourFormat(closedTime12HourFormat);
@@ -268,8 +271,7 @@ class WorkingHours{
 @GenSerializer()
 class WorkingHoursJsonSerializer extends Serializer<WorkingHours> with _$WorkingHoursJsonSerializer {}
 
-
-class WorkingTimes{
+class WorkingTimes {
   String open;
 
   String closed;

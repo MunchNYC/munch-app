@@ -12,6 +12,6 @@ class CommunicationSettings {
   static const int numOfRetries = 1;
 }
 
-class WidgetKeys{
+class WidgetKeys {
   static const String SPLASH_LOGO_HERO_TAG = "splash_logo";
 }
