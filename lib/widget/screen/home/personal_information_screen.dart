@@ -51,7 +51,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   @override
   void initState() {
-    _birthday = DateTime.parse(widget.user.birthday);
+    if (widget.user.birthday != null) {
+      _birthday = DateTime.parse(widget.user.birthday);
+    }
     _initializeFormFields();
     _profileBloc = ProfileBloc();
     super.initState();
@@ -329,7 +331,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
     _genderTextController.text = User.genderToString(widget.user.gender);
-    _birthdayTextController.text = _dateFormat.format(_birthday);
+    _birthdayTextController.text = (_birthday != null) ? _dateFormat.format(_birthday) : "";
     _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
   }
 
@@ -386,7 +388,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                               height: 240,
                               child: CupertinoDatePicker(
                                 mode: CupertinoDatePickerMode.date,
-                                initialDateTime: _dateFormat.parse(_birthdayTextController.text),
+                                initialDateTime: (_birthday != null) ? _dateFormat.parse(_birthdayTextController.text) : DateTime.now(),
                                 maximumDate: DateTime.now().add(Duration(seconds: 1)),
                                 onDateTimeChanged: (value) { _updateBirthday(value); }
                               ),
@@ -415,9 +417,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
       FocusScope.of(context).unfocus();
 
       if (_changesMade()) {
-        Map<String, dynamic> fields;
+        Map<String, dynamic> fields = Map<String, dynamic>();
         if (_nameChanged) fields["displayName"] = _nameTextController.text;
-        if (_genderChanged) fields["gender"] = _gender;
+        if (_genderChanged) fields["gender"] = _gender.toString().split(".").last;
         if (_birthdayChanged) fields["birthday"] = _birthday.year.toString() + "-" + _birthday.month.toString() + "-" + _birthday.day.toString();
 
         _profileBloc.add(UpdatePersonalInformationEvent(fields: fields));

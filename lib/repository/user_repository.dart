@@ -109,6 +109,7 @@ class UserRepo {
   }
 
   Future updateCurrentUser(Map<String, dynamic> fields) async {
+    if (fields == null || fields.isEmpty) return UserRepo.getInstance()._currentUser;
     try {
       User updatedUser = await _usersApi.updatePersonalInfo(fields);
       _currentUser = updatedUser;
