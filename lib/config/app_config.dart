@@ -45,14 +45,14 @@ class AppConfig {
     const devGoogleMapsApiKey = String.fromEnvironment('devMapsApiKey');
     if (devGoogleMapsApiKey != null && devGoogleMapsApiKey.isNotEmpty) {
       googleMapsApiKey = devGoogleMapsApiKey;
-      print("using Dev Maps apiKey" + googleMapsApiKey);
+      print("using Dev Maps apiKey:" + googleMapsApiKey);
     } else {
       if (Platform.isAndroid) {
         googleMapsApiKey = googleMapsAndroidApiKey;
-        print("using android Maps apiKey" + googleMapsApiKey);
+        print("using android Maps apiKey:" + googleMapsApiKey);
       } else if (Platform.isIOS) {
         googleMapsApiKey = googleMapsIosApiKey;
-        print("using ios Maps apiKey" + googleMapsApiKey);
+        print("using ios Maps apiKey:" + googleMapsApiKey);
       } else {
         throw Exception("Failed to resolve maps api key");
       }
