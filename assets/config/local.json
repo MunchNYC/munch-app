@@ -1,8 +1,8 @@
 {
   "appTitle": "Munch",
   "apiUrl": "http://10.0.2.2:8080",
-  "googleMapsIosApiKey": "AIzaSyBO1dYIpiDt1CoWi5PJrfVMfAdZGFs5KIg",
-  "googleMapsAndroidApiKey": "AIzaSyBFhCJHfekBV-Z44NMofgAeoWk0aZdDr9Q",
+  "googleMapsIosApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE",
+  "googleMapsAndroidApiKey": "AIzaSyAnHswwvOR8G-m1GrXMMVx9ScQG6WVPLBE",
   "feedbackEmail": "feedback@munchapp.io",
   "privacyPolicyUrl": "https://sites.google.com/view/munchapp-privacy/home",
   "termsOfServiceUrl": "https://sites.google.com/view/munchapp-tc/home",
