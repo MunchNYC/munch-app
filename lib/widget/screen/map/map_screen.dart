@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart'; // IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
+import 'package:munch/google_maps_webservice-0.0.18/places.dart'; // IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
+import 'package:munch/flutter_google_places-0.2.6/src/flutter_google_places.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';

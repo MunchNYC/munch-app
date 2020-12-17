@@ -38,8 +38,8 @@ dependencies:
   flushbar: 1.10.0
   flutter_bloc: ^6.0.5
   flutter_secure_storage: ^3.3.5
+  rxdart: ^0.25.0
   intl: any
-  flutter_google_places: ^0.2.6
   geolocator: ^6.0.0
   font_awesome_flutter: ^8.8.1
   wc_flutter_share: ^0.2.2
