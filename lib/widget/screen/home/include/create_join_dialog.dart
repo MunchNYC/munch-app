@@ -34,17 +34,13 @@ class CreateJoinDialogState extends State<CreateJoinDialog> {
   String _joinCode;
   String _munchName;
 
-  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 21;
+  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 65;
   String _munchNamePlaceholder;
 
-  final List<String> _munchNamePlaceholders = List<String>();
-
   CreateJoinDialogState() {
-    for (int i = 0; i < TOTAL_MUNCH_NAME_PLACEHOLDERS; i++) {
-      _munchNamePlaceholders.add(App.translate("create_join_dialog_create_form.name_field.placeholder${i + 1}.value"));
-    }
-
-    _munchNamePlaceholder = _munchNamePlaceholders[Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS)];
+    int randomPrefix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
+    int randomSuffix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
+    _munchNamePlaceholder = App.translate("random_munch_group_prefix$randomPrefix") + " " + App.translate("random_munch_group_suffix$randomSuffix");
   }
 
   final TextEditingController _joinTextEditingController = TextEditingController();
