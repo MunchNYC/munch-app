@@ -30,7 +30,6 @@ class MapsRepo {
   }
 
   Future<PlacesAutocompleteResponse> getAutocomplete(String input, Coordinates coordinates) async {
-    print(_sessionToken);
     try {
       PlacesAutocompleteResponse response = await _mapsApi.getAutocomplete(_currentSessionToken, input, coordinates);
       return response;
