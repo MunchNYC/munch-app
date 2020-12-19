@@ -83,9 +83,9 @@ abstract class _$RestaurantJsonSerializer implements Serializer<Restaurant> {
     obj.reviewsNumber = map['reviewCount'] as int;
     obj.timezone = passProcessor.deserialize(map['timezone']);
     obj.url = passProcessor.deserialize(map['url']);
-    obj.usersWhoLiked = codeNonNullIterable<dynamic>(
+    obj.usersWhoLiked = codeNonNullIterable<String>(
             map['usersWhoLiked'] as Iterable,
-            (val) => passProcessor.deserialize(val), <dynamic>[]) ??
+            (val) => passProcessor.deserialize(val), <String>[]) ??
         getJserDefault('usersWhoLiked') ??
         obj.usersWhoLiked;
     return obj;
