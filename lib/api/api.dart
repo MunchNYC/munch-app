@@ -92,6 +92,8 @@ abstract class Api {
 
   Future<dynamic> post(String url, Map<String, dynamic> body, [Map<String, String> headers]) async {
     print("Posting to: " + baseUrl + url);
+    print("Our post body: ");
+    print(body);
 
     return await performHttpRequest(
         headers: headers,

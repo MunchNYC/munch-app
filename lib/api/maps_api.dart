@@ -21,14 +21,12 @@ class MapsApi extends Api {
       },
       "input": input
     };
-    print("our post body: ");
-    print(body);
-
     var data = await post(postUrl, body);
 
     AutocompleteResponses getAutocompleteResponses = AutocompleteResponsesJsonSerializer().fromMap(data);
 
     List<Prediction> predictions = [];
+
     getAutocompleteResponses.autocompleteResponses.forEach((element) {
       predictions.add(Prediction(element.placeId, element.displayString));
     });
@@ -43,8 +41,6 @@ class MapsApi extends Api {
       "sessionToken": sessionToken,
       "placeId": placeId
     };
-    print("our post body: ");
-    print(body);
     var data = await post(postUrl, body);
 
     Coordinates coordinates = CoordinatesJsonSerializer().fromMap(data['coordinates']);
