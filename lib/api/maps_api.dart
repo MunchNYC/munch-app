@@ -1,6 +1,6 @@
-import 'dart:html';
-
+import 'package:uuid/uuid.dart';
 import 'package:munch/model/coordinates.dart';
+import 'package:munch/model/response/autocomplete_responses.dart';
 
 import 'api.dart';
 
@@ -10,19 +10,28 @@ class MapsApi extends Api {
 
   MapsApi() : super(endpointSetPrefix: ENDPOINT_SET_PREFIX, version: API_VERSION);
 
-  Future<AutocompleteResponse> getAutocomplete(AutocompleteRequest body) async {
+  Future<AutocompleteResponses> getAutocomplete(String sessionToken, String input, Coordinates coordinates) async {
     String postUrl = "/autocomplete";
+
+    Map<String, dynamic> body = {
+      "sessionToken": sessionToken,
+      "coordinates": {
+        "longitude": 12.1234,
+        "latitude": 12.1
+      },
+      "input": input
+    };
 
     var data = await post(postUrl, body);
 
-    AutocompleteResponse getAutocompleteResponse = GetAutocompleteResponseJsonSerializer().fromMap(data);
+    AutocompleteResponses getAutocompleteResponses = AutocompleteResponsesJsonSerializer().fromMap(data);
   }
 
-  Future<AutocompleteCoordinatesReponse> getCoordinates(String placeId) async {
+  Future<Coordinates> getCoordinates(String sessionToken, String placeId) async {
     String postUrl = "/coordinates";
 
     Map<String, dynamic> body = {
-      "sessionToken": "84baf23a-f119-4e93-9acb-e2b2ff849f8a",
+      "sessionToken": sessionToken,
       "placeId": placeId
     };
     var data = await post(postUrl, body);
