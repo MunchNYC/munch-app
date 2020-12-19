@@ -141,7 +141,6 @@ class GoogleMapsPlaces extends GoogleWebService {
     num radius,
     String language,
     List<String> types,
-    List<Component> components,
     bool strictbounds,
     String region,
   }) async {
@@ -154,7 +153,6 @@ class GoogleMapsPlaces extends GoogleWebService {
       radius: radius,
       language: language,
       types: types,
-      components: components,
       strictbounds: strictbounds,
       region: region,
     );
@@ -296,7 +294,6 @@ class GoogleMapsPlaces extends GoogleWebService {
     num radius,
     String language,
     List<String> types,
-    List<Component> components,
     bool strictbounds,
     String region,
   }) {
@@ -307,7 +304,6 @@ class GoogleMapsPlaces extends GoogleWebService {
       'location': location,
       'radius': radius,
       'types': types,
-      'components': components,
       'strictbounds': strictbounds,
       'offset': offset,
       'region': region,
@@ -415,7 +411,6 @@ class PlacesSearchResponse extends GoogleResponseList<PlacesSearchResult> {
 
 class PlacesSearchResult {
   final String icon;
-  final Geometry geometry;
   final String name;
 
   /// JSON opening_hours
@@ -452,7 +447,6 @@ class PlacesSearchResult {
 
   PlacesSearchResult(
     this.icon,
-    this.geometry,
     this.name,
     this.openingHours,
     this.photos,
@@ -472,7 +466,6 @@ class PlacesSearchResult {
   factory PlacesSearchResult.fromJson(Map json) => json != null
       ? PlacesSearchResult(
           json['icon'],
-          json['geometry'] != null ? Geometry.fromJson(json['geometry']) : null,
           json['name'],
           json['opening_hours'] != null
               ? OpeningHours.fromJson(json['opening_hours'])
@@ -501,9 +494,6 @@ class PlacesSearchResult {
 }
 
 class PlaceDetails {
-  /// JSON address_components
-  final List<AddressComponent> addressComponents;
-
   /// JSON adr_address
   final String adrAddress;
 
@@ -552,10 +542,8 @@ class PlaceDetails {
 
   final List<Review> reviews;
 
-  final Geometry geometry;
 
   PlaceDetails(
-    this.addressComponents,
     this.adrAddress,
     this.formattedAddress,
     this.formattedPhoneNumber,
@@ -576,15 +564,10 @@ class PlaceDetails {
     this.utcOffset,
     this.website,
     this.reviews,
-    this.geometry,
   );
 
   factory PlaceDetails.fromJson(Map json) => json != null
       ? PlaceDetails(
-          json['address_components']
-              ?.map((addr) => AddressComponent.fromJson(addr))
-              ?.toList()
-              ?.cast<AddressComponent>(),
           json['adr_address'],
           json['formatted_address'],
           json['formatted_phone_number'],
@@ -618,8 +601,7 @@ class PlaceDetails {
           json['reviews']
               ?.map((r) => Review.fromJson(r))
               ?.toList()
-              ?.cast<Review>(),
-          json['geometry'] != null ? Geometry.fromJson(json['geometry']) : null)
+              ?.cast<Review>())
       : null;
 }
 

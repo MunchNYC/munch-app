@@ -19,7 +19,6 @@ class PlacesAutocompleteWidget extends StatefulWidget {
   final String language;
   final String sessionToken;
   final List<String> types;
-  final List<Component> components;
   final bool strictbounds;
   final String region;
   final Mode mode;
@@ -51,7 +50,6 @@ class PlacesAutocompleteWidget extends StatefulWidget {
       this.language,
       this.sessionToken,
       this.types,
-      this.components,
       this.strictbounds,
       this.region,
       this.logo,
@@ -466,7 +464,6 @@ class PlacesAutocomplete {
       String language,
       String sessionToken,
       List<String> types,
-      List<Component> components,
       bool strictbounds,
       String region,
       Widget logo,
@@ -480,7 +477,6 @@ class PlacesAutocomplete {
         overlayBorderRadius: overlayBorderRadius,
         language: language,
         sessionToken: sessionToken,
-        components: components,
         types: types,
         location: location,
         radius: radius,

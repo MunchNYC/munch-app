@@ -52,7 +52,6 @@ class PlacesAutocompleteField extends StatefulWidget {
     this.language,
     this.sessionToken,
     this.types,
-    this.components,
     this.strictbounds,
     this.onChanged,
     this.onSelected,
@@ -118,8 +117,6 @@ class PlacesAutocompleteField extends StatefulWidget {
 
   final List<String> types;
 
-  final List<Component> components;
-
   final Location location;
 
   final num radius;
@@ -172,7 +169,6 @@ class _LocationAutocompleteFieldState extends State<PlacesAutocompleteField> {
         hint: widget.hint,
         language: widget.language,
         sessionToken: widget.sessionToken,
-        components: widget.components,
         location: widget.location,
         radius: widget.radius,
         types: widget.types,
