@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:munch/google_maps_webservice-0.0.18/places.dart'; // IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
-import 'package:munch/flutter_google_places-0.2.6/src/flutter_google_places.dart';
+import 'package:munch/api/maps_api.dart';
+import 'package:munch/google_maps_webservice-0.0.18/places.dart';// IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
+import 'package:munch/google_maps_webservice-0.0.18/core.dart';
+import 'file:///C:/Users/EChan/Development/munch-app/lib/flutter_google_places-0.2.6/flutter_google_places.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/repository/maps_repository.dart';
 import 'package:munch/service/location/location_bloc.dart';
 import 'package:munch/service/location/location_event.dart';
 import 'package:munch/service/location/location_state.dart';
@@ -438,13 +441,14 @@ class MapScreenState extends State<MapScreen> {
       context: context,
       apiKey: AppConfig.getInstance().googleMapsApiKey,
       mode: Mode.overlay,
+      location: Location(_centralCircle.center.latitude, _centralCircle.center.longitude)
     );
 
     if (prediction != null) {
-      PlacesDetailsResponse detail = await _googleMapsPlaces.getDetailsByPlaceId(prediction.placeId);
+      PlacesDetailsResponse detail = await MapsRepo.getInstance().getCoordinates(prediction.placeId);
 
-      final lat = detail.result.geometry.location.lat;
-      final lng = detail.result.geometry.location.lng;
+      final lat = detail.coordinates.latitude;
+      final lng = detail.coordinates.longitude;
 
       _animateMapToLocation(LatLng(lat, lng));
 
