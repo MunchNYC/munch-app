@@ -1,5 +1,3 @@
-library google_maps_webservice.core;
-
 class Location {
   final double lat;
   final double lng;

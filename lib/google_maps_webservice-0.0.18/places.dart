@@ -1,11 +1,8 @@
-library google_maps_webservice.places.src;
-
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
-
+import 'package:munch/model/coordinates.dart';
 import 'core.dart';
 import 'utils.dart';
 
@@ -729,13 +726,14 @@ enum PriceLevel { free, inexpensive, moderate, expensive, veryExpensive }
 
 class PlacesDetailsResponse extends GoogleResponse<PlaceDetails> {
   /// JSON html_attributions
-  final List<String> htmlAttributions;
+  final List<String> htmlAttributions = [];
+  final Coordinates coordinates;
 
   PlacesDetailsResponse(
-    String status,
+    this.coordinates,
+    {String status,
     String errorMessage,
-    PlaceDetails result,
-    this.htmlAttributions,
+    PlaceDetails result}
   ) : super(
           status,
           errorMessage,
@@ -743,14 +741,7 @@ class PlacesDetailsResponse extends GoogleResponse<PlaceDetails> {
         );
 
   factory PlacesDetailsResponse.fromJson(Map json) => json != null
-      ? PlacesDetailsResponse(
-          json['status'],
-          json['error_message'],
-          json['result'] != null ? PlaceDetails.fromJson(json['result']) : null,
-          json['html_attributions'] != null
-              ? (json['html_attributions'] as List)?.cast<String>()
-              : [])
-      : null;
+      ? PlacesDetailsResponse(json['coordinates']) : null;
 }
 
 class Review {
@@ -802,9 +793,9 @@ class PlacesAutocompleteResponse extends GoogleResponseStatus {
   final List<Prediction> predictions;
 
   PlacesAutocompleteResponse(
-    String status,
-    String errorMessage,
     this.predictions,
+    {String status,
+    String errorMessage}
   ) : super(
           status,
           errorMessage,
@@ -812,9 +803,7 @@ class PlacesAutocompleteResponse extends GoogleResponseStatus {
 
   factory PlacesAutocompleteResponse.fromJson(Map json) => json != null
       ? PlacesAutocompleteResponse(
-          json['status'],
-          json['error_message'],
-          json['predictions']
+          json['autocompleteResults']
               ?.map((p) => Prediction.fromJson(p))
               ?.toList()
               ?.cast<Prediction>())
@@ -829,6 +818,7 @@ class Prediction {
 
   /// JSON place_id
   final String placeId;
+  final String displayString;
   final String reference;
   final List<String> types;
 
@@ -838,32 +828,21 @@ class Prediction {
   final StructuredFormatting structuredFormatting;
 
   Prediction(
-      this.description,
+      this.placeId,
+      this.displayString,
+      {this.description,
       this.id,
       this.terms,
       this.distanceMeters,
-      this.placeId,
       this.reference,
       this.types,
       this.matchedSubstrings,
-      this.structuredFormatting);
+      this.structuredFormatting});
 
   factory Prediction.fromJson(Map json) => json != null
       ? Prediction(
-          json['description'],
-          json['id'],
-          json['terms']?.map((t) => Term.fromJson(t))?.toList()?.cast<Term>(),
-          json['distance_meters'],
-          json['place_id'],
-          json['reference'],
-          json['types'] != null ? (json['types'] as List)?.cast<String>() : [],
-          json['matched_substrings']
-              ?.map((m) => MatchedSubstring.fromJson(m))
-              ?.toList()
-              ?.cast<MatchedSubstring>(),
-          json['structured_formatting'] != null
-              ? StructuredFormatting.fromJson(json['structured_formatting'])
-              : null,
+          json['placeId'],
+          json['displayString'],
         )
       : null;
 }
