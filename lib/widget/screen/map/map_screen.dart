@@ -451,7 +451,7 @@ class MapScreenState extends State<MapScreen> {
 
       _animateMapToLocation(LatLng(lat, lng));
 
-      _searchTextController.text = prediction.description;
+      _searchTextController.text = prediction.displayString;
     }
   }
 }

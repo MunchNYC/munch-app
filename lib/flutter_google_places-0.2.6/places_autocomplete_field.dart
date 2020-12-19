@@ -181,9 +181,9 @@ class _LocationAutocompleteFieldState extends State<PlacesAutocompleteField> {
     if (p == null) return;
     
     setState(() {
-      _effectiveController.text = p.description;
+      _effectiveController.text = p.displayString;
       if (widget.onChanged != null) {
-        widget.onChanged(p.description);
+        widget.onChanged(p.displayString);
       }
       if (widget.onSelected != null) {
         widget.onSelected(p);
