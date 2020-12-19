@@ -6,7 +6,8 @@ part of 'google_sign_in_response.dart';
 // JaguarSerializerGenerator
 // **************************************************************************
 
-abstract class _$GoogleSignInResponseJsonSerializer implements Serializer<GoogleSignInResponse> {
+abstract class _$GoogleSignInResponseJsonSerializer
+    implements Serializer<GoogleSignInResponse> {
   @override
   Map<String, dynamic> toMap(GoogleSignInResponse model) {
     if (model == null) return null;

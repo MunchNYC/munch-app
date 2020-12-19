@@ -6,7 +6,8 @@ part of 'facebook_graph_profile_response.dart';
 // JaguarSerializerGenerator
 // **************************************************************************
 
-abstract class _$FacebookGraphProfileResponseJsonSerializer implements Serializer<FacebookGraphProfileResponse> {
+abstract class _$FacebookGraphProfileResponseJsonSerializer
+    implements Serializer<FacebookGraphProfileResponse> {
   @override
   Map<String, dynamic> toMap(FacebookGraphProfileResponse model) {
     if (model == null) return null;
