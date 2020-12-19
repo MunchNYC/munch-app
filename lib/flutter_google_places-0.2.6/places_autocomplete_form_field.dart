@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:munch/flutter_google_places-0.2.6/places_autocomplete_field.dart';
 import 'package:munch/google_maps_webservice-0.0.18/places.dart';
 import 'package:munch/google_maps_webservice-0.0.18/core.dart';
-
 import 'flutter_google_places.dart';
-import 'places_autocomplete_field.dart';
 
 /// A [FormField] that contains a [PlacesAutocompleteField].
 ///
