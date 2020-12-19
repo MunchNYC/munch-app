@@ -1,11 +1,11 @@
-library flutter_google_places.src;
-
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:munch/google_maps_webservice-0.0.18/places.dart';
 import 'package:munch/google_maps_webservice-0.0.18/core.dart';
+import 'package:munch/model/coordinates.dart';
 import 'package:http/http.dart';
+import 'package:munch/repository/maps_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PlacesAutocompleteWidget extends StatefulWidget {
@@ -316,9 +316,9 @@ class _AppBarPlacesAutoCompleteTextFieldState
 
 class PoweredByGoogleImage extends StatelessWidget {
   final _poweredByGoogleWhite =
-      "packages/flutter_google_places/assets/google_white.png";
+      'assets/images/google/google_white.png';
   final _poweredByGoogleBlack =
-      "packages/flutter_google_places/assets/google_black.png";
+      'assets/images/google/google_black.png';
 
   @override
   Widget build(BuildContext context) {
@@ -361,7 +361,7 @@ class PredictionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(Icons.location_on),
-      title: Text(prediction.description),
+      title: Text(prediction.displayString),
       onTap: () {
         if (onTap != null) {
           onTap(prediction);
@@ -403,26 +403,8 @@ abstract class PlacesAutocompleteState extends State<PlacesAutocompleteWidget> {
       setState(() {
         _searching = true;
       });
-
-      final res = await _places.autocomplete(
-        value,
-        offset: widget.offset,
-        location: widget.location,
-        radius: widget.radius,
-        language: widget.language,
-        sessionToken: widget.sessionToken,
-        types: widget.types,
-        components: widget.components,
-        strictbounds: widget.strictbounds,
-        region: widget.region,
-      );
-
-      if (res.errorMessage?.isNotEmpty == true ||
-          res.status == "REQUEST_DENIED") {
-        onResponseError(res);
-      } else {
-        onResponse(res);
-      }
+      final res = await MapsRepo.getInstance().getAutocomplete(value, Coordinates(latitude: widget.location.lat, longitude: widget.location.lng));
+      onResponse(res);
     } else {
       onResponse(null);
     }
