@@ -67,9 +67,6 @@ class AuthRepo {
   }
 
   Future<User> _registerGoogleUser(GoogleSignInAccount account, firebase_auth.User firebaseUser) async {
-    GoogleSignInApi googleSignInApi = GoogleSignInApi();
-    GoogleSignInResponse googleSignInResponse = await googleSignInApi.getUserProfile(await account.authHeaders);
-
     User user =
         User(uid: firebaseUser.uid, displayName: account.displayName, email: account.email, imageUrl: account.photoUrl);
 
