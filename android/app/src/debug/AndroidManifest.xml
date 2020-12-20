@@ -1,7 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.munch">
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+    <meta-data
+        tools:replace="android:value"
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyCX6HE9z3D0Vvjm6jrq1HTzNPcx1mRj5w0"/>
+</application>
 </manifest>
