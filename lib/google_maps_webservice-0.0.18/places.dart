@@ -8,11 +8,9 @@ const _placesUrl = '/place';
 /// https://developers.google.com/places/web-service/
 class GoogleMapsPlaces extends GoogleWebService {
   GoogleMapsPlaces({
-    String apiKey,
     String baseUrl,
     Client httpClient,
   }) : super(
-            apiKey: apiKey,
             baseUrl: baseUrl,
             url: _placesUrl,
             httpClient: httpClient);

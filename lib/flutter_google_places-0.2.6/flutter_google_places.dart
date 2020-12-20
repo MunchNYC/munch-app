@@ -386,7 +386,6 @@ abstract class PlacesAutocompleteState extends State<PlacesAutocompleteWidget> {
     _queryTextController = TextEditingController(text: widget.startText);
 
     _places = GoogleMapsPlaces(
-        apiKey: widget.apiKey,
         baseUrl: widget.proxyBaseUrl,
         httpClient: widget.httpClient);
     _searching = false;

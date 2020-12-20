@@ -11,24 +11,17 @@ abstract class GoogleWebService {
   @protected
   final String _url;
 
-  @protected
-  final String _apiKey;
-
   String get url => _url;
 
   Client get httpClient => _httpClient;
 
-  String get apiKey => _apiKey;
-
   GoogleWebService({
-    String apiKey,
     String baseUrl,
     @required String url,
     Client httpClient,
   })  : assert(url != null),
         _url = '${baseUrl ?? kGMapsUrl}$url',
-        _httpClient = httpClient ?? Client(),
-        _apiKey = apiKey;
+        _httpClient = httpClient ?? Client();
 
   @protected
   String buildQuery(Map<String, dynamic> params) {
