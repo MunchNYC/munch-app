@@ -15,6 +15,86 @@
       },
       "oauth_client": [
         {
+          "client_id": "565789517036-2ofg9162jrnij49tu5qqme1cd828fi61.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "d256c66c0b7bef1a62fbcbfe164c8111e1413f87"
+          }
+        },
+        {
+          "client_id": "565789517036-4hk9beckve8042buf4148kludee8hnf8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "c1abc28536210cb1a100ac5326f86fe64f54afd1"
+          }
+        },
+        {
+          "client_id": "565789517036-89oai8uu5pehoh3rvrkhoiec3i9ds9et.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "2d229f81839c279d58bac15a7b4c28bcfa2a8efb"
+          }
+        },
+        {
+          "client_id": "565789517036-9a6kllqsgitoncloooidbhntlpk1etic.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "51002c48491d23c109cad7bc6e5485ab9b90eead"
+          }
+        },
+        {
+          "client_id": "565789517036-cp23g5au01gied9imafolctr7it791uo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "bbeb6d174404ff90301dbba74e19f0dfadb14e5d"
+          }
+        },
+        {
+          "client_id": "565789517036-it9hjb2u5ms84su0kuj557lb0h2akgug.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "6d78a53eb931314ea35198a26752e497822d8acb"
+          }
+        },
+        {
+          "client_id": "565789517036-orc9pi8mlunah65842eu03diqkjvi3t6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "98875b5c07e255e60b4f14ea216a999d73a05eb8"
+          }
+        },
+        {
+          "client_id": "565789517036-qokf512j23636l5rf4qn8olkffdvijau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "6f18d0d355ee2bfdf2d5a4f28b43bae3de3d8114"
+          }
+        },
+        {
+          "client_id": "565789517036-r5pahn3mvltb5ehfi8h537dns1dibvtj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "f7182f8962e58437cbf1a535c83e5ab255152846"
+          }
+        },
+        {
+          "client_id": "565789517036-v13m5add8kcqbe2m8bl0oq63pa5thtd4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.munch",
+            "certificate_hash": "8006af7d68251449abd5598e7a49c99f1df4ec38"
+          }
+        },
+        {
           "client_id": "565789517036-86r4nlbiadr3m1h5grnlngo86vlf4bh4.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -32,7 +112,7 @@
               "client_type": 3
             },
             {
-              "client_id": "565789517036-obboapmoct76r15t2tqsqqr01s0prpdj.apps.googleusercontent.com",
+              "client_id": "565789517036-16ere2i2sf4frueopijqdokfcp5rjha6.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "org.munch"

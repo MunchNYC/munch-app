@@ -46,8 +46,6 @@ class MapScreen extends StatefulWidget {
 class MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
 
-  GoogleMapsPlaces _googleMapsPlaces = GoogleMapsPlaces(apiKey: AppConfig.getInstance().googleMapsApiKey);
-
   static const double DEFAULT_MAP_ZOOM = 14.5;
   static const LatLng DEFAULT_CAMERA_POSITION = LatLng(40.7128, -74.0060);
 
