@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
@@ -146,8 +147,41 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 carouselController: _carouselController,
               ),
               _carouselControlsRow(),
-              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked()
+//              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked(),
+              _userWhoLiked(),
+              _likeIndicator(),
+              _dislikeIndicator()
             ])));
+  }
+
+  Widget _likeIndicator() {
+    return Padding(
+        padding: EdgeInsets.only(top: 24.0, left: 24.0),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Icon(
+            Icons.check_circle_outline,
+            color: Colors.green,
+            size: 72.0,
+            semanticLabel: 'Text to announce in accessibility modes',
+          )
+        )
+    );
+  }
+
+  Widget _dislikeIndicator() {
+    return Padding(
+        padding: EdgeInsets.only(top: 24.0, right: 24.0),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: Icon(
+            Icons.cancel_outlined,
+            color: Colors.red,
+            size: 72.0,
+            semanticLabel: 'Text to announce in accessibility modes',
+          )
+      )
+    );
   }
 
   Widget _userWhoLiked() {
@@ -166,13 +200,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _userAvatars(widget.restaurant.usersWhoLiked),
+                      _userAvatars(["widget.restaurant.usersWhoLiked", "Eric Chang"]),
                       SizedBox(width: 4.0),
-                      Image(
-                        image: AssetImage("assets/images/checkLiked.png"),
-                        width: 24.0,
-                        height: 24.0,
-                      ),
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 24.0,
+                        color: Colors.green
+                      )
                     ],
                   ),
                 ))

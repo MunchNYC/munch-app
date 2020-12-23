@@ -161,7 +161,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   Widget _appBarTitle() {
-    // InkWell to make white space around tapable also
+    // InkWell to make white space around tappable also
     return InkWell(
         onTap: () {
           NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((shouldReloadRestaurants) {
