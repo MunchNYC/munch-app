@@ -90,6 +90,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   double _restaurantCardWidth;
   double _restaurantCardHeight;
   Offset _restaurantCardStartingGlobalOffset;
+  // Swipe indicators
+  double _initialPointerPositionForDrag;
 
   @override
   void initState() {
@@ -550,7 +552,26 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _draggableCard() {
     return LayoutBuilder(
       builder: (context, constraints) => Stack(overflow: Overflow.visible, children: [
-        Draggable(
+        Listener(
+          onPointerDown: (PointerDownEvent event) {
+            RenderBox renderBox = context.findRenderObject();
+            _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
+            _initialPointerPositionForDrag = event.position.dx;
+          },
+          onPointerMove: (PointerMoveEvent event) {
+            double _dx = event.position.dx - _initialPointerPositionForDrag;
+            double _threshold = _restaurantCardWidth * SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD;
+            double _opacity = _dx.abs() / _threshold;
+            if (_opacity > 1) _opacity = 1;
+            if (_opacity < 0) _opacity = 0;
+            print(_opacity);
+            if (_dx < 0) {
+                _currentCardMap[_currentRestaurants[0].id].updateDislikeIndicator(_opacity);
+            } else {
+              _currentCardMap[_currentRestaurants[0].id].updateLikeIndicator(_opacity);
+            }
+          },
+          child: Draggable(
             child: _currentCardMap[_currentRestaurants[0].id],
             ignoringFeedbackSemantics: false,
             feedback: Container(
@@ -560,13 +581,9 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             ),
             childWhenDragging:
                 _currentRestaurants.length > 1 ? _currentCardMap[_currentRestaurants[1].id] : Container(),
-            onDragStarted: () {
-              RenderBox renderBox = context.findRenderObject();
-              _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
-            },
-            // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED GOOD BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
+            // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED WELL BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
             onDragEnd: (DraggableDetails draggableDetails) => _onDragEndListener(context, draggableDetails)),
-            //TODO: method that completes the indicator animation - maybe in this method ^
+        ),
         if (widget.tutorialTriggerListenerActive)
           Positioned.fill(
               child: GestureDetector(
