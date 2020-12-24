@@ -160,8 +160,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 carouselController: _carouselController,
               ),
               _carouselControlsRow(),
-//              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked(),
-              _userWhoLiked(),
+              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked(),
               _likeIndicator(),
               _dislikeIndicator()
             ])));
@@ -218,7 +217,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _userAvatars(["widget.restaurant.usersWhoLiked", "Eric Chang"]),
+                      _userAvatars(widget.restaurant.usersWhoLiked),
                       SizedBox(width: 4.0),
                       Icon(
                         Icons.check_circle_outline,
