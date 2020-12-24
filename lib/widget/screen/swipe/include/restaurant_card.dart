@@ -155,23 +155,26 @@ class _RestaurantCardState extends State<RestaurantCard> {
   }
 
   Widget _likeIndicator() {
-    return Padding(
-        padding: EdgeInsets.only(top: 24.0, left: 24.0),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: Icon(
-            Icons.check_circle_outline,
-            color: Colors.green,
-            size: 72.0,
-            semanticLabel: 'Text to announce in accessibility modes',
+    return AnimatedOpacity(
+        opacity: 0.0,
+        child: Padding(
+          padding: EdgeInsets.only(top: 48.0, left: 36.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Icon(
+              Icons.check_circle_outline,
+              color: Colors.lightGreen,
+              size: 72.0,
+              semanticLabel: 'Text to announce in accessibility modes',
+            )
           )
-        )
+      )
     );
   }
 
   Widget _dislikeIndicator() {
     return Padding(
-        padding: EdgeInsets.only(top: 24.0, right: 24.0),
+        padding: EdgeInsets.only(top: 48.0, right: 36.0),
         child: Align(
           alignment: Alignment.topRight,
           child: Icon(
@@ -194,8 +197,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 child: Container(
                   padding: EdgeInsets.all(3),
                   alignment: Alignment.topRight,
-                  color: Colors.white60,
-                  // padding: EdgeInsets.all(100),
+                  color: Colors.white70,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

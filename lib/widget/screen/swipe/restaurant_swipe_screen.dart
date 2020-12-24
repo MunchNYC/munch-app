@@ -566,20 +566,21 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             },
             // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED GOOD BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
             onDragEnd: (DraggableDetails draggableDetails) => _onDragEndListener(context, draggableDetails)),
+            //TODO: method that completes the indicator animation - maybe in this method ^
         if (widget.tutorialTriggerListenerActive)
           Positioned.fill(
               child: GestureDetector(
-                  // listener to trigger tutorial
-                  onTapDown: (TapDownDetails details) {
-                    OverlayDialogHelper(
-                            isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
-                        .show(context);
+                // listener to trigger tutorial
+                onTapDown: (TapDownDetails details) {
+                  OverlayDialogHelper(
+                          isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
+                      .show(context);
 
-                    setState(() {
-                      widget.tutorialTriggerListenerActive = false;
-                    });
-                  },
-                  child: Container(color: Colors.transparent, width: double.infinity, height: double.infinity)))
+                  setState(() {
+                    widget.tutorialTriggerListenerActive = false;
+                  });
+                },
+                child: Container(color: Colors.transparent, width: double.infinity, height: double.infinity)))
       ]),
     );
   }
@@ -588,8 +589,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return SafeArea(
         child: Stack(
       children: [
-        _buildStillDecidingStatusContainer(),
-        if (widget.munch.munchStatus != MunchStatus.UNDECIDED) _buildDecidedStatusContainer()
+         _buildStillDecidingStatusContainer(),
+         if (widget.munch.munchStatus != MunchStatus.UNDECIDED) _buildDecidedStatusContainer()
       ],
     ));
   }
