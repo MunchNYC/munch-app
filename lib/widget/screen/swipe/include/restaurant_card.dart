@@ -16,6 +16,8 @@ class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
   Munch munch;
   MunchBloc munchBloc;
+  Function(double opacity) updateLikeIndicator;
+  Function(double opacity) updateDislikeIndicator;
 
   RestaurantCard(this.restaurant, this.munch, {this.munchBloc}) : super(key: Key(restaurant.id));
 
@@ -31,6 +33,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
   static const double AVATAR_CONTAINER_PARENT_PERCENT = 0.5;
   static const double AVATAR_SPACING = 4.0;
 
+  double _likeIndicatorOpacity = 0;
+  double _dislikeIndicatorOpacity = 0;
+
   // avatar size calculations
   static final double _totalAvatarWidth = (AVATAR_RADIUS * 2 + AVATAR_SPACING);
   static final double _maxAvatarContainerWidth =
@@ -43,6 +48,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   @override
   Widget build(BuildContext context) {
+    widget.updateLikeIndicator = (opacity) {
+      _likeIndicatorOpacity = opacity;
+      setState(() {});
+    };
+    widget.updateDislikeIndicator = (opacity) {
+      _dislikeIndicatorOpacity = opacity;
+      setState(() {});
+    };
     return Material(
       elevation: 8.0,
       // must be transparent otherwise we'll have Z-axis fight below the image, slight colored line will be there if Material has defined color
@@ -155,8 +168,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
   }
 
   Widget _likeIndicator() {
-    return AnimatedOpacity(
-        opacity: 0.0,
+    return Opacity(
+        opacity: _likeIndicatorOpacity,
         child: Padding(
           padding: EdgeInsets.only(top: 48.0, left: 36.0),
           child: Align(
@@ -164,25 +177,28 @@ class _RestaurantCardState extends State<RestaurantCard> {
             child: Icon(
               Icons.check_circle_outline,
               color: Colors.lightGreen,
-              size: 72.0,
-              semanticLabel: 'Text to announce in accessibility modes',
+              size: 72.0
             )
           )
       )
     );
   }
 
+
+
   Widget _dislikeIndicator() {
-    return Padding(
+    return Opacity(
+      opacity: _dislikeIndicatorOpacity,
+      child: Padding(
         padding: EdgeInsets.only(top: 48.0, right: 36.0),
         child: Align(
           alignment: Alignment.topRight,
           child: Icon(
             Icons.cancel_outlined,
             color: Colors.red,
-            size: 72.0,
-            semanticLabel: 'Text to announce in accessibility modes',
+            size: 72.0
           )
+        )
       )
     );
   }
