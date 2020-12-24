@@ -555,6 +555,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         Listener(
           onPointerDown: (PointerDownEvent event) {
             _initialPointerPositionForDrag = event.position.dx;
+            _restaurantCardWidth = context.findRenderObject().semanticBounds.width;
+            _restaurantCardHeight = context.findRenderObject().semanticBounds.height;
           },
           onPointerMove: (PointerMoveEvent event) {
             double _dx = event.position.dx - _initialPointerPositionForDrag;
@@ -743,10 +745,6 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   void _onDragEndListener(BuildContext context, DraggableDetails details) {
     // Take global position of top left corner where restaurant card drag finished
     _currentAnimatedRestaurantGlobalOffset = details.offset;
-
-    // Take static restaurant card sizes
-    _restaurantCardWidth = context.findRenderObject().semanticBounds.width;
-    _restaurantCardHeight = context.findRenderObject().semanticBounds.height;
 
     // Save restaurant data and restaurant card data for animation
     _currentAnimatedRestaurant = _currentRestaurants[0];
