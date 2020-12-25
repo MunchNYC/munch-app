@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
@@ -15,6 +16,8 @@ class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
   Munch munch;
   MunchBloc munchBloc;
+  Function(double opacity) updateLikeIndicator;
+  Function(double opacity) updateDislikeIndicator;
 
   RestaurantCard(this.restaurant, this.munch, {this.munchBloc}) : super(key: Key(restaurant.id));
 
@@ -30,6 +33,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
   static const double AVATAR_CONTAINER_PARENT_PERCENT = 0.5;
   static const double AVATAR_SPACING = 4.0;
 
+  double _likeIndicatorOpacity = 0;
+  double _dislikeIndicatorOpacity = 0;
+
   // avatar size calculations
   static final double _totalAvatarWidth = (AVATAR_RADIUS * 2 + AVATAR_SPACING);
   static final double _maxAvatarContainerWidth =
@@ -42,6 +48,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   @override
   Widget build(BuildContext context) {
+    widget.updateLikeIndicator = (opacity) {
+      _likeIndicatorOpacity = opacity;
+      setState(() {});
+    };
+    widget.updateDislikeIndicator = (opacity) {
+      _dislikeIndicatorOpacity = opacity;
+      setState(() {});
+    };
     return Material(
       elevation: 8.0,
       // must be transparent otherwise we'll have Z-axis fight below the image, slight colored line will be there if Material has defined color
@@ -146,8 +160,44 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 carouselController: _carouselController,
               ),
               _carouselControlsRow(),
-              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked()
+              if (widget.restaurant.usersWhoLiked.isNotEmpty) _userWhoLiked(),
+              _likeIndicator(),
+              _dislikeIndicator()
             ])));
+  }
+
+  Widget _likeIndicator() {
+    return Opacity(
+        opacity: _likeIndicatorOpacity,
+        child: Padding(
+          padding: EdgeInsets.only(top: 48.0, left: 36.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Icon(
+              Icons.check_circle_outline,
+              color: Colors.lightGreen,
+              size: 72.0
+            )
+          )
+      )
+    );
+  }
+
+  Widget _dislikeIndicator() {
+    return Opacity(
+      opacity: _dislikeIndicatorOpacity,
+      child: Padding(
+        padding: EdgeInsets.only(top: 48.0, right: 36.0),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: Icon(
+            Icons.cancel_outlined,
+            color: Colors.red,
+            size: 72.0
+          )
+        )
+      )
+    );
   }
 
   Widget _userWhoLiked() {
@@ -160,19 +210,18 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 child: Container(
                   padding: EdgeInsets.all(3),
                   alignment: Alignment.topRight,
-                  color: Colors.white60,
-                  // padding: EdgeInsets.all(100),
+                  color: Colors.white70,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _userAvatars(widget.restaurant.usersWhoLiked),
                       SizedBox(width: 4.0),
-                      Image(
-                        image: AssetImage("assets/images/checkLiked.png"),
-                        width: 24.0,
-                        height: 24.0,
-                      ),
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 24.0,
+                        color: Colors.green
+                      )
                     ],
                   ),
                 ))

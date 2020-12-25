@@ -90,6 +90,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   double _restaurantCardWidth;
   double _restaurantCardHeight;
   Offset _restaurantCardStartingGlobalOffset;
+  // Swipe indicators
+  double _initialPointerPositionForDrag;
 
   @override
   void initState() {
@@ -161,7 +163,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   Widget _appBarTitle() {
-    // InkWell to make white space around tapable also
+    // InkWell to make white space around tappable also
     return InkWell(
         onTap: () {
           NavigationHelper.navigateToMunchOptionsScreen(context, munch: widget.munch).then((shouldReloadRestaurants) {
@@ -550,7 +552,25 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   Widget _draggableCard() {
     return LayoutBuilder(
       builder: (context, constraints) => Stack(overflow: Overflow.visible, children: [
-        Draggable(
+        Listener(
+          onPointerDown: (PointerDownEvent event) {
+            _initialPointerPositionForDrag = event.position.dx;
+            _restaurantCardWidth = context.findRenderObject().semanticBounds.width;
+            _restaurantCardHeight = context.findRenderObject().semanticBounds.height;
+          },
+          onPointerMove: (PointerMoveEvent event) {
+            double _dx = event.position.dx - _initialPointerPositionForDrag;
+            double _opacity = _dx.abs() / (_restaurantCardWidth * SWIPE_TO_CARD_WIDTH_RATIO_THRESHOLD);
+            if (_opacity > 1) _opacity = 1;
+            if (_opacity < 0) _opacity = 0;
+
+            if (_dx < 0) {
+                _currentCardMap[_currentRestaurants[0].id].updateDislikeIndicator(_opacity);
+            } else {
+              _currentCardMap[_currentRestaurants[0].id].updateLikeIndicator(_opacity);
+            }
+          },
+          child: Draggable(
             child: _currentCardMap[_currentRestaurants[0].id],
             ignoringFeedbackSemantics: false,
             feedback: Container(
@@ -564,22 +584,23 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               RenderBox renderBox = context.findRenderObject();
               _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
             },
-            // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED GOOD BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
+            // IMPORTANT: Send context here, otherwise method will use default widget context instead of parent context - messes up dimensions
             onDragEnd: (DraggableDetails draggableDetails) => _onDragEndListener(context, draggableDetails)),
+        ),
         if (widget.tutorialTriggerListenerActive)
           Positioned.fill(
               child: GestureDetector(
-                  // listener to trigger tutorial
-                  onTapDown: (TapDownDetails details) {
-                    OverlayDialogHelper(
-                            isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
-                        .show(context);
+                // listener to trigger tutorial
+                onTapDown: (TapDownDetails details) {
+                  OverlayDialogHelper(
+                          isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
+                      .show(context);
 
-                    setState(() {
-                      widget.tutorialTriggerListenerActive = false;
-                    });
-                  },
-                  child: Container(color: Colors.transparent, width: double.infinity, height: double.infinity)))
+                  setState(() {
+                    widget.tutorialTriggerListenerActive = false;
+                  });
+                },
+                child: Container(color: Colors.transparent, width: double.infinity, height: double.infinity)))
       ]),
     );
   }
@@ -588,8 +609,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     return SafeArea(
         child: Stack(
       children: [
-        _buildStillDecidingStatusContainer(),
-        if (widget.munch.munchStatus != MunchStatus.UNDECIDED) _buildDecidedStatusContainer()
+         _buildStillDecidingStatusContainer(),
+         if (widget.munch.munchStatus != MunchStatus.UNDECIDED) _buildDecidedStatusContainer()
       ],
     ));
   }
@@ -724,10 +745,6 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   void _onDragEndListener(BuildContext context, DraggableDetails details) {
     // Take global position of top left corner where restaurant card drag finished
     _currentAnimatedRestaurantGlobalOffset = details.offset;
-
-    // Take static restaurant card sizes
-    _restaurantCardWidth = context.findRenderObject().semanticBounds.width;
-    _restaurantCardHeight = context.findRenderObject().semanticBounds.height;
 
     // Save restaurant data and restaurant card data for animation
     _currentAnimatedRestaurant = _currentRestaurants[0];
