@@ -584,7 +584,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               RenderBox renderBox = context.findRenderObject();
               _restaurantCardStartingGlobalOffset = renderBox.localToGlobal(Offset.zero);
             },
-            // EXTREMELY IMPORTANT TO SEND CONTEXT HERE, OTHERWISE DIMENSIONS WILL NOT BE POPULATED WELL BECAUSE METHOD WILL USE DEFAULT WIDGET CONTEXT INSTEAD OF PARENT CONTEXT
+            // IMPORTANT: Send context here, otherwise method will use default widget context instead of parent context - messes up dimensions
             onDragEnd: (DraggableDetails draggableDetails) => _onDragEndListener(context, draggableDetails)),
         ),
         if (widget.tutorialTriggerListenerActive)

@@ -183,8 +183,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
     );
   }
 
-
-
   Widget _dislikeIndicator() {
     return Opacity(
       opacity: _dislikeIndicatorOpacity,
