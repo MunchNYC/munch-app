@@ -1,15 +1,16 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'filter.jser.dart';
+part 'filter.g.dart';
 
 enum FilterStatus { BLACKLISTED, NEUTRAL, WHITELISTED }
 
+@JsonSerializable()
 class Filter {
   String key;
 
   String label;
 
-  @Field.ignore()
+  @JsonKey(ignore: true)
   FilterStatus filterStatus;
 
   @override
@@ -22,7 +23,6 @@ class Filter {
   Filter cloneWithStatus(FilterStatus filterStatus) {
     return Filter(key: key, label: label, filterStatus: filterStatus);
   }
-}
 
-@GenSerializer()
-class FilterJsonSerializer extends Serializer<Filter> with _$FilterJsonSerializer {}
+  factory Filter.fromJson(Map<String, dynamic> json) => _$FilterFromJson(json);
+}

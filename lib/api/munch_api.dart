@@ -15,7 +15,7 @@ class MunchApi extends Api {
 
     var data = await get(getUrl);
 
-    GetMunchesResponse getMunchesResponse = GetMunchesResponseJsonSerializer().fromMap(data);
+    GetMunchesResponse getMunchesResponse = GetMunchesResponse.fromJson(data);
 
     return getMunchesResponse;
   }
@@ -26,7 +26,7 @@ class MunchApi extends Api {
     var data = await get(getUrl);
 
     List<Munch> munchesList = List<Munch>.from(data['munchCompacts'].map((munchData) {
-      return MunchJsonSerializer().fromMap(munchData);
+      return Munch.fromJson(munchData);
     }));
 
     return munchesList;
@@ -55,7 +55,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }
@@ -63,11 +63,11 @@ class MunchApi extends Api {
   Future<Munch> createMunch(Munch munch) async {
     String postUrl = "/create";
 
-    Map<String, dynamic> fields = MunchJsonSerializer().toMap(munch);
+    Map<String, dynamic> fields = munch.toJson();
 
     var data = await post(postUrl, fields);
 
-    Munch createdMunch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch createdMunch = Munch.fromJson(data['munchDetailed']);
 
     return createdMunch;
   }
@@ -77,7 +77,7 @@ class MunchApi extends Api {
 
     var data = await get(getUrl);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }
@@ -88,7 +88,7 @@ class MunchApi extends Api {
     var data = await get(getUrl);
 
     List<Restaurant> restaurantList = List<Restaurant>.from(data['restaurants'].map((restaurantData) {
-      return RestaurantJsonSerializer().fromMap(restaurantData);
+      return Restaurant.fromJson(restaurantData);
     }));
 
     return restaurantList;
@@ -101,7 +101,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }
@@ -109,11 +109,11 @@ class MunchApi extends Api {
   Future<Munch> saveMunchPreferences({Munch munch}) async {
     String putUrl = "/preferences?munchId=${munch.id}";
 
-    Map<String, dynamic> fields = MunchJsonSerializer().toMap(munch);
+    Map<String, dynamic> fields = munch.toJson();
 
     var data = await put(putUrl, fields);
 
-    Munch updatedMunch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch updatedMunch = Munch.fromJson(data['munchDetailed']);
 
     return updatedMunch;
   }
@@ -127,7 +127,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }
@@ -143,7 +143,7 @@ class MunchApi extends Api {
 
     var data = await delete(deleteUrl);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }
@@ -157,7 +157,7 @@ class MunchApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }

@@ -1,7 +1,8 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'coordinates.jser.dart';
+part 'coordinates.g.dart';
 
+@JsonSerializable(nullable: false)
 class Coordinates {
   double latitude;
   double longitude;
@@ -16,7 +17,8 @@ class Coordinates {
   }
 
   Coordinates({this.latitude, this.longitude});
-}
 
-@GenSerializer()
-class CoordinatesJsonSerializer extends Serializer<Coordinates> with _$CoordinatesJsonSerializer {}
+  factory Coordinates.fromJson(Map<String, dynamic> json) => _$CoordinatesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CoordinatesToJson(this);
+}

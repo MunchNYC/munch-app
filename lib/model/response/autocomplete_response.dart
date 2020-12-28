@@ -1,13 +1,13 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'autocomplete_response.jser.dart';
+part 'autocomplete_response.g.dart';
 
+@JsonSerializable()
 class AutocompleteResponse {
   String placeId;
   String displayString;
 
   AutocompleteResponse({this.placeId, this.displayString});
-}
 
-@GenSerializer()
-class AutocompleteResponseJsonSerializer extends Serializer<AutocompleteResponse> with _$AutocompleteResponseJsonSerializer {}
+  factory AutocompleteResponse.fromJson(Map<String, dynamic> json) => _$AutocompleteResponseFromJson(json);
+}

@@ -14,7 +14,7 @@ class FiltersApi extends Api {
 
     var data = await get(getUrl);
 
-    GetFiltersResponse getFiltersResponse = GetFiltersResponseJsonSerializer().fromMap(data);
+    GetFiltersResponse getFiltersResponse = GetFiltersResponse.fromJson(data);
 
     return getFiltersResponse;
   }
@@ -27,7 +27,7 @@ class FiltersApi extends Api {
 
     var data = await post(postUrl, fields);
 
-    Munch munch = MunchJsonSerializer().fromMap(data['munchDetailed']);
+    Munch munch = Munch.fromJson(data['munchDetailed']);
 
     return munch;
   }

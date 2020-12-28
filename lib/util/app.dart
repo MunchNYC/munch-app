@@ -54,6 +54,11 @@ class App {
     } else {
       var androidDeviceInfo = await deviceInfo.androidInfo;
       deviceId = androidDeviceInfo.androidId; // unique ID on Android
+      print("slkdflskjf");
+      print("slkdflskjf");
+      print("slkdflskjf");
+      print("slkdflskjf");
+      print(deviceId);
     }
   }
 }

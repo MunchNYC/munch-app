@@ -1,14 +1,13 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'google_sign_in_response.jser.dart';
+part 'google_sign_in_response.g.dart';
 
+@JsonSerializable()
 class GoogleSignInResponse {
   String gender;
   String birthday;
 
   GoogleSignInResponse({this.gender, this.birthday});
-}
 
-@GenSerializer()
-class GoogleSignInResponseJsonSerializer extends Serializer<GoogleSignInResponse>
-    with _$GoogleSignInResponseJsonSerializer {}
+  factory GoogleSignInResponse.fromJson(Map<String, dynamic> json) => _$GoogleSignInResponseFromJson(json);
+}

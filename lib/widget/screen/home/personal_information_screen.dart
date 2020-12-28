@@ -309,7 +309,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   void _initializeFormFields() {
     _nameTextController.text = widget.user.displayName;
-    _genderTextController.text = User.genderToString(widget.user.gender);
+    _genderTextController.text = User.genderAsString(widget.user.gender);
     _birthdayTextController.text = (_birthday != null) ? _dateFormat.format(_birthday) : "";
     _scrollController = FixedExtentScrollController(initialItem: _genders.indexOf(widget.user.gender));
   }
@@ -430,7 +430,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     _gender = _genders[index];
     _genderChanged = (widget.user.gender == _genders[index]) ? false : true;
 
-    _genderTextController.text = User.genderToString(_genders[index]);
+    _genderTextController.text = User.genderAsString(_genders[index]);
   }
 
   void _updateBirthday(DateTime dateTime) async {
