@@ -1,41 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:jaguar_serializer/jaguar_serializer.dart';
-import 'package:munch/model/processors/gender_processor.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:munch/util/app.dart';
 
-part 'user.jser.dart';
+part 'user.g.dart';
 
 enum SocialProvider { GOOGLE, FACEBOOK, APPLE }
 
-enum Gender { NOANSWER, MALE, FEMALE, OTHER }
+enum Gender {
+  @JsonValue("NOANSWER") NOANSWER,
+  @JsonValue("MALE") MALE,
+  @JsonValue("FEMALE") FEMALE,
+  @JsonValue("OTHER") OTHER
+}
 
+@JsonSerializable()
 class User {
-  @Field.ignore()
+  @JsonKey(ignore: true)
   String accessToken;
 
-  @Alias('pushInfo', isNullable: false) // Field.encode not generating good JSON serializer for some reason
+  @JsonKey(name: 'pushInfo', nullable: true)
   PushNotificationsInfo pushNotificationsInfo;
 
-  @Alias('userId')
+  @JsonKey(name: 'userId', nullable: false)
   String uid;
-
-  // nonNullable means - put null conditions (maybe better name is @nullable, this is not logical)
-  @nonNullable
+  @JsonKey(nullable: false)
   String email;
-
-  @nonNullable
+  @JsonKey(nullable: false)
   String displayName;
-
-  @nonNullable
+  @JsonKey(unknownEnumValue: Gender.NOANSWER)
   Gender gender;
-
-  @nullable
   String birthday;
-
-  @nonNullable
+  @JsonKey(nullable: false)
   String imageUrl;
 
-  @Field.ignore()
+  @JsonKey(ignore: true)
   SocialProvider socialProvider;
 
   @override
@@ -43,7 +41,7 @@ class User {
     return "uid: $uid; displayName: $displayName; gender: $gender; birthday: $birthday";
   }
 
-  static String genderToString(Gender gender) {
+  static String genderAsString(Gender gender) {
     switch (gender) {
       case Gender.MALE:
         return App.translate("personal_information_screen.gender.male.text");
@@ -82,23 +80,23 @@ class User {
             displayName: firebaseUser.displayName,
             imageUrl: firebaseUser.photoURL,
             accessToken: accessToken);
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
-@GenSerializer(fields: const {
-  // dontEncode must be specified here if we define custom processor, isNullable means that it CAN be nullable
-  'gender': const Field(processor: GenderProcessor(), dontEncode: true, isNullable: true)
-})
-class UserJsonSerializer extends Serializer<User> with _$UserJsonSerializer {}
-
+@JsonSerializable()
 class PushNotificationsInfo {
   String deviceId;
 
-  @Alias('pushToken')
+  @JsonKey(name: 'pushToken')
   String fcmToken;
 
   PushNotificationsInfo({this.deviceId, this.fcmToken});
+
+  factory PushNotificationsInfo.fromJson(Map<String, dynamic> json) => _$PushNotificationsInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PushNotificationsInfoToJson(this);
 }
 
-@GenSerializer()
-class PushNotificationsInfoJsonSerializer extends Serializer<PushNotificationsInfo>
-    with _$PushNotificationsInfoJsonSerializer {}

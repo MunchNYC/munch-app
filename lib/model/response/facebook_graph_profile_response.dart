@@ -1,7 +1,8 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'facebook_graph_profile_response.jser.dart';
+part 'facebook_graph_profile_response.g.dart';
 
+@JsonSerializable()
 class FacebookGraphProfileResponse {
   String name;
   String email;
@@ -10,8 +11,6 @@ class FacebookGraphProfileResponse {
   String photoUrl;
 
   FacebookGraphProfileResponse({this.name, this.email, this.gender, this.birthday, this.photoUrl});
-}
 
-@GenSerializer()
-class FacebookGraphProfileResponseJsonSerializer extends Serializer<FacebookGraphProfileResponse>
-    with _$FacebookGraphProfileResponseJsonSerializer {}
+  factory FacebookGraphProfileResponse.fromJson(Map<String, dynamic> json) => _$FacebookGraphProfileResponseFromJson(json);
+}

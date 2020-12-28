@@ -10,7 +10,7 @@ class GoogleSignInApi extends Api {
 
     var data = await get(getUrl, authHeaders);
 
-    GoogleSignInResponse googleSignInResponse = GoogleSignInResponseJsonSerializer().fromMap(data);
+    GoogleSignInResponse googleSignInResponse = GoogleSignInResponse.fromJson(data);
 
     return googleSignInResponse;
   }

@@ -12,11 +12,11 @@ class UsersApi extends Api {
   Future<User> registerUser(User user) async {
     final String postUrl = '/data';
 
-    Map<String, dynamic> fields = UserJsonSerializer().toMap(user);
+    Map<String, dynamic> fields = user.toJson();
 
     var data = await post(postUrl, fields);
 
-    return UserJsonSerializer().fromMap(data['muncher']);
+    return User.fromJson(data['muncher']);
   }
 
   Future<User> getAuthenticatedUser() async {
@@ -24,7 +24,7 @@ class UsersApi extends Api {
 
     var data = await get(getUrl);
 
-    User user = UserJsonSerializer().fromMap(data['muncher']);
+    User user = User.fromJson(data['muncher']);
 
     return user;
   }
@@ -33,12 +33,12 @@ class UsersApi extends Api {
     final String patchUrl = '/data';
 
     Map<String, dynamic> fields = Map.of({
-      "pushInfo": PushNotificationsInfoJsonSerializer().toMap(pushNotificationsInfo),
+      "pushInfo": pushNotificationsInfo.toJson(),
     });
 
     var data = await patch(patchUrl, fields);
 
-    User user = UserJsonSerializer().fromMap(data['muncher']);
+    User user = User.fromJson(data['muncher']);
 
     return user;
   }
@@ -52,7 +52,7 @@ class UsersApi extends Api {
     print("updating personal info with fields: " + fields.toString());
 
     var data = await patch(patchUrl, fields);
-    User returnedUser = UserJsonSerializer().fromMap(data['muncher']);
+    User returnedUser = User.fromJson(data['muncher']);
 
     return returnedUser;
   }

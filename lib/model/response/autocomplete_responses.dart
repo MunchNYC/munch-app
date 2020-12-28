@@ -1,14 +1,14 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:munch/model/response/autocomplete_response.dart';
 
-part 'autocomplete_responses.jser.dart';
+part 'autocomplete_responses.g.dart';
 
+@JsonSerializable()
 class AutocompleteResponses {
-  @Alias('autocompleteResults')
+  @JsonKey(name: 'autocompleteResults')
   List<AutocompleteResponse> autocompleteResponses;
 
   AutocompleteResponses({this.autocompleteResponses});
-}
 
-@GenSerializer()
-class AutocompleteResponsesJsonSerializer extends Serializer<AutocompleteResponses> with _$AutocompleteResponsesJsonSerializer {}
+  factory AutocompleteResponses.fromJson(Map<String, dynamic> json) => _$AutocompleteResponsesFromJson(json);
+}

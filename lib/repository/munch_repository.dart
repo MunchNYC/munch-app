@@ -124,6 +124,8 @@ class MunchRepo {
   }
 
   void _addMunchToCache(Munch munch) {
+    print(munch);
+    print(munch.munchStatus);
     munchStatusLists[munch.munchStatus].add(munch);
 
     munchMap[munch.id] = munch;

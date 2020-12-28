@@ -1,81 +1,71 @@
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/model/coordinates.dart';
-import 'package:munch/model/processors/munch_status_processor.dart';
-import 'package:munch/model/processors/timestamp_processor.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/deep_link_handler.dart';
 
-part 'munch.jser.dart';
+part 'munch.g.dart';
 
-enum MunchStatus { UNDECIDED, DECIDED, UNMODIFIABLE, HISTORICAL }
+enum MunchStatus {
+  @JsonValue("UNDECIDED") UNDECIDED,
+  @JsonValue("DECIDED") DECIDED,
+  @JsonValue("UNMODIFIABLE") UNMODIFIABLE,
+  @JsonValue("HISTORICAL") HISTORICAL
+}
 
 enum MunchReviewValue { LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED }
 
+@JsonSerializable()
 class Munch {
-  @Field.decode()
   String id;
-
-  @Field.decode()
   String code;
-
   String name;
 
-  // isNullable means - put null conditions (maybe better name is @nullable, this is not logical)
-  @Field.decode(isNullable: false, alias: 'host') // if Field.decode is defined alias must be defined inside it
+  @JsonKey(name: 'host')
   String hostUserId;
 
-  @Field.decode(isNullable: false)
   int numberOfMembers;
 
-  // special processor
+  @JsonKey(fromJson: _dateTimeFromEpochUs, toJson: _dateTimeToEpochUs)
   DateTime creationTimestamp;
 
-  @nonNullable
+  @JsonKey(nullable: false)
   Coordinates coordinates;
 
-  @nonNullable
   int radius;
 
-  @Field.decode(isNullable: false)
   String imageUrl;
 
-  @Field.decode(isNullable: false)
   List<User> members;
 
-  @Field.decode(isNullable: false)
   MunchMemberFilters munchMemberFilters;
 
-  @Field.decode(isNullable: false)
   MunchFilters munchFilters;
 
   // will be fetched totally in detailed munch
-  @Field.decode(isNullable: false)
   Restaurant matchedRestaurant;
 
   // will be get for compact munches list
-  @Field.decode(isNullable: false)
   String matchedRestaurantName;
 
-  @nonNullable
   bool receivePushNotifications;
 
-  // special processor, alias specified there
+  @JsonKey(name: "state", nullable: false, unknownEnumValue: MunchStatus.HISTORICAL)
   MunchStatus munchStatus;
 
   // used for cache, in the future we can move it to cache custom implementation, but for now is here
-  @Field.ignore()
+  @JsonKey(ignore: true)
   DateTime lastUpdatedUTC;
 
-  @Field.ignore()
+  @JsonKey(ignore: true)
   bool munchStatusChanged = false;
 
-  @Field.ignore()
+  @JsonKey(ignore: true)
   String get joinLink => AppConfig.getInstance().deepLinkUrl + DeepLinkRouter.JOIN_ROUTE_PATH + "/" + code;
 
-  @Field.ignore()
+  @JsonKey(ignore: true)
   bool get isModifiable => munchStatus != MunchStatus.UNMODIFIABLE && munchStatus != MunchStatus.HISTORICAL;
 
   int getNumberOfMembers() {
@@ -139,55 +129,63 @@ class Munch {
     return "id: $id; name: $name;";
   }
 
+  static DateTime _dateTimeFromEpochUs(int us) => DateTime.fromMicrosecondsSinceEpoch(us);
+
+  static int _dateTimeToEpochUs(DateTime dateTime) => dateTime?.microsecondsSinceEpoch;
+
+  // static Map<String, dynamic> _coordinatesToJson(Coordinates coordinates) => _$CoordinatesToJson();
+
   Munch({this.id, this.name, this.receivePushNotifications, this.coordinates, this.radius});
+
+  factory Munch.fromJson(Map<String, dynamic> json) => _$MunchFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MunchToJson(this);
 }
 
-@GenSerializer(fields: const {
-  // dontEncode must be specified here if we define custom processor, isNullable means that it CAN be nullable
-  'creationTimestamp': const Field(processor: TimestampProcessor(), dontEncode: true, isNullable: false),
-  'munchStatus': const Field(processor: MunchStatusProcessor(), dontEncode: true, decodeFrom: 'state')
-})
-class MunchJsonSerializer extends Serializer<Munch> with _$MunchJsonSerializer {}
-
+@JsonSerializable()
 class MunchMemberFilters {
-  @Alias('whitelist')
+  @JsonKey(name: 'whitelist', defaultValue: [])
   List<String> whitelistFiltersKeys;
 
-  @Alias('blacklist')
+  @JsonKey(name: 'blacklist', defaultValue: [])
   List<String> blacklistFiltersKeys;
 
   MunchMemberFilters({this.whitelistFiltersKeys, this.blacklistFiltersKeys});
+
+  factory MunchMemberFilters.fromJson(Map<String, dynamic> json) => _$MunchMemberFiltersFromJson(json);
 }
 
-@GenSerializer()
-class MunchMemberFiltersJsonSerializer extends Serializer<MunchMemberFilters> with _$MunchMemberFiltersJsonSerializer {}
-
+@JsonSerializable()
 class MunchFilters {
+  @JsonKey(defaultValue: [])
   List<MunchGroupFilter> blacklist;
 
+  @JsonKey(defaultValue: [])
   List<MunchGroupFilter> whitelist;
 
   MunchFilters({this.blacklist, this.whitelist});
+
+  factory MunchFilters.fromJson(Map<String, dynamic> json) => _$MunchFiltersFromJson(json);
 }
 
-@GenSerializer()
-class MunchFiltersJsonSerializer extends Serializer<MunchFilters> with _$MunchFiltersJsonSerializer {}
-
+@JsonSerializable()
 class MunchGroupFilter {
   String key;
 
+  @JsonKey(defaultValue: [])
   List<String> userIds;
 
   MunchGroupFilter({this.key, this.userIds});
+
+  factory MunchGroupFilter.fromJson(Map<String, dynamic> json) => _$MunchGroupFilterFromJson(json);
 }
 
-@GenSerializer()
-class MunchGroupFilterJsonSerializer extends Serializer<MunchGroupFilter> with _$MunchGroupFilterJsonSerializer {}
-
+@JsonSerializable()
 class RequestedReview {
   String munchId;
   String imageUrl;
-}
 
-@GenSerializer()
-class RequestedReviewJsonSerializer extends Serializer<RequestedReview> with _$RequestedReviewJsonSerializer {}
+  RequestedReview({this.munchId, this.imageUrl});
+
+  factory RequestedReview.fromJson(Map<String, dynamic> json) => _$RequestedReviewFromJson(json);
+}

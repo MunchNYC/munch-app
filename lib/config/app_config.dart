@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:package_info/package_info.dart';
 
-part 'app_config.jser.dart';
+part 'app_config.g.dart';
 
+@JsonSerializable()
 class AppConfig {
   String appTitle;
   String apiUrl;
@@ -16,7 +16,7 @@ class AppConfig {
   String termsOfServiceUrl;
   String websiteUrl;
   String deepLinkUrl;
-  @Field.ignore()
+  @JsonKey(ignore: true)
   PackageInfo packageInfo;
 
   static AppConfig _instance;
@@ -34,7 +34,7 @@ class AppConfig {
     final json = jsonDecode(contents);
 
     // convert our JSON into an instance of our AppConfig class
-    _instance = AppConfigJsonSerializer().fromMap(json);
+    _instance = _$AppConfigFromJson(json);
     _instance.packageInfo = await PackageInfo.fromPlatform();
   }
 
@@ -46,6 +46,3 @@ class AppConfig {
     return _instance;
   }
 }
-
-@GenSerializer()
-class AppConfigJsonSerializer extends Serializer<AppConfig> with _$AppConfigJsonSerializer {}

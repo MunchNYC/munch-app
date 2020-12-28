@@ -23,7 +23,7 @@ class MapsApi extends Api {
     };
     var data = await post(postUrl, body);
 
-    AutocompleteResponses getAutocompleteResponses = AutocompleteResponsesJsonSerializer().fromMap(data);
+    AutocompleteResponses getAutocompleteResponses = AutocompleteResponses.fromJson(data);
 
     List<Prediction> predictions = [];
 
@@ -43,7 +43,7 @@ class MapsApi extends Api {
     };
     var data = await post(postUrl, body);
 
-    Coordinates coordinates = CoordinatesJsonSerializer().fromMap(data['coordinates']);
+    Coordinates coordinates = Coordinates.fromJson(data['coordinates']);
 
     return PlacesDetailsResponse(coordinates);
   }

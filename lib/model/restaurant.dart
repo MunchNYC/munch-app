@@ -1,56 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:jaguar_serializer/jaguar_serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/utility.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-part 'restaurant.jser.dart';
+part 'restaurant.g.dart';
 
+@JsonSerializable()
 class Restaurant {
+  @JsonKey(nullable: false)
   String id;
 
+  @JsonKey(nullable: false)
   String name;
 
+  @JsonKey(defaultValue: [])
   List<RestaurantCategory> categories;
 
-  @Alias('hours')
+  @JsonKey(name: 'hours', defaultValue: [])
   List<WorkingHours> workingHours;
 
+  @JsonKey(nullable: false)
   Coordinates coordinates;
 
+  @JsonKey(nullable: false)
   String city;
 
+  @JsonKey(nullable: false)
   String state;
 
+  @JsonKey(nullable: false)
   String country;
 
+  @JsonKey(nullable: false)
   String address;
 
+  @JsonKey(nullable: false)
   String zipCode;
 
   String phoneNumber;
 
-  @Alias('price')
+  @JsonKey(name: 'price')
   String priceSymbol;
 
+  @JsonKey(nullable: false)
   double rating;
 
-  @Alias('photos')
+  @JsonKey(name: 'photos', defaultValue: [])
   List<String> photoUrls;
 
-  @Alias('reviewCount')
+  @JsonKey(name: 'reviewCount', nullable: false)
   int reviewsNumber;
 
+  @JsonKey(nullable: false)
   String timezone;
 
+  @JsonKey(nullable: false)
   String url;
 
-  @nonNullable
+  @JsonKey(defaultValue: [])
   List<String> usersWhoLiked;
 
-  @Field.ignore()
+  @JsonKey(ignore: true)
   String get categoryTitles =>
       categories.map((RestaurantCategory restaurantCategory) => restaurantCategory.title).join(", ");
 
@@ -214,13 +227,13 @@ class Restaurant {
       this.timezone,
       this.url,
       this.usersWhoLiked});
+
+  factory Restaurant.fromJson(Map<String, dynamic> json) => _$RestaurantFromJson(json);
 }
 
-@GenSerializer()
-class RestaurantJsonSerializer extends Serializer<Restaurant> with _$RestaurantJsonSerializer {}
 
-// Better name for this is just "Category" but it will have conflict with Flutter class
-class RestaurantCategory {
+@JsonSerializable()
+class RestaurantCategory { // Better name for this is just "Category" but it will have conflict with Flutter class
   String alias;
 
   String title;
@@ -231,15 +244,16 @@ class RestaurantCategory {
   }
 
   RestaurantCategory({this.alias, this.title});
+
+  factory RestaurantCategory.fromJson(Map<String, dynamic> json) => _$RestaurantCategoryFromJson(json);
 }
 
-@GenSerializer()
-class RestaurantCategoryJsonSerializer extends Serializer<RestaurantCategory> with _$RestaurantCategoryJsonSerializer {}
-
+@JsonSerializable()
 class WorkingHours {
+  @JsonKey(nullable: false)
   String dayOfWeek;
 
-  @Alias('times')
+  @JsonKey(name: 'times', defaultValue: [])
   List<WorkingTimes> workingTimes;
 
   String getWorkingTimesFormatted() {
@@ -266,18 +280,18 @@ class WorkingHours {
   }
 
   WorkingHours({this.dayOfWeek, this.workingTimes});
+
+  factory WorkingHours.fromJson(Map<String, dynamic> json) => _$WorkingHoursFromJson(json);
 }
 
-@GenSerializer()
-class WorkingHoursJsonSerializer extends Serializer<WorkingHours> with _$WorkingHoursJsonSerializer {}
-
+@JsonSerializable()
 class WorkingTimes {
   String open;
 
   String closed;
 
   WorkingTimes({this.open, this.closed});
+
+  factory WorkingTimes.fromJson(Map<String, dynamic> json) => _$WorkingTimesFromJson(json);
 }
 
-@GenSerializer()
-class WorkingTimesJsonSerializer extends Serializer<WorkingTimes> with _$WorkingTimesJsonSerializer {}

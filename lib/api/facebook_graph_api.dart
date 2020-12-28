@@ -18,8 +18,7 @@ class FacebookGraphApi extends Api {
 
     data["photoUrl"] = data["picture"]["data"]["url"];
 
-    FacebookGraphProfileResponse facebookGraphProfileResponse =
-        FacebookGraphProfileResponseJsonSerializer().fromMap(data);
+    FacebookGraphProfileResponse facebookGraphProfileResponse = FacebookGraphProfileResponse.fromJson(data);
 
     return facebookGraphProfileResponse;
   }
