@@ -11,6 +11,7 @@ import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 
 class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
@@ -145,9 +146,20 @@ class _RestaurantCardState extends State<RestaurantCard> {
               CarouselSlider(
                 items: widget.restaurant.photoUrls
                     .map((photoUrl) => SizedBox(
-                          width: double.infinity,
-                          child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
-                        ))
+                        width: double.infinity,
+                        child: Image.network(
+                          photoUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext ctx, Widget child, ImageChunkEvent loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Center(
+                                child: AppCircularProgressIndicator(),
+                              );
+                            }
+                          },
+                        )))
                     .toList(),
                 options: CarouselOptions(
                     height: double.infinity,
