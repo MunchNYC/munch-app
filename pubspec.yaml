@@ -47,8 +47,9 @@ dependencies:
   geolocator: ^6.0.0
   google_maps_flutter: 1.0.6
   google_sign_in: ^4.4.4
+  http: ^0.12.2
   intl: any
-  jaguar_serializer: ^2.2.12
+  json_serializable: ^3.5.1
   line_awesome_flutter: ^1.0.1
   maps_launcher: ^1.2.2+1
   package_info: ^0.4.3
@@ -73,7 +74,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner:
-  jaguar_serializer_cli:
 
 flutter_icons:
   android: true
