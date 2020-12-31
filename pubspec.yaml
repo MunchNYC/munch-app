@@ -34,6 +34,7 @@ dependencies:
   firebase_auth: ^0.18.0+1
   firebase_messaging: ^7.0.3
   flushbar: 1.10.0
+  flutuate_mixpanel: ^1.1.7
   flutter_bloc: ^6.0.5
   flutter_facebook_login: ^3.0.0
   flutter_launcher_icons: ^0.8.0
