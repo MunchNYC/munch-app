@@ -7,7 +7,6 @@
     "create_join_dialog.divider.text": "Or",
     "create_join_dialog.create_button.text": "Create",
     "create_join_dialog.join_form.code_field.regex.validation": "Please enter a valid 6-characters code.",
-    "create_join_dialog.create_form.name_field.required.validation": "Please enter Group name.",
     "create_join_dialog.create_form.name_field.regex.validation": "Only alphanumerical characters and emojis are allowed.",
     "create_join_dialog.join_form.title": "Have a join code?",
     "create_join_dialog.create_form.title": "Start a new Group!",
