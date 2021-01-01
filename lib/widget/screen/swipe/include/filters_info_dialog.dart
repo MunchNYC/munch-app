@@ -8,8 +8,7 @@ import 'package:munch/widget/util/custom_button.dart';
 class FiltersInfoDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0),
+    return Container(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
