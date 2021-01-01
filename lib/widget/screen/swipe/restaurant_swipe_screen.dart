@@ -407,6 +407,10 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         _newCardMap[restaurant.id] = _currentCardMap[restaurant.id];
       } else {
         _newCardMap[restaurant.id] = RestaurantCard(restaurant, widget.munch, munchBloc: _munchBloc);
+
+        restaurant.photoUrls.forEach((photo) {
+          precacheImage(Image.network(photo).image, context);
+        });
       }
     });
 
@@ -518,10 +522,9 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   Widget _emptyCardStack() {
     return Padding(
-      padding: EdgeInsets.only(top: 24.0),
+      padding: EdgeInsets.only(top: 24.0, left: 16.0, right: 16.0),
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+        Container(
           child: Text(App.translate("restaurant_swipe_screen.empty_card_stack.title"),
               style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w400, fontSizeOffset: 2.0),
               textAlign: TextAlign.center),

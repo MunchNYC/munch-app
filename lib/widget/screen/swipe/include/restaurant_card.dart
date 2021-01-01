@@ -11,6 +11,7 @@ import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 
 class RestaurantCard extends StatefulWidget {
   Restaurant restaurant;
@@ -45,6 +46,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   // Must be instantiated here to be always created again when drag starts, otherwise we'll get exceptions because carousel controller won't be instantiated again when we start dragging
   CarouselController _carouselController = CarouselController();
+
+  @override
+  void didChangeDependencies() {
+    widget.restaurant.photoUrls.forEach((photo) {
+      precacheImage(Image.network(photo).image, context);
+    });
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,9 +154,20 @@ class _RestaurantCardState extends State<RestaurantCard> {
               CarouselSlider(
                 items: widget.restaurant.photoUrls
                     .map((photoUrl) => SizedBox(
-                          width: double.infinity,
-                          child: Image(image: NetworkImage(photoUrl), fit: BoxFit.cover),
-                        ))
+                        width: double.infinity,
+                        child: Image.network(
+                          photoUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext ctx, Widget child, ImageChunkEvent loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Center(
+                                child: AppCircularProgressIndicator(),
+                              );
+                            }
+                          },
+                        )))
                     .toList(),
                 options: CarouselOptions(
                     height: double.infinity,
@@ -302,7 +322,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
   void _onCarouselLeftSideTapped() {
     if (widget.currentCarouselPage - 1 >= 0) {
       widget.currentCarouselPage--;
-      _carouselController.previousPage();
+      _carouselController.jumpToPage(widget.currentCarouselPage);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: true));
     }
@@ -311,7 +331,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
   void _onCarouselRightHalfTapped() {
     if (widget.currentCarouselPage + 1 < widget.restaurant.photoUrls.length) {
       widget.currentCarouselPage++;
-      _carouselController.nextPage();
+      _carouselController.jumpToPage(widget.currentCarouselPage);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: false));
     }
