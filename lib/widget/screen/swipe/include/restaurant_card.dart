@@ -314,7 +314,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
   void _onCarouselLeftSideTapped() {
     if (widget.currentCarouselPage - 1 >= 0) {
       widget.currentCarouselPage--;
-      _carouselController.previousPage();
+      _carouselController.jumpToPage(widget.currentCarouselPage);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: true));
     }
@@ -323,7 +323,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
   void _onCarouselRightHalfTapped() {
     if (widget.currentCarouselPage + 1 < widget.restaurant.photoUrls.length) {
       widget.currentCarouselPage++;
-      _carouselController.nextPage();
+      _carouselController.jumpToPage(widget.currentCarouselPage);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: false));
     }
