@@ -127,7 +127,6 @@
     "options_screen.change_location_field.value.text": "Choose a new location.",
     "options_screen.change_location_button.text": "Change",
     "options_screen.leave_munch_button.text": "Leave Group",
-    "options_screen.update_location_button.text": "Update Location",
     "options_screen.members.title": "Members",
     "options_screen.member_list.host.text": "Host",
     "options_screen.member_list.kick_button.text": "Kick",
@@ -223,7 +222,6 @@
 
     "alert_dialog.positive_button.text.default": "Continue",
     "alert_dialog.negative_button.text.default": "Cancel",
-    "alert_dialog.title.default": "Warning",
 
     "api.error.request_timeout": "Failed to connect to the server.",
     "api.error.internet_connection": "No Network Connection.",
