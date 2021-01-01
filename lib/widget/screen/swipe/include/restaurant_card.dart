@@ -58,7 +58,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   @override
   void dispose() {
+    print(imageCache.currentSize);
     imageCache.clearLiveImages();
+    print(imageCache.currentSize);
     super.dispose();
   }
 
