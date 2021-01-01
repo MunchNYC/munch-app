@@ -57,14 +57,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
   }
 
   @override
-  void dispose() {
-    print(imageCache.currentSize);
-    imageCache.clearLiveImages();
-    print(imageCache.currentSize);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     widget.updateLikeIndicator = (opacity) {
       _likeIndicatorOpacity = opacity;
