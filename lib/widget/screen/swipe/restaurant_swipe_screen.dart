@@ -407,6 +407,10 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
         _newCardMap[restaurant.id] = _currentCardMap[restaurant.id];
       } else {
         _newCardMap[restaurant.id] = RestaurantCard(restaurant, widget.munch, munchBloc: _munchBloc);
+
+        restaurant.photoUrls.forEach((photo) {
+          precacheImage(Image.network(photo).image, context);
+        });
       }
     });
 

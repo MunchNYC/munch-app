@@ -48,6 +48,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
   CarouselController _carouselController = CarouselController();
 
   @override
+  void didChangeDependencies() {
+    widget.restaurant.photoUrls.forEach((photo) {
+      precacheImage(Image.network(photo).image, context);
+    });
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     widget.updateLikeIndicator = (opacity) {
       _likeIndicatorOpacity = opacity;
