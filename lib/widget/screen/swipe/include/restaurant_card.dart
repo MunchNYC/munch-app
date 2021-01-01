@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
@@ -53,6 +54,12 @@ class _RestaurantCardState extends State<RestaurantCard> {
       precacheImage(Image.network(photo).image, context);
     });
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    imageCache.clearLiveImages();
+    super.dispose();
   }
 
   @override
