@@ -38,7 +38,6 @@
     "munches_tab.title": "Groups",
     "munches_tab.deciding_tab.title": "Undecided",
     "munches_tab.decided_tab.title": "Decided",
-    "munches_tab.still_deciding_list_view.empty.text": "No Groups yet",
     "munches_tab.decided_list_view.empty.text": "No Groups yet",
     "munches_tab.join_munch.successful.message": "Group successfully joined.",
 
