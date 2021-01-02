@@ -352,7 +352,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
   }
 
   void _incrementImpression(ImpressionDirection direction) {
-    print(widget.imageImpressions);
     String key = Utility.convertEnumValueToString(direction);
     if (widget.imageImpressions[key] == null) widget.imageImpressions[key] = 0;
     widget.imageImpressions[key] += 1;
