@@ -740,14 +740,14 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
 
   void _onSwipeLeft() {
     String restaurantId = _currentRestaurants[0].id;
-    AnalyticsRepo.getInstance().trackSwipeScreenLeftSwipe(restaurantId);
     _munchBloc.add(RestaurantSwipeLeftEvent(munchId: widget.munch.id, restaurantId: restaurantId));
+    AnalyticsRepo.getInstance().trackSwipeScreenLeftSwipe(restaurantId);
   }
 
   void _onSwipeRight() {
     String restaurantId = _currentRestaurants[0].id;
-    AnalyticsRepo.getInstance().trackSwipeScreenRightSwipe(restaurantId);
     _munchBloc.add(RestaurantSwipeRightEvent(munchId: widget.munch.id, restaurantId: restaurantId));
+    AnalyticsRepo.getInstance().trackSwipeScreenRightSwipe(restaurantId);
   }
 
   void _onDragEndListener(BuildContext context, DraggableDetails details) {
