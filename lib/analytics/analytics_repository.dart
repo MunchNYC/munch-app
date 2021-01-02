@@ -1,4 +1,4 @@
-import 'package:munch/analytics/mixpanel_analytics.dart';
+import 'package:munch/analytics/analytics_api.dart';
 import 'package:munch/analytics/events.dart';
 
 class AnalyticsRepo {
