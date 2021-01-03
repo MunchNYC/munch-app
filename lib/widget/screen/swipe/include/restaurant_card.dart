@@ -49,6 +49,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   // Must be instantiated here to be always created again when drag starts, otherwise we'll get exceptions because carousel controller won't be instantiated again when we start dragging
   CarouselController _carouselController = CarouselController();
+  int _uniquePhotosSeen = 0;
 
   @override
   void didChangeDependencies() {
@@ -339,7 +340,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
     if (widget.currentCarouselPage + 1 < widget.restaurant.photoUrls.length) {
       widget.currentCarouselPage++;
       _carouselController.jumpToPage(widget.currentCarouselPage);
+
       _incrementImpression(ImpressionDirection.NEXT);
+      print(widget.currentCarouselPage);
+      print(_uniquePhotosSeen);
+      if (widget.currentCarouselPage > _uniquePhotosSeen) {
+        _uniquePhotosSeen++;
+        _incrementImpression(ImpressionDirection.UNIQUE);
+      }
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: false));
       _incrementImpression(ImpressionDirection.NEXTDEADEND);

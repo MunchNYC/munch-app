@@ -22,6 +22,8 @@ class SwipeScreenEvents {
     int previousPhoto = impressions[Utility.convertEnumValueToString(ImpressionDirection.PREVIOUS)] ?? 0;
     int nextDeadEnd = impressions[Utility.convertEnumValueToString(ImpressionDirection.NEXTDEADEND)] ?? 0;
     int previousDeadEnd = impressions[Utility.convertEnumValueToString(ImpressionDirection.PREVIOUSDEADEND)] ?? 0;
+    // starts at 0 to match carousel index, but first photo is always seen so we +1.
+    int uniquePhotosSeen = (impressions[Utility.convertEnumValueToString(ImpressionDirection.UNIQUE)] ?? 0) + 1;
 
     return Event(
         'ImageImpressions',
@@ -31,7 +33,8 @@ class SwipeScreenEvents {
           'nextPhoto': nextPhoto.toString(),
           'previousPhoto': previousPhoto.toString(),
           'nextDeadEnd': nextDeadEnd.toString(),
-          'previousDeadEnd': previousDeadEnd.toString()
+          'previousDeadEnd': previousDeadEnd.toString(),
+          'uniquePhotos': uniquePhotosSeen.toString()
         }
     );
   }
