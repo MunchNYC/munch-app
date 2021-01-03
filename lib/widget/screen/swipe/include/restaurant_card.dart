@@ -21,7 +21,7 @@ class RestaurantCard extends StatefulWidget {
   Function(double opacity) updateLikeIndicator;
   Function(double opacity) updateDislikeIndicator;
 
-  Map<String, int> imageImpressions;
+  Map<String, int> imageImpressions = {};
 
   RestaurantCard(this.restaurant, this.munch, {this.munchBloc}) : super(key: Key(restaurant.id));
 
@@ -61,12 +61,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
   @override
   Widget build(BuildContext context) {
     widget.updateLikeIndicator = (opacity) {
-      _likeIndicatorOpacity = opacity;
-      setState(() {});
+      setState(() {
+        _likeIndicatorOpacity = opacity;
+      });
     };
     widget.updateDislikeIndicator = (opacity) {
-      _dislikeIndicatorOpacity = opacity;
-      setState(() {});
+      setState(() {
+        _dislikeIndicatorOpacity = opacity;
+      });
     };
     return Material(
       elevation: 8.0,
@@ -353,6 +355,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   void _incrementImpression(ImpressionDirection direction) {
     String key = Utility.convertEnumValueToString(direction);
+    if (widget.imageImpressions == null) widget.imageImpressions = {};
     if (widget.imageImpressions[key] == null) widget.imageImpressions[key] = 0;
     widget.imageImpressions[key] += 1;
   }
