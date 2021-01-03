@@ -20,6 +20,8 @@ class SwipeScreenEvents {
   static Event photoImpression(String restaurantId, Map<String, int> impressions) {
     int nextPhoto = impressions[Utility.convertEnumValueToString(ImpressionDirection.NEXT)] ?? 0;
     int previousPhoto = impressions[Utility.convertEnumValueToString(ImpressionDirection.PREVIOUS)] ?? 0;
+    int nextDeadEnd = impressions[Utility.convertEnumValueToString(ImpressionDirection.NEXTDEADEND)] ?? 0;
+    int previousDeadEnd = impressions[Utility.convertEnumValueToString(ImpressionDirection.PREVIOUSDEADEND)] ?? 0;
 
     return Event(
         'ImageImpressions',
@@ -28,7 +30,8 @@ class SwipeScreenEvents {
           'totalImpressions': (nextPhoto + previousPhoto).toString(),
           'nextPhoto': nextPhoto.toString(),
           'previousPhoto': previousPhoto.toString(),
-          'deadEnd': (impressions[Utility.convertEnumValueToString(ImpressionDirection.DEADEND)] ?? 0).toString()
+          'nextDeadEnd': nextDeadEnd.toString(),
+          'previousDeadEnd': previousDeadEnd.toString()
         }
     );
   }
