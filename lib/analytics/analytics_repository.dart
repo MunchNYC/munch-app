@@ -24,4 +24,4 @@ class AnalyticsRepo {
   }
 }
 
-enum ImpressionDirection { NEXT, PREVIOUS, DEADEND }
+enum ImpressionDirection { NEXT, PREVIOUS, NEXTDEADEND, PREVIOUSDEADEND }
