@@ -28,19 +28,8 @@ class Analytics {
   void track(Event event) async {
     if (_mixpanel == null) await _initializeMixpanel();
     _mixpanel.track(event.eventName, event.properties);
-    print("");
-    print("");
-    print("");
-    print("");
-    print("");
-    print("");
     print("tracking event: " + event.eventName + " with properties: ");
     print(event.properties);
-    print("");
-    print("");
-    print("");
-    print("");
-    print("");
   }
 
   Map<String, String> _superProperties() {
