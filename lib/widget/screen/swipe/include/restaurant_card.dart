@@ -331,7 +331,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
       _incrementImpression(ImpressionDirection.PREVIOUS);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: true));
-      _incrementImpression(ImpressionDirection.DEADEND);
+      _incrementImpression(ImpressionDirection.PREVIOUSDEADEND);
     }
   }
 
@@ -342,7 +342,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
       _incrementImpression(ImpressionDirection.NEXT);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: false));
-      _incrementImpression(ImpressionDirection.DEADEND);
+      _incrementImpression(ImpressionDirection.NEXTDEADEND);
     }
   }
 
