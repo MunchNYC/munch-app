@@ -40,7 +40,7 @@ Restaurant _$RestaurantFromJson(Map<String, dynamic> json) {
     usersWhoLiked:
         (json['usersWhoLiked'] as List)?.map((e) => e as String)?.toList() ??
             [],
-  );
+  )..mapsUrl = json['mapsUrl'] as String;
 }
 
 Map<String, dynamic> _$RestaurantToJson(Restaurant instance) =>
@@ -62,6 +62,7 @@ Map<String, dynamic> _$RestaurantToJson(Restaurant instance) =>
       'reviewCount': instance.reviewsNumber,
       'timezone': instance.timezone,
       'url': instance.url,
+      'mapsUrl': instance.mapsUrl,
       'usersWhoLiked': instance.usersWhoLiked,
     };
 

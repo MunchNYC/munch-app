@@ -1,6 +1,6 @@
 {
   "appTitle": "Munch",
-  "apiUrl": "http://10.0.2.2:8080",
+  "apiUrl": "http://192.168.0.40:8080",
   "feedbackEmail": "feedback@munchapp.io",
   "privacyPolicyUrl": "https://sites.google.com/view/munchapp-privacy/home",
   "termsOfServiceUrl": "https://sites.google.com/view/munchapp-tc/home",
