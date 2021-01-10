@@ -60,6 +60,8 @@ class Restaurant {
   @JsonKey(nullable: false)
   String url;
 
+  String mapsUrl;
+
   @JsonKey(defaultValue: [])
   List<String> usersWhoLiked;
 

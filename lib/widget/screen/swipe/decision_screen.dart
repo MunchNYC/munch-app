@@ -459,8 +459,12 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 28.0,
           ),
           onPressedCallback: () {
-            MapsLauncher.launchCoordinates(widget.restaurant.coordinates.latitude,
-                widget.restaurant.coordinates.longitude, widget.restaurant.name);
+            if (widget.restaurant.mapsUrl != null) {
+              Utility.launchUrl(context, widget.restaurant.mapsUrl);
+            } else {
+              MapsLauncher.launchCoordinates(widget.restaurant.coordinates.latitude,
+                  widget.restaurant.coordinates.longitude, widget.restaurant.name);
+            }
           },
         ),
         Text(App.translate("decision_screen.map_button.label.text"),
