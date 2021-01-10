@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
+import 'package:munch/analytics/analytics_api.dart';
+import 'package:munch/analytics/events.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
@@ -64,15 +66,16 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void _splashScreenNavigationLogic() {
     UserRepo.getInstance().getCurrentUser(forceRefresh: true).then((User user) async {
       String deepLink = await DeepLinkHandler.getInstance().getAppStartDeepLink();
-      DeepLinkHandler.getInstance().initializeDeepLinkListener();
 
       if (user == null) {
         // navigate with delay because if user is not stored in local storage, it will happen very fast, we want to animate splash logo smooth
-        Future.delayed(Duration(seconds: 1)).then((value) {
+        Future.delayed(Duration(seconds: 2)).then((value) {
+          DeepLinkHandler.getInstance().initializeDeepLinkListener();
           _navigateToLoginScreen();
         });
       } else {
         await NotificationsHandler.getInstance().initializeNotifications();
+        DeepLinkHandler.getInstance().initializeDeepLinkListener();
 
         if (deepLink == null) {
           NavigationHelper.navigateToHome(context, popAllRoutes: true);
@@ -83,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     }).catchError(_onAuthUserFetchingException);
   }
 
-  void _onAuthUserFetchingException(error) {
+  void _onAuthUserFetchingException(error, stackTrace) {
     if (error is ServerConnectionException) {
       Utility.showErrorFlushbar(
           error.toString() + "\n" + App.translate("api.error.fetch_data_exception.retry.text"), context);
@@ -96,6 +99,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
       _reconnectAttempt(seconds: CommunicationSettings.connectionRetryTimeSec);
     } else {
+      // TODO: - REMOVE ON 1.0.6
+      String stacktracePiece = stackTrace.toString();
+      int threshold = stackTrace.toString().length~/4;
+      Analytics.getInstance().track(Event('_onAuthUserFetchingException', {'error': error.toString() } ));
+      Analytics.getInstance().track(Event('_onAuthUserFetchingException', {'stackTrace1': stacktracePiece.substring(0, threshold) } ));
+      Analytics.getInstance().track(Event('_onAuthUserFetchingException', {'stackTrace2': stacktracePiece.substring(threshold, threshold * 2) } ));
+      Analytics.getInstance().track(Event('_onAuthUserFetchingException', {'stackTrace3': stacktracePiece.substring(threshold * 2, threshold * 3) } ));
+      Analytics.getInstance().track(Event('_onAuthUserFetchingException', {'stackTrace4': stacktracePiece.substring(threshold * 3, threshold * 4) } ));
+
       AuthRepo.getInstance().signOut();
 
       _navigateToLoginScreen();
