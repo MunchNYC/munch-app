@@ -3,6 +3,7 @@ import 'package:animated_widgets/widgets/translation_animated.dart';
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/munch.dart';
@@ -738,11 +739,15 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   void _onSwipeLeft() {
-    _munchBloc.add(RestaurantSwipeLeftEvent(munchId: widget.munch.id, restaurantId: _currentRestaurants[0].id));
+    String restaurantId = _currentRestaurants[0].id;
+    _munchBloc.add(RestaurantSwipeLeftEvent(munchId: widget.munch.id, restaurantId: restaurantId));
+    AnalyticsRepo.getInstance().trackSwipeScreenLeftSwipe(restaurantId);
   }
 
   void _onSwipeRight() {
-    _munchBloc.add(RestaurantSwipeRightEvent(munchId: widget.munch.id, restaurantId: _currentRestaurants[0].id));
+    String restaurantId = _currentRestaurants[0].id;
+    _munchBloc.add(RestaurantSwipeRightEvent(munchId: widget.munch.id, restaurantId: restaurantId));
+    AnalyticsRepo.getInstance().trackSwipeScreenRightSwipe(restaurantId);
   }
 
   void _onDragEndListener(BuildContext context, DraggableDetails details) {
@@ -866,5 +871,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _swipeCompletedAnimatorKey.triggerAnimation();
     });
+
+    AnalyticsRepo.getInstance().trackImpressions(_currentRestaurants[0].id, _currentCardMap[_currentRestaurants[0].id].imageImpressions);
   }
 }

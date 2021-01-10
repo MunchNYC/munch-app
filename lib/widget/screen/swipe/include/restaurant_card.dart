@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
@@ -19,6 +20,8 @@ class RestaurantCard extends StatefulWidget {
   MunchBloc munchBloc;
   Function(double opacity) updateLikeIndicator;
   Function(double opacity) updateDislikeIndicator;
+
+  Map<String, int> imageImpressions = {};
 
   RestaurantCard(this.restaurant, this.munch, {this.munchBloc}) : super(key: Key(restaurant.id));
 
@@ -58,12 +61,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
   @override
   Widget build(BuildContext context) {
     widget.updateLikeIndicator = (opacity) {
-      _likeIndicatorOpacity = opacity;
-      setState(() {});
+      setState(() {
+        _likeIndicatorOpacity = opacity;
+      });
     };
     widget.updateDislikeIndicator = (opacity) {
-      _dislikeIndicatorOpacity = opacity;
-      setState(() {});
+      setState(() {
+        _dislikeIndicatorOpacity = opacity;
+      });
     };
     return Material(
       elevation: 8.0,
@@ -323,8 +328,10 @@ class _RestaurantCardState extends State<RestaurantCard> {
     if (widget.currentCarouselPage - 1 >= 0) {
       widget.currentCarouselPage--;
       _carouselController.jumpToPage(widget.currentCarouselPage);
+      _incrementImpression(ImpressionDirection.PREVIOUS);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: true));
+      _incrementImpression(ImpressionDirection.PREVIOUSDEADEND);
     }
   }
 
@@ -332,8 +339,12 @@ class _RestaurantCardState extends State<RestaurantCard> {
     if (widget.currentCarouselPage + 1 < widget.restaurant.photoUrls.length) {
       widget.currentCarouselPage++;
       _carouselController.jumpToPage(widget.currentCarouselPage);
+
+      _incrementImpression(ImpressionDirection.NEXT);
+      _incrementUniqueImpressionIfNeeded(widget.currentCarouselPage);
     } else {
       widget.munchBloc.add(NoMoreImagesCarouselEvent(isLeftSideTapped: false));
+      _incrementImpression(ImpressionDirection.NEXTDEADEND);
     }
   }
 
@@ -342,5 +353,19 @@ class _RestaurantCardState extends State<RestaurantCard> {
       Expanded(child: GestureDetector(child: Container(color: Colors.transparent), onTap: _onCarouselLeftSideTapped)),
       Expanded(child: GestureDetector(child: Container(color: Colors.transparent), onTap: _onCarouselRightHalfTapped)),
     ]);
+  }
+
+  void _incrementImpression(ImpressionDirection direction) {
+    String key = Utility.convertEnumValueToString(direction);
+    if (widget.imageImpressions == null) widget.imageImpressions = {};
+    if (widget.imageImpressions[key] == null) widget.imageImpressions[key] = 0;
+    widget.imageImpressions[key] += 1;
+  }
+
+  void _incrementUniqueImpressionIfNeeded(int index) {
+    String key = Utility.convertEnumValueToString(ImpressionDirection.UNIQUE);
+    if (widget.imageImpressions == null) widget.imageImpressions = {};
+    if (widget.imageImpressions[key] == null) widget.imageImpressions[key] = 0;
+    if (index > widget.imageImpressions[key]) widget.imageImpressions[key]++;
   }
 }
