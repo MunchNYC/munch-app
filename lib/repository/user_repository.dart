@@ -89,7 +89,6 @@ class UserRepo {
         if (exception is NotFoundException) {
           return null;
         }
-
         throw exception;
       }
     }

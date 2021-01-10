@@ -31,8 +31,10 @@ class DeepLinkHandler {
   Future<String> getAppStartDeepLink() async {
     try {
       return await _methodChannel.invokeMethod('initialLink');
-    } on PlatformException catch (e) {
-      return "Failed to Invoke: '${e.message}'.";
+    } on PlatformException catch (e, stacktrace) {
+      print(e);
+      print(stacktrace);
+      return null;
     }
   }
 
