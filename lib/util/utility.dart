@@ -64,7 +64,7 @@ class Utility {
   }
 
   static DateTime convertUnixTimestampToUTC(int value) {
-    return DateTime.fromMicrosecondsSinceEpoch(value * 1000, isUtc: true);
+    return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
   }
 
   static String convertTo24HourFormat(String dateTime12HoursString) {
