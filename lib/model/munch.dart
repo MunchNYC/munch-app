@@ -129,9 +129,9 @@ class Munch {
     return "id: $id; name: $name;";
   }
 
-  static DateTime _dateTimeFromEpochUs(int us) => DateTime.fromMicrosecondsSinceEpoch(us);
+  static DateTime _dateTimeFromEpochUs(int us) => DateTime.fromMillisecondsSinceEpoch(us);
 
-  static int _dateTimeToEpochUs(DateTime dateTime) => dateTime?.microsecondsSinceEpoch;
+  static int _dateTimeToEpochUs(DateTime dateTime) => dateTime?.millisecondsSinceEpoch;
 
   // static Map<String, dynamic> _coordinatesToJson(Coordinates coordinates) => _$CoordinatesToJson();
 
