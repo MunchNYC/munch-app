@@ -23,10 +23,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     LocationPermission locationPermission;
 
     try {
-      locationPermission = await requestPermission();
+      locationPermission = await Geolocator.requestPermission();
 
       if (locationPermission == LocationPermission.whileInUse || locationPermission == LocationPermission.always) {
-        currentLocation = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        currentLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
         yield CurrentLocationFetchingState.ready(data: currentLocation);
       }
@@ -36,7 +36,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       if (locationPermission != null &&
           (locationPermission == LocationPermission.whileInUse || locationPermission == LocationPermission.always)) {
         // If user doesn't want to enable location services try to acquire getLastKnownPosition (can return null)
-        currentLocation = await getLastKnownPosition();
+        currentLocation = await Geolocator.getLastKnownPosition();
 
         if (currentLocation != null) {
           yield CurrentLocationFetchingState.ready(data: currentLocation);

@@ -51,7 +51,7 @@ class MapScreenState extends State<MapScreen> {
 
   static const double MILES_TO_METERS_RATIO = 1609.344;
   static const List<double> RADIUS_VALUES_MILES = [0.5, 1, 2, 5];
-  static const List<double> RADIUS_VALUES_ZOOMS = [DEFAULT_MAP_ZOOM, DEFAULT_MAP_ZOOM - 1.0, DEFAULT_MAP_ZOOM - 2.0];
+  static const List<double> RADIUS_VALUES_ZOOMS = [DEFAULT_MAP_ZOOM, DEFAULT_MAP_ZOOM - 1.0, DEFAULT_MAP_ZOOM - 2.0, DEFAULT_MAP_ZOOM - 3.0];
 
   static List<int> _radiusValuesMetres =
       RADIUS_VALUES_MILES.map((value) => (value * MILES_TO_METERS_RATIO).floor()).toList();
