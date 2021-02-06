@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/api/api.dart';
@@ -59,6 +60,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   List<Filter> _topFilters;
 
   Map<String, Filter> _filtersMap;
+  bool _deliveryOn = false;
 
   // Don't refresh anything on swipe screen if filters are not saved once, return value for a route
   bool _filtersSaved = false;
@@ -347,12 +349,76 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   Widget _renderScreen(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top: 12.0),
-        child:
-            Column(mainAxisSize: MainAxisSize.min, children: <Widget>[_tabHeaders(), Expanded(child: _tabsContent())]));
+        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          _additionalFiltersRow(),
+          Divider(height: 16.0, color: Palette.secondaryLight),
+          _tabHeaders(),
+          Expanded(child: _tabsContent())
+        ]));
   }
 
   void _showInfoDialog() {
     DialogHelper(dialogContent: FiltersInfoDialog()).show(context);
+  }
+
+  Widget _additionalFiltersRow() {
+    return SingleChildScrollView(
+        child: Padding(
+            child: Row(children: [
+              SizedBox(width: 48.0),
+              _openTimeFilter(),
+              SizedBox(width: 16.0),
+              _deliveryFilter(),
+              SizedBox(width: 16.0),
+              _priceFilter(),
+              SizedBox(width: 48.0)
+            ]),
+            padding: EdgeInsets.only(top: 0, bottom: 16.0)),
+        scrollDirection: Axis.horizontal);
+  }
+
+  Widget _openTimeFilter() {
+    return OutlineButton(
+      onPressed: () {},
+      child: Row(children: [
+        Text("Open Now"),
+        SizedBox(width: 8.0),
+        ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
+      ]),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+      borderSide: BorderSide(color: Colors.grey, width: 0.5),
+      padding: EdgeInsets.all(8),
+      highlightedBorderColor: Colors.redAccent,
+    );
+  }
+
+  Widget _deliveryFilter() {
+    return OutlineButton(
+        onPressed: () => setState(() => _deliveryOn = !_deliveryOn),
+        child: Row(children: [
+          Text("Delivery"),
+          SizedBox(width: 8.0),
+          Icon(_deliveryOn ? Icons.check_box_outlined : Icons.check_box_outline_blank_rounded,
+              color: _deliveryOn ? Colors.redAccent : Palette.secondaryLight, size: 16.0)
+        ]),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+        borderSide: BorderSide(color: Colors.grey, width: 0.5),
+        padding: EdgeInsets.all(8));
+  }
+
+  Widget _priceFilter() {
+    return OutlineButton(
+      onPressed: () {},
+      child: Row(children: [
+        Text("Price"),
+        SizedBox(width: 8.0),
+        ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
+      ]),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+      borderSide: BorderSide(color: Colors.grey, width: 0.5),
+      padding: EdgeInsets.all(8),
+      highlightedBorderColor: Colors.redAccent,
+    );
   }
 
   Widget _tabHeaders() {
