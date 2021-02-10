@@ -61,6 +61,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   Map<String, Filter> _filtersMap;
   bool _deliveryOn = false;
+  FixedExtentScrollController _openTimeScrollController;
+  DateTime _selectedTime;
 
   // Don't refresh anything on swipe screen if filters are not saved once, return value for a route
   bool _filtersSaved = false;
@@ -379,7 +381,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   Widget _openTimeFilter() {
     return OutlineButton(
-      onPressed: () {},
+      onPressed: () { _openTimeFilterTapped(); },
       child: Row(children: [
         Text("Open Now"),
         SizedBox(width: 8.0),
@@ -396,11 +398,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     return OutlineButton(
         onPressed: () => setState(() => _deliveryOn = !_deliveryOn),
         child: Row(children: [
-          Text("Delivery"),
-          SizedBox(width: 8.0),
-          Icon(_deliveryOn ? Icons.check_box_outlined : Icons.check_box_outline_blank_rounded,
-              color: _deliveryOn ? Colors.redAccent : Palette.secondaryLight, size: 16.0)
-        ]),
+          Text("Delivery")]),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
         borderSide: BorderSide(color: Colors.grey, width: 0.5),
         padding: EdgeInsets.all(8));
@@ -419,6 +417,36 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       padding: EdgeInsets.all(8),
       highlightedBorderColor: Colors.redAccent,
     );
+  }
+
+  DateTime _calculateClosesCurrentTime() {
+    int interval = 15;
+
+    int factor = (DateTime.now().minute / interval).round();
+    int initialMinute = factor * interval;
+
+    return DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      DateTime.now().hour,
+      initialMinute
+    );
+  }
+
+  void _openTimeFilterTapped() {
+    showModalBottomSheet(context: context, builder: (BuildContext context) {
+      return CupertinoDatePicker(
+        onDateTimeChanged: (value) { _updateSelectedTime(value); },
+        minimumDate: DateTime.now().subtract(Duration(minutes: 8)),
+        minuteInterval: 15,
+        initialDateTime: (_selectedTime != null) ? _selectedTime : _calculateClosesCurrentTime(),
+          );
+    });
+  }
+
+  void _updateSelectedTime(DateTime time) {
+
   }
 
   Widget _tabHeaders() {
