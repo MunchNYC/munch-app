@@ -32,6 +32,10 @@ Munch _$MunchFromJson(Map<String, dynamic> json) {
     ..munchFilters = json['munchFilters'] == null
         ? null
         : MunchFilters.fromJson(json['munchFilters'] as Map<String, dynamic>)
+    ..secondaryFilters = json['searchPreferences'] == null
+        ? null
+        : SecondaryFilters.fromJson(
+            json['searchPreferences'] as Map<String, dynamic>)
     ..matchedRestaurant = json['matchedRestaurant'] == null
         ? null
         : Restaurant.fromJson(json['matchedRestaurant'] as Map<String, dynamic>)
@@ -53,6 +57,7 @@ Map<String, dynamic> _$MunchToJson(Munch instance) => <String, dynamic>{
       'members': instance.members,
       'munchMemberFilters': instance.munchMemberFilters,
       'munchFilters': instance.munchFilters,
+      'searchPreferences': instance.secondaryFilters,
       'matchedRestaurant': instance.matchedRestaurant,
       'matchedRestaurantName': instance.matchedRestaurantName,
       'receivePushNotifications': instance.receivePushNotifications,
