@@ -15,10 +15,12 @@ enum FilterTransactionTypes {
 
 @JsonSerializable()
 class SecondaryFilters {
+  @JsonKey(defaultValue: [])
   List<PriceFilter> price;
 
   int openTime;
 
+  @JsonKey(defaultValue: [])
   List<FilterTransactionTypes> transactionTypes;
 
   SecondaryFilters({this.price, this.openTime, this.transactionTypes});

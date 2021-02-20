@@ -9,12 +9,15 @@ part of 'secondary_filters.dart';
 SecondaryFilters _$SecondaryFiltersFromJson(Map<String, dynamic> json) {
   return SecondaryFilters(
     price: (json['price'] as List)
-        ?.map((e) => _$enumDecodeNullable(_$PriceFilterEnumMap, e))
-        ?.toList(),
+            ?.map((e) => _$enumDecodeNullable(_$PriceFilterEnumMap, e))
+            ?.toList() ??
+        [],
     openTime: json['openTime'] as int,
     transactionTypes: (json['transactionTypes'] as List)
-        ?.map((e) => _$enumDecodeNullable(_$FilterTransactionTypesEnumMap, e))
-        ?.toList(),
+            ?.map(
+                (e) => _$enumDecodeNullable(_$FilterTransactionTypesEnumMap, e))
+            ?.toList() ??
+        [],
   );
 }
 
