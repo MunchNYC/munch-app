@@ -243,14 +243,11 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
             child: GestureDetector(
               onTap: () {
                 NavigationHelper.navigateToFiltersScreen(context, munch: widget.munch).then((filtersSaved) {
-                  setState(() {
-                    // Don't refresh anything if filters are not saved
-                    if (filtersSaved) {
+                  if (filtersSaved)
+                    setState(() {
                       _clearRestaurantsCache();
-
                       _throwGetSwipeRestaurantNextPageEvent();
-                    }
-                  });
+                    });
                 });
               },
               child: ImageIcon(
