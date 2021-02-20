@@ -444,12 +444,46 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   void _openTimeFilterTapped() {
     showModalBottomSheet(context: context, builder: (BuildContext context) {
-      return CupertinoDatePicker(
-        onDateTimeChanged: (value) { _updateSelectedTime(value); },
-        minimumDate: DateTime.now().subtract(Duration(minutes: 8)),
-        minuteInterval: 15,
-        initialDateTime: (_selectedTime != null) ? _selectedTime : _calculateClosesCurrentTime(),
-          );
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                ),
+                CupertinoButton(
+                  child: Text('Confirm'),
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Flexible(
+              child: CupertinoDatePicker(
+                onDateTimeChanged: (value) {
+                  _updateSelectedTime(value);
+                },
+                minimumDate: DateTime.now().subtract(Duration(minutes: 8)),
+                minuteInterval: 15,
+                initialDateTime: (_selectedTime != null) ? _selectedTime : _calculateClosesCurrentTime(),
+              )
+          )
+        ],
+      );
     });
   }
 
