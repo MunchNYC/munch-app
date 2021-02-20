@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/filters_repository.dart';
 import 'package:munch/service/munch/filter/filters_bloc.dart';
@@ -61,6 +62,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   Map<String, Filter> _filtersMap;
   bool _deliveryOn = false;
+  Color _deliveryBorderColor = Colors.grey;
   FixedExtentScrollController _openTimeScrollController;
   DateTime _selectedTime;
 
@@ -90,6 +92,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   @override
   void initState() {
     _filtersBloc = FiltersBloc();
+    _deliveryBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY) ? Colors.redAccent : Colors.grey);
 
     if (_filtersRepo.allFilters == null || _filtersRepo.topFilters == null) {
       _filtersBloc.add(GetFiltersEvent());
@@ -396,12 +399,17 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   Widget _deliveryFilter() {
     return OutlineButton(
-        onPressed: () => setState(() => _deliveryOn = !_deliveryOn),
+        onPressed: () => setState(() => _toggleDelivery()),
         child: Row(children: [
           Text("Delivery")]),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-        borderSide: BorderSide(color: Colors.grey, width: 0.5),
+        borderSide: BorderSide(color: _deliveryBorderColor, width: 0.5),
         padding: EdgeInsets.all(8));
+  }
+
+  void _toggleDelivery() {
+    _deliveryOn = !_deliveryOn;
+    _deliveryBorderColor = _deliveryOn ? Colors.redAccent : Colors.grey;
   }
 
   Widget _priceFilter() {
