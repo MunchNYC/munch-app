@@ -9,13 +9,17 @@ enum PriceFilter {
   @JsonValue(4) FOUR
 }
 
+enum FilterTransactionTypes {
+  @JsonValue("DELIVERY") DELIVERY
+}
+
 @JsonSerializable()
 class SecondaryFilters {
   List<PriceFilter> price;
 
   int openTime;
 
-  List<String> transactionTypes;
+  List<FilterTransactionTypes> transactionTypes;
 
   SecondaryFilters({this.price, this.openTime, this.transactionTypes});
 
