@@ -125,6 +125,10 @@ class Munch {
       this.munchStatusChanged = true;
     }
 
+    if (detailedMunch.secondaryFilters != null) {
+      this.secondaryFilters = detailedMunch.secondaryFilters;
+    }
+
     this.munchStatus = detailedMunch.munchStatus;
   }
 
