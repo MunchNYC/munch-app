@@ -5,6 +5,7 @@ import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
@@ -61,8 +62,11 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   List<Filter> _topFilters;
 
   Map<String, Filter> _filtersMap;
+  String _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
   bool _deliveryOn = false;
-  Color _deliveryBorderColor = Colors.grey;
+  Color _deliveryFilterBorderColor = Colors.grey;
+  Color _openTimeFilterBorderColor = Colors.grey;
+  Color _priceFilterBorderColor = Colors.grey;
   FixedExtentScrollController _openTimeScrollController;
   DateTime _selectedTime;
 
@@ -92,7 +96,13 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   @override
   void initState() {
     _filtersBloc = FiltersBloc();
-    _deliveryBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY) ? Colors.redAccent : Colors.grey);
+    if (widget.munch.secondaryFilters.transactionTypes != null) {
+      _deliveryFilterBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
+          ? Colors.redAccent
+          : Colors.grey);
+    } else {
+      _deliveryFilterBorderColor = Colors.grey;
+    }
 
     if (_filtersRepo.allFilters == null || _filtersRepo.topFilters == null) {
       _filtersBloc.add(GetFiltersEvent());
@@ -386,14 +396,13 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     return OutlineButton(
       onPressed: () { _openTimeFilterTapped(); },
       child: Row(children: [
-        Text("Open Now"),
+        Text(_openTimeButtonLabel),
         SizedBox(width: 8.0),
         ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
       ]),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      borderSide: BorderSide(color: Colors.grey, width: 0.5),
-      padding: EdgeInsets.all(8),
-      highlightedBorderColor: Colors.redAccent,
+      borderSide: BorderSide(color: _openTimeFilterBorderColor, width: 1),
+      padding: EdgeInsets.all(8)
     );
   }
 
@@ -401,15 +410,10 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     return OutlineButton(
         onPressed: () => setState(() => _toggleDelivery()),
         child: Row(children: [
-          Text("Delivery")]),
+          Text(App.translate("filters_screen.secondary_filters.delivery_button_label"))]),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-        borderSide: BorderSide(color: _deliveryBorderColor, width: 0.5),
+        borderSide: BorderSide(color: _deliveryFilterBorderColor, width: 1),
         padding: EdgeInsets.all(8));
-  }
-
-  void _toggleDelivery() {
-    _deliveryOn = !_deliveryOn;
-    _deliveryBorderColor = _deliveryOn ? Colors.redAccent : Colors.grey;
   }
 
   Widget _priceFilter() {
@@ -421,24 +425,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
       ]),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      borderSide: BorderSide(color: Colors.grey, width: 0.5),
-      padding: EdgeInsets.all(8),
-      highlightedBorderColor: Colors.redAccent,
-    );
-  }
-
-  DateTime _calculateClosesCurrentTime() {
-    int interval = 15;
-
-    int factor = (DateTime.now().minute / interval).round();
-    int initialMinute = factor * interval;
-
-    return DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-      DateTime.now().hour,
-      initialMinute
+      borderSide: BorderSide(color: _priceFilterBorderColor, width: 1),
+      padding: EdgeInsets.all(8)
     );
   }
 
@@ -452,21 +440,21 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 CupertinoButton(
-                  child: Text('Cancel'),
+                  child: Text(App.translate("filters_screen.secondary_filters.now_button_label")),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    _openNowButtonTapped(context);
                   },
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
-                    vertical: 8.0,
+                    vertical: 24.0,
                   ),
                 ),
                 CupertinoButton(
-                  child: Text('Confirm'),
-                  onPressed: () {},
+                  child: Text(App.translate("filters_screen.secondary_filters.done_button_label")),
+                  onPressed: () { Navigator.of(context).pop(); },
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
-                    vertical: 8.0,
+                    vertical: 24.0,
                   ),
                 )
               ],
@@ -487,8 +475,18 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     });
   }
 
-  void _updateSelectedTime(DateTime time) {
+  void _toggleDelivery() {
+    _deliveryOn = !_deliveryOn;
+    _deliveryFilterBorderColor = _deliveryOn ? Colors.redAccent : Colors.grey;
+  }
 
+  void _updateSelectedTime(DateTime time) {
+    final DateFormat formatter = DateFormat('E').add_jm();
+    final String formatted = formatter.format(time);
+    setState(() {
+      _openTimeFilterBorderColor = Colors.redAccent;
+      _openTimeButtonLabel = "Open: " + formatted;
+    });
   }
 
   Widget _tabHeaders() {
@@ -978,5 +976,28 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     NavigationHelper.popRoute(context);
 
     _popScopeCompleter.complete(true);
+  }
+
+  void _openNowButtonTapped(BuildContext context) {
+    setState(() {
+      _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
+      _openTimeFilterBorderColor = Colors.grey;
+    });
+    Navigator.of(context).pop();
+  }
+
+  DateTime _calculateClosesCurrentTime() {
+    int interval = 15;
+
+    int factor = (DateTime.now().minute / interval).round();
+    int initialMinute = factor * interval;
+
+    return DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        DateTime.now().hour,
+        initialMinute
+    );
   }
 }
