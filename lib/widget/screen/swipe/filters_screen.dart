@@ -481,11 +481,22 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _updateSelectedTime(DateTime time) {
-    final DateFormat formatter = DateFormat('E').add_jm();
-    final String formatted = formatter.format(time);
+    String _displayString;
+    if (time.day == DateTime.now().day) {
+      _displayString = "Today";
+    } else if (time.day == DateTime.now().day + 1) {
+      _displayString = "Tomorrow";
+    } else {
+      final DateFormat dayFormatter = DateFormat('E MMM d');
+      _displayString = dayFormatter.format(time);
+    }
+
+    final DateFormat timeFormatter = DateFormat('jm');
+    final String displayTime = timeFormatter.format(time);
+
     setState(() {
       _openTimeFilterBorderColor = Colors.redAccent;
-      _openTimeButtonLabel = "Open: " + formatted;
+      _openTimeButtonLabel = "Open: " + _displayString + " " + displayTime;
     });
   }
 
