@@ -67,6 +67,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   Color _deliveryFilterBorderColor = Colors.grey;
   Color _openTimeFilterBorderColor = Colors.grey;
   Color _priceFilterBorderColor = Colors.grey;
+  double _priceOptionsRowHeight = 0.0;
+  Map<PriceFilter, int> _priceFilters = {};
+  Map<PriceFilter, Color> _priceFilterBorderColors = {};
   FixedExtentScrollController _openTimeScrollController;
   DateTime _selectedTime;
 
@@ -96,13 +99,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   @override
   void initState() {
     _filtersBloc = FiltersBloc();
-    if (widget.munch.secondaryFilters.transactionTypes != null) {
-      _deliveryFilterBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
-          ? Colors.redAccent
-          : Colors.grey);
-    } else {
-      _deliveryFilterBorderColor = Colors.grey;
-    }
+    _setupSecondaryFilters();
 
     if (_filtersRepo.allFilters == null || _filtersRepo.topFilters == null) {
       _filtersBloc.add(GetFiltersEvent());
@@ -367,6 +364,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           _additionalFiltersRow(),
           Divider(height: 16.0, color: Palette.secondaryLight),
+          _priceFilterOptions(),
           _tabHeaders(),
           Expanded(child: _tabsContent())
         ]));
@@ -416,9 +414,76 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         padding: EdgeInsets.all(8));
   }
 
+  Widget _priceFilterOptions() {
+    return AnimatedContainer(
+      height: _priceOptionsRowHeight,
+      child: _priceOptionsRow(),
+      duration: Duration(milliseconds: 250),
+    );
+  }
+
+  Widget _priceOptionsRow() {
+    return  Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 48.0),
+              _priceFilterOption(PriceFilter.ONE),
+              SizedBox(width: 16.0),
+              _priceFilterOption(PriceFilter.TWO),
+              SizedBox(width: 16.0),
+              _priceFilterOption(PriceFilter.THREE),
+              SizedBox(width: 16.0),
+              _priceFilterOption(PriceFilter.FOUR),
+              SizedBox(width: 48.0, height: 5.0),
+      ]
+    );
+  }
+
+  void _togglePrice(PriceFilter price) {
+    _priceFilters[price] = _priceFilters[price] == 0 ? 1 : 0;
+    setState(() {
+      _priceFilterBorderColors[price] = _priceFilters[price] == 1 ? Colors.redAccent : Colors.grey;
+    });
+  }
+
+  Widget _priceFilterOption(PriceFilter price) {
+    return Material(
+        type: MaterialType.transparency,
+        child: Ink(
+          decoration: BoxDecoration(
+              border: Border.all(color: _priceFilterBorderColors[price], width: 1.0),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(7)
+          ),
+          child: InkWell(
+            onTap: () => _togglePrice(price),
+            child: Padding(
+                padding:EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(() {
+                  switch (price) {
+                    case PriceFilter.ONE:
+                      return "\$";
+                      break;
+                    case PriceFilter.TWO:
+                      return "\$\$";
+                      break;
+                    case PriceFilter.THREE:
+                      return "\$\$\$";
+                      break;
+                    case PriceFilter.FOUR:
+                      return "\$\$\$\$";
+                      break;
+                  }
+                  }())
+            ),
+          ),
+        )
+    );
+  }
+
   Widget _priceFilter() {
     return OutlineButton(
-      onPressed: () {},
+      onPressed: () { setState(() => _priceOptionsRowHeight = _priceOptionsRowHeight < 50 ? 50 : 0 ); },
       child: Row(children: [
         Text("Price"),
         SizedBox(width: 8.0),
@@ -1010,5 +1075,21 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         DateTime.now().hour,
         initialMinute
     );
+  }
+
+  void _setupSecondaryFilters() {
+    if (widget.munch.secondaryFilters.transactionTypes != null) {
+      _deliveryFilterBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
+          ? Colors.redAccent
+          : Colors.grey);
+    } else {
+      _deliveryFilterBorderColor = Colors.grey;
+    }
+
+    PriceFilter.values.forEach((price) {
+      bool _priceOn = (widget.munch.secondaryFilters.price.contains(price));
+      _priceFilters[price] = _priceOn ? 1 : 0;
+      _priceFilterBorderColors[price] = _priceOn ? Colors.redAccent : Colors.grey;
+    });
   }
 }
