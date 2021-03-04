@@ -496,7 +496,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
     setState(() {
       _openTimeFilterBorderColor = Colors.redAccent;
-      _openTimeButtonLabel = "Open: " + _displayString + " " + displayTime;
+      _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
     });
   }
 
