@@ -63,6 +63,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   Map<String, Filter> _filtersMap;
   String _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
+  String _priceFilterButtonLabel = App.translate("filters_screen.secondary_filters.price_button_label");
   bool _deliveryOn = false;
   Color _deliveryFilterBorderColor = Colors.grey;
   Color _openTimeFilterBorderColor = Colors.grey;
@@ -441,8 +442,11 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   void _togglePrice(PriceFilter price) {
     _priceFilters[price] = _priceFilters[price] == 0 ? 1 : 0;
+
     setState(() {
       _priceFilterBorderColors[price] = _priceFilters[price] == 1 ? Colors.redAccent : Colors.grey;
+      _priceFilterButtonLabel = _priceFiltersToDisplay();
+      _priceFilterBorderColor = (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label")) ? Colors.grey : Colors.redAccent;
     });
   }
 
@@ -459,22 +463,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
             onTap: () => _togglePrice(price),
             child: Padding(
                 padding:EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Text(() {
-                  switch (price) {
-                    case PriceFilter.ONE:
-                      return "\$";
-                      break;
-                    case PriceFilter.TWO:
-                      return "\$\$";
-                      break;
-                    case PriceFilter.THREE:
-                      return "\$\$\$";
-                      break;
-                    case PriceFilter.FOUR:
-                      return "\$\$\$\$";
-                      break;
-                  }
-                  }())
+                child: Text(_priceFilterAsString(price))
             ),
           ),
         )
@@ -485,7 +474,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     return OutlineButton(
       onPressed: () { setState(() => _priceOptionsRowHeight = _priceOptionsRowHeight < 50 ? 50 : 0 ); },
       child: Row(children: [
-        Text("Price"),
+        Text(_priceFilterButtonLabel),
         SizedBox(width: 8.0),
         ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
       ]),
@@ -1077,6 +1066,37 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     );
   }
 
+  String _priceFiltersToDisplay() {
+    List<String> _filtersOn = [];
+    (_priceFilters[PriceFilter.ONE] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.ONE)) : null);
+    (_priceFilters[PriceFilter.TWO] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.TWO)) : null);
+    (_priceFilters[PriceFilter.THREE] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.THREE)) : null);
+    (_priceFilters[PriceFilter.FOUR] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.FOUR)) : null);
+
+    if (_filtersOn.isEmpty) {
+      return App.translate("filters_screen.secondary_filters.price_button_label");
+    } else {
+      return _filtersOn.join(", ");
+    }
+  }
+
+  String _priceFilterAsString(PriceFilter price) {
+    switch (price) {
+      case PriceFilter.ONE:
+        return "\$";
+        break;
+      case PriceFilter.TWO:
+        return "\$\$";
+        break;
+      case PriceFilter.THREE:
+        return "\$\$\$";
+        break;
+      case PriceFilter.FOUR:
+        return "\$\$\$\$";
+        break;
+    }
+  }
+
   void _setupSecondaryFilters() {
     if (widget.munch.secondaryFilters.transactionTypes != null) {
       _deliveryFilterBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
@@ -1091,5 +1111,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       _priceFilters[price] = _priceOn ? 1 : 0;
       _priceFilterBorderColors[price] = _priceOn ? Colors.redAccent : Colors.grey;
     });
+
+    _priceFilterButtonLabel = _priceFiltersToDisplay();
+    _priceFilterBorderColor = (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label")) ? Colors.grey : Colors.redAccent;
   }
 }
