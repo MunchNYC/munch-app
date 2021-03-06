@@ -1,5 +1,6 @@
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
+import 'package:munch/model/secondary_filters.dart';
 
 import 'api.dart';
 
@@ -24,6 +25,35 @@ class FiltersApi extends Api {
     String postUrl = "/filters?munchId=$munchId";
 
     Map<String, dynamic> fields = {"whitelist": whitelistFiltersKeys, "blacklist": blacklistFiltersKeys};
+
+    var data = await post(postUrl, fields);
+
+    Munch munch = Munch.fromJson(data['munchDetailed']);
+
+    return munch;
+  }
+
+  Future<Munch> updateAllFilters({SecondaryFilters oldFilters, SecondaryFilters newFilters, List<String> whitelistFiltersKeys, List<String> blacklistFiltersKeys, String munchId}) async {
+    assert ((oldFilters != null) == (newFilters != null) ||  (oldFilters == null) == (newFilters == null));
+    String postUrl = "/preferences/searchFilters?munchId=$munchId";
+
+
+    Map<String, dynamic> secondaryFiltersFields;
+
+    if (oldFilters != null) {
+      secondaryFiltersFields = {
+        "currentPreferences" : oldFilters,
+        "updatedPreferences" : newFilters
+      };
+    }
+
+    Map<String, dynamic> fields = {
+      "searchPreferences": secondaryFiltersFields,
+      "userFilters": {
+        "whitelist": whitelistFiltersKeys,
+        "blacklist": blacklistFiltersKeys
+      }
+    };
 
     var data = await post(postUrl, fields);
 

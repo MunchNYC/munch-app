@@ -60,19 +60,19 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   List<Filter> _allFilters;
   List<Filter> _topFilters;
-
   Map<String, Filter> _filtersMap;
+
+  // secondary filters
   String _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
   String _priceFilterButtonLabel = App.translate("filters_screen.secondary_filters.price_button_label");
+  DateTime _openTimeFilterSelectedTime;
   bool _deliveryOn = false;
+  Map<PriceFilter, int> _priceFilters = {};
   Color _deliveryFilterBorderColor = Colors.grey;
   Color _openTimeFilterBorderColor = Colors.grey;
   Color _priceFilterBorderColor = Colors.grey;
-  double _priceOptionsRowHeight = 0.0;
-  Map<PriceFilter, int> _priceFilters = {};
   Map<PriceFilter, Color> _priceFilterBorderColors = {};
-  FixedExtentScrollController _openTimeScrollController;
-  DateTime _selectedTime;
+  double _priceOptionsRowHeight = 0.0;
 
   // Don't refresh anything on swipe screen if filters are not saved once, return value for a route
   bool _filtersSaved = false;
@@ -106,7 +106,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       _filtersBloc.add(GetFiltersEvent());
     } else {
       _initializeFilters();
-    }
+  }
 
     super.initState();
   }
@@ -230,6 +230,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     } else {
       changesMade = true;
     }
+
+    if (_secondaryFiltersChanged())
+    changesMade = true;
 
     return changesMade;
   }
@@ -521,7 +524,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                 },
                 minimumDate: DateTime.now().subtract(Duration(minutes: 8)),
                 minuteInterval: 15,
-                initialDateTime: (_selectedTime != null) ? _selectedTime : _calculateClosesCurrentTime(),
+                initialDateTime: (_openTimeFilterSelectedTime != null) ? _openTimeFilterSelectedTime : _calculateClosestCurrentTime(),
               )
           )
         ],
@@ -547,6 +550,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
     final DateFormat timeFormatter = DateFormat('jm');
     final String displayTime = timeFormatter.format(time);
+
+    _openTimeFilterSelectedTime = time;
 
     setState(() {
       _openTimeFilterBorderColor = Colors.redAccent;
@@ -1025,8 +1030,13 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _onSaveButtonClicked() {
-    _filtersBloc.add(UpdateFiltersEvent(
-        whitelistFilters: _whitelistFilters, blacklistFilters: _blacklistFilters, munchId: widget.munch.id));
+      _filtersBloc.add(UpdateAllFiltersEvent(
+        oldFilters: widget.munch.secondaryFilters,
+        newFilters: _getCurrentSecondaryFilters(),
+          whitelistFilters: _whitelistFilters,
+          blacklistFilters: _blacklistFilters,
+          munchId: widget.munch.id
+      ));
   }
 
   void _onSaveChangesDialogButtonClicked() {
@@ -1051,7 +1061,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     Navigator.of(context).pop();
   }
 
-  DateTime _calculateClosesCurrentTime() {
+  DateTime _calculateClosestCurrentTime() {
     int interval = 15;
 
     int factor = (DateTime.now().minute / interval).round();
@@ -1068,10 +1078,10 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   String _priceFiltersToDisplay() {
     List<String> _filtersOn = [];
-    (_priceFilters[PriceFilter.ONE] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.ONE)) : null);
-    (_priceFilters[PriceFilter.TWO] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.TWO)) : null);
-    (_priceFilters[PriceFilter.THREE] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.THREE)) : null);
-    (_priceFilters[PriceFilter.FOUR] == 1 ?  _filtersOn.add(_priceFilterAsString(PriceFilter.FOUR)) : null);
+    _priceFilters.forEach((key, value) {
+      if (value == 1)
+      _filtersOn.add(_priceFilterAsString(key));
+    });
 
     if (_filtersOn.isEmpty) {
       return App.translate("filters_screen.secondary_filters.price_button_label");
@@ -1095,24 +1105,64 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         return "\$\$\$\$";
         break;
     }
+    return App.translate("filters_screen.secondary_filters.price_button_label");
+  }
+
+  bool _secondaryFiltersChanged() {
+    SecondaryFilters _currentSecondaryFilters = _getCurrentSecondaryFilters();
+
+    if (_currentSecondaryFilters == widget.munch.secondaryFilters)
+      return false;
+
+    return true;
+  }
+
+  SecondaryFilters _getCurrentSecondaryFilters() {
+    SecondaryFilters _currentSecondaryFilters = SecondaryFilters(
+        price: [],
+        openTime: null,
+        transactionTypes: []
+    );
+    if (_deliveryOn)
+      _currentSecondaryFilters.transactionTypes.add(FilterTransactionTypes.DELIVERY);
+
+    if (_openTimeFilterSelectedTime != null)
+      _currentSecondaryFilters.openTime = _openTimeFilterSelectedTime.toUtc().millisecondsSinceEpoch;
+
+    _priceFilters.forEach((key, value) {
+      if (value == 1)
+        _currentSecondaryFilters.price.add(key);
+    });
+
+    return _currentSecondaryFilters;
   }
 
   void _setupSecondaryFilters() {
+    if (widget.munch.secondaryFilters.openTime != null) {
+      _openTimeFilterSelectedTime = Utility.convertUnixTimestampToUTC(widget.munch.secondaryFilters.openTime);
+    }
+
     if (widget.munch.secondaryFilters.transactionTypes != null) {
-      _deliveryFilterBorderColor = (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
+      _deliveryFilterBorderColor =
+      (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
           ? Colors.redAccent
           : Colors.grey);
     } else {
       _deliveryFilterBorderColor = Colors.grey;
     }
 
-    PriceFilter.values.forEach((price) {
-      bool _priceOn = (widget.munch.secondaryFilters.price.contains(price));
-      _priceFilters[price] = _priceOn ? 1 : 0;
-      _priceFilterBorderColors[price] = _priceOn ? Colors.redAccent : Colors.grey;
-    });
+    if (widget.munch.secondaryFilters.price != null) {
+      PriceFilter.values.forEach((price) {
+        bool _priceOn = (widget.munch.secondaryFilters.price.contains(price));
+        _priceFilters[price] = _priceOn ? 1 : 0;
+        _priceFilterBorderColors[price] = _priceOn ? Colors.redAccent : Colors.grey;
+      });
 
-    _priceFilterButtonLabel = _priceFiltersToDisplay();
-    _priceFilterBorderColor = (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label")) ? Colors.grey : Colors.redAccent;
+      _priceFilterButtonLabel = _priceFiltersToDisplay();
+      _priceFilterBorderColor =
+      (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label"))
+          ? Colors.grey
+          : Colors.redAccent;
+    }
   }
 }
