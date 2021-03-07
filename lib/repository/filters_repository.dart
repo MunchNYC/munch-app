@@ -67,7 +67,16 @@ class FiltersRepo {
     String munchId
   }) async {
     try {
-      Munch munch = await _filtersApi.updateAllFilters(oldFilters: oldFilters, newFilters: newFilters);
+      List<String> whitelistFiltersKeys = whitelistFilters.map((Filter filter) => filter.key).toList();
+      List<String> blacklistFiltersKeys = blacklistFilters.map((Filter filter) => filter.key).toList();
+
+      Munch munch = await _filtersApi.updateAllFilters(
+          oldFilters: oldFilters,
+          newFilters: newFilters,
+          whitelistFiltersKeys: whitelistFiltersKeys,
+          blacklistFiltersKeys: blacklistFiltersKeys,
+          munchId: munchId
+      );
 
       _munchRepo.updateMunchCache(munch);
 

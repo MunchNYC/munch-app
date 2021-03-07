@@ -35,15 +35,15 @@ class FiltersApi extends Api {
 
   Future<Munch> updateAllFilters({SecondaryFilters oldFilters, SecondaryFilters newFilters, List<String> whitelistFiltersKeys, List<String> blacklistFiltersKeys, String munchId}) async {
     assert ((oldFilters != null) == (newFilters != null) ||  (oldFilters == null) == (newFilters == null));
-    String postUrl = "/preferences/searchFilters?munchId=$munchId";
+    String postUrl = "/preferences/searchfilters?munchId=$munchId";
 
 
     Map<String, dynamic> secondaryFiltersFields;
 
     if (oldFilters != null) {
       secondaryFiltersFields = {
-        "currentPreferences" : oldFilters,
-        "updatedPreferences" : newFilters
+        "currentPreferences" : oldFilters.toJson(),
+        "updatedPreferences" : newFilters.toJson()
       };
     }
 

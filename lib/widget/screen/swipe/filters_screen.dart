@@ -303,7 +303,11 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       if (_popScopeCompleter != null) {
         _popScopeCompleter.complete(true);
       } else {
-        Utility.showFlushbar(App.translate("filters_screen.save.successful.message"), context);
+        if (widget.munch.updateSecondaryFiltersFailed) {
+          Utility.showFlushbar(App.translate("filters_screen.secondary_filters.update_failed"), context);
+        } else {
+          Utility.showFlushbar(App.translate("filters_screen.save.successful.message"), context);
+        }
       }
     }
   }
