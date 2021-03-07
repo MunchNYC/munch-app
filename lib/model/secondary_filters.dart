@@ -1,4 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:munch/util/utility.dart';
 
 part 'secondary_filters.g.dart';
 
@@ -52,6 +54,10 @@ class SecondaryFilters {
     });
 
     return prices;
+  }
+
+  bool equals(SecondaryFilters filters) {
+    return listEquals(this.price, filters.price) && this.openTime == filters.openTime && listEquals(this.transactionTypes, filters.transactionTypes);
   }
 
   SecondaryFilters({this.price, this.openTime, this.transactionTypes});

@@ -526,9 +526,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                 onDateTimeChanged: (value) {
                   _updateSelectedTime(value);
                 },
-                minimumDate: DateTime.now().subtract(Duration(minutes: 8)),
+                minimumDate: DateTime.now().subtract(Duration(minutes: 15)),
                 minuteInterval: 15,
-                initialDateTime: (_openTimeFilterSelectedTime != null) ? _openTimeFilterSelectedTime : _calculateClosestCurrentTime(),
+                initialDateTime: _calculateInitialOpenTime(),
               )
           )
         ],
@@ -1065,19 +1065,24 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     Navigator.of(context).pop();
   }
 
-  DateTime _calculateClosestCurrentTime() {
+  DateTime _calculateInitialOpenTime() {
     int interval = 15;
-
     int factor = (DateTime.now().minute / interval).round();
-    int initialMinute = factor * interval;
+    int earliestInitialMinute = factor * interval;
 
-    return DateTime(
+    DateTime earliestInitialTime = DateTime(
         DateTime.now().year,
         DateTime.now().month,
         DateTime.now().day,
         DateTime.now().hour,
-        initialMinute
+        earliestInitialMinute
     );
+
+
+    if (_openTimeFilterSelectedTime != null && !_openTimeFilterSelectedTime.isBefore(earliestInitialTime))
+      return _openTimeFilterSelectedTime;
+
+    return earliestInitialTime;
   }
 
   String _priceFiltersToDisplay() {
@@ -1115,7 +1120,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   bool _secondaryFiltersChanged() {
     SecondaryFilters _currentSecondaryFilters = _getCurrentSecondaryFilters();
 
-    if (_currentSecondaryFilters == widget.munch.secondaryFilters)
+    if (_currentSecondaryFilters.equals(widget.munch.secondaryFilters))
       return false;
 
     return true;
@@ -1143,7 +1148,24 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   void _setupSecondaryFilters() {
     if (widget.munch.secondaryFilters.openTime != null) {
-      _openTimeFilterSelectedTime = Utility.convertUnixTimestampToUTC(widget.munch.secondaryFilters.openTime);
+      DateTime time = DateTime.fromMillisecondsSinceEpoch(widget.munch.secondaryFilters.openTime);
+      String _displayString;
+      if (time.day == DateTime.now().day) {
+        _displayString = "Today";
+      } else if (time.day == DateTime.now().day + 1) {
+        _displayString = "Tomorrow";
+      } else {
+        final DateFormat dayFormatter = DateFormat('E MMM d');
+        _displayString = dayFormatter.format(time);
+      }
+
+      final DateFormat timeFormatter = DateFormat('jm');
+      final String displayTime = timeFormatter.format(time);
+
+      _openTimeFilterSelectedTime = time;
+
+      _openTimeFilterBorderColor = Colors.redAccent;
+      _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
     }
 
     if (widget.munch.secondaryFilters.transactionTypes != null) {
@@ -1151,6 +1173,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
           ? Colors.redAccent
           : Colors.grey);
+      _deliveryOn = true;
     } else {
       _deliveryFilterBorderColor = Colors.grey;
     }
