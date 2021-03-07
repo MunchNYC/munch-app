@@ -133,9 +133,6 @@ class Munch {
     }
 
     this.munchStatus = detailedMunch.munchStatus;
-
-    if (detailedMunch.secondaryFilters != null)
-    this.secondaryFilters = detailedMunch.secondaryFilters;
   }
 
   @override
