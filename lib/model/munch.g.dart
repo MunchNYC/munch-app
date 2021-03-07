@@ -40,6 +40,8 @@ Munch _$MunchFromJson(Map<String, dynamic> json) {
         ? null
         : Restaurant.fromJson(json['matchedRestaurant'] as Map<String, dynamic>)
     ..matchedRestaurantName = json['matchedRestaurantName'] as String
+    ..updateSecondaryFiltersFailed =
+        json['updateSearchPreferencesFailed'] as bool ?? false
     ..munchStatus = _$enumDecode(_$MunchStatusEnumMap, json['state'],
         unknownValue: MunchStatus.HISTORICAL);
 }
@@ -61,6 +63,7 @@ Map<String, dynamic> _$MunchToJson(Munch instance) => <String, dynamic>{
       'matchedRestaurant': instance.matchedRestaurant,
       'matchedRestaurantName': instance.matchedRestaurantName,
       'receivePushNotifications': instance.receivePushNotifications,
+      'updateSearchPreferencesFailed': instance.updateSecondaryFiltersFailed,
       'state': _$MunchStatusEnumMap[instance.munchStatus],
     };
 

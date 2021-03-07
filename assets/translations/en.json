@@ -193,6 +193,7 @@
     "filters_screen.secondary_filters.done_button_label": "Done",
     "filters_screen.secondary_filters.delivery_button_label": "Delivery",
     "filters_screen.secondary_filters.price_button_label": "Price",
+    "filters_screen.secondary_filters.update_failed": "Someone else has updated the filters. Try again.",
 
     "decision_screen.munch_unmodifiable.description": "Update your review for",
     "decision_screen.munch_unmodifiable.feedback_button.text": "Update Review",

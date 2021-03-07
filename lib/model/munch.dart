@@ -5,6 +5,7 @@ import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
+import 'package:munch/util/app.dart';
 import 'package:munch/util/deep_link_handler.dart';
 
 part 'munch.g.dart';
@@ -55,6 +56,12 @@ class Munch {
   String matchedRestaurantName;
 
   bool receivePushNotifications;
+
+  @JsonKey(name: "updateSearchPreferencesFailed", defaultValue: false)
+  bool updateSecondaryFiltersFailed;
+
+  @JsonKey(ignore: true)
+  String updateSecondaryFiltersFailedMessage = App.translate("filters_screen.secondary_filters.update_failed");
 
   @JsonKey(name: "state", nullable: false, unknownEnumValue: MunchStatus.HISTORICAL)
   MunchStatus munchStatus;
@@ -130,6 +137,9 @@ class Munch {
     }
 
     this.munchStatus = detailedMunch.munchStatus;
+
+    if (detailedMunch.secondaryFilters != null)
+    this.secondaryFilters = detailedMunch.secondaryFilters;
   }
 
   @override
