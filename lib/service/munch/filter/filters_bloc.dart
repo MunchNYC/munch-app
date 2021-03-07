@@ -79,16 +79,3 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
     }
   }
 }
-
-
-// tap save
-// make both calls
-
-// see if error code == 422
-
-// double success
-// 206 200 take most recent
-// 206 206 take most recent
-// 422 - only for new endpoint - preferences mismatch - get munchDetailed back - update Munch & display error of updating new filters
-// 500
-
