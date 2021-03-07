@@ -231,8 +231,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       changesMade = true;
     }
 
-    if (_secondaryFiltersChanged())
-    changesMade = true;
+    if (!_getCurrentSecondaryFilters().equals(widget.munch.secondaryFilters))
+      changesMade = true;
 
     return changesMade;
   }
@@ -1115,15 +1115,6 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
         break;
     }
     return App.translate("filters_screen.secondary_filters.price_button_label");
-  }
-
-  bool _secondaryFiltersChanged() {
-    SecondaryFilters _currentSecondaryFilters = _getCurrentSecondaryFilters();
-
-    if (_currentSecondaryFilters.equals(widget.munch.secondaryFilters))
-      return false;
-
-    return true;
   }
 
   SecondaryFilters _getCurrentSecondaryFilters() {
