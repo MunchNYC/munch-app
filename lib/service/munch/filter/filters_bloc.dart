@@ -73,8 +73,8 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
       );
 
       yield FiltersUpdatingState.ready(data: munch);
-    } catch (error, response) {
-      print("Updating filters failed: " + error.toString() + response.toString());
+    } catch (error) {
+      print("Updating filters failed: " + error.toString());
       yield FiltersUpdatingState.failed(exception: error, message: error.toString());
     }
   }
