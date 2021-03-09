@@ -1159,14 +1159,15 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
     }
 
-    if (widget.munch.secondaryFilters.transactionTypes != null) {
+    if (widget.munch.secondaryFilters.transactionTypes.isNotEmpty) {
       _deliveryFilterBorderColor =
       (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
           ? Colors.redAccent
           : Colors.grey);
-      _deliveryOn = true;
+      _deliveryOn = widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY) ? true : false;
     } else {
       _deliveryFilterBorderColor = Colors.grey;
+      _deliveryOn = false;
     }
 
     if (widget.munch.secondaryFilters.price != null) {
