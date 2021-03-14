@@ -66,6 +66,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   String _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
   String _priceFilterButtonLabel = App.translate("filters_screen.secondary_filters.price_button_label");
   DateTime _openTimeFilterSelectedTime;
+  bool _openTimeSetToNow = false;
   bool _deliveryOn = false;
   Map<PriceFilter, int> _priceFilters = {};
   Color _deliveryFilterBorderColor = Colors.grey;
@@ -556,6 +557,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     final String displayTime = timeFormatter.format(time);
 
     _openTimeFilterSelectedTime = time;
+    _openTimeSetToNow = false;
 
     setState(() {
       _openTimeFilterBorderColor = Colors.redAccent;
@@ -1058,6 +1060,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _openNowButtonTapped(BuildContext context) {
+    _openTimeSetToNow = true;
+
     setState(() {
       _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
       _openTimeFilterBorderColor = Colors.grey;
@@ -1126,7 +1130,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     if (_deliveryOn)
       _currentSecondaryFilters.transactionTypes.add(FilterTransactionTypes.DELIVERY);
 
-    if (_openTimeFilterSelectedTime != null)
+    if (_openTimeFilterSelectedTime != null && !_openTimeSetToNow)
       _currentSecondaryFilters.openTime = _openTimeFilterSelectedTime.toUtc().millisecondsSinceEpoch;
 
     _priceFilters.forEach((key, value) {
