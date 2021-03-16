@@ -3,6 +3,7 @@ import 'package:munch/api/filters_api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
+import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/repository/munch_repository.dart';
 
 class FiltersRepo {
@@ -54,6 +55,34 @@ class FiltersRepo {
     } on AccessDeniedException catch (error) {
       _munchRepo.deleteMunchFromCache(munchId);
 
+      throw error;
+    }
+  }
+
+  Future<Munch> updateAllFilters({
+    SecondaryFilters oldFilters,
+    SecondaryFilters newFilters,
+    List<Filter> whitelistFilters,
+    List<Filter> blacklistFilters,
+    String munchId
+  }) async {
+    try {
+      List<String> whitelistFiltersKeys = whitelistFilters.map((Filter filter) => filter.key).toList();
+      List<String> blacklistFiltersKeys = blacklistFilters.map((Filter filter) => filter.key).toList();
+
+      Munch munch = await _filtersApi.updateAllFilters(
+          oldFilters: oldFilters,
+          newFilters: newFilters,
+          whitelistFiltersKeys: whitelistFiltersKeys,
+          blacklistFiltersKeys: blacklistFiltersKeys,
+          munchId: munchId
+      );
+
+      _munchRepo.updateMunchCache(munch);
+
+      return munch;
+    } on AccessDeniedException catch (error) {
+      _munchRepo.deleteMunchFromCache(munchId);
       throw error;
     }
   }

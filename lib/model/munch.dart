@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/restaurant.dart';
+import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/deep_link_handler.dart';
@@ -44,6 +45,9 @@ class Munch {
 
   MunchFilters munchFilters;
 
+  @JsonKey(name: "searchPreferences")
+  SecondaryFilters secondaryFilters;
+
   // will be fetched totally in detailed munch
   Restaurant matchedRestaurant;
 
@@ -51,6 +55,9 @@ class Munch {
   String matchedRestaurantName;
 
   bool receivePushNotifications;
+
+  @JsonKey(name: "updateSearchPreferencesFailed", defaultValue: false)
+  bool updateSecondaryFiltersFailed;
 
   @JsonKey(name: "state", nullable: false, unknownEnumValue: MunchStatus.HISTORICAL)
   MunchStatus munchStatus;
@@ -119,6 +126,10 @@ class Munch {
     // Otherwise keep last value of munchStatusChanged, before it is reverted to false on swipe or decision screen
     if (this.munchStatus != detailedMunch.munchStatus) {
       this.munchStatusChanged = true;
+    }
+
+    if (detailedMunch.secondaryFilters != null) {
+      this.secondaryFilters = detailedMunch.secondaryFilters;
     }
 
     this.munchStatus = detailedMunch.munchStatus;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_filters_response.dart';
+import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/repository/filters_repository.dart';
 import 'package:munch/service/munch/filter/filters_event.dart';
 
@@ -25,6 +26,8 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
       yield* getFilters();
     } else if (event is UpdateFiltersEvent) {
       yield* updateFilters(event);
+    } else if (event is UpdateAllFiltersEvent) {
+      yield* updateAllFilters(event);
     }
   }
 
@@ -53,6 +56,25 @@ class FiltersBloc extends Bloc<FiltersEvent, FiltersState> {
       yield FiltersUpdatingState.ready(data: munch);
     } catch (error) {
       print("Munches fetching failed: " + error.toString());
+      yield FiltersUpdatingState.failed(exception: error, message: error.toString());
+    }
+  }
+
+  Stream<FiltersState> updateAllFilters(UpdateAllFiltersEvent event) async* {
+    yield FiltersUpdatingState.loading();
+
+    try {
+      Munch munch = await _filtersRepo.updateAllFilters(
+          oldFilters: event.oldFilters,
+          newFilters: event.newFilters,
+          whitelistFilters: event.whitelistFilters,
+          blacklistFilters: event.blacklistFilters,
+          munchId: event.munchId
+      );
+
+      yield FiltersUpdatingState.ready(data: munch);
+    } catch (error) {
+      print("Updating filters failed: " + error.toString());
       yield FiltersUpdatingState.failed(exception: error, message: error.toString());
     }
   }

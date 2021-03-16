@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/model/filter.dart';
 import 'package:munch/model/munch.dart';
+import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/filters_repository.dart';
 import 'package:munch/service/munch/filter/filters_bloc.dart';
@@ -57,8 +60,20 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
   List<Filter> _allFilters;
   List<Filter> _topFilters;
-
   Map<String, Filter> _filtersMap;
+
+  // secondary filters
+  String _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
+  String _priceFilterButtonLabel = App.translate("filters_screen.secondary_filters.price_button_label");
+  DateTime _openTimeFilterSelectedTime;
+  bool _openTimeSetToNow = false;
+  bool _deliveryOn = false;
+  Map<PriceFilter, int> _priceFilters = {};
+  Color _deliveryFilterBorderColor = Colors.grey;
+  Color _openTimeFilterBorderColor = Colors.grey;
+  Color _priceFilterBorderColor = Colors.grey;
+  Map<PriceFilter, Color> _priceFilterBorderColors = {};
+  double _priceOptionsRowHeight = 0.0;
 
   // Don't refresh anything on swipe screen if filters are not saved once, return value for a route
   bool _filtersSaved = false;
@@ -86,12 +101,13 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   @override
   void initState() {
     _filtersBloc = FiltersBloc();
+    _setupSecondaryFilters();
 
     if (_filtersRepo.allFilters == null || _filtersRepo.topFilters == null) {
       _filtersBloc.add(GetFiltersEvent());
     } else {
       _initializeFilters();
-    }
+  }
 
     super.initState();
   }
@@ -216,6 +232,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       changesMade = true;
     }
 
+    if (!_getCurrentSecondaryFilters().equals(widget.munch.secondaryFilters))
+      changesMade = true;
+
     return changesMade;
   }
 
@@ -285,7 +304,11 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       if (_popScopeCompleter != null) {
         _popScopeCompleter.complete(true);
       } else {
-        Utility.showFlushbar(App.translate("filters_screen.save.successful.message"), context);
+        if (widget.munch.updateSecondaryFiltersFailed) {
+          Utility.showFlushbar(App.translate("filters_screen.secondary_filters.update_failed"), context);
+        } else {
+          Utility.showFlushbar(App.translate("filters_screen.save.successful.message"), context);
+        }
       }
     }
   }
@@ -347,12 +370,199 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   Widget _renderScreen(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top: 12.0),
-        child:
-            Column(mainAxisSize: MainAxisSize.min, children: <Widget>[_tabHeaders(), Expanded(child: _tabsContent())]));
+        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          _additionalFiltersRow(),
+          Divider(height: 16.0, color: Palette.secondaryLight),
+          _priceFilterOptions(),
+          _tabHeaders(),
+          Expanded(child: _tabsContent())
+        ]));
   }
 
   void _showInfoDialog() {
     DialogHelper(dialogContent: FiltersInfoDialog()).show(context);
+  }
+
+  Widget _additionalFiltersRow() {
+    return SingleChildScrollView(
+        child: Padding(
+            child: Row(children: [
+              SizedBox(width: 48.0),
+              _openTimeFilter(),
+              SizedBox(width: 16.0),
+              _deliveryFilter(),
+              SizedBox(width: 16.0),
+              _priceFilter(),
+              SizedBox(width: 48.0)
+            ]),
+            padding: EdgeInsets.only(top: 0, bottom: 16.0)),
+        scrollDirection: Axis.horizontal);
+  }
+
+  Widget _openTimeFilter() {
+    return OutlineButton(
+      onPressed: () { _openTimeFilterTapped(); },
+      child: Row(children: [
+        Text(_openTimeButtonLabel),
+        SizedBox(width: 8.0),
+        ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
+      ]),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+      borderSide: BorderSide(color: _openTimeFilterBorderColor, width: 1),
+      padding: EdgeInsets.all(8)
+    );
+  }
+
+  Widget _deliveryFilter() {
+    return OutlineButton(
+        onPressed: () => setState(() => _toggleDelivery()),
+        child: Row(children: [
+          Text(App.translate("filters_screen.secondary_filters.delivery_button_label"))]),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+        borderSide: BorderSide(color: _deliveryFilterBorderColor, width: 1),
+        padding: EdgeInsets.all(8));
+  }
+
+  Widget _priceFilterOptions() {
+    return AnimatedContainer(
+      height: _priceOptionsRowHeight,
+      child: _priceOptionsRow(),
+      duration: Duration(milliseconds: 250),
+    );
+  }
+
+  Widget _priceOptionsRow() {
+    return  Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 48.0),
+              _priceFilterOption(PriceFilter.ONE),
+              SizedBox(width: 16.0),
+              _priceFilterOption(PriceFilter.TWO),
+              SizedBox(width: 16.0),
+              _priceFilterOption(PriceFilter.THREE),
+              SizedBox(width: 16.0),
+              _priceFilterOption(PriceFilter.FOUR),
+              SizedBox(width: 48.0, height: 5.0),
+      ]
+    );
+  }
+
+  void _togglePrice(PriceFilter price) {
+    _priceFilters[price] = _priceFilters[price] == 0 ? 1 : 0;
+
+    setState(() {
+      _priceFilterBorderColors[price] = _priceFilters[price] == 1 ? Colors.redAccent : Colors.grey;
+      _priceFilterButtonLabel = _priceFiltersToDisplay();
+      _priceFilterBorderColor = (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label")) ? Colors.grey : Colors.redAccent;
+    });
+  }
+
+  Widget _priceFilterOption(PriceFilter price) {
+    return Material(
+        type: MaterialType.transparency,
+        child: Ink(
+          decoration: BoxDecoration(
+              border: Border.all(color: _priceFilterBorderColors[price], width: 1.0),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(7)
+          ),
+          child: InkWell(
+            onTap: () => _togglePrice(price),
+            child: Padding(
+                padding:EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(_priceFilterAsString(price))
+            ),
+          ),
+        )
+    );
+  }
+
+  Widget _priceFilter() {
+    return OutlineButton(
+      onPressed: () { setState(() => _priceOptionsRowHeight = _priceOptionsRowHeight < 50 ? 50 : 0 ); },
+      child: Row(children: [
+        Text(_priceFilterButtonLabel),
+        SizedBox(width: 8.0),
+        ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
+      ]),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+      borderSide: BorderSide(color: _priceFilterBorderColor, width: 1),
+      padding: EdgeInsets.all(8)
+    );
+  }
+
+  void _openTimeFilterTapped() {
+    showModalBottomSheet(context: context, builder: (BuildContext context) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButton(
+                  child: Text(App.translate("filters_screen.secondary_filters.now_button_label")),
+                  onPressed: () {
+                    _openNowButtonTapped(context);
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 24.0,
+                  ),
+                ),
+                CupertinoButton(
+                  child: Text(App.translate("filters_screen.secondary_filters.done_button_label")),
+                  onPressed: () { Navigator.of(context).pop(); },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 24.0,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Flexible(
+              child: CupertinoDatePicker(
+                onDateTimeChanged: (value) {
+                  _updateSelectedTime(value);
+                },
+                minimumDate: DateTime.now().subtract(Duration(minutes: 15)),
+                minuteInterval: 15,
+                initialDateTime: _calculateInitialOpenTime(),
+              )
+          )
+        ],
+      );
+    });
+  }
+
+  void _toggleDelivery() {
+    _deliveryOn = !_deliveryOn;
+    _deliveryFilterBorderColor = _deliveryOn ? Colors.redAccent : Colors.grey;
+  }
+
+  void _updateSelectedTime(DateTime time) {
+    String _displayString;
+    if (time.day == DateTime.now().day) {
+      _displayString = "Today";
+    } else if (time.day == DateTime.now().day + 1) {
+      _displayString = "Tomorrow";
+    } else {
+      final DateFormat dayFormatter = DateFormat('E MMM d');
+      _displayString = dayFormatter.format(time);
+    }
+
+    final DateFormat timeFormatter = DateFormat('jm');
+    final String displayTime = timeFormatter.format(time);
+
+    _openTimeFilterSelectedTime = time;
+    _openTimeSetToNow = false;
+
+    setState(() {
+      _openTimeFilterBorderColor = Colors.redAccent;
+      _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
+    });
   }
 
   Widget _tabHeaders() {
@@ -826,8 +1036,13 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _onSaveButtonClicked() {
-    _filtersBloc.add(UpdateFiltersEvent(
-        whitelistFilters: _whitelistFilters, blacklistFilters: _blacklistFilters, munchId: widget.munch.id));
+      _filtersBloc.add(UpdateAllFiltersEvent(
+        oldFilters: widget.munch.secondaryFilters,
+        newFilters: _getCurrentSecondaryFilters(),
+          whitelistFilters: _whitelistFilters,
+          blacklistFilters: _blacklistFilters,
+          munchId: widget.munch.id
+      ));
   }
 
   void _onSaveChangesDialogButtonClicked() {
@@ -842,5 +1057,135 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     NavigationHelper.popRoute(context);
 
     _popScopeCompleter.complete(true);
+  }
+
+  void _openNowButtonTapped(BuildContext context) {
+    _openTimeSetToNow = true;
+
+    setState(() {
+      _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
+      _openTimeFilterBorderColor = Colors.grey;
+    });
+    Navigator.of(context).pop();
+  }
+
+  DateTime _calculateInitialOpenTime() {
+    int interval = 15;
+    int factor = (DateTime.now().minute / interval).round();
+    int earliestInitialMinute = factor * interval;
+
+    DateTime earliestInitialTime = DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        DateTime.now().hour,
+        earliestInitialMinute
+    );
+
+
+    if (_openTimeFilterSelectedTime != null && !_openTimeFilterSelectedTime.isBefore(earliestInitialTime))
+      return _openTimeFilterSelectedTime;
+
+    return earliestInitialTime;
+  }
+
+  String _priceFiltersToDisplay() {
+    List<String> _filtersOn = [];
+    _priceFilters.forEach((key, value) {
+      if (value == 1)
+      _filtersOn.add(_priceFilterAsString(key));
+    });
+
+    if (_filtersOn.isEmpty) {
+      return App.translate("filters_screen.secondary_filters.price_button_label");
+    } else {
+      return _filtersOn.join(", ");
+    }
+  }
+
+  String _priceFilterAsString(PriceFilter price) {
+    switch (price) {
+      case PriceFilter.ONE:
+        return "\$";
+        break;
+      case PriceFilter.TWO:
+        return "\$\$";
+        break;
+      case PriceFilter.THREE:
+        return "\$\$\$";
+        break;
+      case PriceFilter.FOUR:
+        return "\$\$\$\$";
+        break;
+    }
+    return App.translate("filters_screen.secondary_filters.price_button_label");
+  }
+
+  SecondaryFilters _getCurrentSecondaryFilters() {
+    SecondaryFilters _currentSecondaryFilters = SecondaryFilters(
+        price: [],
+        openTime: null,
+        transactionTypes: []
+    );
+    if (_deliveryOn)
+      _currentSecondaryFilters.transactionTypes.add(FilterTransactionTypes.DELIVERY);
+
+    if (_openTimeFilterSelectedTime != null && !_openTimeSetToNow)
+      _currentSecondaryFilters.openTime = _openTimeFilterSelectedTime.toUtc().millisecondsSinceEpoch;
+
+    _priceFilters.forEach((key, value) {
+      if (value == 1)
+        _currentSecondaryFilters.price.add(key);
+    });
+
+    return _currentSecondaryFilters;
+  }
+
+  void _setupSecondaryFilters() {
+    if (widget.munch.secondaryFilters.openTime != null) {
+      DateTime time = DateTime.fromMillisecondsSinceEpoch(widget.munch.secondaryFilters.openTime);
+      String _displayString;
+      if (time.day == DateTime.now().day) {
+        _displayString = "Today";
+      } else if (time.day == DateTime.now().day + 1) {
+        _displayString = "Tomorrow";
+      } else {
+        final DateFormat dayFormatter = DateFormat('E MMM d');
+        _displayString = dayFormatter.format(time);
+      }
+
+      final DateFormat timeFormatter = DateFormat('jm');
+      final String displayTime = timeFormatter.format(time);
+
+      _openTimeFilterSelectedTime = time;
+
+      _openTimeFilterBorderColor = Colors.redAccent;
+      _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
+    }
+
+    if (widget.munch.secondaryFilters.transactionTypes.isNotEmpty) {
+      _deliveryFilterBorderColor =
+      (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
+          ? Colors.redAccent
+          : Colors.grey);
+      _deliveryOn = widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY) ? true : false;
+    } else {
+      _deliveryFilterBorderColor = Colors.grey;
+      _deliveryOn = false;
+    }
+
+    if (widget.munch.secondaryFilters.price != null) {
+      PriceFilter.values.forEach((price) {
+        bool _priceOn = (widget.munch.secondaryFilters.price.contains(price));
+        _priceFilters[price] = _priceOn ? 1 : 0;
+        _priceFilterBorderColors[price] = _priceOn ? Colors.redAccent : Colors.grey;
+      });
+
+      _priceFilterButtonLabel = _priceFiltersToDisplay();
+      _priceFilterBorderColor =
+      (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label"))
+          ? Colors.grey
+          : Colors.redAccent;
+    }
   }
 }

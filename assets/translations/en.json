@@ -188,6 +188,13 @@
     "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
     "filters_screen.info_dialog.close_button.text": "Close",
 
+    "filters_screen.secondary_filters.open_now_button_label": "Open Now",
+    "filters_screen.secondary_filters.now_button_label": "Now",
+    "filters_screen.secondary_filters.done_button_label": "Done",
+    "filters_screen.secondary_filters.delivery_button_label": "Delivery",
+    "filters_screen.secondary_filters.price_button_label": "Price",
+    "filters_screen.secondary_filters.update_failed": "Someone else has updated the filters. Try again.",
+
     "decision_screen.munch_unmodifiable.description": "Update your review for",
     "decision_screen.munch_unmodifiable.feedback_button.text": "Update Review",
     "decision_screen.restaurant.hours.subtitle": "Hours",
