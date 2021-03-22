@@ -17,51 +17,27 @@ class MunchCodeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
-      _titleText(),
+      _titleText(context),
       SizedBox(height: 20.0),
       _munchCodeContainer(context),
       SizedBox(height: 16.0),
+      _inviteFriendsButton(context),
+      SizedBox(height: 8.0),
       _continueButton(context)
     ]);
   }
 
-  Widget _titleText() {
-    return Text(App.translate("munch_code_dialog.title"),
+  Widget _titleText(BuildContext context) {
+    return InkWell(
+      child: Text(App.translate("munch_code_dialog.title"),
         style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500),
-        textAlign: TextAlign.center);
-  }
-
-  Widget _copyButton(BuildContext context) {
-    return CustomButton(
-      padding: EdgeInsets.zero,
-      color: Colors.transparent,
-      flat: true,
-      content: Icon(Icons.content_copy, color: Palette.primary, size: 20.0),
-      onPressedCallback: () {
+        textAlign: TextAlign.center),
+      onTap: () {
         Clipboard.setData(ClipboardData(text: munch.joinLink));
 
         Utility.showFlushbar(App.translate("munch_code_dialog.copy_action.successful"), context,
             duration: Duration(seconds: 1));
-      },
-    );
-  }
-
-  Widget _shareButton() {
-    return CustomButton(
-      padding: EdgeInsets.zero,
-      color: Colors.transparent,
-      flat: true,
-      content: ImageIcon(
-        AssetImage("assets/icons/share.png"),
-        color: Palette.primary,
-        size: 18.0,
-      ),
-      onPressedCallback: () async {
-        await WcFlutterShare.share(
-            sharePopupTitle: App.translate("munch_code_dialog.share_button.popup.title"),
-            text: App.translate("munch_code_dialog.share_action.text") + "\n" + munch.joinLink,
-            mimeType: "text/plain");
-      },
+      }
     );
   }
 
@@ -75,26 +51,45 @@ class MunchCodeDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            _copyButton(context),
+            // _copyButton(context),
             SizedBox(width: 8.0),
             Text(munch.code,
                 style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center),
             SizedBox(width: 8.0),
-            _shareButton()
+            // _shareButton()
           ],
         ));
   }
 
-  Widget _continueButton(BuildContext context) {
+  Widget _inviteFriendsButton(BuildContext context) {
     return CustomButton(
       elevation: 4.0,
       minWidth: double.infinity,
       borderRadius: 12.0,
       padding: EdgeInsets.symmetric(vertical: 16.0),
-      content: Text(App.translate("munch_code_dialog.continue_button.text"),
+      content: Text(App.translate("munch_code_dialog.share_button.text"),
           style:
               AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
+      onPressedCallback: () async {
+        await WcFlutterShare.share(
+            sharePopupTitle: App.translate("munch_code_dialog.share_button.popup.title"),
+            text: App.translate("munch_code_dialog.share_action.text") + "\n" + munch.joinLink,
+            mimeType: "text/plain");
+      },
+    );
+  }
+
+  Widget _continueButton(BuildContext context) {
+    return CustomButton(
+      elevation: 0.0,
+      minWidth: double.infinity,
+        borderRadius: 12.0,
+      padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+      content: Text(App.translate("munch_code_dialog.continue_button.text")),
+      color: Colors.transparent,
+      textColor: Colors.redAccent,
+      flat: true,
       onPressedCallback: () {
         // pop modal dialog
         NavigationHelper.popRoute(context, rootNavigator: false);
