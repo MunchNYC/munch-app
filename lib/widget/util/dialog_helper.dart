@@ -7,8 +7,14 @@ class DialogHelper {
   Widget dialogContent;
   bool isModal;
   bool rootNavigator;
+  EdgeInsets padding;
 
-  DialogHelper({this.dialogContent, this.isModal = false, this.rootNavigator = false});
+  DialogHelper({
+    this.dialogContent,
+    this.isModal = false,
+    this.rootNavigator = false,
+    this.padding = const EdgeInsets.all(24.0)
+  });
 
   void show(BuildContext context) {
     showDialog(
@@ -21,12 +27,12 @@ class DialogHelper {
                 return !isModal;
               },
               child: Dialog(
-                  insetPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                  insetPadding: EdgeInsets.only(left: padding.left, right: padding.right),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                   child: SizedBox(
                       width: App.REF_DEVICE_WIDTH,
                       child: SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(vertical: 24.0),
+                          padding: EdgeInsets.only(top: padding.top, bottom: padding.bottom),
                           child: Column(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
