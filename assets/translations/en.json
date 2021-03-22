@@ -13,6 +13,7 @@
 
     "munch_code_dialog.title": "Invite your friends to start Munch'n!",
     "munch_code_dialog.continue_button.text": "Continue",
+    "munch_code_dialog.share_button.text": "Invite Friends",
     "munch_code_dialog.copy_action.successful":"Group link copied.",
     "munch_code_dialog.share_button.popup.title": "Share Group link",
     "munch_code_dialog.share_action.text": "Let's get Munch'n! Tap the link to join now.",
