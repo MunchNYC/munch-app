@@ -51,13 +51,11 @@ class MunchCodeDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            // _copyButton(context),
             SizedBox(width: 8.0),
             Text(munch.code,
                 style: AppTextStyle.style(AppTextStylePattern.heading5, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center),
             SizedBox(width: 8.0),
-            // _shareButton()
           ],
         ));
   }
