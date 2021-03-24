@@ -502,7 +502,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 CupertinoButton(
-                  child: Text(App.translate("filters_screen.secondary_filters.now_button_label")),
+                  child: Text(App.translate("filters_screen.secondary_filters.clear_button_label")),
                   onPressed: () {
                     _openNowButtonTapped(context);
                   },
