@@ -368,7 +368,11 @@ class MapScreenState extends State<MapScreen> {
       if (state is MunchCreatingState) {
         Munch createdMunch = state.data;
 
-        DialogHelper(dialogContent: MunchCodeDialog(createdMunch), isModal: true).show(context);
+        DialogHelper(
+            dialogContent: MunchCodeDialog(createdMunch),
+            isModal: true,
+            padding: EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0, bottom: 12.0)
+        ).show(context);
       }
     }
   }

@@ -107,7 +107,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       _filtersBloc.add(GetFiltersEvent());
     } else {
       _initializeFilters();
-  }
+    }
 
     super.initState();
   }
@@ -232,8 +232,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
       changesMade = true;
     }
 
-    if (!_getCurrentSecondaryFilters().equals(widget.munch.secondaryFilters))
-      changesMade = true;
+    if (!_getCurrentSecondaryFilters().equals(widget.munch.secondaryFilters)) changesMade = true;
 
     return changesMade;
   }
@@ -384,40 +383,42 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   Widget _additionalFiltersRow() {
-    return SingleChildScrollView(
-        child: Padding(
-            child: Row(children: [
-              SizedBox(width: 48.0),
-              _openTimeFilter(),
-              SizedBox(width: 16.0),
-              _deliveryFilter(),
-              SizedBox(width: 16.0),
-              _priceFilter(),
-              SizedBox(width: 48.0)
-            ]),
-            padding: EdgeInsets.only(top: 0, bottom: 16.0)),
-        scrollDirection: Axis.horizontal);
+    return Row(children: [
+      Padding(
+          child: SingleChildScrollView(
+              child: Row(children: [
+                SizedBox(width: 18.0),
+                _openTimeFilter(),
+                SizedBox(width: 16.0),
+                _deliveryFilter(),
+                SizedBox(width: 16.0),
+                _priceFilter(),
+                SizedBox(width: 18.0)
+              ]),
+              scrollDirection: Axis.horizontal),
+          padding: EdgeInsets.only(top: 0, bottom: 16.0)),
+    ]);
   }
 
   Widget _openTimeFilter() {
     return OutlineButton(
-      onPressed: () { _openTimeFilterTapped(); },
-      child: Row(children: [
-        Text(_openTimeButtonLabel),
-        SizedBox(width: 8.0),
-        ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
-      ]),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      borderSide: BorderSide(color: _openTimeFilterBorderColor, width: 1),
-      padding: EdgeInsets.all(8)
-    );
+        onPressed: () {
+          _openTimeFilterTapped();
+        },
+        child: Row(children: [
+          Text(_openTimeButtonLabel),
+          SizedBox(width: 8.0),
+          ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
+        ]),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+        borderSide: BorderSide(color: _openTimeFilterBorderColor, width: 1),
+        padding: EdgeInsets.all(8));
   }
 
   Widget _deliveryFilter() {
     return OutlineButton(
         onPressed: () => setState(() => _toggleDelivery()),
-        child: Row(children: [
-          Text(App.translate("filters_screen.secondary_filters.delivery_button_label"))]),
+        child: Row(children: [Text(App.translate("filters_screen.secondary_filters.delivery_button_label"))]),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
         borderSide: BorderSide(color: _deliveryFilterBorderColor, width: 1),
         padding: EdgeInsets.all(8));
@@ -432,20 +433,15 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   Widget _priceOptionsRow() {
-    return  Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(width: 48.0),
-              _priceFilterOption(PriceFilter.ONE),
-              SizedBox(width: 16.0),
-              _priceFilterOption(PriceFilter.TWO),
-              SizedBox(width: 16.0),
-              _priceFilterOption(PriceFilter.THREE),
-              SizedBox(width: 16.0),
-              _priceFilterOption(PriceFilter.FOUR),
-              SizedBox(width: 48.0, height: 5.0),
-      ]
-    );
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      _priceFilterOption(PriceFilter.ONE),
+      SizedBox(width: 16.0),
+      _priceFilterOption(PriceFilter.TWO),
+      SizedBox(width: 16.0),
+      _priceFilterOption(PriceFilter.THREE),
+      SizedBox(width: 16.0),
+      _priceFilterOption(PriceFilter.FOUR),
+    ]);
   }
 
   void _togglePrice(PriceFilter price) {
@@ -454,7 +450,10 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     setState(() {
       _priceFilterBorderColors[price] = _priceFilters[price] == 1 ? Colors.redAccent : Colors.grey;
       _priceFilterButtonLabel = _priceFiltersToDisplay();
-      _priceFilterBorderColor = (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label")) ? Colors.grey : Colors.redAccent;
+      _priceFilterBorderColor =
+          (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label"))
+              ? Colors.grey
+              : Colors.redAccent;
     });
   }
 
@@ -465,76 +464,77 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
           decoration: BoxDecoration(
               border: Border.all(color: _priceFilterBorderColors[price], width: 1.0),
               shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(7)
-          ),
+              borderRadius: BorderRadius.circular(7)),
           child: InkWell(
             onTap: () => _togglePrice(price),
             child: Padding(
-                padding:EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Text(_priceFilterAsString(price))
-            ),
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(_priceFilterAsString(price))),
           ),
-        )
-    );
+        ));
   }
 
   Widget _priceFilter() {
     return OutlineButton(
-      onPressed: () { setState(() => _priceOptionsRowHeight = _priceOptionsRowHeight < 50 ? 50 : 0 ); },
-      child: Row(children: [
-        Text(_priceFilterButtonLabel),
-        SizedBox(width: 8.0),
-        ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
-      ]),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      borderSide: BorderSide(color: _priceFilterBorderColor, width: 1),
-      padding: EdgeInsets.all(8)
-    );
+        onPressed: () {
+          setState(() => _priceOptionsRowHeight = _priceOptionsRowHeight < 50 ? 50 : 0);
+        },
+        child: Row(children: [
+          Text(_priceFilterButtonLabel),
+          SizedBox(width: 8.0),
+          ImageIcon(AssetImage("assets/icons/arrowDown.png"), size: 16.0)
+        ]),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+        borderSide: BorderSide(color: _priceFilterBorderColor, width: 1),
+        padding: EdgeInsets.all(8));
   }
 
   void _openTimeFilterTapped() {
-    showModalBottomSheet(context: context, builder: (BuildContext context) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                CupertinoButton(
-                  child: Text(App.translate("filters_screen.secondary_filters.now_button_label")),
-                  onPressed: () {
-                    _openNowButtonTapped(context);
-                  },
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 24.0,
-                  ),
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    CupertinoButton(
+                      child: Text(App.translate("filters_screen.secondary_filters.clear_button_label")),
+                      onPressed: () {
+                        _openNowButtonTapped(context);
+                      },
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 24.0,
+                      ),
+                    ),
+                    CupertinoButton(
+                      child: Text(App.translate("filters_screen.secondary_filters.done_button_label")),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 24.0,
+                      ),
+                    )
+                  ],
                 ),
-                CupertinoButton(
-                  child: Text(App.translate("filters_screen.secondary_filters.done_button_label")),
-                  onPressed: () { Navigator.of(context).pop(); },
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 24.0,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Flexible(
-              child: CupertinoDatePicker(
+              ),
+              Flexible(
+                  child: CupertinoDatePicker(
                 onDateTimeChanged: (value) {
                   _updateSelectedTime(value);
                 },
                 minimumDate: DateTime.now().subtract(Duration(minutes: 15)),
                 minuteInterval: 15,
                 initialDateTime: _calculateInitialOpenTime(),
-              )
-          )
-        ],
-      );
-    });
+              ))
+            ],
+          );
+        });
   }
 
   void _toggleDelivery() {
@@ -1036,13 +1036,12 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _onSaveButtonClicked() {
-      _filtersBloc.add(UpdateAllFiltersEvent(
+    _filtersBloc.add(UpdateAllFiltersEvent(
         oldFilters: widget.munch.secondaryFilters,
         newFilters: _getCurrentSecondaryFilters(),
-          whitelistFilters: _whitelistFilters,
-          blacklistFilters: _blacklistFilters,
-          munchId: widget.munch.id
-      ));
+        whitelistFilters: _whitelistFilters,
+        blacklistFilters: _blacklistFilters,
+        munchId: widget.munch.id));
   }
 
   void _onSaveChangesDialogButtonClicked() {
@@ -1075,13 +1074,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     int earliestInitialMinute = factor * interval;
 
     DateTime earliestInitialTime = DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-        DateTime.now().hour,
-        earliestInitialMinute
-    );
-
+        DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, earliestInitialMinute);
 
     if (_openTimeFilterSelectedTime != null && !_openTimeFilterSelectedTime.isBefore(earliestInitialTime))
       return _openTimeFilterSelectedTime;
@@ -1092,8 +1085,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   String _priceFiltersToDisplay() {
     List<String> _filtersOn = [];
     _priceFilters.forEach((key, value) {
-      if (value == 1)
-      _filtersOn.add(_priceFilterAsString(key));
+      if (value == 1) _filtersOn.add(_priceFilterAsString(key));
     });
 
     if (_filtersOn.isEmpty) {
@@ -1122,20 +1114,14 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   SecondaryFilters _getCurrentSecondaryFilters() {
-    SecondaryFilters _currentSecondaryFilters = SecondaryFilters(
-        price: [],
-        openTime: null,
-        transactionTypes: []
-    );
-    if (_deliveryOn)
-      _currentSecondaryFilters.transactionTypes.add(FilterTransactionTypes.DELIVERY);
+    SecondaryFilters _currentSecondaryFilters = SecondaryFilters(price: [], openTime: null, transactionTypes: []);
+    if (_deliveryOn) _currentSecondaryFilters.transactionTypes.add(FilterTransactionTypes.DELIVERY);
 
     if (_openTimeFilterSelectedTime != null && !_openTimeSetToNow)
       _currentSecondaryFilters.openTime = _openTimeFilterSelectedTime.toUtc().millisecondsSinceEpoch;
 
     _priceFilters.forEach((key, value) {
-      if (value == 1)
-        _currentSecondaryFilters.price.add(key);
+      if (value == 1) _currentSecondaryFilters.price.add(key);
     });
 
     return _currentSecondaryFilters;
@@ -1165,10 +1151,11 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
     if (widget.munch.secondaryFilters.transactionTypes.isNotEmpty) {
       _deliveryFilterBorderColor =
-      (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
-          ? Colors.redAccent
-          : Colors.grey);
-      _deliveryOn = widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY) ? true : false;
+          (widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY)
+              ? Colors.redAccent
+              : Colors.grey);
+      _deliveryOn =
+          widget.munch.secondaryFilters.transactionTypes.contains(FilterTransactionTypes.DELIVERY) ? true : false;
     } else {
       _deliveryFilterBorderColor = Colors.grey;
       _deliveryOn = false;
@@ -1183,9 +1170,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
       _priceFilterButtonLabel = _priceFiltersToDisplay();
       _priceFilterBorderColor =
-      (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label"))
-          ? Colors.grey
-          : Colors.redAccent;
+          (_priceFilterButtonLabel == App.translate("filters_screen.secondary_filters.price_button_label"))
+              ? Colors.grey
+              : Colors.redAccent;
     }
   }
 }

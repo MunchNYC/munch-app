@@ -13,6 +13,7 @@
 
     "munch_code_dialog.title": "Invite your friends to start Munch'n!",
     "munch_code_dialog.continue_button.text": "Continue",
+    "munch_code_dialog.share_button.text": "Invite Friends",
     "munch_code_dialog.copy_action.successful":"Group link copied.",
     "munch_code_dialog.share_button.popup.title": "Share Group link",
     "munch_code_dialog.share_action.text": "Let's get Munch'n! Tap the link to join now.",
@@ -188,8 +189,8 @@
     "filters_screen.info_dialog.summary": "You can change your votes in Personal tab.",
     "filters_screen.info_dialog.close_button.text": "Close",
 
-    "filters_screen.secondary_filters.open_now_button_label": "Open Now",
-    "filters_screen.secondary_filters.now_button_label": "Now",
+    "filters_screen.secondary_filters.open_now_button_label": "Open Anytime",
+    "filters_screen.secondary_filters.clear_button_label": "Clear",
     "filters_screen.secondary_filters.done_button_label": "Done",
     "filters_screen.secondary_filters.delivery_button_label": "Delivery",
     "filters_screen.secondary_filters.price_button_label": "Price",
