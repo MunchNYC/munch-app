@@ -383,9 +383,9 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   Widget _additionalFiltersRow() {
-    return Row(children: [
-      Padding(
-          child: SingleChildScrollView(
+    return
+      SingleChildScrollView(
+          child: Padding(
               child: Row(children: [
                 SizedBox(width: 18.0),
                 _openTimeFilter(),
@@ -395,9 +395,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                 _priceFilter(),
                 SizedBox(width: 18.0)
               ]),
-              scrollDirection: Axis.horizontal),
-          padding: EdgeInsets.only(top: 0, bottom: 16.0)),
-    ]);
+              padding: EdgeInsets.only(top: 0, bottom: 16.0)),
+              scrollDirection: Axis.horizontal);
   }
 
   Widget _openTimeFilter() {
