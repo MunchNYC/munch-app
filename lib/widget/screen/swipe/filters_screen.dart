@@ -513,6 +513,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
                     CupertinoButton(
                       child: Text(App.translate("filters_screen.secondary_filters.done_button_label")),
                       onPressed: () {
+                        _updateSelectedTime(_openTimeFilterSelectedTime);
                         Navigator.of(context).pop();
                       },
                       padding: const EdgeInsets.symmetric(
@@ -1147,6 +1148,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
       _openTimeFilterBorderColor = Colors.redAccent;
       _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
+    } else{
+      _openTimeFilterSelectedTime = _calculateInitialOpenTime();
     }
 
     if (widget.munch.secondaryFilters.transactionTypes.isNotEmpty) {
