@@ -66,7 +66,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   String _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
   String _priceFilterButtonLabel = App.translate("filters_screen.secondary_filters.price_button_label");
   DateTime _openTimeFilterSelectedTime;
-  bool _openTimeSetToNow = false;
+  bool _openTimeFilterChanged = false;
   bool _deliveryOn = false;
   Map<PriceFilter, int> _priceFilters = {};
   Color _deliveryFilterBorderColor = Colors.grey;
@@ -156,6 +156,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     _topFilters = List<Filter>();
 
     _filtersMap = Map<String, Filter>();
+    _openTimeFilterChanged = widget.munch.secondaryFilters.openTime!=null;
 
     for (int i = 0; i < _filtersRepo.allFilters.length; i++) {
       Filter clonedFilter = _filtersRepo.allFilters[i].cloneWithStatus(FilterStatus.NEUTRAL);
@@ -490,6 +491,8 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _openTimeFilterTapped() {
+    if (_openTimeFilterSelectedTime == null) _openTimeFilterSelectedTime = _calculateInitialOpenTime();
+
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -544,6 +547,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _updateSelectedTime(DateTime time) {
+
     String _displayString;
     if (time.day == DateTime.now().day) {
       _displayString = "Today";
@@ -558,7 +562,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     final String displayTime = timeFormatter.format(time);
 
     _openTimeFilterSelectedTime = time;
-    _openTimeSetToNow = false;
+    _openTimeFilterChanged = true;
 
     setState(() {
       _openTimeFilterBorderColor = Colors.redAccent;
@@ -1060,8 +1064,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _openNowButtonTapped(BuildContext context) {
-    _openTimeSetToNow = true;
-
+    _openTimeFilterSelectedTime = null;
     setState(() {
       _openTimeButtonLabel = App.translate("filters_screen.secondary_filters.open_now_button_label");
       _openTimeFilterBorderColor = Colors.grey;
@@ -1118,7 +1121,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     SecondaryFilters _currentSecondaryFilters = SecondaryFilters(price: [], openTime: null, transactionTypes: []);
     if (_deliveryOn) _currentSecondaryFilters.transactionTypes.add(FilterTransactionTypes.DELIVERY);
 
-    if (_openTimeFilterSelectedTime != null && !_openTimeSetToNow)
+    if (_openTimeFilterSelectedTime != null && _openTimeFilterChanged)
       _currentSecondaryFilters.openTime = _openTimeFilterSelectedTime.toUtc().millisecondsSinceEpoch;
 
     _priceFilters.forEach((key, value) {
@@ -1148,8 +1151,6 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
 
       _openTimeFilterBorderColor = Colors.redAccent;
       _openTimeButtonLabel = "Open: " + _displayString + ", " + displayTime;
-    } else{
-      _openTimeFilterSelectedTime = _calculateInitialOpenTime();
     }
 
     if (widget.munch.secondaryFilters.transactionTypes.isNotEmpty) {
