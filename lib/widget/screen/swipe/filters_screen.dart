@@ -156,7 +156,7 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
     _topFilters = List<Filter>();
 
     _filtersMap = Map<String, Filter>();
-    _openTimeFilterChanged = widget.munch.secondaryFilters.openTime!=null;
+    _openTimeFilterChanged = widget.munch.secondaryFilters.openTime != null;
 
     for (int i = 0; i < _filtersRepo.allFilters.length; i++) {
       Filter clonedFilter = _filtersRepo.allFilters[i].cloneWithStatus(FilterStatus.NEUTRAL);
@@ -547,7 +547,6 @@ class _FiltersScreenState extends State<FiltersScreen> with TickerProviderStateM
   }
 
   void _updateSelectedTime(DateTime time) {
-
     String _displayString;
     if (time.day == DateTime.now().day) {
       _displayString = "Today";
