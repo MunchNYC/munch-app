@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:munch/util/app.dart';
 
-// DON'T EVER PUT BlocProvider in Context tree of widget which will be disposes (like dialog), because Flutter will disable bloc provided into this BlocProvider
+// DON'T EVER PUT BlocProvider in Context tree of widget which will be disposed (like dialog), because Flutter will disable bloc provided into this BlocProvider
 // Always parametrize dialogContent with required bloc outside of this widget
 class DialogHelper {
   Widget dialogContent;
