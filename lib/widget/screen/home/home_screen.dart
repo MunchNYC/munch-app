@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
           body: IndexedStack(index: _currentIndex, children: _navigators),
           bottomNavigationBar:  FABBottomAppBar(
-              color: Colors.black,
+              color: Colors.grey,
               selectedColor: Colors.redAccent,
               onTabSelected: onTabTapped,
               items: [
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     label: App.translate('home_screen.bottom_navigation.munches_tab.title')
                     ),
                 FABBottomAppBarItem(
-                    assetImage: AssetImage("assets/icons/profile.png"),
+                    iconData: Icons.person_rounded,
                     label: App.translate('home_screen.bottom_navigation.profile_tab.title')
                 ),
               ],
