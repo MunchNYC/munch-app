@@ -85,29 +85,30 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
           body: IndexedStack(index: _currentIndex, children: _navigators),
           bottomNavigationBar:  FABBottomAppBar(
-              color: Colors.grey,
-              selectedColor: Colors.redAccent,
-              onTabSelected: onTabTapped,
-              items: [
-                FABBottomAppBarItem(
-                    iconData: Icons.restaurant,
-                    label: App.translate('home_screen.bottom_navigation.munches_tab.title')
-                    ),
-                FABBottomAppBarItem(
-                    iconData: Icons.person_rounded,
-                    label: App.translate('home_screen.bottom_navigation.profile_tab.title')
-                ),
-              ],
-              ),
+            color: Colors.grey,
+            selectedColor: Colors.redAccent,
+            onTabSelected: onTabTapped,
+            items: [
+              FABBottomAppBarItem(
+                  iconData: Icons.restaurant,
+                  label: App.translate('home_screen.bottom_navigation.munches_tab.title')
+                  ),
+              FABBottomAppBarItem(
+                  iconData: Icons.person_rounded,
+                  label: App.translate('home_screen.bottom_navigation.profile_tab.title')
+              )],
+            ),
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: FloatingActionButton(
               onPressed: () {
                 DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), rootNavigator: true).show(context);
               },
               child: Icon(Icons.add, size: 32.0),
               elevation: 2.0,
               backgroundColor: Colors.redAccent,
-            ),
+            )),
           ));
   }
 
