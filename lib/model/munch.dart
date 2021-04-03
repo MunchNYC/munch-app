@@ -54,6 +54,7 @@ class Munch {
   // will be get for compact munches list
   String matchedRestaurantName;
 
+  @JsonKey(defaultValue: false)
   bool receivePushNotifications;
 
   @JsonKey(name: "updateSearchPreferencesFailed", defaultValue: false)
