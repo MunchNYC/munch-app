@@ -36,7 +36,7 @@
     "terms_of_service_screen.app_bar.title": "Terms of Service",
     "privacy_policy_screen.app_bar.title": "Privacy Policy",
 
-    "munches_tab.title": "Groups",
+    "munches_tab.title": "Munch",
     "munches_tab.deciding_tab.title": "Undecided",
     "munches_tab.decided_tab.title": "Decided",
 
@@ -47,7 +47,9 @@
     "empty_munches_list_widget.tutorial.join_create_row_separator.text": "OR",
     "empty_munches_list_widget.tutorial.create_row_1.text": "Create",
     "empty_munches_list_widget.tutorial.create_row_2.text": "a new Group and invite your friends.",
-    "empty_munches_list_widget.start_button.text": "Get Munch'n",
+    "empty_munches_list_widget.screen_title.text": "Get Munch'n",
+    "empty_munches_list_widget.screen_body_instructions_prefix.text": "Tap",
+    "empty_munches_list_widget.screen_body_instructions_suffix.text": "to start a food adventure!",
 
     "account_tab.menu_item.personal_information.text": "Personal Information",
     "account_tab.menu_item.notifications.text": "Notifications",
