@@ -20,20 +20,20 @@ class EmptyMunchesListWidget extends StatelessWidget {
           children: [
             SizedBox(height: 74.0),
             Container(
-              child: Image(image: AssetImage('assets/images/logo/logo_BG_Red.png'), height: 144, width: 144),
+              child: Image(image: AssetImage('assets/images/homeScreenLogo.png'), height: 144, width: 144),
             ),
             SizedBox(height: 28.0),
             Text(
                 App.translate("empty_munches_list_widget.screen_title.text"),
-                style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500, color: Palette.secondaryDark)
+                style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500, color: Palette.secondaryDark.withOpacity(0.5))
             ),
             SizedBox(height: 4.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(App.translate("empty_munches_list_widget.screen_body_instructions_prefix.text")),
+                Text(App.translate("empty_munches_list_widget.screen_body_instructions_prefix.text"), strutStyle: StrutStyle(fontSize: 16)),
                 Text(" + ", style: TextStyle(color: Palette.secondaryDark)),
-                Text(App.translate("empty_munches_list_widget.screen_body_instructions_suffix.text")),
+                Text(App.translate("empty_munches_list_widget.screen_body_instructions_suffix.text"), strutStyle: StrutStyle(fontSize: 16)),
               ],
             )
           ],

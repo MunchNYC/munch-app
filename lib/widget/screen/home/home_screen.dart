@@ -75,6 +75,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget button = Container(
+        width: 64.0,
+        height: 64.0,
+        child: new RawMaterialButton(
+          shape: new CircleBorder(),
+          elevation: 2.0,
+          child: Image(image: AssetImage('assets/images/floatingActionButtonImage.png')),
+          onPressed: (){
+            DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), rootNavigator: true).show(context);
+          },
+        ));
+
     return WillPopScope(
         onWillPop: () => _onBackButtonPressed(context),
         child: Scaffold(
@@ -100,15 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             floatingActionButton: Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: FloatingActionButton(
-              onPressed: () {
-                DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), rootNavigator: true).show(context);
-              },
-              child: Icon(Icons.add, size: 32.0),
-              elevation: 2.0,
-              backgroundColor: Colors.redAccent,
-            )),
+              padding: EdgeInsets.only(top: 24),
+              child: button
+            ),
           ));
   }
 
