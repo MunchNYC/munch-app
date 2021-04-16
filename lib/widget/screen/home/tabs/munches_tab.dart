@@ -152,8 +152,7 @@ class MunchesTabState extends State<MunchesTab> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Text(App.translate("munches_tab.title"),
-            style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500)),
-        _plusButton()
+            style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500))
       ],
     );
   }
@@ -517,23 +516,5 @@ class MunchesTabState extends State<MunchesTab> {
     } else {
       return _renderEmptyMunchesListWidget();
     }
-  }
-
-  void _onPlusButtonClicked(BuildContext context) {
-    DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
-  }
-
-  Widget _plusButton() {
-    return CustomButton(
-      color: Palette.background,
-      padding: EdgeInsets.zero,
-      content: Icon(
-        Icons.add,
-        size: 30,
-        color: Palette.secondaryDark,
-      ),
-      flat: true,
-      onPressedCallback: () => _onPlusButtonClicked(context),
-    );
   }
 }

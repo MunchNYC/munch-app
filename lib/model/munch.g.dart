@@ -10,7 +10,7 @@ Munch _$MunchFromJson(Map<String, dynamic> json) {
   return Munch(
     id: json['id'] as String,
     name: json['name'] as String,
-    receivePushNotifications: json['receivePushNotifications'] as bool,
+    receivePushNotifications: json['receivePushNotifications'] as bool ?? false,
     coordinates:
         Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>),
     radius: json['radius'] as int,
