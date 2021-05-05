@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
 import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
@@ -19,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   MunchBloc _munchBloc;
+  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 65;
 
   int _currentIndex = 0;
 
@@ -82,9 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shape: new CircleBorder(),
           elevation: 2.0,
           child: Image(image: AssetImage('assets/images/floatingActionButtonImage.png')),
-          onPressed: (){
-            DialogHelper(dialogContent: CreateJoinDialog(munchBloc: _munchBloc), rootNavigator: true).show(context);
-          },
+          onPressed: () => _createMunch(context),
         ));
 
     return WillPopScope(
@@ -129,5 +131,13 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  void _createMunch(BuildContext context) {
+    int randomPrefix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
+    int randomSuffix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
+    String _munchName = App.translate("random_munch_group_prefix$randomPrefix") + " " + App.translate("random_munch_group_suffix$randomSuffix");
+
+    NavigationHelper.navigateToMapScreen(context, munchName: _munchName, addToBackStack: true);
   }
 }
