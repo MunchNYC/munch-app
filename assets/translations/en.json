@@ -39,6 +39,7 @@
     "munches_tab.title": "Munch",
     "munches_tab.deciding_tab.title": "Undecided",
     "munches_tab.decided_tab.title": "Decided",
+    "munches_tab.join_button.title":  "Join Code",
 
     "empty_munches_list_widget.tutorial.description_row_1.text": "Tap the",
     "empty_munches_list_widget.tutorial.description_row_2.text": "icon to get started",
