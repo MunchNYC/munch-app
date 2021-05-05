@@ -152,7 +152,8 @@ class MunchesTabState extends State<MunchesTab> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Text(App.translate("munches_tab.title"),
-            style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500))
+            style: AppTextStyle.style(AppTextStylePattern.heading2, fontWeight: FontWeight.w500)),
+        _joinButton()
       ],
     );
   }
@@ -301,6 +302,15 @@ class MunchesTabState extends State<MunchesTab> {
             current is HistoricalMunchesPageFetchingState ||
             (current is MunchJoiningState || current is ReviewMunchState && current.ready),
         builder: (BuildContext context, MunchState state) => _buildListViews(context, state));
+  }
+
+  Widget _joinButton() {
+    return InkWell(
+      child: Text("Join Code", style: TextStyle(color: Colors.grey)),//Text(App.translate("munches_tab.join_button.title")),
+      onTap: () {
+        DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
+      }
+    );
   }
 
   Widget _buildListViews(BuildContext context, MunchState state) {
