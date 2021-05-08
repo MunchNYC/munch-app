@@ -24,6 +24,7 @@ import 'package:munch/util/vibration/vibrator.dart';
 import 'package:munch/widget/screen/swipe/tutorial_restaurant_swipe_screen.dart';
 import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
+import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -463,8 +464,8 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   Widget _buildSwipeScreen(BuildContext context, MunchState state) {
-    if (state.hasError) {
-      return ErrorPageWidget();
+    if (true) {
+      return _errorWidget();
     }
 
     bool showLoadingIndicator = false;
@@ -870,5 +871,26 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
     });
 
     AnalyticsRepo.getInstance().trackImpressions(_currentRestaurants[0].id, _currentCardMap[_currentRestaurants[0].id].imageImpressions);
+  }
+
+  Widget _errorWidget() {
+    return Column(
+      children: [
+        ErrorPageWidget(),
+        SizedBox(height: 24),
+        CustomButton<MunchState, MunchesFetchingState>.bloc(
+          cubit: _munchBloc,
+          minWidth: 80.0,
+          borderRadius: 24.0,
+          padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+          color: Colors.white,
+          borderColor: Palette.secondaryDark,
+          textColor: Palette.secondaryDark,
+          elevation: 0.0,
+          content: Text(App.translate("restaurant_swipe_screen.error_card.retry_button.text"), style: TextStyle(fontSize: 12.0)),
+          onPressedCallback: () => { _munchBloc.add(GetRestaurantsPageEvent(widget.munch.id)) }
+        )
+      ]
+    );
   }
 }
