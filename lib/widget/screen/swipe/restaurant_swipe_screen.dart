@@ -464,7 +464,7 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
   }
 
   Widget _buildSwipeScreen(BuildContext context, MunchState state) {
-    if (true) {
+    if (state.hasError) {
       return _errorWidget();
     }
 
