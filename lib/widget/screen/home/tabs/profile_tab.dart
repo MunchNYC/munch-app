@@ -1,6 +1,7 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
@@ -179,6 +180,8 @@ class _ProfileTabScreenState extends State<ProfileTab> {
   }
 
   void _onInviteFriendsItemClicked() async {
+    AnalyticsRepo.getInstance().trackInviteFriend();
+
     await WcFlutterShare.share(
         sharePopupTitle: App.translate("account_tab.invite_friends.item.share_popup.title"),
         text: App.translate("account_tab.invite_friends.item.share_popup.text") +
