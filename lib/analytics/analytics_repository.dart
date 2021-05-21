@@ -1,5 +1,7 @@
 import 'package:munch/analytics/analytics_api.dart';
-import 'package:munch/analytics/events.dart';
+import 'package:munch/analytics/events/sharing_events.dart';
+import 'package:munch/analytics/events/swipe_screen_events.dart';
+import 'package:munch/analytics/events/group_events.dart';
 
 class AnalyticsRepo {
   static AnalyticsRepo _instance;
@@ -11,6 +13,7 @@ class AnalyticsRepo {
     return _instance;
   }
 
+  //region swipingEvents
   void trackImpressions(String restaurantId, Map<String, int> impressions) {
     Analytics.getInstance().track(SwipeScreenEvents.photoImpression(restaurantId, impressions));
   }
@@ -22,22 +25,33 @@ class AnalyticsRepo {
   void trackSwipeScreenRightSwipe(String restaurantId) {
     Analytics.getInstance().track(SwipeScreenEvents.swipedRight(restaurantId));
   }
+  //endregion
 
-  void trackShareGroupPostCreate(String munchId, String groupName) {
-    Analytics.getInstance().track(Event('ShareGroupPostCreate', {
-      'groupId': munchId,
-      'groupName': groupName,
-    }));
+  //region inviteTracking
+  void trackShareGroup(String munchId, String groupName, ShareGroupType shareGroupType) {
+    Analytics.getInstance().track(UserSharingEvents.shareGroup(munchId, groupName, shareGroupType));
   }
-  void trackShareGroupFromOptions(String munchId, String groupName) {
-    Analytics.getInstance().track(Event('ShareGroupFromOptions', {
-      'groupId': munchId,
-      'groupName': groupName,
-    }));
-  }
+
   void trackInviteFriend() {
-    Analytics.getInstance().track(Event('InviteFriend', {}));
+    Analytics.getInstance().track(UserSharingEvents.inviteFriend());
   }
-}
+  //endregion
 
-enum ImpressionDirection { NEXT, PREVIOUS, NEXTDEADEND, PREVIOUSDEADEND, UNIQUE }
+  //region groupEvents
+  void createGroupButtonTapped(int tapHour){
+    Analytics.getInstance().track(GroupEvents.createGroupButtonTapped(tapHour));
+  }
+
+  void trackGroupCreation(String munchId){
+    Analytics.getInstance().track(GroupEvents.groupCreated(munchId));
+  }
+
+  void trackGroupMatched(String munchId){
+    Analytics.getInstance().track(GroupEvents.groupMatched(munchId));
+  }
+
+  void trackGroupUnmatched(String munchId){
+    Analytics.getInstance().track(GroupEvents.groupUnmatched(munchId));
+  }
+  //endregion
+}

@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:munch/google_maps_webservice-0.0.18/places.dart';// IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
-import 'package:munch/google_maps_webservice-0.0.18/core.dart';
-import 'package:munch/flutter_google_places-0.2.6/flutter_google_places.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/config/app_config.dart';
+import 'package:munch/flutter_google_places-0.2.6/flutter_google_places.dart';
+import 'package:munch/google_maps_webservice-0.0.18/core.dart';
+import 'package:munch/google_maps_webservice-0.0.18/places.dart'; // IMPORTANT TO BE MANUALLY INCLUDED FOR flutter_google_places library
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/repository/maps_repository.dart';
@@ -51,7 +52,12 @@ class MapScreenState extends State<MapScreen> {
 
   static const double MILES_TO_METERS_RATIO = 1609.344;
   static const List<double> RADIUS_VALUES_MILES = [0.5, 1, 2, 5];
-  static const List<double> RADIUS_VALUES_ZOOMS = [DEFAULT_MAP_ZOOM, DEFAULT_MAP_ZOOM - 1.0, DEFAULT_MAP_ZOOM - 2.0, DEFAULT_MAP_ZOOM - 3.0];
+  static const List<double> RADIUS_VALUES_ZOOMS = [
+    DEFAULT_MAP_ZOOM,
+    DEFAULT_MAP_ZOOM - 1.0,
+    DEFAULT_MAP_ZOOM - 2.0,
+    DEFAULT_MAP_ZOOM - 3.0
+  ];
 
   static List<int> _radiusValuesMetres =
       RADIUS_VALUES_MILES.map((value) => (value * MILES_TO_METERS_RATIO).floor()).toList();
@@ -369,10 +375,10 @@ class MapScreenState extends State<MapScreen> {
         Munch createdMunch = state.data;
 
         DialogHelper(
-            dialogContent: MunchCodeDialog(createdMunch),
-            isModal: true,
-            padding: EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0, bottom: 12.0)
-        ).show(context);
+                dialogContent: MunchCodeDialog(createdMunch),
+                isModal: true,
+                padding: EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0, bottom: 12.0))
+            .show(context);
       }
     }
   }
@@ -408,7 +414,6 @@ class MapScreenState extends State<MapScreen> {
         name: widget.munchName,
         coordinates: Coordinates(latitude: _centralCircle.center.latitude, longitude: _centralCircle.center.longitude),
         radius: _circleRadius);
-
     _munchBloc.add(CreateMunchEvent(munch));
   }
 
@@ -439,11 +444,10 @@ class MapScreenState extends State<MapScreen> {
 
   Future _onSearchBarClicked() async {
     Prediction prediction = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: AppConfig.getInstance().googleMapsApiKey,
-      mode: Mode.overlay,
-      location: Location(_centralCircle.center.latitude, _centralCircle.center.longitude)
-    );
+        context: context,
+        apiKey: AppConfig.getInstance().googleMapsApiKey,
+        mode: Mode.overlay,
+        location: Location(_centralCircle.center.latitude, _centralCircle.center.longitude));
 
     if (prediction != null) {
       PlacesDetailsResponse detail = await MapsRepo.getInstance().getCoordinates(prediction.placeId);

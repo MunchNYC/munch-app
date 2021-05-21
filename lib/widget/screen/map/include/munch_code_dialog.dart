@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:munch/analytics/analytics_repository.dart';
+import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
@@ -70,7 +71,7 @@ class MunchCodeDialog extends StatelessWidget {
           style:
               AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: () async {
-        AnalyticsRepo.getInstance().trackShareGroupPostCreate(munch.id, munch.name);
+        AnalyticsRepo.getInstance().trackShareGroup(munch.id, munch.name, ShareGroupType.POST_CREATE);
         await WcFlutterShare.share(
             sharePopupTitle: App.translate("munch_code_dialog.share_button.popup.title"),
             text: App.translate("munch_code_dialog.share_action.text") + "\n" + munch.joinLink,
