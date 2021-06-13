@@ -6,14 +6,19 @@ import 'package:munch/model/secondary_filters.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/deep_link_handler.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 
 part 'munch.g.dart';
 
 enum MunchStatus {
-  @JsonValue("UNDECIDED") UNDECIDED,
-  @JsonValue("DECIDED") DECIDED,
-  @JsonValue("UNMODIFIABLE") UNMODIFIABLE,
-  @JsonValue("HISTORICAL") HISTORICAL
+  @JsonValue("UNDECIDED")
+  UNDECIDED,
+  @JsonValue("DECIDED")
+  DECIDED,
+  @JsonValue("UNMODIFIABLE")
+  UNMODIFIABLE,
+  @JsonValue("HISTORICAL")
+  HISTORICAL
 }
 
 enum MunchReviewValue { LIKED, DISLIKED, NEUTRAL, NOSHOW, SKIPPED }
@@ -93,6 +98,10 @@ class Munch {
   // detailedMunch - new munch fetched
   // called with instance of current munch
   void merge(Munch detailedMunch) {
+    if (munchHasNewMatch(this, detailedMunch)) {
+      AnalyticsRepo.getInstance().trackGroupMatched(detailedMunch.id);
+    }
+
     this.name = detailedMunch.name;
     this.code = detailedMunch.code;
     this.hostUserId = detailedMunch.hostUserId;
@@ -134,6 +143,21 @@ class Munch {
     }
 
     this.munchStatus = detailedMunch.munchStatus;
+  }
+
+  bool munchHasNewMatch(Munch currentMunch, Munch updatedMunch) {
+    bool changedUndecidedToDecided =
+        currentMunch.munchStatus == MunchStatus.UNDECIDED && updatedMunch.munchStatus == MunchStatus.DECIDED;
+    bool matchedRestaurantChanged;
+
+    if (currentMunch.matchedRestaurant == null || updatedMunch.matchedRestaurant == null)
+      matchedRestaurantChanged = currentMunch.matchedRestaurant == updatedMunch.matchedRestaurant;
+    else
+      matchedRestaurantChanged = currentMunch.matchedRestaurant.id != updatedMunch.matchedRestaurant.id;
+
+    if (changedUndecidedToDecided || (updatedMunch.matchedRestaurant != null && matchedRestaurantChanged)) return true;
+
+    return false;
   }
 
   @override

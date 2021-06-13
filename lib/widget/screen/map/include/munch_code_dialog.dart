@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:munch/analytics/analytics_repository.dart';
+import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/theme/text_style.dart';
@@ -29,16 +31,15 @@ class MunchCodeDialog extends StatelessWidget {
 
   Widget _titleText(BuildContext context) {
     return InkWell(
-      child: Text(App.translate("munch_code_dialog.title"),
-        style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500),
-        textAlign: TextAlign.center),
-      onTap: () {
-        Clipboard.setData(ClipboardData(text: munch.joinLink));
+        child: Text(App.translate("munch_code_dialog.title"),
+            style: AppTextStyle.style(AppTextStylePattern.heading6, fontWeight: FontWeight.w500),
+            textAlign: TextAlign.center),
+        onTap: () {
+          Clipboard.setData(ClipboardData(text: munch.joinLink));
 
-        Utility.showFlushbar(App.translate("munch_code_dialog.copy_action.successful"), context,
-            duration: Duration(seconds: 1));
-      }
-    );
+          Utility.showFlushbar(App.translate("munch_code_dialog.copy_action.successful"), context,
+              duration: Duration(seconds: 1));
+        });
   }
 
   Widget _munchCodeContainer(BuildContext context) {
@@ -70,6 +71,7 @@ class MunchCodeDialog extends StatelessWidget {
           style:
               AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: () async {
+        AnalyticsRepo.getInstance().trackShareGroup(munch.id, munch.name, ShareGroupType.POST_CREATE);
         await WcFlutterShare.share(
             sharePopupTitle: App.translate("munch_code_dialog.share_button.popup.title"),
             text: App.translate("munch_code_dialog.share_action.text") + "\n" + munch.joinLink,
@@ -82,7 +84,7 @@ class MunchCodeDialog extends StatelessWidget {
     return CustomButton(
       elevation: 0.0,
       minWidth: double.infinity,
-        borderRadius: 12.0,
+      borderRadius: 12.0,
       padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
       content: Text(App.translate("munch_code_dialog.continue_button.text")),
       color: Colors.transparent,

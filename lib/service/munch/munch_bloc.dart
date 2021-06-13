@@ -6,6 +6,7 @@ import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/repository/munch_repository.dart';
 import 'package:munch/service/munch/munch_state.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 
 import 'munch_event.dart';
 
@@ -93,6 +94,8 @@ class MunchBloc extends Bloc<MunchEvent, MunchState> {
     yield MunchCreatingState.loading();
     try {
       Munch createdMunch = await _munchRepo.createMunch(munch);
+
+      AnalyticsRepo.getInstance().trackGroupCreation(createdMunch.id);
 
       yield MunchCreatingState.ready(data: createdMunch);
     } catch (error) {

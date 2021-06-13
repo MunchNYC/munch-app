@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:munch/analytics/analytics_repository.dart';
+import 'package:munch/analytics/events/swipe_screen_events.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
@@ -195,34 +195,19 @@ class _RestaurantCardState extends State<RestaurantCard> {
     return Opacity(
         opacity: _likeIndicatorOpacity,
         child: Padding(
-          padding: EdgeInsets.only(top: 48.0, left: 36.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Icon(
-              Icons.check_circle_outline,
-              color: Colors.lightGreen,
-              size: 72.0
-            )
-          )
-      )
-    );
+            padding: EdgeInsets.only(top: 48.0, left: 36.0),
+            child: Align(
+                alignment: Alignment.topLeft,
+                child: Icon(Icons.check_circle_outline, color: Colors.lightGreen, size: 72.0))));
   }
 
   Widget _dislikeIndicator() {
     return Opacity(
-      opacity: _dislikeIndicatorOpacity,
-      child: Padding(
-        padding: EdgeInsets.only(top: 48.0, right: 36.0),
-        child: Align(
-          alignment: Alignment.topRight,
-          child: Icon(
-            Icons.cancel_outlined,
-            color: Colors.red,
-            size: 72.0
-          )
-        )
-      )
-    );
+        opacity: _dislikeIndicatorOpacity,
+        child: Padding(
+            padding: EdgeInsets.only(top: 48.0, right: 36.0),
+            child: Align(
+                alignment: Alignment.topRight, child: Icon(Icons.cancel_outlined, color: Colors.red, size: 72.0))));
   }
 
   Widget _userWhoLiked() {
@@ -242,11 +227,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     children: [
                       _userAvatars(widget.restaurant.usersWhoLiked),
                       SizedBox(width: 4.0),
-                      Icon(
-                        Icons.check_circle_outline,
-                        size: 24.0,
-                        color: Colors.green
-                      )
+                      Icon(Icons.check_circle_outline, size: 24.0, color: Colors.green)
                     ],
                   ),
                 ))

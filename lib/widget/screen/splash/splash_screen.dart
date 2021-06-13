@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:munch/analytics/analytics_api.dart';
-import 'package:munch/analytics/events.dart';
+import 'package:munch/analytics/events/event.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/user.dart';
