@@ -22,7 +22,6 @@ import 'package:munch/widget/screen/home/include/empty_munches_list_widget.dart'
 import 'package:munch/widget/screen/home/include/review_munch_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munch_list_widget.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
-import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_list_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
@@ -306,11 +305,10 @@ class MunchesTabState extends State<MunchesTab> {
 
   Widget _joinButton() {
     return InkWell(
-      child: Text("Join Code", style: TextStyle(color: Colors.grey)),//Text(App.translate("munches_tab.join_button.title")),
-      onTap: () {
-        DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
-      }
-    );
+        child: Text(App.translate("munches_tab.join_button.title"), style: TextStyle(color: Colors.grey)),
+        onTap: () {
+          DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
+        });
   }
 
   Widget _buildListViews(BuildContext context, MunchState state) {

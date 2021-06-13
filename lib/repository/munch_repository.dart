@@ -5,6 +5,7 @@ import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/model/user.dart';
 import 'package:munch/util/utility.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 
 class MunchRepo {
   static MunchRepo _instance;
@@ -289,6 +290,7 @@ class MunchRepo {
       );
 
       munch = updateMunchCache(munch);
+      AnalyticsRepo.getInstance().trackGroupUnmatched(munchId);
 
       return munch;
     } on AccessDeniedException catch (error) {

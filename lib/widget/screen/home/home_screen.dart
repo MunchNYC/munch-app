@@ -5,12 +5,11 @@ import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
-import 'package:munch/widget/screen/home/include/create_join_dialog.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
 import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/bottom_app_bar.dart';
-import 'package:munch/widget/util/dialog_helper.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
@@ -98,26 +97,21 @@ class _HomeScreenState extends State<HomeScreen> {
           // this needs to be set there as false, in order to support keyboard on create join dialog without overflowing
           appBar: AppStatusBar.getAppStatusBar(iconBrightness: Brightness.dark),
           body: IndexedStack(index: _currentIndex, children: _navigators),
-          bottomNavigationBar:  FABBottomAppBar(
+          bottomNavigationBar: FABBottomAppBar(
             color: Colors.grey,
             selectedColor: Colors.redAccent,
             onTabSelected: onTabTapped,
             items: [
               FABBottomAppBarItem(
-                  iconData: Icons.restaurant,
-                  label: App.translate('home_screen.bottom_navigation.munches_tab.title')
-                  ),
+                  iconData: Icons.restaurant, label: App.translate('home_screen.bottom_navigation.munches_tab.title')),
               FABBottomAppBarItem(
                   iconData: Icons.person_rounded,
-                  label: App.translate('home_screen.bottom_navigation.profile_tab.title')
-              )],
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: Padding(
-              padding: EdgeInsets.only(top: 24),
-              child: button
-            ),
-          ));
+                  label: App.translate('home_screen.bottom_navigation.profile_tab.title'))
+            ],
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: Padding(padding: EdgeInsets.only(top: 24), child: button),
+        ));
   }
 
   void onTabTapped(int index) {
@@ -136,8 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void _createMunch(BuildContext context) {
     int randomPrefix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
     int randomSuffix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
-    String _munchName = App.translate("random_munch_group_prefix$randomPrefix") + " " + App.translate("random_munch_group_suffix$randomSuffix");
+    String _munchName = App.translate("random_munch_group_prefix$randomPrefix") +
+        " " +
+        App.translate("random_munch_group_suffix$randomSuffix");
 
+    AnalyticsRepo.getInstance().createGroupButtonTapped(DateTime.now().hour);
     NavigationHelper.navigateToMapScreen(context, munchName: _munchName, addToBackStack: true);
   }
 }

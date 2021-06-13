@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:munch/analytics/analytics_repository.dart';
+import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/model/coordinates.dart';
 import 'package:munch/model/munch.dart';
@@ -561,6 +563,7 @@ class _MunchOptionsScreenState extends State<MunchOptionsScreen> {
   }
 
   void _onShareButtonClicked() async {
+    AnalyticsRepo.getInstance().trackShareGroup(widget.munch.id, widget.munch.name, ShareGroupType.GROUP_OPTIONS);
     await WcFlutterShare.share(
         sharePopupTitle: App.translate("options_screen.share_button.popup.title"),
         text: App.translate("options_screen.share_action.text") + "\n" + widget.munch.joinLink,
