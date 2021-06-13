@@ -54,7 +54,7 @@ class Analytics {
   Map<String, String> _superPropertiesForUser(User user) {
     return {
       "uid": user.uid,
-      "email": user.email,
+      "\$email": user.email,
       "gender": Utility.convertEnumValueToString(user.gender),
       "birthday": user.birthday
     };
