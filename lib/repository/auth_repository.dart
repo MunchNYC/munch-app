@@ -12,6 +12,7 @@ import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/notifications_handler.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:munch/analytics/analytics_api.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
@@ -285,6 +286,8 @@ class AuthRepo {
     }
 
     NotificationsHandler.getInstance().stopNotifications();
+    // TODO: move to login screen init after a few releases
+    Analytics.getInstance().resetMixpanel();
 
     if (_auth.currentUser != null) {
       return _auth.signOut().catchError((error) {

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -29,11 +28,7 @@ abstract class Api {
 
   Future<Map<String, String>> generateHeaders(
       {String contentType = "application/json", String accept = "application/json", bool authRequired = true}) async {
-
-    Map<String, String> map = Map.of({
-      HttpHeaders.contentTypeHeader: contentType,
-      HttpHeaders.acceptHeader: accept
-    });
+    Map<String, String> map = Map.of({HttpHeaders.contentTypeHeader: contentType, HttpHeaders.acceptHeader: accept});
 
     if (authRequired) {
       map.addAll(await accessTokenHeader());
