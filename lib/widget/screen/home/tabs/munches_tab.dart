@@ -305,8 +305,7 @@ class MunchesTabState extends State<MunchesTab> {
 
   Widget _joinButton() {
     return InkWell(
-        child: Text("Join Code", style: TextStyle(color: Colors.grey)),
-        //Text(App.translate("munches_tab.join_button.title")),
+        child: Text(App.translate("munches_tab.join_button.title"), style: TextStyle(color: Colors.grey)),
         onTap: () {
           DialogHelper(dialogContent: CreateJoinDialog(munchBloc: munchBloc), rootNavigator: true).show(context);
         });
