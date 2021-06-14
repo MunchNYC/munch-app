@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:focus_detector/focus_detector.dart';
-import 'package:munch/analytics/analytics_api.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/response/get_munches_response.dart';
 import 'package:munch/repository/munch_repository.dart';
@@ -82,7 +81,6 @@ class MunchesTabState extends State<MunchesTab> {
 
   @override
   void initState() {
-    Analytics.getInstance().initializeMixpanel();
     _throwGetMunchesEvent();
 
     super.initState();

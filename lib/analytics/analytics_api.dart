@@ -18,7 +18,7 @@ class Analytics {
 
   MixpanelAPI _mixpanel;
   final String _token = '9d7269369114f9104c6be9a08684ce06';
-  bool identityConfigured = false;
+  bool _identityConfigured = false;
 
   Future<void> initializeMixpanel() async {
     if (_mixpanel == null) {
@@ -27,14 +27,14 @@ class Analytics {
       });
     }
     User user = UserRepo.getInstance().currentUser;
-    if (user != null && !identityConfigured) {
+    if (user != null && !_identityConfigured) {
       String mixPanelDistinctId = await _mixpanel.getDistinctId();
       Map<String, String> userSuperProperties = _superPropertiesForUser(user);
       _mixpanel.alias(userSuperProperties["uid"], mixPanelDistinctId);
       _mixpanel.identify(userSuperProperties["uid"]);
       _mixpanel.people.set(userSuperProperties);
       _mixpanel.registerSuperProperties(userSuperProperties);
-      identityConfigured = true;
+      _identityConfigured = true;
     }
   }
 
@@ -48,7 +48,7 @@ class Analytics {
   Future<void> resetMixpanel() async {
     await initializeMixpanel();
     _mixpanel.reset();
-    identityConfigured = false;
+    _identityConfigured = false;
   }
 
   Map<String, String> _superPropertiesForUser(User user) {

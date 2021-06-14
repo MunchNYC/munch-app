@@ -3,6 +3,7 @@ import 'dart:async';
 // firebase recommends to prefix this import with namespace to avoid collisions
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:munch/analytics/analytics_api.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/users_api.dart';
 import 'package:munch/config/constants.dart';
@@ -106,6 +107,7 @@ class UserRepo {
     _currentUser = user;
     Map<String, String> map = {"email": user.email, "name": user.displayName};
     Smartlook.setUserIdentifier(user.uid, map);
+    Analytics.getInstance().initializeMixpanel();
     print("current user set: " + _currentUser.toString());
   }
 
