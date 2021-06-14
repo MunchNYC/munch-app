@@ -20,7 +20,7 @@ class Analytics {
   final String _token = '9d7269369114f9104c6be9a08684ce06';
   bool identityConfigured = false;
 
-  Future<void> _initializeMixpanel() async {
+  Future<void> initializeMixpanel() async {
     if (_mixpanel == null) {
       await MixpanelAPI.getInstance(_token).then((mixpanel) {
         _mixpanel = mixpanel;
@@ -39,14 +39,14 @@ class Analytics {
   }
 
   Future<void> track(Event event) async {
-    await _initializeMixpanel();
+    await initializeMixpanel();
     _mixpanel.track(event.eventName, event.properties);
     print("tracking event: " + event.eventName + " with properties: ");
     print(event.properties);
   }
 
   Future<void> resetMixpanel() async {
-    await _initializeMixpanel();
+    await initializeMixpanel();
     _mixpanel.reset();
     identityConfigured = false;
   }
