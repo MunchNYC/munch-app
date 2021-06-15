@@ -107,7 +107,7 @@ class UserRepo {
     _currentUser = user;
     Map<String, String> map = {"email": user.email, "name": user.displayName};
     Smartlook.setUserIdentifier(user.uid, map);
-    Analytics.getInstance().initializeMixpanel();
+    Analytics.getInstance().initializeMixpanelUser(user);
     print("current user set: " + _currentUser.toString());
   }
 

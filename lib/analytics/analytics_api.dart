@@ -20,13 +20,15 @@ class Analytics {
   final String _token = '9d7269369114f9104c6be9a08684ce06';
   bool _identityConfigured = false;
 
-  Future<void> initializeMixpanel() async {
+  Future<void> _initializeMixpanel() async {
     if (_mixpanel == null) {
       await MixpanelAPI.getInstance(_token).then((mixpanel) {
         _mixpanel = mixpanel;
       });
     }
-    User user = UserRepo.getInstance().currentUser;
+  }
+
+  Future<void> initializeMixpanelUser(User user) async {
     if (user != null && !_identityConfigured) {
       String mixPanelDistinctId = await _mixpanel.getDistinctId();
       Map<String, String> userSuperProperties = _superPropertiesForUser(user);
@@ -39,14 +41,14 @@ class Analytics {
   }
 
   Future<void> track(Event event) async {
-    await initializeMixpanel();
+    await _initializeMixpanel();
     _mixpanel.track(event.eventName, event.properties);
     print("tracking event: " + event.eventName + " with properties: ");
     print(event.properties);
   }
 
   Future<void> resetMixpanel() async {
-    await initializeMixpanel();
+    await _initializeMixpanel();
     _mixpanel.reset();
     _identityConfigured = false;
   }
