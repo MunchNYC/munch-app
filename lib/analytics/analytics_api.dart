@@ -29,6 +29,7 @@ class Analytics {
   }
 
   Future<void> initializeMixpanelUser(User user) async {
+    await _initializeMixpanel();
     if (user != null && !_identityConfigured) {
       String mixPanelDistinctId = await _mixpanel.getDistinctId();
       Map<String, String> userSuperProperties = _superPropertiesForUser(user);
