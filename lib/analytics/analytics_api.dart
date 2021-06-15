@@ -1,7 +1,6 @@
 import 'package:flutuate_mixpanel/flutuate_mixpanel.dart';
 import 'package:munch/analytics/events/event.dart';
 import 'package:munch/model/user.dart';
-import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/utility.dart';
 
 class Analytics {
