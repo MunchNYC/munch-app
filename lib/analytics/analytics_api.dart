@@ -1,7 +1,6 @@
 import 'package:flutuate_mixpanel/flutuate_mixpanel.dart';
 import 'package:munch/analytics/events/event.dart';
 import 'package:munch/model/user.dart';
-import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/utility.dart';
 
 class Analytics {
@@ -42,7 +41,9 @@ class Analytics {
   }
 
   Future<void> track(Event event) async {
-    await _initializeMixpanel();
+    if (_mixpanel == null) {
+      print("ERROR: unable to track event, mixpanel has not been initialized");
+    }
     _mixpanel.track(event.eventName, event.properties);
     print("tracking event: " + event.eventName + " with properties: ");
     print(event.properties);
