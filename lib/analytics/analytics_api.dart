@@ -44,9 +44,11 @@ class Analytics {
     if (_mixpanel == null) {
       print("ERROR: unable to track event, mixpanel has not been initialized");
     }
-    _mixpanel.track(event.eventName, event.properties);
-    print("tracking event: " + event.eventName + " with properties: ");
-    print(event.properties);
+    else {
+      _mixpanel.track(event.eventName, event.properties);
+      print("tracking event: " + event.eventName + " with properties: ");
+      print(event.properties);
+    }
   }
 
   Future<void> resetMixpanel() async {
