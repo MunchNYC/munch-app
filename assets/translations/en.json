@@ -112,12 +112,12 @@
     "restaurant_swipe_screen.error_card.retry_button.text": "Try Again",
 
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.text":  "Tap",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.description": "either side\nto see more\nphotos.",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.previous_control.text": "Previous\nPhoto\nHere",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.next_control.text": "Next\nPhoto\nHere",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.description": "\nfor photos.",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.previous_control.text": "Previous",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.next_control.text": "Next",
 
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.text":  "Drag",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.description": "to either\nside based on\ninterest.",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.description": "\n to like or dislike.",
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.controls.left.text": "No Thanks",
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.controls.right.text": "Yes Please",
 
