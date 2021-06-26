@@ -108,6 +108,7 @@ flutter:
     - assets/images/yelp/
     - assets/images/yelp/stars/
     - assets/images/google/
+    - assets/images/onboarding/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
