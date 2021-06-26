@@ -7,6 +7,7 @@ import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
 import 'package:munch/widget/screen/home/personal_information_screen.dart';
 import 'package:munch/widget/screen/map/map_screen.dart';
+import 'package:munch/widget/screen/onboarding/onboarding_screen.dart';
 import 'package:munch/widget/screen/swipe/decision_screen.dart';
 import 'package:munch/widget/screen/swipe/filters_screen.dart';
 import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
@@ -131,6 +132,20 @@ class NavigationHelper {
           transitionDuration: transitionDuration,
           slideTransitionBuilder: slideTransitionBuilder);
     }
+  }
+
+  // When navigatorState is not null - context will be null
+  static Future navigateToOnboardingScreen(BuildContext context,
+      {bool addToBackStack: true,
+        String munchName,
+        Munch munch,
+        bool editLocation: false,
+        NavigatorState navigatorState}) {
+    return _navigateTo(context,
+        addToBackStack: true,
+        screen: OnboardingScreen(),
+        rootNavigator: true,
+        navigatorState: navigatorState);
   }
 
   static Future navigateToHome(BuildContext context,
