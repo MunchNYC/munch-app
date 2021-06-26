@@ -220,6 +220,15 @@
     "new_restaurant_alert_dialog.description": "This will reset the decision for the entire group and is irreversible",
     "new_restaurant_alert_dialog.new_restaurant_button.text": "New Decision",
 
+    "onboarding_greeting.title": "Discover & Decide",
+    "onboarding_greeting.description": "Munch makes it easy to find hidden gems and have all your friends say \"Let's Go\" instead of \"I don't know\".",
+    "onboarding_engage.title": "",
+    "onboarding_engage.description": "",
+    "onboarding_location.title": "",
+    "onboarding_location.description": "",
+    "onboarding_location.accept_permissions.button.title": "See Nearby Restaurants",
+    "onboarding_location.deny_permissions.button.title": "No Thanks",
+
     "restaurant.working_hours.closed.text": "Closed",
 
     "error_page_widget.text": "Oops! Something went wrong.",
