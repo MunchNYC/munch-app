@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sliding_tutorial/flutter_sliding_tutorial.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/onboarding/tutorial_page.dart';
+import 'package:munch/widget/util/custom_button.dart';
 
 class SlidingTutorial extends StatefulWidget {
   final ValueNotifier<double> notifier;
@@ -25,15 +26,28 @@ class _SlidingTutorial extends State<SlidingTutorial> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBackgroundColor(
-      colors: [Colors.white],
-        pageController: _pageController,
-        pageCount: widget.pageCount,
-        child: Container(
-            child: PageView(
-                controller: _pageController,
-                children: List<Widget>.generate(
-                    widget.pageCount, (index) => _getPageByIndex(index)))));
+    return Stack(children: [
+      AnimatedBackgroundColor(
+          colors: [Colors.white],
+          pageController: _pageController,
+          pageCount: widget.pageCount,
+          child: Container(
+              child: PageView(
+                  controller: _pageController,
+                  children: List<Widget>.generate(widget.pageCount, (index) => _getPageByIndex(index))))),
+      Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+              padding: EdgeInsets.only(left: 16.0, top: 24.0),
+              child: CustomButton(
+                content: Text("Skip", style: TextStyle(fontSize: 16.0)),
+                color: Colors.transparent,
+                textColor: Colors.grey.shade400,
+                flat: true,
+                onPressedCallback: () =>
+                    {_pageController.animateToPage(2, duration: Duration(milliseconds: 600), curve: Curves.easeInOut)},
+              ))),
+    ]);
   }
 
   /// Create different [SlidingPage] for indexes.
@@ -45,12 +59,24 @@ class _SlidingTutorial extends State<SlidingTutorial> {
             widget.notifier,
             Image(image: AssetImage('assets/images/onboarding/greet.png')),
             App.translate("onboarding_greeting.title"),
-            App.translate("onboarding_greeting.description")
-        );
+            App.translate("onboarding_greeting.description"),
+            _pageController);
       case 1:
-        return TutorialPage(index, widget.notifier, Image(image: AssetImage('assets/images/onboarding/engage.png')), "Swipe Match Eat!", "We make it fun and easy");
+        return TutorialPage(
+            index,
+            widget.notifier,
+            Image(image: AssetImage('assets/images/onboarding/engage.png')),
+            App.translate("onboarding_engage.title"),
+            App.translate("onboarding_engage.description"),
+            _pageController);
       case 2:
-        return TutorialPage(index, widget.notifier, Image(image: AssetImage('assets/images/onboarding/location.png')), "Tasty Neighborhood", "We make it fun and easy");
+        return TutorialPage(
+            index,
+            widget.notifier,
+            Image(image: AssetImage('assets/images/onboarding/location.png')),
+            App.translate("onboarding_location.title"),
+            App.translate("onboarding_location.description"),
+            _pageController);
       default:
         throw ArgumentError("Unknown position: $index");
     }
