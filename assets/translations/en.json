@@ -221,13 +221,13 @@
     "new_restaurant_alert_dialog.new_restaurant_button.text": "New Decision",
 
     "onboarding_greeting.title": "Discover & Decide",
-    "onboarding_greeting.description": "Munch makes it easy to find hidden gems and have all your friends say \"Let's Go\" instead of \"I don't know\".",
-    "onboarding_engage.title": "",
-    "onboarding_engage.description": "",
-    "onboarding_location.title": "",
-    "onboarding_location.description": "",
+    "onboarding_greeting.description": "Munch makes it easy to find hidden gems and have all your friends say \"Let's Go\" instead of \"I don't know\"!",
+    "onboarding_engage.title": "Swipe Match Eat",
+    "onboarding_engage.description": "Let us know which neighborhood you fancy some good eats, invite your friends, and let the Munch'n begin!",
+    "onboarding_location.title": "Discover Local Gems",
+    "onboarding_location.description": "We use your location only to recommend you the best restaurants in the area!",
     "onboarding_location.accept_permissions.button.title": "See Nearby Restaurants",
-    "onboarding_location.deny_permissions.button.title": "No Thanks",
+    "onboarding_location.deny_permissions.button.title": "Manually Search for Food",
 
     "restaurant.working_hours.closed.text": "Closed",
 
