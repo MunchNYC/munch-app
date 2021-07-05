@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sliding_tutorial/flutter_sliding_tutorial.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/custom_button.dart';
 
 class TutorialPage extends StatelessWidget {
@@ -96,7 +97,7 @@ class TutorialPage extends StatelessWidget {
                   textColor: Colors.redAccent,
                   flat: true,
                   content: Text(App.translate("onboarding_location.deny_permissions.button.title")),
-                  onPressedCallback: () => { NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: true) },
+                  onPressedCallback: () => { NavigationHelper.navigateToMapScreen(context, munchName: Utility.createRandomGroupName(), addToBackStack: false) },
                 )),
       ]);
     }
