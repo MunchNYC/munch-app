@@ -228,6 +228,8 @@
     "onboarding_location.description": "We use your location only to recommend you the best restaurants in the area!",
     "onboarding_location.accept_permissions.button.title": "See Nearby Restaurants",
     "onboarding_location.deny_permissions.button.title": "Manually Search for Food",
+    "onboarding_location.deepLink_entry.button.title": "Get Munch'n!",
+    "onboarding.next.button.title": "Next",
 
     "restaurant.working_hours.closed.text": "Closed",
 
