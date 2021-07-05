@@ -14,6 +14,9 @@ import 'package:munch/analytics/analytics_repository.dart';
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
   static GlobalKey<NavigatorState> accountTabNavigator;
+  bool showOnboarding;
+
+  HomeScreen({this.showOnboarding});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -51,6 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _munchBloc = MunchBloc();
 
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(widget.showOnboarding) {
+        NavigationHelper.navigateToOnboardingScreen(context);
+      }
+    });
   }
 
   @override
