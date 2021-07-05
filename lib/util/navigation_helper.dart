@@ -144,18 +144,19 @@ class NavigationHelper {
     return _navigateTo(context,
         addToBackStack: true,
         screen: OnboardingScreen(),
-        rootNavigator: true,
+        rootNavigator: false,
         navigatorState: navigatorState);
   }
 
   static Future navigateToHome(BuildContext context,
       {bool popAllRoutes: false,
       bool addToBackStack: false,
+      bool showOnboarding: false,
       Function slideTransitionBuilder,
       NavigatorState navigatorState}) {
     if (popAllRoutes) {
       return _popAllRoutesAndNavigateTo(context,
-          screen: HomeScreen(),
+          screen: HomeScreen(showOnboarding: showOnboarding),
           rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder,
           navigatorState: navigatorState);
@@ -163,7 +164,7 @@ class NavigationHelper {
       // addToBackStack is considered if popAllRoutes = false
       return _navigateTo(context,
           addToBackStack: addToBackStack,
-          screen: HomeScreen(),
+          screen: HomeScreen(showOnboarding: showOnboarding),
           rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder,
           navigatorState: navigatorState);
