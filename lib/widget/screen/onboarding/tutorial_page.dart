@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_tutorial/flutter_sliding_tutorial.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/util/custom_button.dart';
@@ -12,8 +13,9 @@ class TutorialPage extends StatelessWidget {
   final String title;
   final String body;
   final PageController pageController;
+  final String deepLink;
 
-  TutorialPage(this.page, this.notifier, this.image, this.title, this.body, this.pageController);
+  TutorialPage(this.page, this.notifier, this.image, this.title, this.body, this.pageController, {this.deepLink});
 
   @override
   Widget build(BuildContext context) {
@@ -71,35 +73,48 @@ class TutorialPage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                 borderRadius: 4.0,
                 color: Colors.redAccent,
-                content: Text("Next"),
+                content: Text(App.translate("onboarding.next.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
                 onPressedCallback: () => { pageController.animateToPage(page+1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut)},
               )));
     } else if (page == 2) {
-      return Column(
-          children: <Widget>[
-
-            Center(
-              child: CustomButton(
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                borderRadius: 4.0,
-                color: Colors.redAccent,
-                content: Text(App.translate("onboarding_location.accept_permissions.button.title")),
-                onPressedCallback: () {
-                  NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: false);
-                  },
-              )),
-            SizedBox(height: 8.0),
-            Center(
-                child: CustomButton(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  borderRadius: 4.0,
-                  color: Colors.white,
-                  textColor: Colors.redAccent,
-                  flat: true,
-                  content: Text(App.translate("onboarding_location.deny_permissions.button.title")),
-                  onPressedCallback: () => { NavigationHelper.navigateToMapScreen(context, munchName: Utility.createRandomGroupName(), addToBackStack: false) },
-                )),
-      ]);
+      if (deepLink != null) {
+        return Center(
+            child: CustomButton(
+              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              borderRadius: 4.0,
+              color: Colors.redAccent,
+              content: Text(App.translate("onboarding_location.deepLink_entry.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
+              onPressedCallback: () => { DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink) },
+            ));
+      } else {
+        return Column(
+            children: <Widget>[
+              Center(
+                  child: CustomButton(
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    borderRadius: 4.0,
+                    color: Colors.redAccent,
+                    content: Text(App.translate("onboarding_location.accept_permissions.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
+                    onPressedCallback: () {
+                      NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: false);
+                    },
+                  )),
+              SizedBox(height: 8.0),
+              Center(
+                  child: CustomButton(
+                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    borderRadius: 4.0,
+                    color: Colors.white,
+                    textColor: Colors.redAccent,
+                    flat: true,
+                    content: Text(App.translate("onboarding_location.deny_permissions.button.title"), style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400)),
+                    onPressedCallback: () => {
+                      NavigationHelper.navigateToMapScreen(
+                          context, munchName: Utility.createRandomGroupName(), addToBackStack: false)
+                    },
+                  )),
+            ]);
+      }
     }
   }
 }

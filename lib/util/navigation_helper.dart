@@ -135,28 +135,23 @@ class NavigationHelper {
   }
 
   // When navigatorState is not null - context will be null
-  static Future navigateToOnboardingScreen(BuildContext context,
-      {bool addToBackStack: true,
-        String munchName,
-        Munch munch,
-        bool editLocation: false,
-        NavigatorState navigatorState}) {
+  static Future navigateToOnboardingScreen(BuildContext context, {String deepLink}) {
     return _navigateTo(context,
         addToBackStack: true,
-        screen: OnboardingScreen(),
-        rootNavigator: false,
-        navigatorState: navigatorState);
+        screen: OnboardingScreen(deepLink: deepLink),
+        rootNavigator: false);
   }
 
   static Future navigateToHome(BuildContext context,
       {bool popAllRoutes: false,
       bool addToBackStack: false,
       bool showOnboarding: false,
+      String deepLink,
       Function slideTransitionBuilder,
       NavigatorState navigatorState}) {
     if (popAllRoutes) {
       return _popAllRoutesAndNavigateTo(context,
-          screen: HomeScreen(showOnboarding: showOnboarding),
+          screen: HomeScreen(showOnboarding: showOnboarding, deepLink: deepLink),
           rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder,
           navigatorState: navigatorState);
@@ -164,7 +159,7 @@ class NavigationHelper {
       // addToBackStack is considered if popAllRoutes = false
       return _navigateTo(context,
           addToBackStack: addToBackStack,
-          screen: HomeScreen(showOnboarding: showOnboarding),
+          screen: HomeScreen(showOnboarding: showOnboarding, deepLink: deepLink),
           rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder,
           navigatorState: navigatorState);

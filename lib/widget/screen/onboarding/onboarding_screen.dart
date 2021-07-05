@@ -6,7 +6,9 @@ import 'package:munch/widget/screen/onboarding/sliding_tutorial.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  OnboardingScreen();
+  String deepLink;
+
+  OnboardingScreen({this.deepLink});
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -33,6 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               SlidingTutorial(
                 pageCount: pageCount,
                 notifier: notifier,
+                deepLink: widget.deepLink
               ),
 
               /// [SlidingIndicator] for [PageView] in [SlidingTutorial].

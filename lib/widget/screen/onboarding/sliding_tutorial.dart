@@ -7,8 +7,9 @@ import 'package:munch/widget/util/custom_button.dart';
 class SlidingTutorial extends StatefulWidget {
   final ValueNotifier<double> notifier;
   final int pageCount;
+  final String deepLink;
 
-  const SlidingTutorial({this.notifier, this.pageCount});
+  const SlidingTutorial({this.notifier, this.pageCount, this.deepLink});
 
   @override
   State<StatefulWidget> createState() => _SlidingTutorial();
@@ -75,7 +76,9 @@ class _SlidingTutorial extends State<SlidingTutorial> {
             Image(image: AssetImage('assets/images/onboarding/location.png')),
             App.translate("onboarding_location.title"),
             App.translate("onboarding_location.description"),
-            _pageController);
+            _pageController,
+            deepLink: widget.deepLink
+        );
       default:
         throw ArgumentError("Unknown position: $index");
     }

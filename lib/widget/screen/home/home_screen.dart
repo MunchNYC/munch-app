@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
@@ -14,8 +15,9 @@ class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
   static GlobalKey<NavigatorState> accountTabNavigator;
   final bool showOnboarding;
+  final String deepLink;
 
-  HomeScreen({this.showOnboarding});
+  HomeScreen({this.showOnboarding, this.deepLink});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -54,8 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(widget.showOnboarding) {
-        NavigationHelper.navigateToOnboardingScreen(context);
+      if (widget.showOnboarding) {
+        NavigationHelper.navigateToOnboardingScreen(context, deepLink: widget.deepLink);
+      } else if (widget.deepLink != null) {
+        DeepLinkHandler.getInstance().onDeepLinkReceived(widget.deepLink);
       }
     });
   }
