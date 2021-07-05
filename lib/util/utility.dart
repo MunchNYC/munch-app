@@ -1,13 +1,18 @@
+import 'dart:math';
 import 'package:flushbar/flushbar.dart';
 import 'package:flushbar/flushbar_route.dart' as route;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:munch/config/constants.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:url_launcher/url_launcher.dart';
 
 class Utility {
+  static const _TOTAL_MUNCH_NAME_PLACEHOLDERS = 65;
+
   static void showFlushbar(String text, BuildContext context,
       {Duration duration = const Duration(seconds: 3),
       Color color = Palette.hyperlink,
@@ -69,5 +74,21 @@ class Utility {
 
   static String convertTo24HourFormat(String dateTime12HoursString) {
     return DateFormat("HH:mm").format(DateFormat("y-M-d hh:mm aa").parse(dateTime12HoursString));
+  }
+
+  static Future<bool> shouldShowOnboarding() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    bool shouldShowOnboarding = sharedPreferences.getBool(StorageKeys.SHOULD_SHOW_ONBOARDING);
+
+    // SharedPreferences are null by default && until we set them elsewhere.
+    return shouldShowOnboarding == null ? true : false;
+  }
+
+  static String createRandomGroupName() {
+    int randomPrefix = Random().nextInt(_TOTAL_MUNCH_NAME_PLACEHOLDERS);
+    int randomSuffix = Random().nextInt(_TOTAL_MUNCH_NAME_PLACEHOLDERS);
+    return App.translate("random_munch_group_prefix$randomPrefix") +
+        " " +
+        App.translate("random_munch_group_suffix$randomSuffix");
   }
 }
