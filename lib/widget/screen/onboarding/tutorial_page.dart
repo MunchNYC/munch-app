@@ -96,7 +96,7 @@ class TutorialPage extends StatelessWidget {
                     color: Colors.redAccent,
                     content: Text(App.translate("onboarding_location.accept_permissions.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
                     onPressedCallback: () {
-                      NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: false);
+                      NavigationHelper.navigateToMapScreen(context, munchName: Utility.createRandomGroupName(), addToBackStack: false);
                     },
                   )),
               SizedBox(height: 8.0),
