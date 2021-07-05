@@ -10,23 +10,23 @@ class TutorialPage extends StatelessWidget {
   final Image image;
   final String title;
   final String body;
+  final PageController pageController;
 
-  TutorialPage(this.page, this.notifier, this.image, this.title, this.body);
+  TutorialPage(this.page, this.notifier, this.image, this.title, this.body, this.pageController);
 
   @override
   Widget build(BuildContext context) {
     return SlidingPage(
       notifier: notifier,
       page: page,
-      child: Container(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
+        child: Container(
         child: Column(
           children: [
             SizedBox(height: 80),
-            FractionallySizedBox(
-              widthFactor: .75,
-              child: SlidingContainer(child: image, offset: 0),
-            ),
-            SizedBox(height: 52),
+            SlidingContainer(child: image, offset: 0),
+            SizedBox(height: 40),
             SlidingContainer(
               offset: 250,
               child: Text(
@@ -34,19 +34,20 @@ class TutorialPage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black,
                 ),
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: 16),
             SlidingContainer(
               offset: 100,
               child: Text(
                 body,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
+                  fontSize: 16,
+                  color: Color(0xff717171),
                 ),
               ),
             ),
@@ -54,6 +55,7 @@ class TutorialPage extends StatelessWidget {
             SlidingContainer(offset: 75, child: _nextButton(context))
           ],
         ),
+      ),
       ),
     );
   }
@@ -69,29 +71,33 @@ class TutorialPage extends StatelessWidget {
                 borderRadius: 4.0,
                 color: Colors.redAccent,
                 content: Text("Next"),
-                onPressedCallback: () => {notifier.value += 1},
+                onPressedCallback: () => { pageController.animateToPage(page+1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut)},
               )));
     } else if (page == 2) {
-      return Column(children: [
-        Center(
-            child: CustomButton(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-              borderRadius: 4.0,
-              color: Colors.redAccent,
-              content: Text(App.translate("onboarding_location.accept_permissions.button.title")),
-              onPressedCallback: () => { NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: true) },
-            )),
-        SizedBox(height: 8.0),
-        Center(
-            child: CustomButton(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-              borderRadius: 4.0,
-              color: Colors.white,
-              textColor: Colors.redAccent,
-              flat: true,
-              content: Text(App.translate("onboarding_location.deny_permissions.button.title")),
-              onPressedCallback: () => { NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: true) },
-            )),
+      return Column(
+          children: <Widget>[
+
+            Center(
+              child: CustomButton(
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                borderRadius: 4.0,
+                color: Colors.redAccent,
+                content: Text(App.translate("onboarding_location.accept_permissions.button.title")),
+                onPressedCallback: () {
+                  NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: false);
+                  },
+              )),
+            SizedBox(height: 8.0),
+            Center(
+                child: CustomButton(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  borderRadius: 4.0,
+                  color: Colors.white,
+                  textColor: Colors.redAccent,
+                  flat: true,
+                  content: Text(App.translate("onboarding_location.deny_permissions.button.title")),
+                  onPressedCallback: () => { NavigationHelper.navigateToMapScreen(context, munchName: "_munchName", addToBackStack: true) },
+                )),
       ]);
     }
   }

@@ -44,8 +44,7 @@ class _SlidingTutorial extends State<SlidingTutorial> {
                 color: Colors.transparent,
                 textColor: Colors.grey.shade400,
                 flat: true,
-                onPressedCallback: () =>
-                    {_pageController.animateToPage(2, duration: Duration(milliseconds: 600), curve: Curves.easeInOut)},
+                onPressedCallback: () => { _pageController.animateToPage(2, duration: Duration(milliseconds: 600), curve: Curves.easeInOut) },
               ))),
     ]);
   }
