@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sliding_tutorial/flutter_sliding_tutorial.dart';
 import 'package:munch/widget/screen/onboarding/sliding_tutorial.dart';
-
-import 'package:flutter/widgets.dart';
-import 'package:munch/widget/util/custom_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   OnboardingScreen();
@@ -23,16 +21,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Stack(
             alignment: AlignmentDirectional.center,
             children: <Widget>[
-              Align(
-                alignment: Alignment.topLeft,
-                child:
-              CustomButton(
-                minWidth: 4000,
-                content: Text("Skip"),
-                color: Colors.red,
-                flat: true,
-              )),
-
               /// [StatefulWidget] with [PageView] and [AnimatedBackgroundColor].
               SlidingTutorial(
                 pageCount: pageCount,
@@ -41,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               /// [SlidingIndicator] for [PageView] in [SlidingTutorial].
               Align(
-                alignment: Alignment(0, 0.6),
+                alignment: Alignment(0, 0.8),
                 child: SlidingIndicator(
                   indicatorCount: pageCount,
                   notifier: notifier,
@@ -52,7 +40,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               )
             ],
-          )),
+      )),
     );
   }
 }
