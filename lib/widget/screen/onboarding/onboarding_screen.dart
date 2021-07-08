@@ -40,7 +40,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               /// [SlidingIndicator] for [PageView] in [SlidingTutorial].
               Align(
-                alignment: Alignment(0, 0.8),
+                alignment: Alignment(0, 0.85),
                 child: SlidingIndicator(
                   indicatorCount: pageCount,
                   notifier: notifier,
