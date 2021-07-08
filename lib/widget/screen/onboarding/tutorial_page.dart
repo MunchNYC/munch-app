@@ -27,9 +27,7 @@ class TutorialPage extends StatelessWidget {
         child: Container(
         child: Column(
           children: [
-            SizedBox(height: 80),
             SlidingContainer(child: image, offset: 0),
-            SizedBox(height: 40),
             SlidingContainer(
               offset: 250,
               child: Text(
