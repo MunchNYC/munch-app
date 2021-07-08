@@ -4,6 +4,7 @@ import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:munch/analytics/analytics_repository.dart';
+import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/config/constants.dart';
 import 'package:munch/model/munch.dart';
@@ -28,6 +29,7 @@ import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'include/restaurant_card.dart';
 
@@ -239,6 +241,25 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
       title: _appBarTitleBuilder(),
       centerTitle: true,
       actions: <Widget>[
+        /// [Invite Friends]
+        Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () async {
+                AnalyticsRepo.getInstance().trackShareGroup(widget.munch.id, widget.munch.name, ShareGroupType.SWIPE_SCREEN);
+                await WcFlutterShare.share(
+                    sharePopupTitle: App.translate("munch_code_dialog.share_button.popup.title"),
+                    text: App.translate("munch_code_dialog.share_action.text") + "\n" + widget.munch.joinLink,
+                    mimeType: "text/plain");
+              },
+              child: ImageIcon(
+                AssetImage("assets/icons/invite.png"),
+                color: Palette.primary.withOpacity(0.5),
+                size: 24.0,
+              ),
+            )),
+
+        /// [Filters]
         Padding(
             padding: EdgeInsets.only(right: 24.0),
             child: GestureDetector(
