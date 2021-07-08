@@ -607,9 +607,6 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
                             },
                             child: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState));
                       });
-                  // OverlayDialogHelper(
-                  //         isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
-                  //     .show(context);
 
                   setState(() {
                     widget.tutorialTriggerListenerActive = false;
