@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/config/app_config.dart';
 import 'package:munch/flutter_google_places-0.2.6/flutter_google_places.dart';
 import 'package:munch/google_maps_webservice-0.0.18/core.dart';
@@ -23,11 +22,9 @@ import 'package:munch/theme/text_style.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/navigation_helper.dart';
 import 'package:munch/util/utility.dart';
-import 'package:munch/widget/screen/map/include/munch_code_dialog.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/custom_form_field.dart';
-import 'package:munch/widget/util/dialog_helper.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 
 class MapScreen extends StatefulWidget {
@@ -374,11 +371,12 @@ class MapScreenState extends State<MapScreen> {
       if (state is MunchCreatingState) {
         Munch createdMunch = state.data;
 
-        DialogHelper(
-                dialogContent: MunchCodeDialog(createdMunch),
-                isModal: true,
-                padding: EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0, bottom: 12.0))
-            .show(context);
+        NavigationHelper.navigateToRestaurantSwipeScreen(
+            context,
+            munch: createdMunch,
+            addToBackStack: false,
+            slideTransitionBuilder: NavigationAnimationHelper.rightToLeftAnimation
+        );
       }
     }
   }
@@ -404,12 +402,12 @@ class MapScreenState extends State<MapScreen> {
           style:
               AppTextStyle.style(AppTextStylePattern.body3Inverse, fontWeight: FontWeight.w600, fontSizeOffset: 1.0)),
       onPressedCallback: () {
-        _onLetsEatButtonClicked();
+        _onLetsEatButtonTapped();
       },
     );
   }
 
-  void _onLetsEatButtonClicked() {
+  void _onLetsEatButtonTapped() {
     Munch munch = Munch(
         name: widget.munchName,
         coordinates: Coordinates(latitude: _centralCircle.center.latitude, longitude: _centralCircle.center.longitude),
