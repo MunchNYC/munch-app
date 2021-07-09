@@ -24,39 +24,39 @@ class TutorialPage extends StatelessWidget {
       page: page,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-        child: Container(
-        child: Column(
+        child: SingleChildScrollView(
+          child: Column(
           children: [
             SlidingContainer(child: image, offset: 0),
             SlidingContainer(
-              offset: 250,
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                offset: 250,
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
+            SizedBox(height: 16.0),
             SlidingContainer(
-              offset: 100,
-              child: Text(
-                body,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xff717171),
+                offset: 100,
+                child: Text(
+                  body,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff717171),
+                  ),
                 ),
               ),
-            ),
             SizedBox(height: 40),
             SlidingContainer(offset: 75, child: _nextButton(context))
           ],
         ),
-      ),
+        ),
       ),
     );
   }
