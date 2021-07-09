@@ -26,7 +26,6 @@ import 'package:munch/widget/util/app_bar_back_button.dart';
 import 'package:munch/widget/util/app_circular_progress_indicator.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
-import 'package:munch/widget/util/overlay_dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'include/restaurant_card.dart';
@@ -594,9 +593,20 @@ class RestaurantSwipeScreenState extends State<RestaurantSwipeScreen> {
               child: GestureDetector(
                 // listener to trigger tutorial
                 onTapDown: (TapDownDetails details) {
-                  OverlayDialogHelper(
-                          isModal: true, widget: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState))
-                      .show(context);
+                  showGeneralDialog(
+                      context: context,
+                      useRootNavigator: true,
+                      barrierDismissible: true,
+                      barrierLabel: "",
+                      barrierColor: Colors.black38.withAlpha(200),
+                      transitionDuration: const Duration(milliseconds: 200),
+                      pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
+                        return WillPopScope(
+                            onWillPop: () async {
+                              return true;
+                            },
+                            child: _tutorialOverlayDialog(_currentRestaurants[0], _tutorialState));
+                      });
 
                   setState(() {
                     widget.tutorialTriggerListenerActive = false;

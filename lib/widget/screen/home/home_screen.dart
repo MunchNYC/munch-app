@@ -1,10 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
 import 'package:munch/theme/palette.dart';
 import 'package:munch/util/app.dart';
+import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
+import 'package:munch/util/utility.dart';
 import 'package:munch/widget/screen/home/tabs/munches_tab.dart';
 import 'package:munch/widget/screen/home/tabs/profile_tab.dart';
 import 'package:munch/widget/util/app_status_bar.dart';
@@ -14,6 +14,10 @@ import 'package:munch/analytics/analytics_repository.dart';
 class HomeScreen extends StatefulWidget {
   static GlobalKey<NavigatorState> munchesTabNavigator;
   static GlobalKey<NavigatorState> accountTabNavigator;
+  final bool showOnboarding;
+  final String deepLink;
+
+  HomeScreen({this.showOnboarding, this.deepLink});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -21,7 +25,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   MunchBloc _munchBloc;
-  static const TOTAL_MUNCH_NAME_PLACEHOLDERS = 65;
 
   int _currentIndex = 0;
 
@@ -51,6 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _munchBloc = MunchBloc();
 
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.showOnboarding) {
+        NavigationHelper.navigateToOnboardingScreen(context, deepLink: widget.deepLink);
+      } else if (widget.deepLink != null) {
+        DeepLinkHandler.getInstance().onDeepLinkReceived(widget.deepLink);
+      }
+    });
   }
 
   @override
@@ -128,13 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _createMunch(BuildContext context) {
-    int randomPrefix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
-    int randomSuffix = Random().nextInt(TOTAL_MUNCH_NAME_PLACEHOLDERS);
-    String _munchName = App.translate("random_munch_group_prefix$randomPrefix") +
-        " " +
-        App.translate("random_munch_group_suffix$randomSuffix");
-
     AnalyticsRepo.getInstance().createGroupButtonTapped(DateTime.now().hour);
-    NavigationHelper.navigateToMapScreen(context, munchName: _munchName, addToBackStack: true);
+    NavigationHelper.navigateToMapScreen(context, munchName: Utility.createRandomGroupName(), addToBackStack: true);
   }
 }

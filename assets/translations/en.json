@@ -112,12 +112,12 @@
     "restaurant_swipe_screen.error_card.retry_button.text": "Try Again",
 
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.text":  "Tap",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.description": "either side\nto see more\nphotos.",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.previous_control.text": "Previous\nPhoto\nHere",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.next_control.text": "Next\nPhoto\nHere",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.title.gesture.description": "\nfor photos.",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.previous_control.text": "Previous",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.carousel_tutorial.controls.next_control.text": "Next",
 
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.text":  "Drag",
-    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.description": "to either\nside based on\ninterest.",
+    "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.title.gesture.description": "\n to like or dislike.",
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.controls.left.text": "No Thanks",
     "tutorial_restaurant_swipe_screen.tutorial_restaurant_card.swipe_tutorial.controls.right.text": "Yes Please",
 
@@ -219,6 +219,17 @@
     "new_restaurant_alert_dialog.title": "Are you sure?",
     "new_restaurant_alert_dialog.description": "This will reset the decision for the entire group and is irreversible",
     "new_restaurant_alert_dialog.new_restaurant_button.text": "New Decision",
+
+    "onboarding_greeting.title": "Discover & Decide",
+    "onboarding_greeting.description": "Munch makes it easy to find hidden gems and have all your friends say \"Let's Go\" instead of \"I don't know\"!",
+    "onboarding_engage.title": "Swipe Match Eat",
+    "onboarding_engage.description": "Let us know which neighborhood you fancy some good eats, invite your friends, and let the Munch'n begin!",
+    "onboarding_location.title": "Discover Local Gems",
+    "onboarding_location.description": "We use your location only to recommend you the best restaurants in the area!",
+    "onboarding_location.accept_permissions.button.title": "See Nearby Restaurants",
+    "onboarding_location.deny_permissions.button.title": "Manually Search for Food",
+    "onboarding_location.deepLink_entry.button.title": "Get Munch'n!",
+    "onboarding.next.button.title": "Next",
 
     "restaurant.working_hours.closed.text": "Closed",
 

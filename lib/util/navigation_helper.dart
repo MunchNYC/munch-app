@@ -7,6 +7,7 @@ import 'package:munch/widget/screen/auth/login_screen.dart';
 import 'package:munch/widget/screen/home/home_screen.dart';
 import 'package:munch/widget/screen/home/personal_information_screen.dart';
 import 'package:munch/widget/screen/map/map_screen.dart';
+import 'package:munch/widget/screen/onboarding/onboarding_screen.dart';
 import 'package:munch/widget/screen/swipe/decision_screen.dart';
 import 'package:munch/widget/screen/swipe/filters_screen.dart';
 import 'package:munch/widget/screen/swipe/munch_options_screen.dart';
@@ -133,14 +134,24 @@ class NavigationHelper {
     }
   }
 
+  // When navigatorState is not null - context will be null
+  static Future navigateToOnboardingScreen(BuildContext context, {String deepLink}) {
+    return _navigateTo(context,
+        addToBackStack: true,
+        screen: OnboardingScreen(deepLink: deepLink),
+        rootNavigator: false);
+  }
+
   static Future navigateToHome(BuildContext context,
       {bool popAllRoutes: false,
       bool addToBackStack: false,
+      bool showOnboarding: false,
+      String deepLink,
       Function slideTransitionBuilder,
       NavigatorState navigatorState}) {
     if (popAllRoutes) {
       return _popAllRoutesAndNavigateTo(context,
-          screen: HomeScreen(),
+          screen: HomeScreen(showOnboarding: showOnboarding, deepLink: deepLink),
           rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder,
           navigatorState: navigatorState);
@@ -148,7 +159,7 @@ class NavigationHelper {
       // addToBackStack is considered if popAllRoutes = false
       return _navigateTo(context,
           addToBackStack: addToBackStack,
-          screen: HomeScreen(),
+          screen: HomeScreen(showOnboarding: showOnboarding, deepLink: deepLink),
           rootNavigator: true,
           slideTransitionBuilder: slideTransitionBuilder,
           navigatorState: navigatorState);

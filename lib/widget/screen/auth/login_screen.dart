@@ -58,14 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _loginListener(BuildContext context, AuthenticationState state) {
+  Future<void> _loginListener(BuildContext context, AuthenticationState state) async {
     if (state.hasError) {
       Utility.showErrorFlushbar(state.message, context);
     } else if (state is LoginWithGoogleState || state is LoginWithFacebookState || state is LoginWithAppleState) {
       if (UserRepo.getInstance().postLoginDeeplink != null) {
         DeepLinkHandler.getInstance().onDeepLinkReceived(UserRepo.getInstance().postLoginDeeplink);
       } else {
-        NavigationHelper.navigateToHome(context);
+        NavigationHelper.navigateToHome(context, showOnboarding: await Utility.shouldShowOnboarding());
       }
     }
   }
