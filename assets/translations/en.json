@@ -230,6 +230,7 @@
     "onboarding_location.deny_permissions.button.title": "Manually Search for Food",
     "onboarding_location.deepLink_entry.button.title": "Get Munch'n!",
     "onboarding.next.button.title": "Next",
+    "onboarding.skip.button.title": "Skip",
 
     "restaurant.working_hours.closed.text": "Closed",
 

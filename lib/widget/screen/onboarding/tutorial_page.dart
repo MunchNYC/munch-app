@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_tutorial/flutter_sliding_tutorial.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/deep_link_handler.dart';
 import 'package:munch/util/navigation_helper.dart';
@@ -24,39 +25,39 @@ class TutorialPage extends StatelessWidget {
       page: page,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-        child: Container(
-        child: Column(
+        child: SingleChildScrollView(
+          child: Column(
           children: [
             SlidingContainer(child: image, offset: 0),
             SlidingContainer(
-              offset: 250,
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                offset: 250,
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
+            SizedBox(height: 16.0),
             SlidingContainer(
-              offset: 100,
-              child: Text(
-                body,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xff717171),
+                offset: 100,
+                child: Text(
+                  body,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff717171),
+                  ),
                 ),
               ),
-            ),
             SizedBox(height: 40),
             SlidingContainer(offset: 75, child: _nextButton(context))
           ],
         ),
-      ),
+        ),
       ),
     );
   }
@@ -72,7 +73,10 @@ class TutorialPage extends StatelessWidget {
                 borderRadius: 4.0,
                 color: Colors.redAccent,
                 content: Text(App.translate("onboarding.next.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
-                onPressedCallback: () => { pageController.animateToPage(page+1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut)},
+                onPressedCallback: () {
+                  AnalyticsRepo.getInstance().onboardingNextTapped(page);
+                  pageController.animateToPage(page+1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                },
               )));
     } else if (page == 2) {
       if (deepLink != null) {
@@ -82,7 +86,10 @@ class TutorialPage extends StatelessWidget {
               borderRadius: 4.0,
               color: Colors.redAccent,
               content: Text(App.translate("onboarding_location.deepLink_entry.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
-              onPressedCallback: () => { DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink) },
+              onPressedCallback: () {
+                AnalyticsRepo.getInstance().onboardingCompletionWithDeeplinkTapped();
+                DeepLinkHandler.getInstance().onDeepLinkReceived(deepLink);
+              },
             ));
       } else {
         return Column(
@@ -94,6 +101,7 @@ class TutorialPage extends StatelessWidget {
                     color: Colors.redAccent,
                     content: Text(App.translate("onboarding_location.accept_permissions.button.title"), style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
                     onPressedCallback: () {
+                      AnalyticsRepo.getInstance().onboardingCompletionCTATapped();
                       NavigationHelper.navigateToMapScreen(context, munchName: Utility.createRandomGroupName(), addToBackStack: false);
                     },
                   )),
@@ -106,9 +114,9 @@ class TutorialPage extends StatelessWidget {
                     textColor: Colors.redAccent,
                     flat: true,
                     content: Text(App.translate("onboarding_location.deny_permissions.button.title"), style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400)),
-                    onPressedCallback: () => {
-                      NavigationHelper.navigateToMapScreen(
-                          context, munchName: Utility.createRandomGroupName(), addToBackStack: false)
+                    onPressedCallback: () {
+                      AnalyticsRepo.getInstance().onboardingCompletionManuallyTapped();
+                      NavigationHelper.navigateToMapScreen(context, munchName: Utility.createRandomGroupName(), addToBackStack: false);
                     },
                   )),
             ]);

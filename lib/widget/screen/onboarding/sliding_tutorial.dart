@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_tutorial/flutter_sliding_tutorial.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/widget/screen/onboarding/tutorial_page.dart';
 import 'package:munch/widget/util/custom_button.dart';
@@ -41,11 +42,14 @@ class _SlidingTutorial extends State<SlidingTutorial> {
           child: Padding(
               padding: EdgeInsets.only(left: 16.0, top: 24.0),
               child: CustomButton(
-                content: Text("Skip", style: TextStyle(fontSize: 16.0)),
+                content: Text(App.translate("onboarding.skip.button.title"), style: TextStyle(fontSize: 16.0)),
                 color: Colors.transparent,
                 textColor: Colors.grey.shade400,
                 flat: true,
-                onPressedCallback: () => { _pageController.animateToPage(2, duration: Duration(milliseconds: 600), curve: Curves.easeInOut) },
+                onPressedCallback: () {
+                  AnalyticsRepo.getInstance().onboardingSkipTapped(_pageController.page.toInt());
+                  _pageController.animateToPage(2, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                },
               ))),
     ]);
   }
