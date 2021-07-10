@@ -2,7 +2,7 @@ import 'package:munch/analytics/analytics_api.dart';
 import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/analytics/events/swipe_screen_events.dart';
 import 'package:munch/analytics/events/group_events.dart';
-import 'events/onboarding_events.dart';
+import 'package:munch/analytics/events/onboarding_events.dart';
 
 class AnalyticsRepo {
   static AnalyticsRepo _instance;
