@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:munch/analytics/analytics_api.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/api/facebook_graph_api.dart';
 import 'package:munch/config/constants.dart';
@@ -12,7 +16,6 @@ import 'package:munch/repository/user_repository.dart';
 import 'package:munch/util/app.dart';
 import 'package:munch/util/notifications_handler.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:munch/analytics/analytics_api.dart';
 
 class AuthRepo {
   static AuthRepo _instance;
@@ -30,7 +33,7 @@ class AuthRepo {
 
   final UserRepo _userRepo = UserRepo.getInstance();
 
-  Future<firebase_auth.User> _firebaseSignIn(firebase_auth.AuthCredential credentials) async {
+  Future<firebase_auth.User> _firebaseSignIn(firebase_auth.AuthCredential credentials, [FacebookLoginResult loginResult]) async {
     firebase_auth.UserCredential userCredential;
 
     try {
@@ -44,6 +47,10 @@ class AuthRepo {
     } catch (error) {
       print(error);
       if (error.code.toUpperCase() == "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {
+        if (credentials.signInMethod == "facebook.com") {
+          _linkFacebookWithGoogle(credentials, loginResult);
+        }
+
         throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
       }
 
@@ -51,6 +58,54 @@ class AuthRepo {
     }
 
     throw UnauthorisedException(401, {"message": App.translate("firebase_auth.no_account.error")});
+  }
+
+  Future _linkFacebookWithGoogle(firebase_auth.AuthCredential credentials, FacebookLoginResult loginResult) async {
+    final httpClient = new HttpClient();
+    final graphRequest = await httpClient.getUrl(
+        Uri.parse("https://graph.facebook.com/v2.12/me?fields=email&access_token=${loginResult.accessToken.token}"));
+    final graphResponse = await graphRequest.close();
+    final graphResponseJSON = json.decode((await graphResponse.transform(utf8.decoder).single));
+    final email = graphResponseJSON["email"];
+    // Now we have both credential and email that is required for linking
+    final signInMethods = await _auth.fetchSignInMethodsForEmail(email);
+
+    if (!signInMethods.contains("google.com")) {
+      print("Error linking Facebook to Google. Existing login methods: $signInMethods");
+    }
+
+    GoogleSignIn googleSignIn = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"], hostedDomain: "");
+
+    try {
+      GoogleSignInAccount account = await googleSignIn.signIn();
+
+      if (account != null) {
+        final authentication = await account.authentication;
+        final credentials = firebase_auth.GoogleAuthProvider.credential(
+            idToken: authentication.idToken, accessToken: authentication.accessToken);
+
+        firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
+
+        if (firebaseUser.email == email) {
+          // Now we can link the accounts together
+          await firebaseUser.linkWithCredential(credentials);
+        }
+      }
+    } catch (error, stacktrace) {
+      if (error is PlatformException) {
+        if (error.code == "network_error") {
+          throw InternetConnectionException();
+        } else {
+          print("error stack trace: " + stacktrace.toString());
+          // TODO remove after confirmed fixed for users https://github.com/mogol/flutter_secure_storage/issues/43
+          FlutterSecureStorage().delete(key: StorageKeys.ACCESS_TOKEN);
+          throw FetchDataException.fromMessage(App.translate("google_login.platform_exception.text"));
+        }
+      } else {
+        // just forward the error if it's not PlatformException
+        throw error;
+      }
+    }
   }
 
   Future _synchronizeCurrentUser({Function registerUserCallback, Function updateUserCallback}) async {
