@@ -49,9 +49,9 @@ class AuthRepo {
       if (error.code.toUpperCase() == "ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL") {
         if (credentials.signInMethod == "facebook.com") {
           _linkFacebookWithGoogle(credentials, loginResult);
+        } else {
+          throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
         }
-
-        throw UnauthorisedException(401, {"message": App.translate("firebase_auth.credentials_clash.error")});
       }
 
       print("AuthRepo::signIn No user found; " + error.toString());
@@ -88,7 +88,13 @@ class AuthRepo {
 
         if (firebaseUser.email == email) {
           // Now we can link the accounts together
-          await firebaseUser.linkWithCredential(credentials);
+          try {
+            // await firebaseUser.unlink(credentials.providerId);
+            await firebaseUser.linkWithCredential(credentials);
+          } catch (error) {
+            print("[][][]");
+            print(error);
+          }
         }
       }
     } catch (error, stacktrace) {
@@ -233,7 +239,7 @@ class AuthRepo {
       case FacebookLoginStatus.loggedIn:
         final credentials = firebase_auth.FacebookAuthProvider.credential(facebookLoginResult.accessToken.token);
 
-        firebase_auth.User firebaseUser = await _firebaseSignIn(credentials);
+        firebase_auth.User firebaseUser = await _firebaseSignIn(credentials, facebookLoginResult);
 
         await _synchronizeCurrentUser(
             registerUserCallback: () => _registerFacebookUser(facebookLoginResult, firebaseUser),
