@@ -7,10 +7,10 @@ part 'user.g.dart';
 enum SocialProvider { GOOGLE, FACEBOOK, APPLE }
 
 enum Gender {
-  @JsonValue("NOANSWER") NOANSWER,
-  @JsonValue("MALE") MALE,
-  @JsonValue("FEMALE") FEMALE,
-  @JsonValue("OTHER") OTHER
+@JsonValue("NOANSWER") NOANSWER,
+@JsonValue("MALE") MALE,
+@JsonValue("FEMALE") FEMALE,
+@JsonValue("OTHER") OTHER
 }
 
 @JsonSerializable()
@@ -75,15 +75,33 @@ class User {
 
   User.fromFirebaseUser({final firebase_auth.User firebaseUser, final String accessToken = ""})
       : this(
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            imageUrl: firebaseUser.photoURL,
-            accessToken: accessToken);
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: firebaseUser.displayName,
+      imageUrl: firebaseUser.photoURL,
+      accessToken: accessToken);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'pushInfo': pushNotificationsInfo,
+      'userId': uid,
+      'email': email,
+      'displayName': displayName,
+      'gender': (gender != null) ? genderAsString(gender).toUpperCase() : null,
+      'birthday': formattedBirthday(birthday),
+      'imageUrl': imageUrl,
+    };
+  }
+
+  static String formattedBirthday(String birthday) {
+    if (birthday == null || birthday.isEmpty) { return null; }
+    String year = birthday.substring(birthday.length-4);
+    String month = birthday.substring(0, 2);
+    String day = birthday.substring(3, 5);
+    return year + "-" + month + "-" + day;
+  }
 }
 
 @JsonSerializable()
