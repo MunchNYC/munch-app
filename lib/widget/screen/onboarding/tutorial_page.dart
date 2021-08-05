@@ -28,6 +28,7 @@ class TutorialPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
           children: [
+            SizedBox(height: 16),
             SlidingContainer(child: image, offset: 0),
             SlidingContainer(
                 offset: 250,
