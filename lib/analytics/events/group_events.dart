@@ -2,7 +2,7 @@ import 'package:munch/analytics/events/event.dart';
 
 class GroupEvents {
   static Event createGroupButtonTapped(int time) {
-    return Event('CreateGroupButtonTapped', {'time': time.toString()});
+    return Event('CreateGroupButtonTapped', {'hourOfDay': time.toString()});
   }
 
   static Event groupCreated(String groupId) {
