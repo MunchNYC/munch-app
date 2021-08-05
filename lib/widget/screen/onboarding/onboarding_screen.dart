@@ -27,7 +27,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: SafeArea(
+        child: Center(
           child: Stack(
             alignment: AlignmentDirectional.center,
             children: <Widget>[
@@ -52,7 +53,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               )
             ],
       )),
-    );
+    ));
   }
 
   void _setSharedPreferencesForOnboarding() async {
