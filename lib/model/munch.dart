@@ -44,6 +44,8 @@ class Munch {
 
   String imageUrl;
 
+  String deliverZeroUrl;
+
   List<User> members;
 
   MunchMemberFilters munchMemberFilters;

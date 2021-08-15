@@ -207,6 +207,7 @@
     "decision_screen.map_button.label.text": "View Map",
     "decision_screen.yelp_button.label.text": "Yelp",
     "decision_screen.share_button.label.text": "Share",
+    "decision_screen.deliver_zero_button.label.text": "Deliver Zero",
     "decision_screen.restaurant_card.yelp.reviews.text": "Reviews",
     "decision_screen.share_button.popup.title": "Share decided restaurant",
     "decision_screen.share_action.text": "Decided on this spot via Munch:",

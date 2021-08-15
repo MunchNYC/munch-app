@@ -412,7 +412,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
       children: <Widget>[
         if (widget.restaurant.phoneNumber != null) Expanded(child: _callButton()),
         Expanded(child: _mapButton()),
-        Expanded(child: _yelpButton()),
+        (widget.munch.deliverZeroUrl != null) ? Expanded(child: _deliverZeroButton()) : Expanded(child: _yelpButton()),
         Expanded(child: _shareButton()),
       ],
     );
@@ -493,6 +493,31 @@ class _DecisionScreenState extends State<DecisionScreen> {
           },
         ),
         Text(App.translate("decision_screen.yelp_button.label.text"),
+            style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary)),
+      ],
+    );
+  }
+
+  Widget _deliverZeroButton() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        CustomButton(
+          padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+          flat: true,
+          color: Palette.background,
+          textColor: Palette.primary,
+          content: ImageIcon(
+            AssetImage("assets/icons/deliverZeroLogo.png"),
+            color: Palette.primary,
+            size: 32.0,
+          ),
+          onPressedCallback: () {
+            Utility.launchUrl(context, widget.munch.deliverZeroUrl);
+          },
+        ),
+        Text(App.translate("decision_screen.deliver_zero_button.label.text"),
             style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.primary)),
       ],
     );

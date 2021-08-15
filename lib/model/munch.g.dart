@@ -21,6 +21,7 @@ Munch _$MunchFromJson(Map<String, dynamic> json) {
     ..creationTimestamp =
         Munch._dateTimeFromEpochUs(json['creationTimestamp'] as int)
     ..imageUrl = json['imageUrl'] as String
+    ..deliverZeroUrl = json['deliverZeroUrl'] as String
     ..members = (json['members'] as List)
         ?.map(
             (e) => e == null ? null : User.fromJson(e as Map<String, dynamic>))
@@ -56,6 +57,7 @@ Map<String, dynamic> _$MunchToJson(Munch instance) => <String, dynamic>{
       'coordinates': instance.coordinates,
       'radius': instance.radius,
       'imageUrl': instance.imageUrl,
+      'deliverZeroUrl': instance.deliverZeroUrl,
       'members': instance.members,
       'munchMemberFilters': instance.munchMemberFilters,
       'munchFilters': instance.munchFilters,
