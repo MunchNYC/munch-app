@@ -23,6 +23,7 @@ import 'package:munch/widget/util/app_status_bar.dart';
 import 'package:munch/widget/util/custom_button.dart';
 import 'package:munch/widget/util/error_page_widget.dart';
 import 'package:munch/widget/util/overlay_dialog_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'include/new_restaurant_alert_dialog.dart';
@@ -434,7 +435,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 24.0,
           ),
           onPressedCallback: () {
-            Utility.launchUrl(context, "tel://" + widget.restaurant.phoneNumber);
+            launch("tel://" + widget.restaurant.phoneNumber.replaceAll(" ", ""));
           },
         ),
         Text(App.translate("decision_screen.call_button.label.text"),
