@@ -89,7 +89,7 @@ class User {
       'userId': uid,
       'email': email,
       'displayName': displayName,
-      'gender': (gender != null) ? genderAsString(gender).toUpperCase() : null,
+      'gender': (gender != null) ? gender.toString().split(".").last : null,
       'birthday': formattedBirthday(birthday),
       'imageUrl': imageUrl,
     };
