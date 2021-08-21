@@ -62,6 +62,8 @@ class Restaurant {
 
   String mapsUrl;
 
+  String deliverZeroUrl;
+
   @JsonKey(defaultValue: [])
   List<String> usersWhoLiked;
 

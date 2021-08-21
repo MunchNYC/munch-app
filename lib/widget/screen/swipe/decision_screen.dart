@@ -413,7 +413,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
       children: <Widget>[
         if (widget.restaurant.phoneNumber != null) Expanded(child: _callButton()),
         Expanded(child: _mapButton()),
-        (widget.munch.deliverZeroUrl != null) ? Expanded(child: _deliverZeroButton()) : Expanded(child: _yelpButton()),
+        (widget.restaurant.deliverZeroUrl != null) ? Expanded(child: _deliverZeroButton()) : Expanded(child: _yelpButton()),
         Expanded(child: _shareButton()),
       ],
     );
@@ -515,7 +515,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 32.0,
           ),
           onPressedCallback: () {
-            Utility.launchUrl(context, widget.munch.deliverZeroUrl);
+            Utility.launchUrl(context, widget.restaurant.deliverZeroUrl);
           },
         ),
         Text(App.translate("decision_screen.deliver_zero_button.label.text"),
