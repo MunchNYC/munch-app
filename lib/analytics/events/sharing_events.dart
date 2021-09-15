@@ -15,4 +15,4 @@ class UserSharingEvents {
   }
 }
 
-enum ShareGroupType { SWIPE_SCREEN, GROUP_OPTIONS }
+enum ShareGroupType { SWIPE_SCREEN, GROUP_OPTIONS, DECISION_SCREEN }

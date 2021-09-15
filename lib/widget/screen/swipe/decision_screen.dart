@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:munch/api/api.dart';
 import 'package:munch/analytics/analytics_repository.dart';
+import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
@@ -542,6 +543,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
           size: 24.0,
         ),
         onPressedCallback: () async {
+          AnalyticsRepo.getInstance().trackShareGroup(widget.munch.id, widget.munch.name, ShareGroupType.DECISION_SCREEN);
           await WcFlutterShare.share(
               sharePopupTitle: App.translate("decision_screen.share_button.popup.title"),
               text: App.translate("decision_screen.share_action.text") + "\n" + widget.restaurant.url,
