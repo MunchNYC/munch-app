@@ -1,4 +1,5 @@
 import 'package:munch/analytics/analytics_api.dart';
+import 'package:munch/analytics/events/decision_screen_events.dart';
 import 'package:munch/analytics/events/sharing_events.dart';
 import 'package:munch/analytics/events/swipe_screen_events.dart';
 import 'package:munch/analytics/events/group_events.dart';
@@ -75,6 +76,24 @@ class AnalyticsRepo {
 
   void onboardingCompletionWithDeeplinkTapped() {
     Analytics.getInstance().track(OnboardingEvents.deeplinkCompletionTapped());
+  }
+  //endregion
+
+  //region decisionScreen
+  void decisionScreenCallTapped(String restaurantName, String munchId) {
+    Analytics.getInstance().track(DecisionScreenEvents.call(restaurantName, munchId));
+  }
+
+  void decisionScreenMapTapped(String restaurantName, String munchId) {
+    Analytics.getInstance().track(DecisionScreenEvents.viewMap(restaurantName, munchId));
+  }
+
+  void decisionScreenYelpTapped(String restaurantName, String munchId) {
+    Analytics.getInstance().track(DecisionScreenEvents.yelpTapped(restaurantName, munchId));
+  }
+
+  void decisionScreenDeliverZeroTapped(String restaurantName, String munchId) {
+    Analytics.getInstance().track(DecisionScreenEvents.deliverZeroTapped(restaurantName, munchId));
   }
   //endregion
 }
