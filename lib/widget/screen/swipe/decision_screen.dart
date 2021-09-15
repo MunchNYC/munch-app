@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:munch/api/api.dart';
+import 'package:munch/analytics/analytics_repository.dart';
 import 'package:munch/model/munch.dart';
 import 'package:munch/model/restaurant.dart';
 import 'package:munch/service/munch/munch_bloc.dart';
@@ -435,6 +436,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 24.0,
           ),
           onPressedCallback: () {
+            AnalyticsRepo.getInstance().decisionScreenCallTapped(widget.restaurant.name, widget.munch.id);
             launch("tel://" + widget.restaurant.phoneNumber.replaceAll(" ", ""));
           },
         ),
@@ -460,6 +462,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 28.0,
           ),
           onPressedCallback: () {
+            AnalyticsRepo.getInstance().decisionScreenMapTapped(widget.restaurant.name, widget.munch.id);
             if (widget.restaurant.mapsUrl != null) {
               Utility.launchUrl(context, widget.restaurant.mapsUrl);
             } else {
@@ -490,6 +493,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 32.0,
           ),
           onPressedCallback: () {
+            AnalyticsRepo.getInstance().decisionScreenYelpTapped(widget.restaurant.name, widget.munch.id);
             Utility.launchUrl(context, widget.restaurant.url);
           },
         ),
@@ -515,6 +519,7 @@ class _DecisionScreenState extends State<DecisionScreen> {
             size: 32.0,
           ),
           onPressedCallback: () {
+            AnalyticsRepo.getInstance().decisionScreenDeliverZeroTapped(widget.restaurant.name, widget.munch.id);
             Utility.launchUrl(context, widget.restaurant.deliverZeroUrl);
           },
         ),
