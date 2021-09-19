@@ -138,7 +138,7 @@ class MunchesTabState extends State<MunchesTab> {
         padding: AppDimensions.padding(AppPaddingType.screenOnly).copyWith(left: 0.0, right: 0.0),
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           Padding(padding: EdgeInsets.symmetric(horizontal: 24.0), child: _headerBar()),
-          Expanded(child: _tabsContent())
+          Expanded(child: _pageContentBloc())
         ]));
   }
 
@@ -246,7 +246,7 @@ class MunchesTabState extends State<MunchesTab> {
     }
   }
 
-  Widget _tabsContent() {
+  Widget _pageContentBloc() {
     return BlocConsumer<MunchBloc, MunchState>(
         cubit: munchBloc,
         listenWhen: (MunchState previous, MunchState current) =>
