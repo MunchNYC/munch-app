@@ -51,8 +51,6 @@ class MunchesTabState extends State<MunchesTab> {
   // sent as an argument in order to be used in initState method, widget is null there
   MunchesTabState({this.munchBloc});
 
-  int _currentTab = 0;
-
   List<Munch> _stillDecidingMunches;
   List<Munch> _decidedMunches;
   List<Munch> _unmodifiableMunches;
@@ -140,7 +138,6 @@ class MunchesTabState extends State<MunchesTab> {
         padding: AppDimensions.padding(AppPaddingType.screenOnly).copyWith(left: 0.0, right: 0.0),
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           Padding(padding: EdgeInsets.symmetric(horizontal: 24.0), child: _headerBar()),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 24.0), child: _tabHeaders()),
           Expanded(child: _tabsContent())
         ]));
   }
@@ -155,47 +152,6 @@ class MunchesTabState extends State<MunchesTab> {
         _joinButton()
       ],
     );
-  }
-
-  Widget _tabHeaders() {
-    return Align(
-        alignment: Alignment.centerLeft,
-        child: DefaultTabController(
-            length: 2,
-            child: TabBar(
-              onTap: (int index) {
-                setState(() {
-                  _currentTab = index;
-
-                  if (_currentTab == 1) {
-                    _showDecidedNotification = false;
-                  }
-                });
-              },
-              isScrollable: true,
-              // needs to be set to true in order to make Align widget workable
-              labelColor: Palette.primary,
-              unselectedLabelColor: Palette.secondaryLight,
-              indicatorColor: Palette.primary,
-              indicatorPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-              labelPadding: EdgeInsets.only(left: 0.0, right: 15.0),
-              labelStyle: AppTextStyle.style(AppTextStylePattern.body3, fontWeight: FontWeight.w600),
-              tabs: [
-                Tab(text: App.translate("munches_tab.deciding_tab.title")),
-                Tab(
-                    child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(App.translate("munches_tab.decided_tab.title")),
-                    if (_showDecidedNotification)
-                      Padding(
-                          padding: EdgeInsets.only(bottom: AppDimensions.scaleSizeToScreen(16.0)),
-                          child:
-                              Icon(Icons.circle, color: Color(0xFFE60000), size: AppDimensions.scaleSizeToScreen(10.0)))
-                  ],
-                )),
-              ],
-            )));
   }
 
   void _initHistoricalPaginationData() {
@@ -313,20 +269,12 @@ class MunchesTabState extends State<MunchesTab> {
 
   Widget _buildListViews(BuildContext context, MunchState state) {
     if (state.hasError) {
-      return _renderListViews(errorOccurred: true);
+      return _renderGroupPageContent(errorOccurred: true);
     } else if ((state.initial || state.loading) && !(state is HistoricalMunchesPageFetchingState)) {
-      return _renderListViews(loading: true);
+      return _renderGroupPageContent(loading: true);
     } else {
-      return _renderListViews();
+      return _renderGroupPageContent();
     }
-  }
-
-  Widget _renderListViews({bool errorOccurred = false, bool loading = false}) {
-    // IndexedStack must be used instead of TabBarView, because we need unbounded height
-    return IndexedStack(index: _currentTab, children: <Widget>[
-      _renderStillDecidingTabContent(errorOccurred: errorOccurred, loading: loading),
-      _renderDecidedTabContent(errorOccurred: errorOccurred, loading: loading),
-    ]);
   }
 
   Future _refreshListView() async {
@@ -379,43 +327,16 @@ class MunchesTabState extends State<MunchesTab> {
             ]));
   }
 
-  Widget _renderStillDecidingListWidget(bool loading) {
-    return RefreshIndicator(
-        color: Palette.secondaryDark,
-        onRefresh: _refreshListView,
-        // SingleChildScrollView must exist because of RefreshIndicator, otherwise RefreshIndicator won't work if list is empty
-        child: ListView.separated(
-          primary: true,
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          itemCount: loading ? SKELETON_ITEMS_NUMBER : _stillDecidingMunches.length,
-          separatorBuilder: (BuildContext context, int index) {
-            return _listViewSeparator(index, loading ? SKELETON_ITEMS_NUMBER : _stillDecidingMunches.length);
-          },
-          itemBuilder: (BuildContext context, int index) {
-            if (loading) return _renderSkeletonWidget(index);
-
-            return InkWell(
-                onTap: () {
-                  NavigationHelper.navigateToRestaurantSwipeScreen(context,
-                      munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true);
-                },
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-                  child: MunchListWidget(munch: _stillDecidingMunches[index]),
-                ));
-          },
+  Widget _stillDecidingListItem(Munch munch, int index) {
+    return InkWell(
+        onTap: () {
+          NavigationHelper.navigateToRestaurantSwipeScreen(context,
+              munch: _stillDecidingMunches[index], shouldFetchDetailedMunch: true);
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+          child: MunchListWidget(munch: _stillDecidingMunches[index]),
         ));
-  }
-
-  Widget _renderStillDecidingTabContent({bool errorOccurred = false, bool loading = false}) {
-    if (errorOccurred) {
-      return _renderErrorMunchesListWidget();
-    } else if (loading || _stillDecidingMunches.length > 0) {
-      return _renderStillDecidingListWidget(loading);
-    } else {
-      return _renderEmptyMunchesListWidget();
-    }
   }
 
   Widget _decidedMunchListItem(Munch munch, int index) {
@@ -458,7 +379,7 @@ class MunchesTabState extends State<MunchesTab> {
     return false;
   }
 
-  Widget _renderDecidedListWidget(bool loading) {
+  Widget _renderGroupListWidget(bool loading) {
     // RefreshIndicator must be placed above scroll view
     return RefreshIndicator(
         color: Palette.secondaryDark,
@@ -475,29 +396,33 @@ class MunchesTabState extends State<MunchesTab> {
                     shrinkWrap: true,
                     itemCount: loading
                         ? SKELETON_ITEMS_NUMBER
-                        : _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length,
+                        : _stillDecidingMunches.length + _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length,
                     padding: EdgeInsets.zero,
                     separatorBuilder: (BuildContext context, int index) {
                       return _listViewSeparator(
                           index,
                           loading
                               ? SKELETON_ITEMS_NUMBER
-                              : _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length);
+                              : _stillDecidingMunches.length + _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length);
                     },
                     itemBuilder: (BuildContext context, int index) {
                       if (loading) return _renderSkeletonWidget(index);
 
                       Munch munch;
+                      bool stillDeciding = false;
 
-                      if (index < _decidedMunches.length) {
-                        munch = _decidedMunches[index];
-                      } else if (index < _decidedMunches.length + _unmodifiableMunches.length) {
-                        munch = _unmodifiableMunches[index - _decidedMunches.length];
+                      if (index < _stillDecidingMunches.length) {
+                        munch = _stillDecidingMunches[index];
+                        stillDeciding = true;
+                      } else if (index < _stillDecidingMunches.length + _decidedMunches.length) {
+                        munch = _decidedMunches[index - _stillDecidingMunches.length];
+                      } else if (index < _stillDecidingMunches.length + _decidedMunches.length + _unmodifiableMunches.length) {
+                        munch = _unmodifiableMunches[index - _stillDecidingMunches.length - _decidedMunches.length];
                       } else {
-                        munch = _historicalMunches[index - _decidedMunches.length - _unmodifiableMunches.length];
+                        munch = _historicalMunches[index - _stillDecidingMunches.length - _decidedMunches.length - _unmodifiableMunches.length];
                       }
 
-                      return _decidedMunchListItem(munch, index);
+                      return stillDeciding ? _stillDecidingListItem(munch, index) : _decidedMunchListItem(munch, index);
                     },
                   ),
                   if (_getHistoricalPageRequestInProgress)
@@ -514,13 +439,13 @@ class MunchesTabState extends State<MunchesTab> {
   /*
     Decided munches are sorted, then unmodifiable munches are rendered sorted
    */
-  Widget _renderDecidedTabContent({bool errorOccurred = false, bool loading = false}) {
+  Widget _renderGroupPageContent({bool errorOccurred = false, bool loading = false}) {
     if (errorOccurred) {
       return _renderErrorMunchesListWidget();
     } else if (loading ||
         !_historicalPagesFinished ||
-        _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length > 0) {
-      return _renderDecidedListWidget(loading);
+        _stillDecidingMunches.length + _decidedMunches.length + _unmodifiableMunches.length + _historicalMunches.length > 0) {
+      return _renderGroupListWidget(loading);
     } else {
       return _renderEmptyMunchesListWidget();
     }
