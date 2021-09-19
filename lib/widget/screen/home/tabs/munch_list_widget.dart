@@ -95,16 +95,16 @@ class MunchListWidget extends StatelessWidget {
 
   Widget _restaurantNameRow() {
     return
-      (munch.munchStatus == MunchStatus.UNDECIDED)
+      (munch.munchStatus != MunchStatus.UNDECIDED && munch.matchedRestaurantName != null)
           ?
-      Text(App.translate("munch_list_widget.munch_status.undecided.text"),
-          style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight, fontSizeOffset: 1.0),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis)
-          :
       Text(munch.matchedRestaurantName,
           style:
           AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight, fontSizeOffset: 1.0),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis)
+    :
+      Text(App.translate("munch_list_widget.munch_status.undecided.text"),
+          style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight, fontSizeOffset: 1.0),
           maxLines: 1,
           overflow: TextOverflow.ellipsis);
   }
