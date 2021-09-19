@@ -47,10 +47,9 @@ class MunchListWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _firstRow(),
-          _secondRow(),
-          if (munch.munchStatus == MunchStatus.UNDECIDED) _undecidedThirdRow(),
-          if (munch.munchStatus != MunchStatus.UNDECIDED) _decidedUnmodifiableHistoricalThirdRow(),
+          _groupNameAndDateRow(),
+          _restaurantNameRow(),
+          _numberOfMembersRow(),
         ]);
   }
 
@@ -72,7 +71,7 @@ class MunchListWidget extends StatelessWidget {
     return formattedTimestamp;
   }
 
-  Widget _firstRow() {
+  Widget _groupNameAndDateRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
@@ -94,29 +93,30 @@ class MunchListWidget extends StatelessWidget {
     );
   }
 
-  Widget _secondRow() {
-    return Text(munch.getNumberOfMembers().toString() + " " + App.translate("munch_list_widget.members.text"),
-        style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0));
+  Widget _restaurantNameRow() {
+    return
+      (munch.munchStatus == MunchStatus.UNDECIDED)
+          ?
+      Text(App.translate("munch_list_widget.munch_status.undecided.text"),
+          style: AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight, fontSizeOffset: 1.0),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis)
+          :
+      Text(munch.matchedRestaurantName,
+          style:
+          AppTextStyle.style(AppTextStylePattern.body3, color: Palette.secondaryLight, fontSizeOffset: 1.0),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis);
   }
 
-  Widget _undecidedThirdRow() {
-    return Text(App.translate("munch_list_widget.munch_status.undecided.text"),
-        style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis);
-  }
-
-  Widget _decidedUnmodifiableHistoricalThirdRow() {
+  Widget _numberOfMembersRow() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-            child: Text(munch.matchedRestaurantName,
-                style:
-                    AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis)),
+            child: Text(munch.getNumberOfMembers().toString() + " " + App.translate("munch_list_widget.members.text"),
+                style: AppTextStyle.style(AppTextStylePattern.body2, color: Palette.secondaryLight, fontSizeOffset: 1.0))),
         if (munch.munchStatus == MunchStatus.DECIDED) SizedBox(width: 8.0),
         if (munch.munchStatus == MunchStatus.DECIDED)
           Padding(
